@@ -1,0 +1,107 @@
+[gd_scene load_steps=23 format=3 uid="uid://b28fs2sgvdicd"]
+
+[ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://world.gd" id="1_fj7yv"]
+[ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/pause.tres" id="3_036b0"]
+[ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="4_2u3nc"]
+[ext_resource type="PackedScene" uid="uid://ce23we1tq5w8b" path="res://character.tscn" id="4_036b0"]
+[ext_resource type="PackedScene" uid="uid://dkr80d2pi0d41" path="res://addons/guide/debugger/guide_debugger.tscn" id="4_aqk2v"]
+[ext_resource type="Texture2D" uid="uid://dhm02ktyg4mxk" path="res://textures/terrain/grass_ground_d.jpg" id="4_hiqwa"]
+[ext_resource type="Texture2D" uid="uid://cldhykj0yqnnu" path="res://textures/terrain/grass_ground_n.jpg" id="5_2u3nc"]
+[ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
+[ext_resource type="Texture2D" uid="uid://bysd0ff6efev7" path="res://textures/terrain/grass_rocky_d.jpg" id="6_udxuc"]
+[ext_resource type="Texture2D" uid="uid://bth8ce3x71scl" path="res://textures/terrain/grass_rocky_n.jpg" id="7_ikiii"]
+[ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
+[ext_resource type="Texture2D" uid="uid://b0qmm215ojqwq" path="res://textures/terrain/ground_mud2_d.jpg" id="8_cbp6q"]
+[ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
+[ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="9_26xuy"]
+[ext_resource type="Compositor" uid="uid://bplbeo4eidf1p" path="res://environment/compositor.tres" id="9_ic0uy"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_036b0"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_aqk2v")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_bc84e"]
+name = "grass"
+albedo_texture = ExtResource("4_hiqwa")
+normal_texture = ExtResource("5_2u3nc")
+roughness = 1.0
+uv_scale = 0.4
+detiling_rotation = 0.271
+detiling_shift = 0.058
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_wukud"]
+name = "rocky"
+id = 1
+albedo_texture = ExtResource("6_udxuc")
+normal_texture = ExtResource("7_ikiii")
+roughness = 1.0
+uv_scale = 0.4
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_il2jm"]
+name = "dirt"
+id = 2
+albedo_color = Color(0.629675, 0.629675, 0.629675, 1)
+albedo_texture = ExtResource("8_cbp6q")
+normal_texture = ExtResource("9_26xuy")
+normal_depth = 0.688
+roughness = 1.0
+uv_scale = 0.4
+detiling_rotation = 0.251
+
+[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_dwbse"]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_036b0")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])
+
+[node name="world" type="Node3D"]
+process_mode = 3
+script = ExtResource("1_fj7yv")
+first_person = ExtResource("2_tlwt5")
+pause = ExtResource("3_036b0")
+
+[node name="Terrain3D" type="Terrain3D" parent="."]
+data_directory = "res://terrain_data/world"
+material = ExtResource("4_2u3nc")
+assets = SubResource("Terrain3DAssets_dwbse")
+save_16_bit = true
+process_mode = 1
+top_level = true
+metadata/_edit_lock_ = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+
+[node name="GuideDebugger" parent="CanvasLayer" instance=ExtResource("4_aqk2v")]
+
+[node name="pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
+unique_name_in_owner = true
+visible = false
+top_level = true
+
+[node name="character" parent="." instance=ExtResource("4_036b0")]
+process_mode = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.163517, 0, 0.120956)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("7_ioo17")
+camera_attributes = ExtResource("8_wse8f")
+compositor = ExtResource("9_ic0uy")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.682431, 0.0358815, 0.730069, -0.289603, 0.93033, 0.224982, -0.671132, -0.364965, 0.645277, 0, 3.23165, 0)
+light_temperature = 5000.0
+light_energy = 4.0

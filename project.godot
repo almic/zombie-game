@@ -1,0 +1,47 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Zombie Game"
+run/main_scene="uid://b28fs2sgvdicd"
+config/features=PackedStringArray("4.4", "Forward Plus")
+config/icon="res://icon.svg"
+
+[autoload]
+
+GUIDE="*res://addons/guide/guide.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/borderless=true
+window/size/sharp_corners=true
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/guide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+
+[layer_names]
+
+3d_render/layer_20="Editor Only"
+
+[physics]
+
+3d/run_on_separate_thread=true
+3d/physics_engine="Jolt Physics"
+
+[rendering]
+
+lights_and_shadows/use_physical_light_units=true
+textures/default_filters/anisotropic_filtering_level=1
+anti_aliasing/quality/msaa_3d=1
+anti_aliasing/quality/use_debanding=true

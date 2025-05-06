@@ -1,0 +1,19 @@
+[gd_resource type="Environment" load_steps=2 format=3 uid="uid://v7b5rsas5c8s"]
+
+[ext_resource type="Sky" uid="uid://dswhq1dn86hfd" path="res://environment/sky.tres" id="1_amouy"]
+
+[resource]
+background_mode = 2
+sky = ExtResource("1_amouy")
+ambient_light_source = 3
+reflected_light_source = 2
+tonemap_mode = 1
+ssao_enabled = true
+glow_enabled = true
+fog_enabled = true
+fog_sun_scatter = 0.08
+fog_density = 0.0008
+fog_aerial_perspective = 1.0
+fog_sky_affect = 0.0
+volumetric_fog_density = 0.0215
+volumetric_fog_ambient_inject = 16.0

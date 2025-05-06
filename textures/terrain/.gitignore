@@ -1,0 +1,8 @@
+# Ignore the specular maps, terrain3d doesn't support it
+grass_ground_s.jpg
+grass_rocky_s.jpg
+ground_mud2_s.jpg
+grass_ground_s.jpg.import
+grass_rocky_s.jpg.import
+ground_mud2_s.jpg.import
+

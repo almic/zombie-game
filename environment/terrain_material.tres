@@ -1,0 +1,60 @@
+[gd_resource type="Terrain3DMaterial" load_steps=4 format=3 uid="uid://cim2ehhkpiofr"]
+
+[sub_resource type="Gradient" id="Gradient_gv5m4"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_f3sb7"]
+noise_type = 2
+frequency = 0.03
+cellular_jitter = 3.0
+cellular_return_type = 0
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 50.0
+domain_warp_fractal_type = 2
+domain_warp_fractal_lacunarity = 1.5
+domain_warp_fractal_gain = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_fj7yv"]
+seamless = true
+color_ramp = SubResource("Gradient_gv5m4")
+noise = SubResource("FastNoiseLite_f3sb7")
+
+[resource]
+_shader_parameters = {
+&"auto_base_texture": 2,
+&"auto_height_reduction": 0.029,
+&"auto_overlay_texture": 0,
+&"auto_slope": 2.539,
+&"bias_distance": 512.0,
+&"blend_sharpness": 0.547,
+&"depth_blur": 0.0,
+&"enable_macro_variation": true,
+&"enable_projection": false,
+&"height_blending": true,
+&"macro_variation1": Color(1, 0.943244, 0.919604, 1),
+&"macro_variation2": Color(0.899196, 1, 0.823027, 1),
+&"macro_variation_slope": 0.333,
+&"mipmap_bias": 1.0,
+&"noise1_angle": 0.0,
+&"noise1_offset": Vector2(0.5, 0.5),
+&"noise1_scale": 0.04,
+&"noise2_scale": 0.076,
+&"noise3_scale": 0.225,
+&"noise_texture": SubResource("NoiseTexture2D_fj7yv"),
+&"projection_angular_division": 2.0,
+&"projection_threshold": 0.8,
+&"world_noise_fragment_normals": false,
+&"world_noise_height": 22.5,
+&"world_noise_lod_distance": 1000.0,
+&"world_noise_max_octaves": 12,
+&"world_noise_min_octaves": 10,
+&"world_noise_offset": Vector3(4.515, -0.34, -9.905),
+&"world_noise_region_blend": 0.95,
+&"world_noise_scale": 5.0,
+&"world_space_normal_blend": true
+}
+world_background = 2
+texture_filtering = 1
+auto_shader = true

@@ -30,6 +30,11 @@ window/size/sharp_corners=true
 
 enabled=PackedStringArray("res://addons/guide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
+[global_group]
+
+terrain_nav_group="Used in terrain nav baking"
+zombie_target="something a zombie will chase"
+
 [layer_names]
 
 3d_render/layer_20="Editor Only"

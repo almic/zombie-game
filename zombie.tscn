@@ -1,0 +1,61 @@
+[gd_scene load_steps=7 format=3 uid="uid://vvkd1vnbarkk"]
+
+[ext_resource type="Script" uid="uid://yc5h3mnfmgmn" path="res://zombie.gd" id="1_roy8y"]
+[ext_resource type="FontFile" uid="uid://cu8bvod6tnnwr" path="res://addons/guide/ui/renderers/keyboard/Lato-Black.ttf" id="1_uiaus"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_050lg"]
+radius = 0.375
+height = 1.55
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_uiaus"]
+lightmap_size_hint = Vector2i(12, 11)
+radius = 0.35
+height = 1.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_roy8y"]
+albedo_color = Color(0.713726, 0.278431, 0.027451, 1)
+
+[sub_resource type="TextMesh" id="TextMesh_roy8y"]
+text = "O ~ O"
+font = ExtResource("1_uiaus")
+font_size = 15
+depth = 0.1
+
+[node name="zombie" type="CharacterBody3D"]
+process_mode = 1
+script = ExtResource("1_roy8y")
+target_search_groups = Array[String](["zombie_target"])
+
+[node name="collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.775, 0)
+shape = SubResource("CapsuleShape3D_050lg")
+
+[node name="capsule" type="MeshInstance3D" parent="collider"]
+gi_mode = 2
+mesh = SubResource("CapsuleMesh_uiaus")
+surface_material_override/0 = SubResource("StandardMaterial3D_roy8y")
+
+[node name="face" type="MeshInstance3D" parent="collider"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.4, -0.325)
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("TextMesh_roy8y")
+
+[node name="RayCast3D" type="RayCast3D" parent="collider"]
+target_position = Vector3(0, 0, -1)
+collision_mask = 0
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+unique_name_in_owner = true
+path_desired_distance = 0.25
+path_height_offset = 0.25
+path_metadata_flags = 0
+simplify_path = true
+simplify_epsilon = 0.1
+avoidance_enabled = true
+radius = 0.4
+neighbor_distance = 5.0
+max_neighbors = 5
+time_horizon_agents = 0.25
+max_speed = 7.0
+debug_enabled = true

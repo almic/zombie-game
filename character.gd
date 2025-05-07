@@ -3,7 +3,6 @@ class_name Character extends CharacterBody3D
 @onready var camera_3d: Camera3D = %Camera3D
 
 
-
 @export_category("Movement")
 @export var gravity: float = 9.81
 @export var jump_power: float = 5

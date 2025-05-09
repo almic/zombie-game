@@ -2,34 +2,31 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dguqfwkgfek3y"
-path.s3tc="res://.godot/imported/Romero_Model_T_0.png-56e3d290ce1f56fe8e18c359f8e587ba.s3tc.ctex"
+uid="uid://dc0u60nevuaee"
+path.bptc="res://.godot/imported/skin_nr.png-f8ec402df9d03b56e48c1a3e78c343b6.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "b0162432fc7ed34cb583653b1e0dbacd"
-}
 
 [deps]
 
-source_file="res://models/zombie/Romero_Model_T_0.png"
-dest_files=["res://.godot/imported/Romero_Model_T_0.png-56e3d290ce1f56fe8e18c359f8e587ba.s3tc.ctex"]
+source_file="res://models/zombie/skin_nr.png"
+dest_files=["res://.godot/imported/skin_nr.png-f8ec402df9d03b56e48c1a3e78c343b6.bptc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=false
+compress/high_quality=true
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=2
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=0
-roughness/src_normal=""
-process/fix_alpha_border=true
+roughness/mode=4
+roughness/src_normal="uid://dc0u60nevuaee"
+process/fix_alpha_border=false
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false

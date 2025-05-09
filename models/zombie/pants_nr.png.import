@@ -2,34 +2,31 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://74f73ifjpr1a"
-path.s3tc="res://.godot/imported/Romero_Model_T_1.png-f08d8c0ad80c6d47cdaeed7d22e25502.s3tc.ctex"
+uid="uid://cst1icysnc868"
+path.bptc="res://.godot/imported/pants_nr.png-c0f6278051ee6ebe2f104dea4ecb7417.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
 }
-generator_parameters={
-"md5": "9f60d4a72d82b39cafac59f248b4a9a7"
-}
 
 [deps]
 
-source_file="res://models/zombie/Romero_Model_T_1.png"
-dest_files=["res://.godot/imported/Romero_Model_T_1.png-f08d8c0ad80c6d47cdaeed7d22e25502.s3tc.ctex"]
+source_file="res://models/zombie/pants_nr.png"
+dest_files=["res://.godot/imported/pants_nr.png-c0f6278051ee6ebe2f104dea4ecb7417.bptc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=false
+compress/high_quality=true
 compress/lossy_quality=0.7
 compress/hdr_compression=1
 compress/normal_map=2
 compress/channel_pack=0
 mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=0
-roughness/src_normal=""
-process/fix_alpha_border=true
+roughness/mode=4
+roughness/src_normal="uid://cst1icysnc868"
+process/fix_alpha_border=false
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false

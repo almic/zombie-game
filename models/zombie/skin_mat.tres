@@ -1,0 +1,12 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://d0543y74kxwy"]
+
+[ext_resource type="Texture2D" uid="uid://c8wvlmb8s5fob" path="res://models/zombie/skin.png" id="1_2dexn"]
+[ext_resource type="Texture2D" uid="uid://dc0u60nevuaee" path="res://models/zombie/skin_nr.png" id="1_h0f7x"]
+
+[resource]
+albedo_texture = ExtResource("1_2dexn")
+metallic_specular = 0.1
+roughness_texture = ExtResource("1_h0f7x")
+roughness_texture_channel = 2
+normal_enabled = true
+normal_texture = ExtResource("1_h0f7x")

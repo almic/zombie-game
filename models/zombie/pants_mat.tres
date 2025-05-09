@@ -1,0 +1,16 @@
+[gd_resource type="StandardMaterial3D" load_steps=3 format=3 uid="uid://bjsa8becon5pe"]
+
+[ext_resource type="Texture2D" uid="uid://b3n4vf27juqj8" path="res://models/zombie/pants.png" id="1_eyiyr"]
+[ext_resource type="Texture2D" uid="uid://cst1icysnc868" path="res://models/zombie/pants_nr.png" id="2_wg8yg"]
+
+[resource]
+resource_name = "Ch10_body1"
+albedo_texture = ExtResource("1_eyiyr")
+metallic_specular = 0.0
+roughness_texture = ExtResource("2_wg8yg")
+roughness_texture_channel = 2
+normal_enabled = true
+normal_texture = ExtResource("2_wg8yg")
+clearcoat = 0.04
+clearcoat_roughness = 1.0
+anisotropy = 1.0

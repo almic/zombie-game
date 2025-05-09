@@ -3,4 +3,5 @@
 [resource]
 auto_exposure_enabled = true
 auto_exposure_speed = 2.0
+frustum_focal_length = 5.0
 frustum_far = 500.0

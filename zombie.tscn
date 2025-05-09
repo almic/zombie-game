@@ -36,19 +36,19 @@ mesh = SubResource("CapsuleMesh_uiaus")
 surface_material_override/0 = SubResource("StandardMaterial3D_roy8y")
 
 [node name="face" type="MeshInstance3D" parent="collider"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.4, -0.325)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.325)
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("TextMesh_roy8y")
 
 [node name="RayCast3D" type="RayCast3D" parent="collider"]
-target_position = Vector3(0, 0, -1)
+target_position = Vector3(0, 0, 1)
 collision_mask = 0
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 unique_name_in_owner = true
-path_desired_distance = 0.25
-path_height_offset = 0.25
+path_desired_distance = 0.5
+path_height_offset = 0.5
 path_metadata_flags = 0
 simplify_path = true
 simplify_epsilon = 0.1

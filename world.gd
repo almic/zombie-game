@@ -8,9 +8,9 @@ extends Node3D
 func _ready() -> void:
     GUIDE.enable_mapping_context(first_person)
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-    
+
     # Engine.time_scale = 0.334
-    
+
 func _process(_delta: float) -> void:
     if pause.is_triggered():
         if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:

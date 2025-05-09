@@ -261,6 +261,7 @@ func update_target_position(delta: float) -> void:
         return
 
     if _target_search_accumulator > target_search_rate:
+        print("searching for target")
         # reset accumulator
         _target_search_accumulator = randomize_accumulator(target_search_rate)
 
@@ -290,6 +291,7 @@ func update_target_position(delta: float) -> void:
                 closest_dist = dist
 
         if closest != null:
+            print("target located!")
             _active_target = closest
             navigation.target_position = _active_target.global_position
             _simple_move = false

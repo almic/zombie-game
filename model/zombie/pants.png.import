@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b3n4vf27juqj8"
-path.bptc="res://.godot/imported/pants.png-7857d43d924613c16de16a439ef8be7c.bptc.ctex"
+path.bptc="res://.godot/imported/pants.png-a77ff4f43a9f33425f723f4f0f06b3e2.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://models/zombie/pants.png"
-dest_files=["res://.godot/imported/pants.png-7857d43d924613c16de16a439ef8be7c.bptc.ctex"]
+source_file="res://model/zombie/pants.png"
+dest_files=["res://.godot/imported/pants.png-a77ff4f43a9f33425f723f4f0f06b3e2.bptc.ctex"]
 
 [params]
 

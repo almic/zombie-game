@@ -1,4 +1,4 @@
-extends Node3D
+class_name World extends Node3D
 
 @export var first_person: GUIDEMappingContext
 

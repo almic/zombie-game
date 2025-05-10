@@ -1,10 +1,10 @@
 [gd_scene load_steps=25 format=3 uid="uid://b28fs2sgvdicd"]
 
-[ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://world.gd" id="1_fj7yv"]
+[ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
 [ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/pause.tres" id="3_036b0"]
 [ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="4_2u3nc"]
-[ext_resource type="PackedScene" uid="uid://ce23we1tq5w8b" path="res://character.tscn" id="4_036b0"]
+[ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="4_036b0"]
 [ext_resource type="PackedScene" uid="uid://dkr80d2pi0d41" path="res://addons/guide/debugger/guide_debugger.tscn" id="4_aqk2v"]
 [ext_resource type="Texture2D" uid="uid://dhm02ktyg4mxk" path="res://textures/terrain/grass_ground_d.jpg" id="4_hiqwa"]
 [ext_resource type="Texture2D" uid="uid://cldhykj0yqnnu" path="res://textures/terrain/grass_ground_n.jpg" id="5_2u3nc"]
@@ -17,7 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="9_26xuy"]
 [ext_resource type="Compositor" uid="uid://bplbeo4eidf1p" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
-[ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://zombie.tscn" id="18_ikiii"]
+[ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="18_4akyk"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
 transparency = 4
@@ -74,6 +74,7 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
+metadata/_custom_type_script = "uid://mvbofvslxl7"
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -101,7 +102,7 @@ unique_name_in_owner = true
 visible = false
 top_level = true
 
-[node name="character" parent="." instance=ExtResource("4_036b0")]
+[node name="player" parent="." instance=ExtResource("4_036b0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.80114, -1.90735e-06, -5.38137)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -114,32 +115,5 @@ transform = Transform3D(0.682431, 0.0358815, 0.730069, -0.289603, 0.93033, 0.224
 light_temperature = 5000.0
 light_energy = 4.0
 
-[node name="zombie" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.608955, 0, -0.793205, 0, 1, 0, 0.793205, 0, -0.608955, 6.8589, 0, -14.081)
-
-[node name="zombie2" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.999538, 0, -0.0303989, 0, 1, 0, 0.0303989, 0, -0.999538, 7.35101, 0, -15.6874)
-
-[node name="zombie3" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.908063, 0, -0.418834, 0, 1, 0, 0.418834, 0, -0.908063, 9.26221, 4.76837e-07, -14.7849)
-
-[node name="zombie4" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.887091, 0, 0.461594, 0, 1, 0, -0.461594, 0, -0.887091, 9.25383, 4.76837e-07, -16.3164)
-
-[node name="zombie5" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.258347, 0, 0.966052, 0, 1, 0, -0.966052, 0, -0.258347, 13.618, 9.53674e-07, -13.4846)
-
-[node name="zombie6" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.258347, 0, 0.966052, 0, 1, 0, -0.966052, 0, -0.258347, 12.5464, 9.53674e-07, -16.3738)
-
-[node name="zombie7" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.258347, 0, 0.966052, 0, 1, 0, -0.966052, 0, -0.258347, 11.5022, 4.76837e-07, -15.185)
-
-[node name="zombie8" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.258347, 0, 0.966052, 0, 1, 0, -0.966052, 0, -0.258347, 13.3054, 4.76837e-07, -15.0226)
-
-[node name="zombie9" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.258347, 0, 0.966052, 0, 1, 0, -0.966052, 0, -0.258347, 10.5339, 4.76837e-07, -17.4496)
-
-[node name="zombie10" parent="." instance=ExtResource("18_ikiii")]
-transform = Transform3D(-0.258347, 0, 0.966052, 0, 1, 0, -0.966052, 0, -0.258347, 13.1573, 4.76837e-07, -17.6537)
+[node name="zombie" parent="." instance=ExtResource("18_4akyk")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.6764, 0, -19.1232)

@@ -2,6 +2,7 @@ class_name Zombie extends CharacterBody3D
 
 @onready var navigation: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
+@onready var attack_hitbox: HitBox = %AttackHitbox
 
 
 @export_group("Movement")
@@ -65,14 +66,24 @@ var _simple_move: bool = false
 
 ## How close must the target be in order to attack
 @export var attack_range: float = 1.24
-## How nearly facing the target in order to attack
-@export var attack_facing: float = 0.67
+## How nearly facing the target in order to attack, use cos() to get your desired value
+@export var attack_facing: float = 0.996
+## How much damage to deal
+@export var attack_damage: float = 0.0:
+    set(value):
+        attack_damage = value
+        if is_node_ready():
+            attack_hitbox.damage = attack_damage
 
 ## Locomotion state machine
 var locomotion: AnimationNodeStateMachinePlayback
 
 func _ready() -> void:
     locomotion = animation_tree["parameters/Locomotion/playback"]
+    locomotion.travel(anim_idle)
+
+    attack_hitbox.damage = attack_damage
+
     navigation.velocity_computed.connect(_on_velocity_computed)
 
 func _process(_delta: float) -> void:
@@ -216,10 +227,10 @@ func _on_velocity_computed(safe_velocity: Vector3) -> void:
     move_and_slide()
 
 func on_attack_start() -> void:
-    pass
+    attack_hitbox.enable()
 
 func on_attack_end() -> void:
-    pass
+    attack_hitbox.disable()
 
 func update_rotation(delta: float) -> void:
     var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)

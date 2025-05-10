@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://ce23we1tq5w8b"]
+[gd_scene load_steps=9 format=3 uid="uid://ce23we1tq5w8b"]
 
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/move.tres" id="2_otwb2"]
 [ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/look.tres" id="3_otwb2"]
 [ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/jump.tres" id="4_wfnr8"]
+[ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://hurtbox.gd" id="5_px5sl"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vu45j"]
 radius = 0.375
@@ -12,6 +13,8 @@ height = 1.75
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_glpr6"]
 radius = 0.35
 height = 1.7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_wfnr8"]
 
 [node name="character" type="CharacterBody3D" groups=["zombie_target"]]
 process_mode = 1
@@ -40,3 +43,16 @@ collision_mask = 0
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40809, 0)
 cull_mask = 524287
+
+[node name="Hurtbox" type="Area3D" parent="."]
+unique_name_in_owner = true
+collision_layer = 8
+collision_mask = 0
+monitoring = false
+script = ExtResource("5_px5sl")
+metadata/_custom_type_script = "uid://cx8x5g2jhcrm6"
+
+[node name="collider" type="CollisionShape3D" parent="Hurtbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+shape = SubResource("SphereShape3D_wfnr8")
+debug_color = Color(0.998291, 0, 0.145787, 0.42)

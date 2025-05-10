@@ -1,9 +1,10 @@
-[gd_scene load_steps=37 format=3 uid="uid://vvkd1vnbarkk"]
+[gd_scene load_steps=38 format=3 uid="uid://vvkd1vnbarkk"]
 
 [ext_resource type="Script" uid="uid://yc5h3mnfmgmn" path="res://zombie.gd" id="1_roy8y"]
 [ext_resource type="FontFile" uid="uid://cu8bvod6tnnwr" path="res://addons/guide/ui/renderers/keyboard/Lato-Black.ttf" id="1_uiaus"]
 [ext_resource type="ArrayMesh" uid="uid://b4lot0o7tuu4k" path="res://models/zombie/romero.res" id="3_eseir"]
 [ext_resource type="AnimationLibrary" uid="uid://g7yly4yxa66j" path="res://animation/zombie/zombie_anim_lib.res" id="4_7nqyo"]
+[ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://hitbox.gd" id="5_7nqyo"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_050lg"]
 radius = 0.34
@@ -148,6 +149,7 @@ collision_layer = 2
 collision_mask = 19
 script = ExtResource("1_roy8y")
 target_search_groups = Array[String](["zombie_target"])
+attack_damage = 33.0
 
 [node name="collider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.835, 0)
@@ -1835,10 +1837,18 @@ time_horizon_agents = 0.25
 max_speed = 7.0
 debug_enabled = true
 
-[node name="AttackHtibox" type="Area3D" parent="."]
-collision_layer = 8
-collision_mask = 3
+[node name="AttackHitbox" type="Area3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.65)
+collision_layer = 0
+collision_mask = 8
+monitoring = false
+monitorable = false
+script = ExtResource("5_7nqyo")
+hitbox_owner = NodePath("..")
+metadata/_custom_type_script = "uid://dc77cbpvaw8jo"
 
-[node name="collider" type="CollisionShape3D" parent="AttackHtibox"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.085, 0.75, 0.65)
+[node name="collider" type="CollisionShape3D" parent="AttackHitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
 shape = SubResource("CylinderShape3D_eseir")
+debug_color = Color(0.994448, 0.0677874, 0, 0.42)

@@ -1,14 +1,18 @@
 class_name Character extends CharacterBody3D
 
 @onready var camera_3d: Camera3D = %Camera3D
+@onready var hurtbox: HurtBox = %Hurtbox
 
 
-@export_category("Movement")
+@export_group("Combat")
+@export var health: float = 100
+
+@export_group("Movement")
 @export var gravity: float = 9.81
 @export var jump_power: float = 5
 @export var look_speed: float = 0.55
 
-@export_subgroup("Movement", "move")
+@export_subgroup("Moving", "move")
 @export var move_accel: float = 20
 @export var move_top_speed: float = 4.8
 @export var move_friction: float = 15
@@ -19,6 +23,10 @@ class_name Character extends CharacterBody3D
 @export var jump: GUIDEAction
 @export var look: GUIDEAction
 @export var move: GUIDEAction
+
+func _ready() -> void:
+    hurtbox.enable()
+    hurtbox.on_hit.connect(take_hit)
 
 func _process(_delta: float) -> void:
     rotation_degrees.y -= look.value_axis_2d.x * look_speed
@@ -117,3 +125,12 @@ func _physics_process(delta: float) -> void:
 
     # Update position
     move_and_slide()
+
+func take_hit(_from: Node3D, damage: float) -> void:
+    # take damage
+    health -= damage
+
+    if health > 0:
+        return
+
+    print("gah... dead!")

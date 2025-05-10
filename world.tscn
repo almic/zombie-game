@@ -94,6 +94,7 @@ metadata/_edit_lock_ = true
 process_mode = 3
 
 [node name="GuideDebugger" parent="CanvasLayer" instance=ExtResource("4_aqk2v")]
+visible = false
 
 [node name="pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
 unique_name_in_owner = true

@@ -55,14 +55,14 @@ func _physics_process(delta: float) -> void:
             velocity.y += jump_power
 
         # Apply ground friction opposite to direction and movement
-        if velocity.length_squared() > 0:
+        var friction: Vector2 = Vector2(velocity.x, velocity.z)
+        if not friction.is_zero_approx():
             if stationary:
                 # No movement, full friction
                 velocity.x -= velocity.x * move_friction * delta
                 velocity.z -= velocity.z * move_friction * delta
             else:
                 # Friction opposite to movement
-                var friction: Vector2 = Vector2(velocity.x, velocity.z)
                 var speed: float = friction.length()
                 var current_direction: Vector2 = friction / speed
                 move_dot = clampf(

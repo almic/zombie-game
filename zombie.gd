@@ -1,6 +1,7 @@
 class_name Zombie extends CharacterBody3D
 
 @onready var navigation: NavigationAgent3D = %NavigationAgent3D
+@onready var animation_tree: AnimationTree = %AnimationTree
 
 
 @export_group("Movement")
@@ -54,8 +55,24 @@ var _target_update_accumulator: float = randfn(0.0, 0.2)
 ## Switch for simple chase while waiting for pathing update
 var _simple_move: bool = false
 
+@export_group("Animation", "anim")
+
+@export var anim_idle: String = "idle"
+@export var anim_attack: String = "attack"
+@export var anim_run: String = "run"
+
+@export_group("Attacking", "attack")
+
+## How close must the target be in order to attack
+@export var attack_range: float = 1.24
+## How nearly facing the target in order to attack
+@export var attack_facing: float = 0.67
+
+## Locomotion state machine
+var locomotion: AnimationNodeStateMachinePlayback
 
 func _ready() -> void:
+    locomotion = animation_tree["parameters/Locomotion/playback"]
     navigation.velocity_computed.connect(_on_velocity_computed)
 
 func _process(_delta: float) -> void:
@@ -84,12 +101,20 @@ func _physics_process(delta: float) -> void:
     update_target_position(delta)
 
     if _active_target == null:
+        if new_velocity.length_squared() > 0:
+            # friction
+            new_velocity.x -= new_velocity.x * move_ground_friction * delta
+            new_velocity.z -= new_velocity.z * move_ground_friction * delta
+            _on_velocity_computed(new_velocity)
+        anim_goto(locomotion, anim_idle)
         return
 
-    var move_direction: Vector3 = Vector3.ZERO
+    var move_direction: Vector3
 
-    # stick with simple move first
-    if _simple_move:
+    # dont move if attacking
+    if locomotion.get_current_node() == anim_attack:
+        move_direction = Vector3.ZERO
+    elif _simple_move:
         move_direction = get_simple_move_direction()
     elif not navigation.is_navigation_finished():
         var next_pos: Vector3 = navigation.get_next_path_position()
@@ -104,13 +129,33 @@ func _physics_process(delta: float) -> void:
             new_velocity.x -= new_velocity.x * move_ground_friction * delta
             new_velocity.z -= new_velocity.z * move_ground_friction * delta
             _on_velocity_computed(new_velocity)
-        update_rotation(delta)
+
+        # If attacking, dont rotate and queue back to idle
+        if locomotion.get_current_node() == anim_attack:
+            anim_goto(locomotion, anim_idle)
+        else:
+            # Check if me are close enough to attack and facing the right way
+            var target_dist_sqr: float = global_position.distance_squared_to(_active_target.global_position)
+            var target_facing: float = basis.z.dot(global_position.direction_to(_active_target.global_position))
+            if target_dist_sqr <= attack_range ** 2 and target_facing >= attack_facing:
+                anim_goto(locomotion, anim_attack)
+            else:
+                update_rotation(delta)
         return
 
     # Apply ground friction opposite to movement
     var speed: float = velocity.length_squared()
-    if speed > 0:
+    if is_zero_approx(speed):
+        anim_goto(locomotion, anim_idle)
+    else:
         speed = sqrt(speed)
+
+        if speed >= 0.5:
+            anim_goto(locomotion, anim_run)
+        else:
+            # Return to idle when too slow
+            anim_goto(locomotion, anim_idle)
+
         var friction: Vector2 = Vector2(velocity.x, velocity.z)
         var current_direction: Vector2 = friction / speed
         var move_dot = clampf(
@@ -169,6 +214,12 @@ func _physics_process(delta: float) -> void:
 func _on_velocity_computed(safe_velocity: Vector3) -> void:
     velocity = safe_velocity
     move_and_slide()
+
+func on_attack_start() -> void:
+    pass
+
+func on_attack_end() -> void:
+    pass
 
 func update_rotation(delta: float) -> void:
     var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)
@@ -261,7 +312,6 @@ func update_target_position(delta: float) -> void:
         return
 
     if _target_search_accumulator > target_search_rate:
-        print("searching for target")
         # reset accumulator
         _target_search_accumulator = randomize_accumulator(target_search_rate)
 
@@ -291,7 +341,6 @@ func update_target_position(delta: float) -> void:
                 closest_dist = dist
 
         if closest != null:
-            print("target located!")
             _active_target = closest
             navigation.target_position = _active_target.global_position
             _simple_move = false
@@ -304,3 +353,13 @@ func randomize_accumulator(range_max: float) -> float:
         randfn(0.0, target_update_deviation),
         -range_max, range_max
     )
+
+func anim_goto(
+        state_machine: AnimationNodeStateMachinePlayback,
+        state: String,
+        reset: bool = false
+) -> void:
+    if not reset and state_machine.get_current_node() == state:
+        return
+
+    state_machine.travel(state, reset)

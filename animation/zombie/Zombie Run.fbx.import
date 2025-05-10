@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://d3qirjs2k4qdb"
-path="res://.godot/imported/Zombie Idle.fbx-3682660360664aead7e9d6da37fe93ed.scn"
+uid="uid://q6gnx0k5ii3y"
+path="res://.godot/imported/Zombie Run.fbx-a10434f876470019d84707a0b14be8b0.scn"
 
 [deps]
 
-source_file="res://animation/zombie/Zombie Idle.fbx"
-dest_files=["res://.godot/imported/Zombie Idle.fbx-3682660360664aead7e9d6da37fe93ed.scn"]
+source_file="res://animation/zombie/Zombie Run.fbx"
+dest_files=["res://.godot/imported/Zombie Run.fbx-a10434f876470019d84707a0b14be8b0.scn"]
 
 [params]
 
@@ -37,7 +37,7 @@ _subresources={
 "mixamo_com": {
 "save_to_file/enabled": true,
 "save_to_file/keep_custom_tracks": "",
-"save_to_file/path": "res://animation/zombie/idle.res",
+"save_to_file/path": "res://animation/zombie/run_a.res",
 "settings/loop_mode": 1,
 "slice_1/end_frame": 0,
 "slice_1/loop_mode": 0,

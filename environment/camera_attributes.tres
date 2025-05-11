@@ -1,7 +1,9 @@
 [gd_resource type="CameraAttributesPhysical" format=3 uid="uid://jvbde4fga4dl"]
 
 [resource]
+exposure_sensitivity = 200.0
 auto_exposure_enabled = true
 auto_exposure_speed = 2.0
 frustum_focal_length = 5.0
 frustum_far = 500.0
+auto_exposure_min_exposure_value = 2.0

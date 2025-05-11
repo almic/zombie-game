@@ -1,4 +1,6 @@
-[gd_resource type="Terrain3DMaterial" load_steps=4 format=3 uid="uid://cim2ehhkpiofr"]
+[gd_resource type="Terrain3DMaterial" load_steps=5 format=3 uid="uid://cim2ehhkpiofr"]
+
+[ext_resource type="Shader" uid="uid://dxr0bn2dp205t" path="res://environment/terrain_two_sided.gdshader" id="1_tvpb4"]
 
 [sub_resource type="Gradient" id="Gradient_gv5m4"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -58,3 +60,5 @@ _shader_parameters = {
 world_background = 2
 texture_filtering = 1
 auto_shader = true
+shader_override_enabled = true
+shader_override = ExtResource("1_tvpb4")

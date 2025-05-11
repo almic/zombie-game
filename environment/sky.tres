@@ -1,8 +1,12 @@
 [gd_resource type="Sky" load_steps=2 format=3 uid="uid://dswhq1dn86hfd"]
 
-[ext_resource type="Material" uid="uid://bf38mfl84yp8c" path="res://environment/sky_material.tres" id="1_npvax"]
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_ml76h"]
+rayleigh_coefficient = 26.9
+rayleigh_color = Color(0.0375789, 0.0681623, 0.125327, 1)
+mie_coefficient = 0.008
+mie_eccentricity = 0.99
 
 [resource]
-sky_material = ExtResource("1_npvax")
-process_mode = 1
+sky_material = SubResource("PhysicalSkyMaterial_ml76h")
+process_mode = 2
 radiance_size = 1

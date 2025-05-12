@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=26 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -17,6 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="9_26xuy"]
 [ext_resource type="Compositor" uid="uid://bplbeo4eidf1p" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
+[ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
@@ -104,6 +105,15 @@ top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.8143, 3.85356)
+health = null
+gravity = null
+jump_power = null
+look_speed = null
+move_acceleration = null
+move_top_speed = null
+move_friction = null
+move_air_ctl = null
+move_turn_speed_keep = null
 
 [node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun")]
 environment = ExtResource("7_ioo17")
@@ -128,3 +138,6 @@ directional_shadow_split_3 = 0.8
 directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.9
 directional_shadow_max_distance = 2000.0
+
+[node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.82949, 0, -16.9273)

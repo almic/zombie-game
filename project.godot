@@ -12,12 +12,14 @@ config_version=5
 
 config/name="Zombie Game"
 run/main_scene="uid://b28fs2sgvdicd"
+run/print_header=false
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 GUIDE="*res://addons/guide/guide.gd"
+DrawLine3d="*res://script/draw_line_3d/DrawLine3D.gd"
 
 [display]
 

@@ -4,6 +4,22 @@ class_name Zombie extends CharacterBody3D
 @onready var animation_tree: AnimationTree = %AnimationTree
 @onready var attack_hitbox: HitBox = %AttackHitbox
 
+## Body Region Hurtboxes
+@onready var head: HurtBox = %head
+@onready var body: HurtBox = %body
+@onready var arm_l_1: HurtBox = %arm_l1
+@onready var arm_l_2: HurtBox = %arm_l2
+@onready var hand_l: HurtBox = %hand_l
+@onready var arm_r_1: HurtBox = %arm_r1
+@onready var arm_r_2: HurtBox = %arm_r2
+@onready var hand_r: HurtBox = %hand_r
+@onready var leg_l_1: HurtBox = %leg_l1
+@onready var leg_l_2: HurtBox = %leg_l2
+@onready var foot_l: HurtBox = %foot_l
+@onready var leg_r_1: HurtBox = %leg_r1
+@onready var leg_r_2: HurtBox = %leg_r2
+@onready var foot_r: HurtBox = %foot_r
+
 
 @export_group("Movement")
 @export var gravity: float = 9.81
@@ -62,18 +78,32 @@ var _simple_move: bool = false
 @export var anim_attack: String = "attack"
 @export var anim_run: String = "run"
 
-@export_group("Attacking", "attack")
+@export_group("Combat")
 
-## How close must the target be in order to attack
-@export var attack_range: float = 1.24
-## How nearly facing the target in order to attack, use cos() to get your desired value
-@export var attack_facing: float = 0.996
+## Health
+@export var health: float = 100
+
 ## How much damage to deal
 @export var attack_damage: float = 0.0:
     set(value):
         attack_damage = value
         if is_node_ready():
             attack_hitbox.damage = attack_damage
+
+@export_subgroup("Body Damage Multipliers", "mult")
+
+## Damage received to head
+@export var mult_head: float = 3.0
+@export var mult_body: float = 1.0
+@export var mult_arm: float = 0.35
+@export var mult_leg: float = 0.5
+
+@export_subgroup("Attacking", "attack")
+
+## How close must the target be in order to attack
+@export var attack_range: float = 1.24
+## How nearly facing the target in order to attack, use cos() to get your desired value
+@export var attack_facing: float = 0.996
 
 ## Locomotion state machine
 var locomotion: AnimationNodeStateMachinePlayback
@@ -86,10 +116,15 @@ func _ready() -> void:
 
     navigation.velocity_computed.connect(_on_velocity_computed)
 
+    connect_hurtboxes()
+
 func _process(_delta: float) -> void:
     pass
 
 func _physics_process(delta: float) -> void:
+    if not (health > 0):
+        return
+
     if NavigationServer3D.map_get_iteration_id(navigation.get_navigation_map()) == 0:
         return
 
@@ -374,3 +409,35 @@ func anim_goto(
         return
 
     state_machine.travel(state, reset)
+
+func connect_hurtboxes() -> void:
+    for part in [
+        head,
+        body,
+        arm_l_1, arm_l_2, hand_l,
+        arm_r_1, arm_r_2, hand_r,
+        leg_l_1, leg_l_2, foot_l,
+        leg_r_1, leg_r_2, foot_r
+    ]:
+        part.on_hit.connect(on_hit)
+
+func on_hit(_from: Node3D, part: HurtBox, damage: float) -> void:
+    if part == head:
+        print("headshot!")
+        damage *= mult_head
+    elif part == body:
+        print("body shot!")
+        damage *= mult_body
+    elif part in [arm_l_1, arm_l_2, hand_l, arm_r_1, arm_r_2, hand_r]:
+        print("arm shot!")
+        damage *= mult_arm
+    elif part in [leg_l_1, leg_l_2, foot_l, leg_r_1, leg_r_2, foot_r]:
+        print("leg shot!")
+        damage *= mult_leg
+
+    health -= damage
+    if health > 0:
+        return
+
+    process_mode = Node.PROCESS_MODE_DISABLED
+    print("RAHH I DIE!")

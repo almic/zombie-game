@@ -3,7 +3,7 @@
 class_name HurtBox extends Area3D
 
 ## Called by attackers when damage should be taken
-signal on_hit(from: Node3D, damage: float)
+signal on_hit(from: Node3D, to: HurtBox, damage: float)
 
 func _ready() -> void:
     monitoring = false # does not monitor hits
@@ -17,4 +17,4 @@ func disable() -> void:
 
 ## Signal that a hit should be recieved
 func do_hit(from: Node3D, damage: float):
-    on_hit.emit(from, damage)
+    on_hit.emit(from, self, damage)

@@ -2,6 +2,7 @@ class_name Player extends CharacterBody3D
 
 @onready var camera_3d: Camera3D = %Camera3D
 @onready var hurtbox: HurtBox = %Hurtbox
+@onready var weapon: Weapon = %weapon
 
 
 @export_group("Combat")
@@ -13,16 +14,17 @@ class_name Player extends CharacterBody3D
 @export var look_speed: float = 0.55
 
 @export_subgroup("Moving", "move")
-@export var move_accel: float = 20
+@export var move_acceleration: float = 20
 @export var move_top_speed: float = 4.8
 @export var move_friction: float = 15
 @export var move_air_ctl: float = 0.25
 @export var move_turn_speed_keep: float = 0.67
 
-@export_subgroup("Controls")
+@export_group("Controls")
 @export var jump: GUIDEAction
 @export var look: GUIDEAction
 @export var move: GUIDEAction
+@export var fire_primary: GUIDEAction
 
 func _ready() -> void:
     hurtbox.enable()
@@ -36,6 +38,8 @@ func _process(_delta: float) -> void:
     )
 
 func _physics_process(delta: float) -> void:
+    weapon.trigger(fire_primary)
+
     var move_length: float = move.value_axis_3d.length()
     var stationary: bool = is_zero_approx(move_length)
 
@@ -47,7 +51,7 @@ func _physics_process(delta: float) -> void:
         move_direction = move.value_axis_3d / move_length
         movement = basis * move_direction
         move_direction = Vector2(movement.x, movement.z) # true direction
-        movement *= move_accel * delta
+        movement *= move_acceleration * delta
     else:
         movement = Vector3.ZERO
 
@@ -126,7 +130,7 @@ func _physics_process(delta: float) -> void:
     # Update position
     move_and_slide()
 
-func take_hit(_from: Node3D, damage: float) -> void:
+func take_hit(_from: Node3D, _to: HurtBox, damage: float) -> void:
     # take damage
     health -= damage
 

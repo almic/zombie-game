@@ -1,10 +1,14 @@
-[gd_scene load_steps=9 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=13 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/move.tres" id="2_otwb2"]
 [ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/look.tres" id="3_otwb2"]
 [ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/jump.tres" id="4_wfnr8"]
+[ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
+[ext_resource type="PackedScene" uid="uid://dbeh8uxaa05et" path="res://scene/weapon/weapon.tscn" id="6_noxpy"]
+[ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/pistol.tres" id="7_0cf6c"]
+[ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="8_v2h1c"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vu45j"]
 radius = 0.375
@@ -20,9 +24,19 @@ height = 1.7
 process_mode = 1
 collision_mask = 19
 script = ExtResource("1_y482n")
+health = null
+gravity = null
+jump_power = null
+look_speed = null
+move_acceleration = null
+move_top_speed = null
+move_friction = null
+move_air_ctl = null
+move_turn_speed_keep = null
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
+fire_primary = ExtResource("5_eu8pa")
 metadata/_custom_type_script = "uid://d3d3h5saxicc8"
 
 [node name="collider" type="CollisionShape3D" parent="."]
@@ -30,21 +44,60 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_vu45j")
 
 [node name="capsule" type="MeshInstance3D" parent="collider"]
+visible = false
 layers = 524288
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("CapsuleMesh_glpr6")
 skeleton = NodePath("../..")
 
-[node name="RayCast3D" type="RayCast3D" parent="collider"]
-target_position = Vector3(0, 0, -1)
-collision_mask = 0
-
 [node name="Camera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.40809, 0)
+rotation_edit_mode = 2
 cull_mask = 524287
 current = true
+
+[node name="weapon" parent="Camera3D" node_paths=PackedStringArray("target") instance=ExtResource("6_noxpy")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
+weapon_type = ExtResource("7_0cf6c")
+target = NodePath("../AimTarget")
+target_update_speed = null
+target_update_rate = null
+
+[node name="hud" type="Control" parent="Camera3D"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="center" type="CenterContainer" parent="Camera3D/hud"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="crosshair_ctl" type="Control" parent="Camera3D/hud/center"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CrossHair" type="Node2D" parent="Camera3D/hud/center/crosshair_ctl"]
+script = ExtResource("8_v2h1c")
+center_enabled = true
+center_size = 1.4
+metadata/_custom_type_script = "uid://b8ty0aywli1vd"
+
+[node name="AimTarget" type="RayCast3D" parent="Camera3D"]
+target_position = Vector3(0, 0, -500)
+collision_mask = 19
+collide_with_areas = true
 
 [node name="Hurtbox" type="Area3D" parent="."]
 unique_name_in_owner = true

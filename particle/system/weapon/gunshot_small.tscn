@@ -1,0 +1,125 @@
+[gd_scene load_steps=20 format=3 uid="uid://d30d6ot2ufjtr"]
+
+[ext_resource type="Script" uid="uid://bd6jab6eqtxkd" path="res://script/particle_system/particle_system.gd" id="1_cwgiv"]
+[ext_resource type="Curve" uid="uid://c7hmf1wm7ucbr" path="res://particle/curve/exp_decay.tres" id="2_3cioy"]
+[ext_resource type="Material" uid="uid://b6kedkq4rmwff" path="res://particle/system/weapon/spark.tres" id="3_ow6ch"]
+[ext_resource type="Curve" uid="uid://ckgmhu04yogob" path="res://particle/curve/sphere_decay.tres" id="4_b8v8d"]
+[ext_resource type="Material" uid="uid://c8ipyil3kyeeh" path="res://particle/system/weapon/flash.tres" id="4_ow6ch"]
+[ext_resource type="Curve" uid="uid://hassy4taix1s" path="res://particle/curve/growth.tres" id="4_xw271"]
+
+[sub_resource type="CurveTexture" id="CurveTexture_xw271"]
+width = 32
+texture_mode = 1
+curve = ExtResource("2_3cioy")
+
+[sub_resource type="Gradient" id="Gradient_x6q86"]
+colors = PackedColorArray(1, 1, 0.788235, 1, 0.726544, 0.331732, 1.92523e-07, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_njje4"]
+gradient = SubResource("Gradient_x6q86")
+width = 8
+
+[sub_resource type="CurveTexture" id="CurveTexture_b8v8d"]
+width = 32
+texture_mode = 1
+curve = ExtResource("2_3cioy")
+
+[sub_resource type="CurveTexture" id="CurveTexture_ub2n0"]
+width = 32
+curve = ExtResource("2_3cioy")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_3eq6l"]
+lifetime_randomness = 0.8
+particle_flag_align_y = true
+particle_flag_damping_as_friction = true
+direction = Vector3(0, 0, -1)
+spread = 18.0
+initial_velocity_min = 20.0
+initial_velocity_max = 50.0
+damping_min = 20.0
+damping_max = 20.0
+attractor_interaction_enabled = false
+scale_min = 0.04
+scale_max = 0.06
+scale_curve = SubResource("CurveTexture_ub2n0")
+color = Color(1, 1, 0.788235, 1)
+color_ramp = SubResource("GradientTexture1D_njje4")
+alpha_curve = SubResource("CurveTexture_xw271")
+emission_curve = SubResource("CurveTexture_b8v8d")
+turbulence_noise_strength = 13.75
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ktdfv"]
+material = ExtResource("3_ow6ch")
+size = Vector2(1, 1)
+orientation = 0
+
+[sub_resource type="CurveTexture" id="CurveTexture_c1w0c"]
+width = 32
+texture_mode = 1
+curve = ExtResource("4_b8v8d")
+
+[sub_resource type="Gradient" id="Gradient_drput"]
+colors = PackedColorArray(1, 0.93539, 0.822816, 1, 0.151682, 0.0692286, 6.01634e-09, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_dimw4"]
+gradient = SubResource("Gradient_drput")
+width = 6
+
+[sub_resource type="CurveTexture" id="CurveTexture_drput"]
+curve = ExtResource("4_xw271")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dimw4"]
+particle_flag_rotate_y = true
+angle_min = 1.07288e-05
+angle_max = 360.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.6
+scale_curve = SubResource("CurveTexture_drput")
+color_ramp = SubResource("GradientTexture1D_dimw4")
+alpha_curve = SubResource("CurveTexture_c1w0c")
+
+[sub_resource type="QuadMesh" id="QuadMesh_0ec8m"]
+material = ExtResource("4_ow6ch")
+orientation = 1
+
+[node name="gunshot_small" type="Node3D"]
+script = ExtResource("1_cwgiv")
+metadata/_custom_type_script = "uid://bd6jab6eqtxkd"
+
+[node name="sparks" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 7
+lifetime = 0.37
+one_shot = true
+explosiveness = 0.94
+fixed_fps = 60
+visibility_aabb = AABB(-0.5, -0.5, -1.5, 1, 1, 1.5)
+local_coords = true
+transform_align = 2
+process_material = SubResource("ParticleProcessMaterial_3eq6l")
+draw_pass_1 = SubResource("PlaneMesh_ktdfv")
+
+[node name="flash" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+emitting = false
+amount = 2
+lifetime = 0.04
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 100
+interpolate = false
+fract_delta = false
+visibility_aabb = AABB(-0.3, -0.3, -0.3, 0.6, 0.6, 0.6)
+local_coords = true
+process_material = SubResource("ParticleProcessMaterial_dimw4")
+draw_pass_1 = SubResource("QuadMesh_0ec8m")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05)
+light_intensity_lumens = 150000.0
+light_temperature = 3000.0
+light_size = 0.1
+shadow_enabled = true
+omni_range = 10.0
+omni_attenuation = 2.0
+omni_shadow_mode = 0

@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://c8ipyil3kyeeh"]
+
+[ext_resource type="Shader" uid="uid://b2xhh0lsil5mg" path="res://particle/star.gdshader" id="1_1pen1"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_1pen1")
+shader_parameter/points = 4.0
+shader_parameter/sharpness = 0.905
+shader_parameter/Emmisive = true
+shader_parameter/Energy = 200000.0

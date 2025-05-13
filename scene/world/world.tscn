@@ -104,16 +104,16 @@ visible = false
 top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.8143, 3.85356)
-health = null
-gravity = null
-jump_power = null
-look_speed = null
-move_acceleration = null
-move_top_speed = null
-move_friction = null
-move_air_ctl = null
-move_turn_speed_keep = null
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.824, 3.85356)
+health = 100.0
+gravity = 9.81
+jump_power = 5.0
+look_speed = 0.55
+move_acceleration = 20.0
+move_top_speed = 4.8
+move_friction = 15.0
+move_air_ctl = 0.25
+move_turn_speed_keep = 0.67
 
 [node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun")]
 environment = ExtResource("7_ioo17")
@@ -121,12 +121,13 @@ camera_attributes = ExtResource("8_wse8f")
 compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
+local_time = 0.7982
 latitude = 41.0
 time_scale = 72.0
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.329003, 0.562083, 0.758828, -0.433173, -0.624206, 0.650175, 0.839117, -0.542614, 0.0381139, 0, 0, 0)
+transform = Transform3D(-0.379685, -0.298241, -0.875723, -0.691456, 0.720363, 0.0544619, 0.614596, 0.626202, -0.479732, 0, 0, 0)
 rotation_order = 3
 light_temperature = 3600.0
 light_energy = 4.0

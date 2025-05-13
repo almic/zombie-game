@@ -43,4 +43,4 @@ func _on_hurtbox(hurtbox: HurtBox) -> void:
         return
 
     _cached_hurtboxes.append(id)
-    hurtbox.do_hit(_node_owner, damage)
+    hurtbox.do_hit(_node_owner, {}, damage)

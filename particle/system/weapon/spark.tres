@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://b6kedkq4rmwff"]
+
+[ext_resource type="Shader" uid="uid://dmnv4lpr766mg" path="res://particle/dot.gdshader" id="1_a4aks"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_a4aks")
+shader_parameter/Emmisive = true
+shader_parameter/Energy = 100000.0

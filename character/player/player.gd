@@ -3,6 +3,7 @@ class_name Player extends CharacterBody3D
 @onready var camera_3d: Camera3D = %Camera3D
 @onready var hurtbox: HurtBox = %Hurtbox
 @onready var weapon: Weapon = %weapon
+@onready var aim_target: RayCast3D = %AimTarget
 
 
 @export_group("Combat")
@@ -29,6 +30,10 @@ class_name Player extends CharacterBody3D
 func _ready() -> void:
     hurtbox.enable()
     hurtbox.on_hit.connect(take_hit)
+    aim_target.add_exception(hurtbox)
+    aim_target.add_exception(self)
+
+    weapon.set_trigger(fire_primary)
 
 func _process(_delta: float) -> void:
     rotation_degrees.y -= look.value_axis_2d.x * look_speed
@@ -38,8 +43,6 @@ func _process(_delta: float) -> void:
     )
 
 func _physics_process(delta: float) -> void:
-    weapon.trigger(fire_primary)
-
     var move_length: float = move.value_axis_3d.length()
     var stationary: bool = is_zero_approx(move_length)
 
@@ -130,7 +133,7 @@ func _physics_process(delta: float) -> void:
     # Update position
     move_and_slide()
 
-func take_hit(_from: Node3D, _to: HurtBox, damage: float) -> void:
+func take_hit(_from: Node3D, _to: HurtBox, _hit: Dictionary, damage: float) -> void:
     # take damage
     health -= damage
 

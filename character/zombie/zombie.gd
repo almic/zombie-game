@@ -421,7 +421,7 @@ func connect_hurtboxes() -> void:
     ]:
         part.on_hit.connect(on_hit)
 
-func on_hit(_from: Node3D, part: HurtBox, damage: float) -> void:
+func on_hit(_from: Node3D, part: HurtBox, _hit: Dictionary, damage: float) -> void:
     if part == head:
         print("headshot!")
         damage *= mult_head
@@ -440,4 +440,5 @@ func on_hit(_from: Node3D, part: HurtBox, damage: float) -> void:
         return
 
     process_mode = Node.PROCESS_MODE_DISABLED
+
     print("RAHH I DIE!")

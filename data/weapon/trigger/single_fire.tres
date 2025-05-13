@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TriggerSingleFire" load_steps=2 format=3 uid="uid://br27afoygcjl0"]
+
+[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFire.gd" id="1_n6fqj"]
+
+[resource]
+script = ExtResource("1_n6fqj")
+cycle_time = 0.45
+automatic_fire = false
+metadata/_custom_type_script = "uid://crckednuhsmu2"

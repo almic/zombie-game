@@ -1,13 +1,24 @@
 @tool
+
+## Manages a physical weapon that targets a RayCast3D hit point
 class_name Weapon extends Node3D
+
 
 @onready var mesh: MeshInstance3D = %mesh
 
 
 @export var weapon_type: WeaponResource
+
+## If the weapon should align itself with the target RayCast3D. You should
+## disable this for melee weapons.
+@export var do_targeting: bool = true
+## Aim target for weapon
 @export var target: RayCast3D
+## Speed for weapon re-targeting
 @export var target_update_speed: float = 15
+## Frequency of target position checks in physics frames.
 @export var target_update_rate: int = 3
+
 
 # For moving weapon to face target
 var _weapon_target_from: Quaternion
@@ -15,19 +26,32 @@ var _weapon_target_to: Quaternion
 var _weapon_target_tick: int = 0
 var _weapon_target_amount: float = 0
 
-# For weapon cycling
-var _weapon_cycle: float = 0
-var _weapon_triggered: bool = false
+var _weapon_trigger: GUIDEAction
+
+var _particle_system: ParticleSystem
+
 
 func _ready() -> void:
     mesh.mesh = weapon_type.mesh
-    position = weapon_type.offset
+    position = weapon_type.mesh_offset
+
+    _load_particle_system()
+
+func set_trigger(action: GUIDEAction) -> void:
+    _weapon_trigger = action
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
         if weapon_type:
             mesh.mesh = weapon_type.mesh
-            position = weapon_type.offset
+            position = weapon_type.mesh_offset
+            if weapon_type.particle_test:
+                _load_particle_system()
+                trigger_particle(true)
+                weapon_type.particle_test = false
+        return
+
+    if not do_targeting:
         return
 
     if _weapon_target_to.is_equal_approx(mesh.global_basis.get_rotation_quaternion()):
@@ -42,8 +66,14 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    if _weapon_cycle > 0:
-        _weapon_cycle -= delta
+    weapon_type.trigger_method.update(
+        _weapon_trigger,
+        self,
+        delta
+    )
+
+    if not do_targeting:
+        return
 
     _weapon_target_tick += 1
     if _weapon_target_tick < target_update_rate:
@@ -66,36 +96,44 @@ func _physics_process(delta: float) -> void:
     _weapon_target_from = mesh.global_basis.get_rotation_quaternion()
     _weapon_target_amount = 0
 
-func trigger(action: GUIDEAction) -> void:
+## Get the global weapon transform
+func weapon_tranform() -> Transform3D:
+    return mesh.global_transform
 
-    if action.is_completed():
-        _weapon_triggered = false
+## Trigger the weapon
+func trigger_weapon(activate: bool = true) -> void:
+    weapon_type.trigger_method._trigger(self, activate)
 
-    if _weapon_cycle > 0:
+## Trigger the weapon sound
+func trigger_sound(_activate: bool = true) -> void:
+    pass
+
+## Trigger the particle effect
+func trigger_particle(activate: bool = true) -> void:
+    if not _particle_system:
         return
 
-    # wait for trigger to release
-    if not weapon_type.automatic and _weapon_triggered:
+    _particle_system.emitting = activate
+
+func _load_particle_system() -> void:
+    if _particle_system:
+        remove_child(_particle_system)
+        _particle_system.queue_free()
+        _particle_system = null
+
+    if not weapon_type.particle_system:
         return
 
-    if action.is_triggered():
-        _weapon_cycle = weapon_type.cycle_time
-        _weapon_triggered = true
-    else:
+    var particle_system = weapon_type.particle_system.instantiate()
+    if particle_system is not ParticleSystem:
+        push_error(
+            "Weapon type \"" +
+            str(weapon_type.resource_name) +
+            "\" particle system \"" +
+            str(weapon_type.particle_system.resource_name) +
+            "\" root node is not a ParticleSystem!"
+        )
         return
-
-    var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-    var from: Vector3 = mesh.global_position
-    var to: Vector3 = mesh.global_position - mesh.global_basis.z * weapon_type.max_range
-    var query := PhysicsRayQueryParameters3D.create(from, to, weapon_type.raycast_mask)
-
-    query.collide_with_areas = true
-    query.collide_with_bodies = false
-
-    var hit := space.intersect_ray(query)
-    DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15), 5)
-    if not hit:
-        return
-
-    if hit.collider is HurtBox:
-        hit.collider.do_hit(self, weapon_type.damage)
+    _particle_system = particle_system
+    mesh.add_child(_particle_system)
+    _particle_system.position = weapon_type.particle_offset

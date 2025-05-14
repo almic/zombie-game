@@ -48,16 +48,16 @@ _shader_parameters = {
 &"projection_angular_division": 2.0,
 &"projection_threshold": 0.8,
 &"world_noise_fragment_normals": false,
-&"world_noise_height": 22.5,
-&"world_noise_lod_distance": 1000.0,
-&"world_noise_max_octaves": 12,
-&"world_noise_min_octaves": 10,
-&"world_noise_offset": Vector3(4.515, -0.34, -9.905),
-&"world_noise_region_blend": 0.95,
+&"world_noise_height": 64.0,
+&"world_noise_lod_distance": 7500.0,
+&"world_noise_max_octaves": 4,
+&"world_noise_min_octaves": 2,
+&"world_noise_offset": Vector3(0, 0, 0),
+&"world_noise_region_blend": 0.33,
 &"world_noise_scale": 5.0,
 &"world_space_normal_blend": true
 }
-world_background = 2
+world_background = 0
 texture_filtering = 1
 auto_shader = true
 shader_override_enabled = true

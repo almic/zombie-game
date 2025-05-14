@@ -84,6 +84,10 @@ assets = SubResource("Terrain3DAssets_dwbse")
 save_16_bit = true
 collision_layer = 16
 collision_mask = 0
+mesh_lods = 5
+mesh_size = 64
+cast_shadows = 2
+gi_mode = 0
 process_mode = 1
 top_level = true
 metadata/_edit_lock_ = true
@@ -105,35 +109,29 @@ top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.824, 3.85356)
-health = 100.0
-gravity = 9.81
-jump_power = 5.0
-look_speed = 0.55
-move_acceleration = 20.0
-move_top_speed = 4.8
-move_friction = 15.0
-move_air_ctl = 0.25
-move_turn_speed_keep = 0.67
 
 [node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun")]
+process_mode = 1
 environment = ExtResource("7_ioo17")
 camera_attributes = ExtResource("8_wse8f")
 compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
-local_time = 0.7982
+local_time = 0.76
 latitude = 41.0
 time_scale = 72.0
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.379685, -0.298241, -0.875723, -0.691456, 0.720363, 0.0544619, 0.614596, 0.626202, -0.479732, 0, 0, 0)
+transform = Transform3D(-0.397004, -0.0627906, -0.915667, -0.62077, 0.75322, 0.217495, 0.676042, 0.654764, -0.33801, 0, 0, 0)
 rotation_order = 3
 light_temperature = 3600.0
 light_energy = 4.0
+light_specular = 0.5
 shadow_enabled = true
+shadow_normal_bias = 3.0
 directional_shadow_mode = 1
-directional_shadow_split_1 = 0.5
+directional_shadow_split_1 = 0.33
 directional_shadow_split_2 = 0.5
 directional_shadow_split_3 = 0.8
 directional_shadow_blend_splits = true

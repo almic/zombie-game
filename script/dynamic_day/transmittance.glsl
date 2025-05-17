@@ -5,21 +5,20 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
-layout(rgba32f, set = 0, binding = 0) uniform image2D lut;
+layout(rgba32f, set = 0, binding = 0) uniform restrict writeonly image2D lut;
 
 layout(push_constant, std430) uniform Params
 {
 
-    uvec2 size_steps;
-
-    uvec2 reserved;
+    uvec2 size_steps; // 0, 4
+    uvec2 reserved;   // 8, 12
 
 } params;
 
 void main()
 {
 
-    vec2 uv = gl_GlobalInvocationID.xy / params.size_steps.x;
+    vec2 uv = vec2(gl_GlobalInvocationID.xy) / float(params.size_steps.x);
     uint steps = params.size_steps.y;
 
     float sun_cos_theta = uv.x * 2.0 - 1.0;
@@ -52,7 +51,8 @@ void main()
     }
 
     result = exp(-result);
-    
+
     imageStore(lut, ivec2(gl_GlobalInvocationID.xy), result);
 
 }
+

@@ -1,0 +1,9 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://doowativ10cb7"]
+
+[ext_resource type="Shader" uid="uid://c1a5r8yikiqk2" path="res://script/dynamic_day/dynamic_day.gdshader" id="1_05mco"]
+
+[sub_resource type="Texture2DRD" id="Texture2DRD_05mco"]
+
+[resource]
+shader = ExtResource("1_05mco")
+shader_parameter/sky_tex = SubResource("Texture2DRD_05mco")

@@ -7,15 +7,16 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 layout(set = 0, binding = 0) uniform sampler2D lut;
 
-layout(rgba32f, set = 0, binding = 1) uniform image2D sky;
+layout(rgba32f, set = 0, binding = 1) uniform restrict writeonly image2D sky;
 
 layout(push_constant, std430) uniform Params 
 {
 
-    uvec2 size_steps;
-    vec3 sun_dir;
+    uvec2 size_steps; // 0, 4
+    uvec2 reserved;   // 8, 12
 
-    vec2 reserved;
+    vec3 sun_dir;     // 16, 20, 24
+    // padded to 28 (32 bytes total)
     
 } params;
 
@@ -70,7 +71,7 @@ vec4 compute_inscattering(
 
         // Energy-conserving analytical integration
         // "Physically Based Sky, Atmosphere and Cloud Rendering in Frostbite"
-        // by Sébastien Hillaire
+        // by Sebastien Hillaire
         vec4 S_int = (S - S * step_transmittance) / max(extinction, 1e-7);
         L_inscattering += transmittance * S_int;
         transmittance *= step_transmittance;
@@ -82,7 +83,7 @@ vec4 compute_inscattering(
 void main() 
 {
 
-    vec2 uv = gl_GlobalInvocationID.xy / params.size_steps.x;
+    vec2 uv = vec2(gl_GlobalInvocationID.xy) / float(params.size_steps.x);
 
     float azimuth = 2.0 * PI * uv.x;
 
@@ -96,7 +97,7 @@ void main()
                         sin(elev));
 
     // For simplicity, place the viewpoint slightly above sealevel
-    vec3 ray_origin = vec3(0.0, 0.0, EARTH_RADIUS + 0.01);
+    vec3 ray_origin = vec3(0.0, 0.0, EARTH_RADIUS + 0.1);
 
     float atmos_dist  = ray_sphere_intersection(ray_origin, ray_dir, ATMOSPHERE_RADIUS);
     float ground_dist = ray_sphere_intersection(ray_origin, ray_dir, EARTH_RADIUS);
@@ -115,7 +116,7 @@ void main()
     vec4 L = compute_inscattering(ray_origin, ray_dir, t_d, transmittance);
 
     L = vec4(linear_srgb_from_spectral_samples(L), 1.0);
-    
+
     imageStore(sky, ivec2(gl_GlobalInvocationID.xy), L);
 
 }

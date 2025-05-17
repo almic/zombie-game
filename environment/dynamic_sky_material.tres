@@ -1,9 +1,0 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3 uid="uid://r7vhfda66ad0"]
-
-[ext_resource type="Shader" uid="uid://h08l3u5tfoqm" path="res://environment/dynamic_sky.gdshader" id="1_03lvw"]
-
-[resource]
-shader = ExtResource("1_03lvw")
-shader_parameter/sun_color = Color(1, 1, 1, 1)
-shader_parameter/sun_direction = Vector3(-0.905909, 0.370581, -0.204934)
-shader_parameter/sun_angular_diameter = 0.5

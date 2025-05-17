@@ -18,6 +18,14 @@ var time_scale: float = 100
 ## Enable this to play the local time value in the editor.
 @export var editor_realtime: bool = false
 
+## Reload sky shaders
+@export var reload_shaders: bool = false:
+    set(value):
+        reload_shaders = value
+        if reload_shaders:
+            reload_shaders = false
+            if sky_compute:
+                sky_compute.reload_shaders()
 
 @export_category("Planet Attributes")
 
@@ -54,6 +62,8 @@ var _inv_day_length: PackedFloat64Array = [0]
 
 
 var sky: ShaderMaterial
+var sky_compute: PhysicalSkyCompute
+
 
 func _init() -> void:
     # force cached calculations
@@ -117,9 +127,15 @@ func update_moon() -> void:
 func init_shader() -> void:
     sky = environment.sky.sky_material
 
-    sky.set_shader_parameter("sun_color", Sun.light_color)
-    sky.set_shader_parameter("sun_direction", Sun.basis.z)
-    sky.set_shader_parameter("sun_angular_diameter", 0.5)
+    if not sky_compute:
+        for effect in compositor.compositor_effects:
+            if effect is PhysicalSkyCompute:
+                sky_compute = effect
+                break
+
+    sky_compute.sun_direction = -Sun.basis.z
+    sky_compute.sky_out = sky.get_shader_parameter("sky_tex")
 
 func update_shader() -> void:
-    sky.set_shader_parameter("sun_direction", Sun.basis.z)
+    sky_compute.sun_direction = -Sun.basis.z
+

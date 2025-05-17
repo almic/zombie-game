@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=27 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -15,7 +15,6 @@
 [ext_resource type="Texture2D" uid="uid://b0qmm215ojqwq" path="res://textures/terrain/ground_mud2_d.jpg" id="8_cbp6q"]
 [ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
 [ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="9_26xuy"]
-[ext_resource type="Compositor" uid="uid://bplbeo4eidf1p" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
@@ -42,6 +41,7 @@ lod0_range = 128.0
 name = "grass"
 albedo_texture = ExtResource("4_hiqwa")
 normal_texture = ExtResource("5_2u3nc")
+normal_depth = 0.295
 roughness = 1.0
 uv_scale = 0.4
 detiling_rotation = 0.271
@@ -61,7 +61,7 @@ id = 2
 albedo_color = Color(0.629675, 0.629675, 0.629675, 1)
 albedo_texture = ExtResource("8_cbp6q")
 normal_texture = ExtResource("9_26xuy")
-normal_depth = 0.688
+normal_depth = 0.253
 roughness = 1.0
 uv_scale = 0.4
 detiling_rotation = 0.251
@@ -69,6 +69,11 @@ detiling_rotation = 0.251
 [sub_resource type="Terrain3DAssets" id="Terrain3DAssets_dwbse"]
 mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_036b0")])
 texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])
+
+[sub_resource type="Compositor" id="Compositor_4akyk"]
+compositor_effects = Array[CompositorEffect]([null])
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_g0i7g"]
 
 [node name="world" type="Node3D"]
 process_mode = 3
@@ -87,7 +92,7 @@ collision_mask = 0
 mesh_lods = 5
 mesh_size = 64
 cast_shadows = 2
-gi_mode = 0
+show_instances = false
 process_mode = 1
 top_level = true
 metadata/_edit_lock_ = true
@@ -114,29 +119,32 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.824, 3.85356)
 process_mode = 1
 environment = ExtResource("7_ioo17")
 camera_attributes = ExtResource("8_wse8f")
-compositor = ExtResource("9_ic0uy")
+compositor = SubResource("Compositor_4akyk")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
-local_time = 0.76
-latitude = 41.0
+local_time = 0.7247
 time_scale = 72.0
+latitude = 41.0
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.397004, -0.0627906, -0.915667, -0.62077, 0.75322, 0.217495, 0.676042, 0.654764, -0.33801, 0, 0, 0)
-rotation_order = 3
+transform = Transform3D(-0.392773, 0.158296, -0.905909, -0.554396, 0.745194, 0.370581, 0.73374, 0.647787, -0.204934, 0, 0, 0)
+rotation_edit_mode = 2
 light_temperature = 3600.0
 light_energy = 4.0
 light_specular = 0.5
 shadow_enabled = true
 shadow_normal_bias = 3.0
-directional_shadow_mode = 1
-directional_shadow_split_1 = 0.33
-directional_shadow_split_2 = 0.5
-directional_shadow_split_3 = 0.8
+shadow_blur = 0.0
+directional_shadow_split_1 = 0.005
+directional_shadow_split_2 = 0.05
 directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.9
 directional_shadow_max_distance = 2000.0
 
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.82949, 0, -16.9273)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(-0.0101751, -0.999948, 0, 0.999948, -0.0101751, 0, 0, 0, 1, 24.1405, 15.6737, 3.66427)
+mesh = SubResource("PlaneMesh_g0i7g")

@@ -1,6 +1,6 @@
 [gd_resource type="Terrain3DMaterial" load_steps=5 format=3 uid="uid://cim2ehhkpiofr"]
 
-[ext_resource type="Shader" uid="uid://dxr0bn2dp205t" path="res://environment/terrain_two_sided.gdshader" id="1_tvpb4"]
+[ext_resource type="Shader" uid="uid://og4ni5sxfwtq" path="res://environment/terrain.gdshader" id="1_tvpb4"]
 
 [sub_resource type="Gradient" id="Gradient_gv5m4"]
 offsets = PackedFloat32Array(0.2, 1)
@@ -47,14 +47,6 @@ _shader_parameters = {
 &"noise_texture": SubResource("NoiseTexture2D_fj7yv"),
 &"projection_angular_division": 2.0,
 &"projection_threshold": 0.8,
-&"world_noise_fragment_normals": false,
-&"world_noise_height": 64.0,
-&"world_noise_lod_distance": 7500.0,
-&"world_noise_max_octaves": 4,
-&"world_noise_min_octaves": 2,
-&"world_noise_offset": Vector3(0, 0, 0),
-&"world_noise_region_blend": 0.33,
-&"world_noise_scale": 5.0,
 &"world_space_normal_blend": true
 }
 world_background = 0

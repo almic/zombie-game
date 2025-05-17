@@ -1,11 +1,11 @@
 shader_type spatial;
-render_mode blend_mix,depth_draw_opaque,cull_disabled,diffuse_burley,specular_schlick_ggx,skip_vertex_transform;
+render_mode blend_mix,depth_draw_opaque,cull_back,skip_vertex_transform;
 
-/* The terrain depends on this shader to function. Don't change most things in vertex() or 
- * terrain normal calculations in fragment(). You probably only want to customize the 
+/* The terrain depends on this shader to function. Don't change most things in vertex() or
+ * terrain normal calculations in fragment(). You probably only want to customize the
  * material calculation and PBR application in fragment().
  *
- * Uniforms that begin with _ are private and will not display in the inspector. However, 
+ * Uniforms that begin with _ are private and will not display in the inspector. However,
  * you can set them via code. You are welcome to create more of your own hidden uniforms.
  *
  * This system only supports albedo, height, normal, roughness. Most textures don't need the other
@@ -74,7 +74,7 @@ uniform vec3 macro_variation1 : source_color = vec3(1.);
 uniform vec3 macro_variation2 : source_color = vec3(1.);
 uniform float macro_variation_slope : hint_range(0., 1.)  = 0.333;
 
-// Generic noise at 3 scales, which can be used for anything 
+// Generic noise at 3 scales, which can be used for anything
 uniform highp sampler2D noise_texture : source_color, filter_nearest_mipmap_anisotropic, repeat_enable;
 
 uniform float noise1_scale : hint_range(0.001, 1.) = 0.04; // Used for macro variation 1. Scaled up 10x
@@ -133,107 +133,6 @@ vec3 get_index_uv(const vec2 uv2) {
 	return vec3(uv2 - _region_locations[layer_index], float(layer_index));
 }
 
-// World Noise
-uniform bool world_noise_fragment_normals = false;
-uniform float world_noise_region_blend : hint_range(0.05, 0.95, 0.01) = 0.33;
-uniform int world_noise_max_octaves : hint_range(0, 15) = 4;
-uniform int world_noise_min_octaves : hint_range(0, 15) = 2;
-uniform float world_noise_lod_distance : hint_range(0, 40000, 1) = 7500.;
-uniform float world_noise_scale : hint_range(0.25, 20, 0.01) = 5.0;
-uniform float world_noise_height : hint_range(0, 1000, 0.1) = 64.0;
-uniform vec3 world_noise_offset = vec3(0.0);
-varying vec2 world_noise_ddxy;
-
-// Takes in UV2 region space coordinates, returns 1.0 or 0.0 if a region is present or not.
-float check_region(const vec2 uv2) {
-	ivec2 pos = ivec2(floor(uv2)) + (_region_map_size / 2);
-	int layer_index = 0;
-	if (uint(pos.x | pos.y) < uint(_region_map_size)) {
-		layer_index = clamp(_region_map[ pos.y * _region_map_size + pos.x ] - 1, -1, 0) + 1;
-	}
-	return float(layer_index);
-}
-
-// Takes in UV2 region space coordinates, returns a blend value (0 - 1 range) between empty, and valid regions
-float region_blend(vec2 uv2) {
-	uv2 -= 0.5;
-	const vec2 offset = vec2(0.0,1.0);
-	float a = check_region(uv2 + offset.xy);
-	float b = check_region(uv2 + offset.yy);
-	float c = check_region(uv2 + offset.yx);
-	float d = check_region(uv2 + offset.xx);
-	vec2 w = smoothstep(vec2(0.0), vec2(1.0), fract(uv2));
-	float blend = mix(mix(d, c, w.x), mix(a, b, w.x), w.y);
-    return 1.0 - blend;
-}
-
-float hashf(float f) {
-	return fract(sin(f) * 1e4);
-}
-
-float hashv2(vec2 v) {
-	return fract(1e4 * sin(fma(17.0, v.x, v.y * 0.1)) * (0.1 + abs(sin(fma(v.y, 13.0, v.x)))));
-}
-
-// https://iquilezles.org/articles/morenoise/
-vec3 noise2D(vec2 x) {
-    vec2 f = fract(x);
-    // Quintic Hermine Curve.  Similar to SmoothStep()
-    vec2 u = f*f*f*(f*(f*6.0-15.0)+10.0);
-    vec2 du = 30.0*f*f*(f*(f-2.0)+1.0);
-
-    vec2 p = floor(x);
-
-	// Four corners in 2D of a tile
-	float a = hashv2( p+vec2(0,0) );
-    float b = hashv2( p+vec2(1,0) );
-    float c = hashv2( p+vec2(0,1) );
-    float d = hashv2( p+vec2(1,1) );
-
-    // Mix 4 corner percentages
-    float k0 =   a;
-    float k1 =   b - a;
-    float k2 =   c - a;
-    float k3 =   a - b - c + d;
-    return vec3( k0 + k1 * u.x + k2 * u.y + k3 * u.x * u.y,
-                du * ( vec2(k1, k2) + k3 * u.yx) );
-}
-
-float world_noise(vec2 p) {
-    float a = 0.0;
-    float b = 1.0;
-    vec2  d = vec2(0.0);
-
-    int octaves = int( clamp(
-		float(world_noise_max_octaves) - floor(v_vertex_xz_dist/(world_noise_lod_distance)),
-		float(world_noise_min_octaves), float(world_noise_max_octaves))
-	);
-	
-    for( int i=0; i < octaves; i++ ) {
-        vec3 n = noise2D(p);
-        d += n.yz;
-        a += b * n.x / (1.0 + dot(d,d));
-        b *= 0.5;
-        p = mat2( vec2(0.8, -0.6), vec2(0.6, 0.8) ) * p * 2.0;
-    }
-    return a;
-}
-
-float get_noise_height(const vec2 uv) {
-	float weight = region_blend(uv);
-	// only calculate world noise when it could be visibile.
-	if (weight <= 1.0 - world_noise_region_blend) {
-		return 0.0;
-	}
-	//TODO: Offset/scale UVs are semi-dependent upon region size 1024. Base on v_vertex.xz instead
-	float noise = world_noise((uv + world_noise_offset.xz * 1024. / _region_size) * world_noise_scale * _region_size / 1024. * .1) *
-            world_noise_height * 10. + world_noise_offset.y * 100.;
-	weight = smoothstep(1.0 - world_noise_region_blend, 1.0, weight);
-	return mix(0.0, noise, weight);
-}
-
-// World Noise end
-
 void vertex() {
 	// Get vertex of flat plane in world coordinates and set world UV
 	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
@@ -270,27 +169,14 @@ void vertex() {
 	bool hole = bool(control >>2u & 0x1u);
 
 	// Show holes to all cameras except mouse camera (on exactly 1 layer)
-	if ( !(CAMERA_VISIBLE_LAYERS == _mouse_layer) && 
+	if ( !(CAMERA_VISIBLE_LAYERS == _mouse_layer) &&
 			(hole || (_background_mode == 0u && v_region.z == -1))) {
 		v_vertex.x = 0. / 0.;
-	} else {		
+	} else {
 		// Set final vertex height & calculate vertex normals. 3 lookups
 		ivec3 coord_a = get_index_coord(start_pos, VERTEX_PASS);
 		ivec3 coord_b = get_index_coord(end_pos, VERTEX_PASS);
 		float h = mix(texelFetch(_height_maps, coord_a, 0).r,texelFetch(_height_maps, coord_b, 0).r,vertex_lerp);
-		// World Noise
-		if (_background_mode == 2u) {
-			vec2 nuv_a = fma(start_pos, vec2(_region_texel_size), vec2(0.5 * _region_texel_size));
-			vec2 nuv_b = fma(end_pos, vec2(_region_texel_size), vec2(0.5 * _region_texel_size));
-			float nh = mix(get_noise_height(nuv_a),get_noise_height(nuv_b),vertex_lerp);
-			float nu = mix(get_noise_height(nuv_a + vec2(_region_texel_size, 0.0)),
-				get_noise_height(nuv_b + vec2(_region_texel_size, 0.0)),vertex_lerp);
-			float nv = mix(get_noise_height(nuv_a + vec2(0.0, _region_texel_size)),
-				get_noise_height(nuv_b + vec2(0.0, _region_texel_size)),vertex_lerp);
-			world_noise_ddxy = vec2(nh - nu, nh - nv);
-			h += nh;
-		}
-
 		v_vertex.y = h;
 	}
 
@@ -381,21 +267,21 @@ void get_material(vec3 i_normal, float i_height, vec4 ddxy, uint control, ivec3 
 	out_mat = Material(vec4(0.), vec4(0.), 0, 0, 0.0, 0.0, 0.0);
 	vec2 index_pos = vec2(index.xy);
 	int region = index.z;
-	
+
 	// Translate index position to world space.
 	index_pos += _region_locations[region] * _region_size;
 	index_pos *= _vertex_spacing;
-	
+
 	vec2 base_uv;
 	float p_angle = 0.0;
-	
+
 	if (i_normal.y >= projection_threshold || !enable_projection) {
 		base_uv = v_vertex.xz;
 	} else {
 		// Project UVs and determine surface normal angle
 		// Quantize the normal otherwise textures lose continuity across domains
 		// Avoid potential singularitys for unit length normal, usually worst case would be
-		// sqrt(3.0)/2.0, however as we are nullifying y component and renormalizing, 
+		// sqrt(3.0)/2.0, however as we are nullifying y component and renormalizing,
 		// we can use sqrt(2.0)/2.0, as a lower bound.
 		#define SQRT2_HALF 0.7071067811865476
 		vec3 p_normal = normalize(vec3(i_normal.x, 0., i_normal.z));
@@ -416,8 +302,8 @@ void get_material(vec3 i_normal, float i_height, vec4 ddxy, uint control, ivec3 
 	out_mat.blend = float(auto_shader) * clamp(
 			(auto_slope * 2. * ( TANGENT_WORLD_MATRIX[1].y - 1.) + 1.)
 			- auto_height_reduction * .01 * v_vertex.y // Reduce as vertices get higher
-			, 0., 1.) + 
-			 float(!auto_shader) * float(control >>14u & 0xFFu) * 0.003921568627450; // 1./255.0		
+			, 0., 1.) +
+			 float(!auto_shader) * float(control >>14u & 0xFFu) * 0.003921568627450; // 1./255.0
 
 	out_mat.nrm_depth = _texture_normal_depth_array[out_mat.base];
 	out_mat.ao_str = _texture_ao_strength_array[out_mat.base];
@@ -443,7 +329,7 @@ void get_material(vec3 i_normal, float i_height, vec4 ddxy, uint control, ivec3 
 	float mat_scale = _texture_uv_scale_array[out_mat.base];
 	float normal_angle = uv_rotation + p_angle;
 	vec4 dd1 = ddxy;
-	
+
 	if (out_mat.blend < 1.0) {
 		// 2 lookups
 		matUV = detiling(base_uv * mat_scale, index_pos * mat_scale, out_mat.base, normal_angle);
@@ -517,7 +403,7 @@ void fragment() {
 	// Recover UVs
 	vec2 uv = UV;
 	vec2 uv2 = UV2;
-	
+
 	// Lookup offsets, ID and blend weight
 	const vec3 offsets = vec3(0, 1, 2);
 	vec2 index_id = floor(uv);
@@ -529,7 +415,7 @@ void fragment() {
 		weight.x * invert.y, // 2
 		invert.x * invert.y  // 3
 	);
-	
+
 	vec3 base_ddx = dFdxCoarse(v_vertex);
 	vec3 base_ddy = dFdyCoarse(v_vertex);
 	vec4 base_derivatives = vec4(base_ddx.xz, base_ddy.xz);
@@ -544,24 +430,14 @@ void fragment() {
 	index[1] = get_index_coord(index_id + offsets.yy, FRAGMENT_PASS);
 	index[2] = get_index_coord(index_id + offsets.yx, FRAGMENT_PASS);
 	index[3] = get_index_coord(index_id + offsets.xx, FRAGMENT_PASS);
-	
+
 	// Terrain normals
 	vec3 index_normal[4];
 	float h[8];
 	// allows additional derivatives, eg world noise, brush previews etc
 	float u = 0.0;
 	float v = 0.0;
-	
-	// World Noise
-	if (_background_mode == 2u && world_noise_fragment_normals) {
-		float noise_height = get_noise_height(uv2);
-		u += noise_height - get_noise_height(uv2 + vec2(_region_texel_size, 0.0));
-		v += noise_height - get_noise_height(uv2 + vec2(0.0, _region_texel_size));
-	}
-	if (_background_mode == 2u && !world_noise_fragment_normals) {
-		u += world_noise_ddxy.x;
-		v += world_noise_ddxy.y;
-	}
+
 	// Re-use index[] for the first lookups, skipping some math. 3 lookups
 	h[3] = texelFetch(_height_maps, index[3], 0).r; // 0 (0,0)
 	h[2] = texelFetch(_height_maps, index[2], 0).r; // 1 (1,0)
@@ -579,7 +455,7 @@ void fragment() {
 		base_derivatives.xy = vec2(dot(base_ddx, p_tangent), dot(base_ddx, p_binormal));
 		base_derivatives.zw = vec2(dot(base_ddy, p_tangent), dot(base_ddy, p_binormal));
 	}
-	
+
 	// Adjust derivatives for mipmap bias and depth blur effect
 	base_derivatives *=  mix(mipmap_bias,
 		depth_blur + 1.,
@@ -600,8 +476,8 @@ void fragment() {
 		col_map[0] = index[0].z > -1 ? texelFetch(_color_maps, index[0], 0) : COLOR_MAP;
 		col_map[1] = index[1].z > -1 ? texelFetch(_color_maps, index[1], 0) : COLOR_MAP;
 		col_map[2] = index[2].z > -1 ? texelFetch(_color_maps, index[2], 0) : COLOR_MAP;
-		
-		color_map = 
+
+		color_map =
 			col_map[0] * weights[0] +
 			col_map[1] * weights[1] +
 			col_map[2] * weights[2] +
@@ -622,20 +498,20 @@ void fragment() {
 		index_normal[2] = normalize(vec3(h[2] - h[6] + u, _vertex_spacing, h[2] - h[1] + v));
 
 		// Set interpolated world normal
-		w_normal = 
+		w_normal =
 			index_normal[0] * weights[0] +
 			index_normal[1] * weights[1] +
 			index_normal[2] * weights[2] +
 			index_normal[3] * weights[3] ;
 	}
-		
+
 	// Apply terrain normals
 	vec3 w_tangent = normalize(cross(w_normal, vec3(0.0, 0.0, 1.0)));
 	vec3 w_binormal = normalize(cross(w_normal, w_tangent));
 	NORMAL = mat3(VIEW_MATRIX) * w_normal;
 	TANGENT = mat3(VIEW_MATRIX) * w_tangent;
 	BINORMAL = mat3(VIEW_MATRIX) * w_binormal;
-	
+
 	// Used for material world space normal map blending
 	mat3 TANGENT_WORLD_MATRIX = mat3(w_tangent, w_normal, w_binormal);
 
@@ -676,33 +552,33 @@ void fragment() {
 		#undef PARABOLA
 		// renormalize weights
 		weights *= 1.0 / (weights.x + weights.y + weights.z + weights.w);
-	
+
 		// Interpolate Albedo/Height/Normal/Roughness
-		albedo_height = 
+		albedo_height =
 			mat[0].alb_ht * weights[0] +
 			mat[1].alb_ht * weights[1] +
 			mat[2].alb_ht * weights[2] +
 			mat[3].alb_ht * weights[3] ;
-	
-		normal_rough = 
+
+		normal_rough =
 			mat[0].nrm_rg * weights[0] +
 			mat[1].nrm_rg * weights[1] +
 			mat[2].nrm_rg * weights[2] +
 			mat[3].nrm_rg * weights[3] ;
 
-		normal_map_depth = 
+		normal_map_depth =
 			mat[0].nrm_depth * weights[0] +
 			mat[1].nrm_depth * weights[1] +
 			mat[2].nrm_depth * weights[2] +
 			mat[3].nrm_depth * weights[3] ;
-		
-		ao_strength = 
+
+		ao_strength =
 			mat[0].ao_str * weights[0] +
 			mat[1].ao_str * weights[1] +
 			mat[2].ao_str * weights[2] +
 			mat[3].ao_str * weights[3] ;
 	}
-	
+
 	// Macro variation. 2 lookups
 	vec3 macrov = vec3(1.);
 	if (enable_macro_variation) {
@@ -712,10 +588,15 @@ void fragment() {
 		macrov *= mix(macro_variation2, vec3(1.), noise2);
 		macrov = mix(vec3(1.0), macrov, clamp(w_normal.y + macro_variation_slope, 0., 1.));
 	}
-	
+
 	// Wetness/roughness modifier, converting 0 - 1 range to -1 to 1 range
-	float roughness = fma(color_map.a - 0.5, 2.0, normal_rough.a);
-	
+    // Reduces normal depth as well.
+	float roughness = clamp(
+            fma(color_map.a - 0.5, 2.0, normal_rough.a),
+            0.0, 1.0
+    );
+    normal_map_depth *= min(color_map.a * 2.0, 1.0);
+
 	// Apply PBR
 	ALBEDO = albedo_height.rgb * color_map.rgb * macrov;
 	ROUGHNESS = roughness;
@@ -727,6 +608,127 @@ void fragment() {
 	float ao = (1. - (albedo_height.a * log(2.1 - ao_strength))) * (1. - normal_rough.y);
 	AO = clamp(1. - ao * ao_strength, albedo_height.a, 1.0);
 	AO_LIGHT_AFFECT = 1. - albedo_height.a;
-
 }
 
+vec3 F0(float metallic, float specular, vec3 albedo) {
+    float dielectric = 0.04 * specular * specular;
+    return mix(vec3(dielectric), albedo, vec3(metallic));
+}
+
+float D_GGX(float cos_theta_m, float alpha) {
+    float a = cos_theta_m * alpha;
+    float k = alpha / (1.0 - cos_theta_m * cos_theta_m + a * a);
+    return k * k * (1.0 / PI);
+}
+
+float V_GGX(float NdotL, float NdotV, float alpha) {
+    return 0.5 / mix(2.0 * NdotL * NdotV, NdotL + NdotV, alpha);
+}
+
+float SchlickFresnel(float u) {
+    float m = 1.0 - u;
+    float m2 = m * m;
+    return m2 * m2 * m; // pow(m,5)
+}
+
+#define CUSTOM_LIGHTING 1
+
+#if CUSTOM_LIGHTING
+void light()
+{
+    float attenuation = ATTENUATION;  
+    // Directional lights being obscured by a distant horizon
+    // Uses a diameter of 0.53, which is about the Sun's value
+    if (LIGHT_IS_DIRECTIONAL) {
+#define DEBUG_ATTENUATION 0
+// Computed as (d / 2) * (PI / 180) where d = 0.53
+#define FADE_ANGLE 0.0046251225
+        float light_y = (mat3(INV_VIEW_MATRIX) * LIGHT).y;
+        float angle = light_y; // asin(light_y); // at small angles, T ~= arcsin(T)
+        if (angle < FADE_ANGLE) {
+            if (angle < -FADE_ANGLE) {
+                // Disk is below horizon, no direct light
+                attenuation = 0.0;
+            } else {
+                // Disk is obscured by horizon, approximate coverage
+                float rho = -(angle / FADE_ANGLE) + 1.0;
+                float beta = (PI * 0.5) * (cos(PI * rho * 0.5) + 1.0);
+                float alpha = beta / PI;
+                attenuation *= alpha;
+            }
+        }
+#undef FADE_ANGLE
+    }
+    
+    // Much of this code is purely copied from Godot 4.4's shader:
+    // https://github.com/godotengine/godot/blob/4.4/servers/rendering/renderer_rd/shaders/scene_forward_lights_inc.glsl
+
+#if !DEBUG_ATTENUATION
+    if (attenuation > 1e-6) {
+        vec3 diffuse_light = DIFFUSE_LIGHT;
+        vec3 specular_light = SPECULAR_LIGHT;
+        
+        vec3 light_color = LIGHT_COLOR;
+        vec3 backlight = BACKLIGHT;
+        
+        vec3 albedo = ALBEDO;
+        float roughness = ROUGHNESS;
+        float specular = 0.5;
+        float specular_amount = SPECULAR_AMOUNT;
+        float metallic = METALLIC;
+        
+        vec3 f0 = F0(metallic, specular, albedo);
+        
+        vec3 N = NORMAL;
+        vec3 L = LIGHT;
+        vec3 V = VIEW;
+        float A = 0.0001;
+      
+
+        float NdotL = min(A + dot(N, L), 1.0);
+        float cNdotV = max(dot(N, V), 1e-4);
+        float cNdotL = max(NdotL, 0.0);
+        
+        vec3 H = normalize(V + L);
+        float cLdotH = clamp(A + dot(L, H), 0.0, 1.0);
+
+        if (metallic < 1.0) {
+            float diffuse_brdf_NL; // BRDF times N.L for calculating diffuse radiance
+
+            {
+                float FD90_minus_1 = 2.0 * cLdotH * cLdotH * roughness - 0.5;
+                float FdV = 1.0 + FD90_minus_1 * SchlickFresnel(cNdotV);
+                float FdL = 1.0 + FD90_minus_1 * SchlickFresnel(cNdotL);
+                diffuse_brdf_NL = (1.0 / PI) * FdV * FdL * cNdotL;
+            }
+
+            diffuse_light += light_color * diffuse_brdf_NL * attenuation;
+            diffuse_light += light_color * (vec3(1.0 / PI) - diffuse_brdf_NL) * backlight * attenuation;
+        }
+
+        if (roughness > 0.0) {
+            float cNdotH = clamp(A + dot(N, H), 0.0, 1.0);
+            
+            float alpha_ggx = roughness * roughness;
+
+            float D = D_GGX(cNdotH, alpha_ggx);
+            float G = V_GGX(cNdotL, cNdotV, alpha_ggx);
+
+            float cLdotH5 = SchlickFresnel(cLdotH);
+            
+            // Calculate Fresnel using cheap approximate specular occlusion term from Filament:
+            // https://google.github.io/filament/Filament.html#lighting/occlusion/specularocclusion
+            float f90 = clamp(dot(f0, vec3(50.0 * 0.33)), metallic, 1.0);
+            vec3 F = f0 + (f90 - f0) * cLdotH5;
+            vec3 specular_brdf_NL = cNdotL * D * F * G;
+            specular_light += specular_brdf_NL * light_color * attenuation * specular_amount;
+        }
+        
+        DIFFUSE_LIGHT = diffuse_light;
+        SPECULAR_LIGHT = specular_light;
+    }
+#else
+    DIFFUSE_LIGHT += attenuation;
+#endif
+}
+#endif // CUSTOM_LIGHTING

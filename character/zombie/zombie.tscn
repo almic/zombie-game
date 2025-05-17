@@ -664,6 +664,7 @@ bones/64/rotation = Quaternion(7.06885e-10, -2.53703e-17, 1.79339e-26, 1)
 bones/64/scale = Vector3(1, 1, 1)
 
 [node name="mesh" type="MeshInstance3D" parent="Skeleton3D"]
+gi_mode = 0
 mesh = ExtResource("3_eseir")
 
 [node name="PhysicalBoneSimulator3D" type="PhysicalBoneSimulator3D" parent="Skeleton3D"]

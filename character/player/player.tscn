@@ -36,7 +36,6 @@ shape = SubResource("CapsuleShape3D_vu45j")
 
 [node name="capsule" type="MeshInstance3D" parent="collider"]
 layers = 524288
-cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("CapsuleMesh_glpr6")
 skeleton = NodePath("../..")

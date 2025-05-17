@@ -1,11 +1,11 @@
 [gd_scene load_steps=20 format=3 uid="uid://d30d6ot2ufjtr"]
 
 [ext_resource type="Script" uid="uid://bd6jab6eqtxkd" path="res://script/particle_system/particle_system.gd" id="1_cwgiv"]
-[ext_resource type="Curve" uid="uid://c7hmf1wm7ucbr" path="res://particle/curve/exp_decay.tres" id="2_3cioy"]
+[ext_resource type="Curve" uid="uid://c7hmf1wm7ucbr" path="res://data/curve/exp_decay.tres" id="2_3cioy"]
 [ext_resource type="Material" uid="uid://b6kedkq4rmwff" path="res://particle/system/weapon/spark.tres" id="3_ow6ch"]
-[ext_resource type="Curve" uid="uid://ckgmhu04yogob" path="res://particle/curve/sphere_decay.tres" id="4_b8v8d"]
+[ext_resource type="Curve" uid="uid://ckgmhu04yogob" path="res://data/curve/sphere_decay.tres" id="4_b8v8d"]
 [ext_resource type="Material" uid="uid://c8ipyil3kyeeh" path="res://particle/system/weapon/flash.tres" id="4_ow6ch"]
-[ext_resource type="Curve" uid="uid://hassy4taix1s" path="res://particle/curve/growth.tres" id="4_xw271"]
+[ext_resource type="Curve" uid="uid://hassy4taix1s" path="res://data/curve/growth.tres" id="4_xw271"]
 
 [sub_resource type="CurveTexture" id="CurveTexture_xw271"]
 width = 32
@@ -84,6 +84,7 @@ orientation = 1
 
 [node name="gunshot_small" type="Node3D"]
 script = ExtResource("1_cwgiv")
+debug_lights = true
 metadata/_custom_type_script = "uid://bd6jab6eqtxkd"
 
 [node name="sparks" type="GPUParticles3D" parent="."]
@@ -120,6 +121,6 @@ light_intensity_lumens = 150000.0
 light_temperature = 3000.0
 light_size = 0.1
 shadow_enabled = true
-omni_range = 10.0
+omni_range = 50.0
 omni_attenuation = 2.0
 omni_shadow_mode = 0

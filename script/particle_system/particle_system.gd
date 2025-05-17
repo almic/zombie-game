@@ -14,6 +14,19 @@ class_name ParticleSystem extends Node3D
             emitting = value
             _update_emitting()
 
+@export_group("Debug", "debug")
+
+## Forces lights to be visible
+@export var debug_lights: bool = false:
+    set(value):
+        debug_lights = value
+        if debug_lights and is_node_ready():
+            for child in get_children():
+                if child is Light3D:
+                    child.visible = true
+        else:
+            _update_emitting()
+
 # Track if child emitters will turn off in the future
 var _is_all_oneshot: bool = false
 
@@ -38,7 +51,7 @@ func _process(delta: float) -> void:
     if not emitting:
         return
 
-    if _light_time > 0:
+    if _light_time > 0 and not debug_lights:
         _light_time = max(0.0, _light_time - delta)
 
         if fade_lights:
@@ -78,7 +91,7 @@ func _update_emitting(cache_lights: bool = false) -> void:
     if cache_lights:
         _light_energy.clear()
 
-    var toggle_lights: bool = is_zero_approx(flash_lights)
+    var toggle_lights: bool = is_zero_approx(flash_lights) and not debug_lights
     for child in get_children():
         if child is GPUParticles3D:
             if not child.one_shot:

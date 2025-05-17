@@ -1,6 +1,7 @@
 @tool
 class_name DynamicDay extends WorldEnvironment
 
+
 @export var Sun: DirectionalLight3D
 @export var Moon: DirectionalLight3D
 ## Local time of day, where 0.25 is morning, 0.5 is midday, and 1 & 0 are midnight
@@ -10,8 +11,13 @@ class_name DynamicDay extends WorldEnvironment
         _local_time[1] = value
 var _local_time: PackedFloat64Array = [0, 0]
 
+## Rate of time passage relative to real time.
+@export_range(1.0, 200.0, 0.001, 'or_greater')
+var time_scale: float = 100
+
 ## Enable this to play the local time value in the editor.
 @export var editor_realtime: bool = false
+
 
 @export_category("Planet Attributes")
 
@@ -39,15 +45,15 @@ var _tilt_rad: float
 
 ## Hours in a day, this is NOT the rate at which time passes. See "Time Scale".
 ## Because of the orbit, Earth's days are not exactly 24 hours.
-@export_range(1.0, 100.0, 0.00001, 'or_greater') var day_length: float = 23.93:
+@export_range(1.0, 100.0, 0.00001, 'or_greater')
+var day_length: float = 23.93:
     set(value):
         day_length = value
         _inv_day_length[0] = 1.0 / (day_length * 3600)
 var _inv_day_length: PackedFloat64Array = [0]
 
-## Rate of time passage relative to real time.
-@export_range(1.0, 200.0, 0.001, 'or_greater') var time_scale: float = 100
 
+var sky: ShaderMaterial
 
 func _init() -> void:
     # force cached calculations
@@ -58,6 +64,7 @@ func _init() -> void:
     day_length = day_length
 
 func _ready() -> void:
+    init_shader()
     pass
 
 func _process(delta: float) -> void:
@@ -87,6 +94,7 @@ func update_lights(force: bool = false) -> void:
 
     update_sun()
     update_moon()
+    update_shader()
 
     _local_time[0] = local_time
 
@@ -103,10 +111,15 @@ func update_sun() -> void:
     Sun.rotate_z(_latitude_rad)
     Sun.rotate_y(_north_rad)
 
-    if Sun.basis.z.dot(Vector3.UP) < 0:
-        Sun.visible = false
-    else:
-        Sun.visible = true
-
 func update_moon() -> void:
     pass
+
+func init_shader() -> void:
+    sky = environment.sky.sky_material
+
+    sky.set_shader_parameter("sun_color", Sun.light_color)
+    sky.set_shader_parameter("sun_direction", Sun.basis.z)
+    sky.set_shader_parameter("sun_angular_diameter", 0.5)
+
+func update_shader() -> void:
+    sky.set_shader_parameter("sun_direction", Sun.basis.z)

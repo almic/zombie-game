@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://dy1ud1ktljem6"
+path="res://.godot/imported/common_inc.glsl-331316243908ea9519672e798a8e0cbc.res"
+
+[deps]
+
+source_file="res://script/dynamic_day/common_inc.glsl"
+dest_files=["res://.godot/imported/common_inc.glsl-331316243908ea9519672e798a8e0cbc.res"]
+
+[params]
+

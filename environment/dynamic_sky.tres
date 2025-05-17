@@ -1,0 +1,7 @@
+[gd_resource type="Sky" load_steps=2 format=3 uid="uid://bhgcv1ejdml5r"]
+
+[ext_resource type="Material" uid="uid://r7vhfda66ad0" path="res://environment/dynamic_sky_material.tres" id="1_pcboa"]
+
+[resource]
+sky_material = ExtResource("1_pcboa")
+process_mode = 3

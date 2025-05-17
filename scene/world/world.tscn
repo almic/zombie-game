@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://b0qmm215ojqwq" path="res://textures/terrain/ground_mud2_d.jpg" id="8_cbp6q"]
 [ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
 [ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="9_26xuy"]
+[ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
@@ -70,9 +71,6 @@ detiling_rotation = 0.251
 mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_036b0")])
 texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])
 
-[sub_resource type="Compositor" id="Compositor_4akyk"]
-compositor_effects = Array[CompositorEffect]([null])
-
 [sub_resource type="PlaneMesh" id="PlaneMesh_g0i7g"]
 
 [node name="world" type="Node3D"]
@@ -119,7 +117,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.824, 3.85356)
 process_mode = 1
 environment = ExtResource("7_ioo17")
 camera_attributes = ExtResource("8_wse8f")
-compositor = SubResource("Compositor_4akyk")
+compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 local_time = 0.7247

@@ -15,6 +15,6 @@ script = ExtResource("1_1iqvp")
 lut_size = 512
 lut_steps = 32
 sky_size = 256
-sky_steps = 24
+sky_steps = 32
 sun_direction = Vector3(0.905909, -0.370581, 0.204934)
 metadata/_custom_type_script = "uid://b30sia5gpcc2f"

@@ -2,7 +2,7 @@ shader_type sky;
 
 #define ACES 1
 
-uniform sampler2D sky_texture : filter_linear, repeat_disable;
+uniform sampler2D sky_texture : filter_linear, repeat_enable;
 uniform sampler2D lut_texture : filter_linear, repeat_disable;
 
 uniform vec3 sun_direction;

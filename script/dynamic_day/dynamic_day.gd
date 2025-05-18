@@ -85,10 +85,6 @@ func _ready() -> void:
     init_shader()
     pass
 
-func _exit_tree() -> void:
-    if sky_compute:
-        sky_compute.unreference()
-
 func _process(delta: float) -> void:
     if not Engine.is_editor_hint():
         return
@@ -146,14 +142,14 @@ func init_shader() -> void:
                 break
 
     sky_compute.sun_direction = -Sun.basis.z
-    sky.set_shader_parameter("sky_texture", sky_compute.sky_texture)
-    sky.set_shader_parameter("lut_texture", sky_compute.lut_texture)
-
-    # Sky compute will randomly delete itself. Hell if I know why.
-    # Godot might be stupid.
-    sky_compute.reference()
 
 func update_shader() -> void:
     sky.set_shader_parameter("sun_direction", Sun.basis.z)
     sky.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
     sky_compute.sun_direction = -Sun.basis.z
+
+    # This should not need to be necessary, but I keep having this issue where
+    # sky_compute is regenerated, breaking the old texture. Doing this seems
+    # to have no impact on FPS at all, and it fixes the purple/ black sky, so...
+    sky.set_shader_parameter("sky_texture", sky_compute.sky_texture)
+    sky.set_shader_parameter("lut_texture", sky_compute.lut_texture)

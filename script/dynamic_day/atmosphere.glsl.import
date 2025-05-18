@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bad2dbrkdpof6"
+path="res://.godot/imported/atmosphere.glsl-8100b888f69b402383983368a128f4d5.res"
+
+[deps]
+
+source_file="res://script/dynamic_day/atmosphere.glsl"
+dest_files=["res://.godot/imported/atmosphere.glsl-8100b888f69b402383983368a128f4d5.res"]
+
+[params]
+

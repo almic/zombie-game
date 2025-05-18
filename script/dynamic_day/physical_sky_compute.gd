@@ -80,7 +80,8 @@ var sky_uniform_set: RID:
             [sky_lut_uniform, sky_image_uniform],
         )
 
-var texture: Texture2DRD = Texture2DRD.new()
+var sky_texture: Texture2DRD = Texture2DRD.new()
+var lut_texture: Texture2DRD = Texture2DRD.new()
 
 func _init() -> void:
     effect_callback_type = EFFECT_CALLBACK_TYPE_POST_OPAQUE
@@ -140,7 +141,7 @@ func initialize_shader() -> void:
         push_error("Failed to create LUT pipeline!")
         return
 
-    shader_file = load("res://script/dynamic_day/sky.glsl")
+    shader_file = load("res://script/dynamic_day/atmosphere.glsl")
     shader_spirv = shader_file.get_spirv()
 
     sky_shader = rd.shader_create_from_spirv(shader_spirv)
@@ -168,15 +169,13 @@ func initialize_shader() -> void:
         return
 
 func create_lut() -> void:
-    if lut.is_valid():
-        rd.free_rid(lut)
-
     var lut_tf: RDTextureFormat = RDTextureFormat.new()
     lut_tf.is_discardable = false # This is computed once and kept until a resize
     lut_tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
     lut_tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
     lut_tf.width = lut_size
     lut_tf.height = lut_size
+    lut_tf.mipmaps = 1
     lut_tf.usage_bits = (
         RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
         RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT |
@@ -189,12 +188,16 @@ func create_lut() -> void:
     if not lut.is_valid():
         push_error("Failed to create LUT texture!")
 
+    # This cleans up our old textures for us... actually kinda annoying
+    lut_texture.texture_rd_rid = lut
+
 func create_sky() -> void:
     var sky_tf: RDTextureFormat = RDTextureFormat.new()
     sky_tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
     sky_tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
     sky_tf.width = sky_size
     sky_tf.height = sky_size
+    sky_tf.mipmaps = 1
     sky_tf.usage_bits = (
         RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
         RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT |
@@ -211,7 +214,7 @@ func create_sky() -> void:
         push_error("Failed to create Sky texture!")
 
     # This cleans up our old textures for us... actually kinda annoying
-    texture.texture_rd_rid = sky
+    sky_texture.texture_rd_rid = sky
 
 func _render_callback(p_effect_callback_type: int, _render_data: RenderData) -> void:
 
@@ -266,6 +269,9 @@ func compute_sky() -> void:
     push_constants.encode_u32(0, sky_size)
     push_constants.encode_u32(4, sky_steps)
 
+    # TODO: update sky shader to use Godot's coordinate system so we don't have
+    #       to do any direction fixing math
+    # Swizzle y and z, negate y
     push_constants.encode_float(16, sun_direction.x)
     push_constants.encode_float(20, sun_direction.z)
     push_constants.encode_float(24, -sun_direction.y)

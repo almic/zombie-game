@@ -61,6 +61,12 @@ var day_length: float = 23.93:
         _inv_day_length[0] = 1.0 / (day_length * 3600)
 var _inv_day_length: PackedFloat64Array = [0]
 
+@export_category("Sun Attributes")
+
+## Angular diameter of the sun in degrees
+@export_range(0.0, 10.0, 0.0001, 'or_greater')
+var sun_angular_diameter: float = 0.53
+
 
 var sky: ShaderMaterial
 var sky_texture: Texture2DRD
@@ -140,7 +146,8 @@ func init_shader() -> void:
                 break
 
     sky_compute.sun_direction = -Sun.basis.z
-    sky.set_shader_parameter("sky_texture", sky_compute.texture)
+    sky.set_shader_parameter("sky_texture", sky_compute.sky_texture)
+    sky.set_shader_parameter("lut_texture", sky_compute.lut_texture)
 
     # Sky compute will randomly delete itself. Hell if I know why.
     # Godot might be stupid.
@@ -148,4 +155,5 @@ func init_shader() -> void:
 
 func update_shader() -> void:
     sky.set_shader_parameter("sun_direction", Sun.basis.z)
+    sky.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
     sky_compute.sun_direction = -Sun.basis.z

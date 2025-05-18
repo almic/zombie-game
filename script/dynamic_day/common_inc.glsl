@@ -16,9 +16,11 @@ const float gg = g*g;
 
 // These could be put into a uniform for crazy effects, but for most
 // uses they stay constant.
+const float EYE_ALTITUDE = 0.1;
 const float EARTH_RADIUS = 6371.0;
 const float ATMOSPHERE_THICKNESS = 100.0;
 const float ATMOSPHERE_RADIUS = EARTH_RADIUS + ATMOSPHERE_THICKNESS;
+const float EYE_DISTANCE_TO_EARTH_CENTER = EARTH_RADIUS + EYE_ALTITUDE;
 const vec4 GROUND_ALBEDO = vec4(0.3);
 
 // These are real values for sun irradiance, rayleigh scattering, and ozone

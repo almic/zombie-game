@@ -26,7 +26,8 @@ vec4 compute_inscattering(
         float t_d,
         out vec4 transmittance)
 {
-    float cos_theta = dot(-ray_dir, params.sun_dir);
+    vec3 sun_dir = params.sun_dir;
+    float cos_theta = dot(-ray_dir, sun_dir);
 
     float molecular_phase = molecular_phase_function(cos_theta);
     float aerosol_phase = aerosol_phase_function(cos_theta);
@@ -45,7 +46,7 @@ vec4 compute_inscattering(
         float altitude = distance_to_earth_center - EARTH_RADIUS;
         float normalized_altitude = altitude / ATMOSPHERE_THICKNESS;
 
-        float sample_cos_theta = dot(zenith_dir, params.sun_dir);
+        float sample_cos_theta = dot(zenith_dir, sun_dir);
 
         vec4 aerosol_absorption, aerosol_scattering;
         vec4 molecular_absorption, molecular_scattering;
@@ -96,8 +97,7 @@ void main()
                         cos(elev) * sin(azimuth),
                         sin(elev));
 
-    // For simplicity, place the viewpoint slightly above sealevel
-    vec3 ray_origin = vec3(0.0, 0.0, EARTH_RADIUS + 0.1);
+    vec3 ray_origin = vec3(0.0, 0.0, EYE_DISTANCE_TO_EARTH_CENTER);
 
     float atmos_dist  = ray_sphere_intersection(ray_origin, ray_dir, ATMOSPHERE_RADIUS);
     float ground_dist = ray_sphere_intersection(ray_origin, ray_dir, EARTH_RADIUS);

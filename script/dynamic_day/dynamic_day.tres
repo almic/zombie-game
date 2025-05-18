@@ -1,9 +1,14 @@
-[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://doowativ10cb7"]
+[gd_resource type="ShaderMaterial" load_steps=4 format=3 uid="uid://doowativ10cb7"]
 
 [ext_resource type="Shader" uid="uid://c1a5r8yikiqk2" path="res://script/dynamic_day/dynamic_day.gdshader" id="1_05mco"]
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_05mco"]
 
+[sub_resource type="Texture2DRD" id="Texture2DRD_hf3yr"]
+
 [resource]
 shader = ExtResource("1_05mco")
-shader_parameter/sky_texture = SubResource("Texture2DRD_05mco")
+shader_parameter/sky_texture = SubResource("Texture2DRD_hf3yr")
+shader_parameter/lut_texture = SubResource("Texture2DRD_05mco")
+shader_parameter/sun_direction = Vector3(-0.905909, 0.370581, -0.204934)
+shader_parameter/sun_angular_diameter = 0.53

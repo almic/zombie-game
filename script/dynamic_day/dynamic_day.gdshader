@@ -99,7 +99,8 @@ vec3 eye_to_sky(vec3 eye_dir)
     // map to non-linear vertical (higher detail horizon pixels)
     ele = sqrt(abs(ele) / (PI * 0.5)) * sign(ele) * 0.5 + 0.5;
 
-    return texture(sky_texture, vec2(azi, ele)).rgb;
+    // TODO: when GODOT allows x/y split repeating, use X repeat only and remove this clamp()
+    return texture(sky_texture, vec2(azi, clamp(ele, 0.0019, 0.9981))).rgb;
 }
 
 void sky() {

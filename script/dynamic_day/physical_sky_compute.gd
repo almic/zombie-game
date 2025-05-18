@@ -49,25 +49,49 @@ var lut: RID
 var lut_sampler: RID
 var lut_shader: RID
 var lut_pipeline: RID
+var lut_uniform_set: RID:
+    get():
+        var lut_uniform: RDUniform = RDUniform.new()
+        lut_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+        lut_uniform.binding = 0
+        lut_uniform.add_id(lut)
+
+        return UniformSetCacheRD.get_cache(lut_shader, 0, [lut_uniform])
 
 var sky: RID
 var sky_shader: RID
 var sky_pipeline: RID
-var sky_out: Texture2DRD:
-    set(value):
-        sky_out = value
-        if sky_out and sky.is_valid():
-            sky_out.texture_rd_rid = sky
+var sky_uniform_set: RID:
+    get():
+        var sky_lut_uniform: RDUniform = RDUniform.new()
+        sky_lut_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
+        sky_lut_uniform.binding = 0
+        sky_lut_uniform.add_id(lut_sampler)
+        sky_lut_uniform.add_id(lut)
 
+        var sky_image_uniform: RDUniform = RDUniform.new()
+        sky_image_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
+        sky_image_uniform.binding = 1
+        sky_image_uniform.add_id(sky)
+
+        return UniformSetCacheRD.get_cache(
+            sky_shader,
+            0,
+            [sky_lut_uniform, sky_image_uniform],
+        )
+
+var texture: Texture2DRD = Texture2DRD.new()
 
 func _init() -> void:
     effect_callback_type = EFFECT_CALLBACK_TYPE_POST_OPAQUE
     reload_shaders()
 
-func _exit_tree() -> void:
-    RenderingServer.call_on_render_thread(free_resources)
+func _notification(what: int) -> void:
+    if not what == NOTIFICATION_PREDELETE:
+        return
 
-func free_resources() -> void:
+    print_debug("destroying sky compute")
+
     # LUT resources
     if lut.is_valid():
         rd.free_rid(lut)
@@ -93,10 +117,14 @@ func reload_shaders() -> void:
 func initialize_shader() -> void:
     rd = RenderingServer.get_rendering_device()
     if not rd:
+        push_error("Failed te get a rendering device!")
         return
 
     # Free in case we are reloading
-    free_resources()
+    if sky_shader.is_valid():
+        rd.free_rid(sky_shader)
+    if lut_shader.is_valid():
+        rd.free_rid(lut_shader)
 
     # Load LUT and Sky shaders
     var shader_file = load("res://script/dynamic_day/transmittance.glsl")
@@ -108,6 +136,9 @@ func initialize_shader() -> void:
         return
 
     lut_pipeline = rd.compute_pipeline_create(lut_shader)
+    if not lut_pipeline.is_valid():
+        push_error("Failed to create LUT pipeline!")
+        return
 
     shader_file = load("res://script/dynamic_day/sky.glsl")
     shader_spirv = shader_file.get_spirv()
@@ -118,6 +149,9 @@ func initialize_shader() -> void:
         return
 
     sky_pipeline = rd.compute_pipeline_create(sky_shader)
+    if not sky_pipeline.is_valid():
+        push_error("Failed to create Sky pipeline!")
+        return
 
     # LUT and Sky texture creation
     create_lut()
@@ -156,9 +190,6 @@ func create_lut() -> void:
         push_error("Failed to create LUT texture!")
 
 func create_sky() -> void:
-    if sky.is_valid():
-        rd.free_rid(sky)
-
     var sky_tf: RDTextureFormat = RDTextureFormat.new()
     sky_tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
     sky_tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
@@ -177,16 +208,18 @@ func create_sky() -> void:
 
     sky = rd.texture_create(sky_tf, RDTextureView.new())
     if not sky.is_valid():
-        push_error("Failed to create LUT texture!")
-    elif sky_out:
-        sky_out.texture_rd_rid = sky
+        push_error("Failed to create Sky texture!")
+
+    # This cleans up our old textures for us... actually kinda annoying
+    texture.texture_rd_rid = sky
 
 func _render_callback(p_effect_callback_type: int, _render_data: RenderData) -> void:
 
     if not (
         rd and
         p_effect_callback_type == EFFECT_CALLBACK_TYPE_POST_OPAQUE and
-        lut_pipeline.is_valid() and sky_pipeline.is_valid()
+        lut_pipeline.is_valid() and sky_pipeline.is_valid() and
+        sky.is_valid() and lut.is_valid()
     ):
         return
 
@@ -209,28 +242,24 @@ func _render_callback(p_effect_callback_type: int, _render_data: RenderData) -> 
 
 
 func compute_lut() -> void:
-    var groups: int = lut_size / 8
+    @warning_ignore("integer_division")
+    var groups: int = int(lut_size / 8)
 
     var push_constants: PackedByteArray = []
     push_constants.resize(16) # size and step count, padded to 16
     push_constants.encode_u32(0, lut_size)
     push_constants.encode_u32(4, lut_steps)
 
-    var lut_uniform: RDUniform = RDUniform.new()
-    lut_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
-    lut_uniform.binding = 0
-    lut_uniform.add_id(lut)
-    var uniform_set: RID = UniformSetCacheRD.get_cache(lut_shader, 0, [lut_uniform])
-
     var compute: int = rd.compute_list_begin()
     rd.compute_list_bind_compute_pipeline(compute, lut_pipeline)
-    rd.compute_list_bind_uniform_set(compute, uniform_set, 0)
+    rd.compute_list_bind_uniform_set(compute, lut_uniform_set, 0)
     rd.compute_list_set_push_constant(compute, push_constants, push_constants.size())
     rd.compute_list_dispatch(compute, groups, groups, 1)
     rd.compute_list_end()
 
 func compute_sky() -> void:
-    var groups: int = sky_size / 8
+    @warning_ignore("integer_division")
+    var groups: int = int(sky_size / 8)
 
     var push_constants: PackedByteArray = []
     push_constants.resize(32) # size, steps, padding, sun direction, padding
@@ -241,22 +270,9 @@ func compute_sky() -> void:
     push_constants.encode_float(20, sun_direction.z)
     push_constants.encode_float(24, -sun_direction.y)
 
-    var sky_lut_uniform: RDUniform = RDUniform.new()
-    sky_lut_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
-    sky_lut_uniform.binding = 0
-    sky_lut_uniform.add_id(lut_sampler)
-    sky_lut_uniform.add_id(lut)
-
-    var sky_uniform: RDUniform = RDUniform.new()
-    sky_uniform.uniform_type = RenderingDevice.UNIFORM_TYPE_IMAGE
-    sky_uniform.binding = 1
-    sky_uniform.add_id(sky)
-
-    var uniform_set: RID = UniformSetCacheRD.get_cache(sky_shader, 0, [sky_lut_uniform, sky_uniform])
-
     var compute: int = rd.compute_list_begin()
     rd.compute_list_bind_compute_pipeline(compute, sky_pipeline)
-    rd.compute_list_bind_uniform_set(compute, uniform_set, 0)
+    rd.compute_list_bind_uniform_set(compute, sky_uniform_set, 0)
     rd.compute_list_set_push_constant(compute, push_constants, push_constants.size())
 
     # Must wait for LUT to finish, and then finish sky before sending to shader

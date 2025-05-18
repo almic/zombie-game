@@ -4,5 +4,4 @@
 
 [resource]
 sky_material = ExtResource("1_npvax")
-process_mode = 1
-radiance_size = 2
+process_mode = 3

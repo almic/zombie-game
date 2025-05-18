@@ -21,6 +21,10 @@ config/icon="res://icon.svg"
 GUIDE="*res://addons/guide/guide.gd"
 DrawLine3d="*res://script/draw_line_3d/DrawLine3D.gd"
 
+[debug]
+
+shader_language/warnings/treat_warnings_as_errors=true
+
 [display]
 
 window/size/viewport_width=1280

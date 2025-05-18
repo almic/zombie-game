@@ -6,4 +6,4 @@
 
 [resource]
 shader = ExtResource("1_05mco")
-shader_parameter/sky_tex = SubResource("Texture2DRD_05mco")
+shader_parameter/sky_texture = SubResource("Texture2DRD_05mco")

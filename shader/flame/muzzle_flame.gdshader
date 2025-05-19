@@ -99,7 +99,7 @@ void fragment() {
     if (noise_enabled)
     {
         vec2 noise_uv = UV;
-        noise_uv.y -= time * 2.0;
+        noise_uv.y -= time * 2.0 / (scale_y - 1.0);
         flame_uv.x += noise_power * (texture(noise_texture, noise_uv.xy + 0.25).x - 0.5);
         flame_uv.y += noise_power * (texture(noise_texture, noise_uv.xy - 0.25).y - 0.5);
     }
@@ -125,9 +125,10 @@ void fragment() {
 
         // Red is the mix, which pulls down the flame color.
         color_uv.x = color_uv.x + (1.0 - smoke.r);
+
         // Additionally, transparency must pull down the color, too, so there's
         // no transparent flames
-        color_uv.x = color_uv.x + (1.0 - (smoke.a * shape.r));
+        color_uv.x = color_uv.x + (1.0 - smoke.a);
 
         color = texture(flame_gradient, color_uv);
 
@@ -138,7 +139,7 @@ void fragment() {
         color.a *= smoke.a;
 
         // Finally, add color back so color isn't transparent
-        color.a += length(color.rgb) * color.a;
+        color.a += length(color.rgb) * 2.0 * color.a;
 
         EMISSION = max((color.rgb - 1.0) * color.a, 0.0);
     }

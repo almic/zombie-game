@@ -79,8 +79,8 @@ orientation = 1
 
 [sub_resource type="Gradient" id="Gradient_b8v8d"]
 interpolation_color_space = 2
-offsets = PackedFloat32Array(0, 0.0721311, 0.104918, 0.177049, 0.245902, 0.321311)
-colors = PackedColorArray(2, 2, 2, 1, 1, 1, 0.54, 1, 1, 0.931, 0.41, 1, 0.834553, 0.479903, 0.240628, 1, 0.502695, 0.162943, 0.0666676, 1, 0.140447, 0.140447, 0.140447, 1)
+offsets = PackedFloat32Array(0, 0.0688525, 0.101639, 0.177049, 0.285246, 0.370492, 0.468852, 0.829508, 1)
+colors = PackedColorArray(2, 2, 2, 1, 1, 1, 0.54, 1, 1, 0.931, 0.41, 1, 0.834553, 0.479903, 0.240628, 1, 0.502695, 0.162943, 0.0666676, 1, 0.234, 0.026, 0, 1, 0.111197, 0.111197, 0.111197, 1, 0, 0, 0, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_ub2n0"]
 gradient = SubResource("Gradient_b8v8d")
@@ -106,7 +106,6 @@ noise = SubResource("FastNoiseLite_c1w0c")
 [sub_resource type="Gradient" id="Gradient_dimw4"]
 interpolation_mode = 2
 interpolation_color_space = 2
-offsets = PackedFloat32Array(0.186885, 1)
 colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_0ec8m"]
@@ -115,8 +114,8 @@ width = 32
 
 [sub_resource type="Gradient" id="Gradient_xw271"]
 interpolation_color_space = 2
-offsets = PackedFloat32Array(0, 0.335, 0.632787, 1)
-colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0.5522, 0, 0, 0, 0)
+offsets = PackedFloat32Array(0, 0.052, 0.1, 0.190164, 0.5, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.487, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0.5, 0, 0, 0, 0)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_b8v8d"]
 gradient = SubResource("Gradient_xw271")
@@ -126,9 +125,9 @@ width = 32
 render_priority = 0
 shader = ExtResource("6_xw271")
 shader_parameter/time = 0.0
-shader_parameter/fade_speed = 1.8215
+shader_parameter/fade_speed = 6.0
 shader_parameter/scale_x = 3.77
-shader_parameter/scale_y = 2.25
+shader_parameter/scale_y = 1.905
 shader_parameter/skew = 0.78
 shader_parameter/shaping_gradient = SubResource("GradientTexture1D_0ec8m")
 shader_parameter/flame_gradient = SubResource("GradientTexture1D_ub2n0")

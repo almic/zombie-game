@@ -36,6 +36,19 @@ window/size/sharp_corners=true
 
 enabled=PackedStringArray("res://addons/guide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://animation/": "red",
+"res://character/": "orange",
+"res://data/": "blue",
+"res://environment/": "yellow",
+"res://particle/": "teal",
+"res://scene/": "green",
+"res://script/": "purple",
+"res://shader/": "pink"
+}
+
 [global_group]
 
 terrain_nav_group="Used in terrain nav baking"

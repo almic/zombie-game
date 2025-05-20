@@ -4,9 +4,13 @@ shader_type sky;
 
 uniform sampler2D sky_texture : filter_linear, repeat_enable;
 uniform sampler2D lut_texture : filter_linear, repeat_disable;
+uniform sampler2D moon_texture : filter_linear, repeat_disable;
 
 uniform vec3 sun_direction;
 uniform float sun_angular_diameter;
+
+uniform vec3 moon_direction;
+uniform float moon_angular_diameter;
 
 // Ground illumination when sun is overhead
 const float ZENITH_ILLUMINANCE = 100000.0;

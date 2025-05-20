@@ -42,6 +42,8 @@ var sky_steps: int = 16
 
 ## Direction of the sun
 @export var sun_direction: Vector3
+## Direction of the moon
+@export var moon_direction: Vector3
 
 var rd: RenderingDevice
 

@@ -64,14 +64,23 @@ var _inv_day_length: PackedFloat64Array = [0]
 @export_category("Sun Attributes")
 
 ## Angular diameter of the sun in degrees
-@export_range(0.0, 10.0, 0.0001, 'or_greater')
-var sun_angular_diameter: float = 0.53
+@export_range(0.0, 3.0, 0.0001, 'or_greater')
+var sun_angular_diameter: float = 0.542
 
+
+@export_category("Moon Attributes")
+
+## Angular diameter of the moon in degrees
+@export_range(0.0, 3.0, 0.0001, 'or_greater')
+var moon_angular_diameter: float = 0.568
+
+@export var moon_renderer: PackedScene
 
 var sky: ShaderMaterial
 var sky_texture: Texture2DRD
 var sky_compute: PhysicalSkyCompute
-
+var moon_view: SubViewport
+var moon_view_shader: ShaderMaterial
 
 func _init() -> void:
     # force cached calculations
@@ -83,7 +92,6 @@ func _init() -> void:
 
 func _ready() -> void:
     init_shader()
-    pass
 
 func _process(delta: float) -> void:
     if not Engine.is_editor_hint():
@@ -143,13 +151,24 @@ func init_shader() -> void:
 
     sky_compute.sun_direction = -Sun.basis.z
 
+    moon_view = moon_renderer.instantiate()
+    var moon_mesh: MeshInstance3D = moon_view.get_node('%Moon')
+    moon_view_shader = moon_mesh.mesh.surface_get_material(0)
+
 func update_shader() -> void:
     sky.set_shader_parameter("sun_direction", Sun.basis.z)
-    sky.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
+    moon_view_shader.set_shader_parameter("sun_direction", Sun.basis.z)
     sky_compute.sun_direction = -Sun.basis.z
+
+    sky.set_shader_parameter("moon_direction", Moon.basis.z)
+    sky_compute.moon_direction = -Moon.basis.z
+
+    sky.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
+    sky.set_shader_parameter("moon_angular_diameter", moon_angular_diameter)
 
     # This should not need to be necessary, but I keep having this issue where
     # sky_compute is regenerated, breaking the old texture. Doing this seems
     # to have no impact on FPS at all, and it fixes the purple/ black sky, so...
     sky.set_shader_parameter("sky_texture", sky_compute.sky_texture)
     sky.set_shader_parameter("lut_texture", sky_compute.lut_texture)
+    sky.set_shader_parameter("moon_texture", moon_view.get_texture())

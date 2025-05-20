@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=28 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -19,6 +19,7 @@
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
+[ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
 transparency = 4
@@ -111,25 +112,25 @@ visible = false
 top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.5709, 14.824, 3.85356)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.37, 0.0341044, 10.9266)
 
-[node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun")]
+[node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun", "Moon")]
 process_mode = 1
 environment = ExtResource("7_ioo17")
 camera_attributes = ExtResource("8_wse8f")
 compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
+Moon = NodePath("MoonLight")
 local_time = 0.7247
 time_scale = 72.0
 latitude = 41.0
+moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
 transform = Transform3D(-0.392773, 0.158296, -0.905909, -0.554396, 0.745194, 0.370581, 0.73374, 0.647787, -0.204934, 0, 0, 0)
 rotation_edit_mode = 2
-light_temperature = 3600.0
-light_energy = 4.0
 light_specular = 0.5
 shadow_enabled = true
 shadow_normal_bias = 3.0
@@ -139,6 +140,11 @@ directional_shadow_split_2 = 0.05
 directional_shadow_blend_splits = true
 directional_shadow_fade_start = 0.9
 directional_shadow_max_distance = 2000.0
+
+[node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
+transform = Transform3D(0.213158, -0.962636, 0.167021, 0.201208, 0.210537, 0.956655, -0.956075, -0.170313, 0.238567, 0, 0, 0)
+light_intensity_lux = 0.25
+directional_shadow_mode = 0
 
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.82949, 0, -16.9273)

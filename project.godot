@@ -56,6 +56,7 @@ zombie_target="something a zombie will chase"
 
 [layer_names]
 
+3d_render/layer_5="Muzzle Flash Self-Lighting"
 3d_render/layer_20="Editor Only"
 3d_physics/layer_1="Player"
 3d_physics/layer_2="Character"

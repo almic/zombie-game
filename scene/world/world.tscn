@@ -112,7 +112,7 @@ visible = false
 top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 120.37, 0.0341044, 10.9266)
+transform = Transform3D(0.886341, 0, 0.463033, 0, 1, 0, -0.463033, 0, 0.886341, 14.3819, 0.034102, -6.98355)
 
 [node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun", "Moon")]
 process_mode = 1
@@ -122,14 +122,14 @@ compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-local_time = 0.7247
+local_time = 0.81725
 time_scale = 72.0
 latitude = 41.0
 moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.392773, 0.158296, -0.905909, -0.554396, 0.745194, 0.370581, 0.73374, 0.647787, -0.204934, 0, 0, 0)
+transform = Transform3D(-0.362802, -0.410082, -0.836784, -0.725032, 0.688332, -0.02298, 0.585409, 0.598358, -0.547051, 0, 0, 0)
 rotation_edit_mode = 2
 light_specular = 0.5
 shadow_enabled = true

@@ -1,0 +1,61 @@
+[gd_resource type="ShaderMaterial" load_steps=10 format=3 uid="uid://bxa5j13gbkxdr"]
+
+[ext_resource type="Shader" uid="uid://daj5vchrei4yl" path="res://shader/flame/muzzle_flame.gdshader" id="1_1ven0"]
+
+[sub_resource type="Gradient" id="Gradient_b8v8d"]
+interpolation_color_space = 2
+offsets = PackedFloat32Array(0, 0.0688525, 0.101639, 0.177049, 0.285246, 0.370492, 0.468852, 0.708197, 1)
+colors = PackedColorArray(2, 2, 2, 1, 1, 1, 0.54, 1, 1, 0.931, 0.41, 1, 0.834553, 0.479903, 0.240628, 1, 0.502695, 0.162943, 0.0666676, 1, 0.234, 0.026, 0, 1, 0.116038, 0.0608808, 0.0456764, 1, 0.0605303, 0.0605304, 0.0605303, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_ub2n0"]
+gradient = SubResource("Gradient_b8v8d")
+width = 64
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_c1w0c"]
+noise_type = 0
+seed = 117
+frequency = 0.033
+fractal_type = 2
+fractal_octaves = 4
+fractal_gain = 0.575
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_drput"]
+width = 128
+height = 128
+invert = true
+generate_mipmaps = false
+seamless = true
+seamless_blend_skirt = 0.075
+noise = SubResource("FastNoiseLite_c1w0c")
+
+[sub_resource type="Gradient" id="Gradient_dimw4"]
+interpolation_mode = 2
+interpolation_color_space = 2
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_0ec8m"]
+gradient = SubResource("Gradient_dimw4")
+width = 32
+
+[sub_resource type="Gradient" id="Gradient_xw271"]
+interpolation_color_space = 2
+offsets = PackedFloat32Array(0, 0.052, 0.1, 0.190164, 0.5, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.487, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0.5, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_b8v8d"]
+gradient = SubResource("Gradient_xw271")
+width = 32
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_1ven0")
+shader_parameter/fade_speed = 6.0
+shader_parameter/scale_x = 2.86
+shader_parameter/scale_y = 1.001
+shader_parameter/skew = 1.0
+shader_parameter/shaping_gradient = SubResource("GradientTexture1D_0ec8m")
+shader_parameter/flame_gradient = SubResource("GradientTexture1D_ub2n0")
+shader_parameter/smoke_mix = SubResource("GradientTexture1D_b8v8d")
+shader_parameter/noise_enabled = true
+shader_parameter/noise_power = 0.1725
+shader_parameter/noise_texture = SubResource("NoiseTexture2D_drput")

@@ -1,12 +1,25 @@
 shader_type spatial;
-render_mode unshaded;
+render_mode cull_disabled, shadows_disabled;
 
-group_uniforms Parameters;
-
+// Instance uniforms
 /**
  * Time used to animate the effect. This is modulated through code.
  */
-uniform float time: hint_range(0.0, 1.0, 0.0001) = 0.0;
+instance uniform float time: hint_range(0.0, 1.0, 0.0001) = 0.0;
+
+/**
+ * Instance noise offset. This should be modulated through code.
+ */
+instance uniform vec2 noise_offset = vec2(0.0, 0.0);
+
+/**
+ * If this is a front-view flash, using a circular shape and radial noise.
+ * When this is enabled, X-Axis scaling sets the radius and skew is ignored.
+ */
+instance uniform bool is_front = false;
+
+
+group_uniforms Parameters;
 
 /**
  * Affects the flame fade curve, values above 1.0 make the flame linger.
@@ -70,6 +83,12 @@ uniform sampler2D noise_texture: source_color, repeat_enable, filter_linear;
 
 group_uniforms;
 
+
+float fresnel(float power, vec3 normal, vec3 view)
+{
+    return pow(1.0 - clamp(dot(normal, view), 0.0, 1.0), power);
+}
+
 void fragment() {
     if (time < 1e-4)
     {
@@ -88,20 +107,47 @@ void fragment() {
     shape_uv.x *= x_t;
     shape_uv.x -= (x_t - 1.0) * 0.5;
 
-    shape_uv.y *= scale_y;
-    shape_uv.y = mix(shape_uv.y, atan(shape_uv.y, 0.64), skew);
+    if (is_front)
+    {
+        shape_uv.y *= x_t;
+        shape_uv.y -= (x_t - 1.0) * 0.5;
+    }
+    else
+    {
+        shape_uv.y *= scale_y;
+        shape_uv.y = mix(shape_uv.y, atan(shape_uv.y, 0.64), skew);
 
-    // Grow and shrink on y axis
-    shape_uv.y = (shape_uv.y - bottom) / (top - bottom);
+        // Grow and shrink on y axis
+        shape_uv.y = (shape_uv.y - bottom) / (top - bottom);
+    }
 
     vec2 flame_uv = shape_uv;
 
+    vec2 noise_uv = UV;
     if (noise_enabled)
     {
-        vec2 noise_uv = UV;
-        noise_uv.y -= time * 2.0 / (scale_y - 1.0);
-        flame_uv.x += noise_power * (texture(noise_texture, noise_uv.xy + 0.25).x - 0.5);
-        flame_uv.y += noise_power * (texture(noise_texture, noise_uv.xy - 0.25).y - 0.5);
+        if (is_front)
+        {
+            // Map to polar coordinates
+            noise_uv -= 0.5;
+            float r = length(noise_uv);
+            float t = atan(noise_uv.x, noise_uv.y) / TAU;
+
+            noise_uv.x = t;
+            if (noise_uv.x < 0.0)
+            {
+                noise_uv.x = 1.0 + noise_uv.x;
+            }
+
+            noise_uv.y = sqrt(r);
+            noise_uv.y -= time * 4.0;
+        }
+        else
+        {
+            noise_uv.y -= time * 2.0;
+        }
+        flame_uv.x += noise_power * (texture(noise_texture, noise_uv.xy + 0.25 - noise_offset.x).x - 0.5);
+        flame_uv.y += noise_power * (texture(noise_texture, noise_uv.xy - 0.25 - noise_offset.y).y - 0.5);
     }
 
     flame_uv.xy -= radius;
@@ -138,12 +184,12 @@ void fragment() {
         // Smoke alpha is overall opacity.
         color.a *= smoke.a;
 
-        // Finally, add color back so color isn't transparent
-        color.a += length(color.rgb) * 2.0 * color.a;
-
-        EMISSION = max((color.rgb - 1.0) * color.a, 0.0);
+        EMISSION = max(color.rgb * color.a, 0.0) * 300000.0;
     }
 
     ALBEDO = color.rgb;
-    ALPHA = color.a;
+    ALPHA = clamp(
+            clamp(color.a, 0.0, 1.0) - fresnel(2.0, NORMAL, VIEW),
+            0.0, 1.0
+    );
 }

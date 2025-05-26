@@ -254,8 +254,6 @@ void get_material(vec4 ddxy, uint control, vec3 iuv_center, out Material out_mat
 	vec2 matUV = base_uv;
 	vec4 albedo_ht = vec4(0.);
 	vec4 normal_rg = vec4(0.5, 0.5, 1.0, 1.0);
-	vec4 albedo_far = vec4(0.);
-	vec4 normal_far = vec4(0.5, 0.5, 1.0, 1.0);
 	float mat_scale = _texture_uv_scale_array[out_mat.base];
 	vec4 base_dd = ddxy;
 	

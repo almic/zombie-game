@@ -1,6 +1,7 @@
 shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,skip_vertex_transform;
 
+#define CUSTOM_LIGHTING 1
 #define DO_ATTENUATION 0
 #define DEBUG_ATTENUATION 0
 
@@ -72,7 +73,6 @@ uniform float mipmap_bias : hint_range(0.5, 1.5, 0.01) = 1.0;
 uniform float depth_blur : hint_range(0.0, 35.0, 0.1) = 0.0;
 uniform float bias_distance : hint_range(0.0, 16384.0, 0.1) = 512.0;
 
-uniform bool enable_macro_variation = true;
 uniform vec3 macro_variation1 : source_color = vec3(1.);
 uniform vec3 macro_variation2 : source_color = vec3(1.);
 uniform float macro_variation_slope : hint_range(0., 1.)  = 0.333;
@@ -327,8 +327,6 @@ void get_material(vec3 i_normal, float i_height, vec4 ddxy, uint control, ivec3 
 	vec2 matUV = base_uv;
 	vec4 albedo_ht = vec4(0.);
 	vec4 normal_rg = vec4(0.5, 0.5, 1.0, 1.0);
-	vec4 albedo_far = vec4(0.);
-	vec4 normal_far = vec4(0.5, 0.5, 1.0, 1.0);
 	float mat_scale = _texture_uv_scale_array[out_mat.base];
 	float normal_angle = uv_rotation + p_angle;
 	vec4 dd1 = ddxy;
@@ -343,7 +341,7 @@ void get_material(vec3 i_normal, float i_height, vec4 ddxy, uint control, ivec3 
 		normal_rg = textureGrad(_texture_array_normal, vec3(matUV, float(out_mat.base)), dd1.xy, dd1.zw);
 
 		// Unpack & rotate base normal for blending
-		normal_rg.xyz = unpack_normal(normal_rg).xyz;
+		normal_rg.xyz = unpack_normal(normal_rg);
 		normal_rg.xz = rotate_plane(normal_rg.xz, -normal_angle);
 	}
 
@@ -466,26 +464,14 @@ void fragment() {
 
 	// Colormap. 1 - 4 lookups
 	#define COLOR_MAP vec4(1.0, 1.0, 1.0, 0.5)
-	vec4 color_map;
 	vec3 region_uv = get_index_uv(uv2);
-	color_map = region_uv.z > -1.0 && !bilerp ? textureLod(_color_maps, region_uv, region_mip) : COLOR_MAP;
+	vec4 color_map = region_uv.z > -1.0 && !bilerp ? textureLod(_color_maps, region_uv, region_mip) : COLOR_MAP;
 
 	// Branching smooth normals and interpolated color map must be done seperatley with unmodified weights.
 	if (bilerp) {
 		vec4 col_map[4];
 		col_map[3] = index[3].z > -1 ? texelFetch(_color_maps, index[3], 0) : COLOR_MAP;
 		color_map = col_map[3];
-		#ifdef FILTER_LINEAR
-		col_map[0] = index[0].z > -1 ? texelFetch(_color_maps, index[0], 0) : COLOR_MAP;
-		col_map[1] = index[1].z > -1 ? texelFetch(_color_maps, index[1], 0) : COLOR_MAP;
-		col_map[2] = index[2].z > -1 ? texelFetch(_color_maps, index[2], 0) : COLOR_MAP;
-
-		color_map =
-			col_map[0] * weights[0] +
-			col_map[1] * weights[1] +
-			col_map[2] * weights[2] +
-			col_map[3] * weights[3] ;
-		#endif
 
 		// 5 lookups
 		// Fetch the additional required height values for smooth normals
@@ -584,13 +570,11 @@ void fragment() {
 
 	// Macro variation. 2 lookups
 	vec3 macrov = vec3(1.);
-	if (enable_macro_variation) {
-		float noise1 = texture(noise_texture, rotate(uv * noise1_scale * .1, cos(noise1_angle), sin(noise1_angle)) + noise1_offset).r;
-		float noise2 = texture(noise_texture, uv * noise2_scale * .1).r;
-		macrov = mix(macro_variation1, vec3(1.), noise1);
-		macrov *= mix(macro_variation2, vec3(1.), noise2);
-		macrov = mix(vec3(1.0), macrov, clamp(w_normal.y + macro_variation_slope, 0., 1.));
-	}
+	float noise1 = texture(noise_texture, rotate(uv * noise1_scale * .1, cos(noise1_angle), sin(noise1_angle)) + noise1_offset).r;
+	float noise2 = texture(noise_texture, uv * noise2_scale * .1).r;
+	macrov = mix(macro_variation1, vec3(1.), noise1);
+	macrov *= mix(macro_variation2, vec3(1.), noise2);
+	macrov = mix(vec3(1.0), macrov, clamp(w_normal.y + macro_variation_slope, 0., 1.));
 
 	// Wetness/roughness modifier, converting 0 - 1 range to -1 to 1 range
     // Reduces normal depth as well.
@@ -613,6 +597,8 @@ void fragment() {
 	AO_LIGHT_AFFECT = 1. - albedo_height.a;
 }
 
+#if CUSTOM_LIGHTING
+
 vec3 F0(float metallic, float specular, vec3 albedo) {
     float dielectric = 0.04 * specular * specular;
     return mix(vec3(dielectric), albedo, vec3(metallic));
@@ -634,40 +620,13 @@ float SchlickFresnel(float u) {
     return m2 * m2 * m; // pow(m,5)
 }
 
-#define CUSTOM_LIGHTING 1
-
-#if CUSTOM_LIGHTING
 void light()
 {
     float attenuation = ATTENUATION;  
-#if DO_ATTENUATION
-    // Directional lights being obscured by a distant horizon
-    // Uses a diameter of 0.53, which is about the Sun's value
-    if (LIGHT_IS_DIRECTIONAL) {
-// Computed as (d / 2) * (PI / 180) where d = 0.53
-#define FADE_ANGLE 0.0046251225
-        float light_y = (mat3(INV_VIEW_MATRIX) * LIGHT).y;
-        float angle = light_y; // asin(light_y); // at small angles, T ~= arcsin(T)
-        if (angle < FADE_ANGLE) {
-            if (angle < -FADE_ANGLE) {
-                // Disk is below horizon, no direct light
-                attenuation = 0.0;
-            } else {
-                // Disk is obscured by horizon, approximate coverage
-                float rho = -(angle / FADE_ANGLE) + 1.0;
-                float beta = (PI * 0.5) * (cos(PI * rho * 0.5) + 1.0);
-                float alpha = beta / PI;
-                attenuation *= alpha;
-            }
-        }
-#undef FADE_ANGLE
-    }
-#endif
     
     // Much of this code is purely copied from Godot 4.4's shader:
     // https://github.com/godotengine/godot/blob/4.4/servers/rendering/renderer_rd/shaders/scene_forward_lights_inc.glsl
 
-#if !DEBUG_ATTENUATION
     if (attenuation > 1e-6) {
         vec3 diffuse_light = DIFFUSE_LIGHT;
         vec3 specular_light = SPECULAR_LIGHT;
@@ -731,8 +690,5 @@ void light()
         DIFFUSE_LIGHT = diffuse_light;
         SPECULAR_LIGHT = specular_light;
     }
-#else
-    DIFFUSE_LIGHT += attenuation;
-#endif
 }
 #endif // CUSTOM_LIGHTING

@@ -2,14 +2,11 @@
 
 [ext_resource type="Script" uid="uid://bd6jab6eqtxkd" path="res://script/particle_system/particle_system.gd" id="1_cwgiv"]
 [ext_resource type="Curve" uid="uid://c7hmf1wm7ucbr" path="res://data/curve/exp_decay.tres" id="2_3cioy"]
+[ext_resource type="Curve" uid="uid://2mcsf8plepqt" path="res://particle/system/weapon/flash_curve.tres" id="2_b8v8d"]
 [ext_resource type="Material" uid="uid://b6kedkq4rmwff" path="res://particle/system/weapon/spark.tres" id="3_ow6ch"]
 [ext_resource type="Curve" uid="uid://ckgmhu04yogob" path="res://data/curve/sphere_decay.tres" id="4_b8v8d"]
 [ext_resource type="Material" uid="uid://c8ipyil3kyeeh" path="res://particle/system/weapon/flash.tres" id="4_ow6ch"]
 [ext_resource type="Material" uid="uid://bxa5j13gbkxdr" path="res://particle/system/weapon/gunshot_small_material.tres" id="6_xw271"]
-
-[sub_resource type="Curve" id="Curve_xw271"]
-_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.09, 0), 0.0, 100.0, 0, 1, Vector2(0.1, 1), 100.0, 6.12742e-07, 1, 0, Vector2(0.19, 1), 0.0, -10.1358, 0, 0, Vector2(0.5, 0), 0.0, 0.0, 0, 0]
-point_count = 5
 
 [sub_resource type="CurveTexture" id="CurveTexture_xw271"]
 width = 32
@@ -87,7 +84,7 @@ material = ExtResource("6_xw271")
 [node name="gunshot_small" type="Node3D"]
 script = ExtResource("1_cwgiv")
 flash_lights = 0.15
-fade_lights = SubResource("Curve_xw271")
+fade_lights = ExtResource("2_b8v8d")
 enable_mesh_animation = true
 mesh_animation_time = 0.15
 metadata/_custom_type_script = "uid://bd6jab6eqtxkd"

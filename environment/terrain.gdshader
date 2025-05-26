@@ -1,6 +1,9 @@
 shader_type spatial;
 render_mode blend_mix,depth_draw_opaque,cull_back,skip_vertex_transform;
 
+#define DO_ATTENUATION 0
+#define DEBUG_ATTENUATION 0
+
 /* The terrain depends on this shader to function. Don't change most things in vertex() or
  * terrain normal calculations in fragment(). You probably only want to customize the
  * material calculation and PBR application in fragment().
@@ -637,10 +640,10 @@ float SchlickFresnel(float u) {
 void light()
 {
     float attenuation = ATTENUATION;  
+#if DO_ATTENUATION
     // Directional lights being obscured by a distant horizon
     // Uses a diameter of 0.53, which is about the Sun's value
     if (LIGHT_IS_DIRECTIONAL) {
-#define DEBUG_ATTENUATION 0
 // Computed as (d / 2) * (PI / 180) where d = 0.53
 #define FADE_ANGLE 0.0046251225
         float light_y = (mat3(INV_VIEW_MATRIX) * LIGHT).y;
@@ -659,6 +662,7 @@ void light()
         }
 #undef FADE_ANGLE
     }
+#endif
     
     // Much of this code is purely copied from Godot 4.4's shader:
     // https://github.com/godotengine/godot/blob/4.4/servers/rendering/renderer_rd/shaders/scene_forward_lights_inc.glsl

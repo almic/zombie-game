@@ -9,4 +9,6 @@ render_priority = 0
 shader = ExtResource("1_ib4bh")
 shader_parameter/moon_texture = ExtResource("3_7pore")
 shader_parameter/moon_normal = ExtResource("2_v0j16")
-shader_parameter/sun_direction = Vector3(0, 0, 1)
+shader_parameter/sun_direction = Vector3(-0.649935, -0.227755, -0.72506)
+shader_parameter/moon_orbit_basis = Basis(-0.801729, 0.0896766, 0.590922, 0.0721872, 0.995971, -0.0532062, -0.593312, -3.91989e-09, -0.804972)
+shader_parameter/moon_basis = Basis(0.97183, 0.21736, 0.0911043, -0.234753, 0.858481, 0.455962, 0.0208967, -0.464505, 0.885324)

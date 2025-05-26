@@ -122,18 +122,25 @@ compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-local_time = 0.81725
-time_scale = 72.0
+local_time = 0.72858
+time_scale = 30.0
 latitude = 41.0
+sun_angular_diameter = 0.058
+moon_day_length = 239.3
+moon_orbital_period = 239.3
+moon_inclination_phase = 0.25
+moon_tilt_phase = 1.25
+moon_orbit_offset = 0.20621
 moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.362802, -0.410082, -0.836784, -0.725032, 0.688332, -0.02298, 0.585409, 0.598358, -0.547051, 0, 0, 0)
+transform = Transform3D(0.13418, 0.394191, -0.90918, 0.747885, 0.561636, 0.353883, 0.650126, -0.727446, -0.219449, 0, 0, 0)
 rotation_edit_mode = 2
+light_temperature = 5500.0
 light_specular = 0.5
 shadow_enabled = true
-shadow_normal_bias = 3.0
+shadow_bias = 0.2
 shadow_blur = 0.01
 directional_shadow_split_1 = 0.005
 directional_shadow_split_2 = 0.05
@@ -142,13 +149,15 @@ directional_shadow_fade_start = 0.9
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.213158, -0.962636, 0.167021, 0.201208, 0.210537, 0.956655, -0.956075, -0.170313, 0.238567, 0, 0, 0)
-light_intensity_lux = 0.25
+transform = Transform3D(-0.927624, 0.34346, 0.146795, 0.111253, 0.629238, -0.769209, -0.356561, -0.697206, -0.621907, 0, 0, 0)
+light_intensity_lux = 100.0
+light_temperature = 7100.0
 directional_shadow_mode = 0
 
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.82949, 0, -16.9273)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.829, 0, -16.927)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.0101751, -0.999948, 0, 0.999948, -0.0101751, 0, 0, 0, 1, 24.1405, 15.6737, 3.66427)
+visible = false
 mesh = SubResource("PlaneMesh_g0i7g")

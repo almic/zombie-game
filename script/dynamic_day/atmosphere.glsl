@@ -13,7 +13,8 @@ layout(push_constant, std430) uniform Params
 {
 
     uvec2 size_steps; // 0, 4
-    uvec2 reserved;   // 8, 12
+    float shadowing;  // 8
+    float reserved;   // 12
 
     vec3 sun_dir;     // 16, 20, 24
     // padded to 28 (32 bytes total)
@@ -27,6 +28,8 @@ vec4 compute_inscattering(
         out vec4 transmittance)
 {
     vec3 sun_dir = params.sun_dir;
+    float shadowing = params.shadowing;
+
     float cos_theta = dot(-ray_dir, sun_dir);
 
     float molecular_phase = molecular_phase_function(cos_theta);
@@ -64,7 +67,8 @@ vec4 compute_inscattering(
             lut, sample_cos_theta, normalized_altitude,
             distance_to_earth_center);
 
-        vec4 S = sun_spectral_irradiance *
+        // Higher impact on mie from shadowing
+        vec4 S = sun_spectral_irradiance * shadowing *
             (molecular_scattering * (molecular_phase * transmittance_to_sun + ms) +
              aerosol_scattering   * (aerosol_phase   * transmittance_to_sun + ms));
 

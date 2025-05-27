@@ -130,13 +130,13 @@ void vertex() {
 	vec2 start_pos = v_vertex.xz * _vertex_density;
 	vec2 end_pos = (v_vertex.xz - shift * scale) * _vertex_density;
 	v_vertex.xz -= shift * scale * vertex_lerp;
-	
+
 	// UV coordinates in world space. Values are 0 to _region_size within regions
 	UV = v_vertex.xz * _vertex_density;
-	
+
 	// UV coordinates in region space + texel offset. Values are 0 to 1 within regions
 	UV2 = fma(UV, vec2(_region_texel_size), vec2(0.5 * _region_texel_size));
-	
+
 	const vec3 offsets = vec3(0, 1, 2);
 	ivec3 indexUV[4];
 	// control map lookups in vertex, used for bilinear blend in fragment.
@@ -157,12 +157,12 @@ void vertex() {
 			(v_control[2] == v_control[3]));
 	// Verticies are close enough, full auto shader, or all 4 indicies match, skip bilinear blend in fragment.
 	v_lerp = scale <  _vertex_spacing + 1e-3 && vertex_lerp < 1e-3 && (full_auto || identical) ? 1 : 0;
-	
+
 	// Discard vertices for Holes. 1 lookup
 	bool hole = bool(v_control[3] >>2u & 0x1u);
-	
+
 	// Show holes to all cameras except mouse camera (on exactly 1 layer)
-	if ( !(CAMERA_VISIBLE_LAYERS == _mouse_layer) && 
+	if ( !(CAMERA_VISIBLE_LAYERS == _mouse_layer) &&
 			(hole || (_background_mode == 0u && indexUV[3].z == -1))) {
 		v_vertex.x = 0. / 0.;
 	} else {
@@ -177,17 +177,17 @@ void vertex() {
 		v_vertex.y = h;
 		v_normal = vec3(h - u, _vertex_spacing, h - v);
 	}
-	
+
 	// Convert model space to view space w/ skip_vertex_transform render mode
 	VERTEX = (VIEW_MATRIX * vec4(v_vertex, 1.0)).xyz;
-	
+
 	// Apply terrain normals
 	vec3 w_normal = normalize(v_normal);
 	vec3 w_tangent = normalize(cross(w_normal, vec3(0.0, 0.0, 1.0)));
 	vec3 w_binormal = normalize(cross(w_normal, w_tangent));
-	
+
 	v_tbn = mat3(w_tangent, w_normal, w_binormal);
-	
+
 	NORMAL = normalize((VIEW_MATRIX * vec4(w_normal, 0.0)).xyz);
 	BINORMAL = normalize((VIEW_MATRIX * vec4(w_binormal, 0.0)).xyz);
 	TANGENT = normalize((VIEW_MATRIX * vec4(w_tangent, 0.0)).xyz);
@@ -237,7 +237,7 @@ void get_material(vec4 ddxy, uint control, vec3 iuv_center, out Material out_mat
 	int region = int(iuv_center.z);
 	vec2 base_uv = v_vertex.xz * 0.5;
 	ddxy *= 0.5;
-	
+
 	// Enable Autoshader if outside regions or painted in regions, otherwise manual painted
 	bool auto_shader = region < 0 || bool(control & 0x1u);
 	out_mat.base = int(auto_shader) * auto_base_texture + int(!auto_shader) * int(control >>27u & 0x1Fu);
@@ -245,18 +245,18 @@ void get_material(vec4 ddxy, uint control, vec3 iuv_center, out Material out_mat
 	out_mat.blend = float(auto_shader) * clamp(
 			(auto_slope * 2. * ( v_tbn[1].y - 1.) + 1.)
 			- auto_height_reduction * .01 * v_vertex.y // Reduce as vertices get higher
-			, 0., 1.) + 
+			, 0., 1.) +
 			 float(!auto_shader) * float(control >>14u & 0xFFu) * 0.003921568627450; // 1./255.0
-	
+
 	out_mat.nrm_depth = _texture_normal_depth_array[out_mat.base];
 	out_mat.ao_str = _texture_ao_strength_array[out_mat.base];
-	
+
 	vec2 matUV = base_uv;
 	vec4 albedo_ht = vec4(0.);
 	vec4 normal_rg = vec4(0.5, 0.5, 1.0, 1.0);
 	float mat_scale = _texture_uv_scale_array[out_mat.base];
 	vec4 base_dd = ddxy;
-	
+
 	if (out_mat.blend < 1.0) {
 		// 2 lookups
 		//each time we change scale, recalculate antitiling from baseline to maintain continuity.
@@ -264,19 +264,19 @@ void get_material(vec4 ddxy, uint control, vec3 iuv_center, out Material out_mat
 		base_dd *= mat_scale;
 		albedo_ht = textureGrad(_texture_array_albedo, vec3(matUV, float(out_mat.base)), base_dd.xy, base_dd.zw);
 		normal_rg = textureGrad(_texture_array_normal, vec3(matUV, float(out_mat.base)), base_dd.xy, base_dd.zw);
-		
+
 		// Unpack & rotate base normal for blending
 		normal_rg.xyz = unpack_normal(normal_rg);
 	}
 	// Apply color to base
 	albedo_ht.rgb *= _texture_color_array[out_mat.base].rgb;
-	
+
 	// Apply Roughness modifier to base
 	normal_rg.a = clamp(normal_rg.a + _texture_roughness_mod_array[out_mat.base], 0., 1.);
-	
+
 	out_mat.alb_ht = albedo_ht;
 	out_mat.nrm_rg = normal_rg;
-	
+
 	if (out_mat.blend > 0.) {
 		// 2 lookups
 		// Setup overlay texture to blend
@@ -285,22 +285,22 @@ void get_material(vec4 ddxy, uint control, vec3 iuv_center, out Material out_mat
 		vec4 over_dd = ddxy * mat_scale2;
 		vec4 albedo_ht2 = textureGrad(_texture_array_albedo, vec3(matUV2, float(out_mat.over)), over_dd.xy, over_dd.zw);
 		vec4 normal_rg2 = textureGrad(_texture_array_normal, vec3(matUV2, float(out_mat.over)), over_dd.xy, over_dd.zw);
-		
+
 		// Unpack & rotate overlay normal for blending
 		normal_rg2.xyz = unpack_normal(normal_rg2);
-		
+
 		// Apply color to overlay
 		albedo_ht2.rgb *= _texture_color_array[out_mat.over].rgb;
-		
+
 		// Apply Roughness modifier to overlay
 		normal_rg2.a = clamp(normal_rg2.a + _texture_roughness_mod_array[out_mat.over], 0., 1.);
-		
+
 		// apply world space normal weighting from base, to overlay layer
 		// Its a matrix Mult, but the value is rather high, so not cutting this one.
 		if (world_space_normal_blend) {
 			albedo_ht2.a *= bool(control >>3u & 0x1u) ? 1.0 : clamp((v_tbn * normal_rg.xyz).y, 0.0, 1.0);
 		}
-		
+
 		// Blend overlay and base
 		out_mat.alb_ht = height_blend4(albedo_ht, albedo_ht.a, albedo_ht2, albedo_ht2.a, out_mat.blend);
 		out_mat.nrm_rg = height_blend4(normal_rg, albedo_ht.a, normal_rg2, albedo_ht2.a, out_mat.blend);
@@ -327,7 +327,7 @@ void fragment() {
 	#define COLOR_MAP vec4(1.0, 1.0, 1.0, 0.5)
 	vec3 region_uv = get_index_uv(uv2);
 	vec4 color_map = region_uv.z > -1.0 ? textureLod(_color_maps, region_uv, region_mip) : COLOR_MAP;
-	
+
 	Material mat[4];
 	uint control = floatBitsToUint(texelFetch(_control_maps, get_index_coord(floor(uv), FRAGMENT_PASS), 0)).r;
 	get_material(base_derivatives, control, region_uv, mat[3]);
@@ -342,7 +342,7 @@ void fragment() {
 		get_material(base_derivatives, v_control[0], region_uv, mat[0]);
 		get_material(base_derivatives, v_control[1], region_uv, mat[1]);
 		get_material(base_derivatives, v_control[2], region_uv, mat[2]);
-		
+
 		// we dont need weights before this point when using vertex normals.
 		vec2 weight = fract(uv);
 		vec2 invert = 1.0 - weight;
@@ -352,47 +352,47 @@ void fragment() {
 			weight.x * invert.y, // 2
 			invert.x * invert.y  // 3
 		);
-		
+
 		// Interpolate Albedo/Height/Normal/Roughness
-		albedo_height = 
+		albedo_height =
 			mat[0].alb_ht * weights[0] +
 			mat[1].alb_ht * weights[1] +
 			mat[2].alb_ht * weights[2] +
 			mat[3].alb_ht * weights[3] ;
-		
-		normal_rough = 
+
+		normal_rough =
 			mat[0].nrm_rg * weights[0] +
 			mat[1].nrm_rg * weights[1] +
 			mat[2].nrm_rg * weights[2] +
 			mat[3].nrm_rg * weights[3] ;
-		
-		normal_map_depth = 
+
+		normal_map_depth =
 			mat[0].nrm_depth * weights[0] +
 			mat[1].nrm_depth * weights[1] +
 			mat[2].nrm_depth * weights[2] +
 			mat[3].nrm_depth * weights[3] ;
-		
-		ao_strength = 
+
+		ao_strength =
 			mat[0].ao_str * weights[0] +
 			mat[1].ao_str * weights[1] +
 			mat[2].ao_str * weights[2] +
 			mat[3].ao_str * weights[3] ;
 	}
-	
+
 	// Wetness/roughness modifier, converting 0 - 1 range to -1 to 1 range
 	float roughness = fma(color_map.a - 0.5, 2.0, normal_rough.a);
-	
+
 	// Apply PBR
 	ALBEDO = albedo_height.rgb * color_map.rgb;
 	ROUGHNESS = roughness;
 	SPECULAR = 1. - normal_rough.a;
 	NORMAL_MAP = pack_normal(normal_rough.rgb);
 	NORMAL_MAP_DEPTH = normal_map_depth;
-	
+
 	// Higher and/or facing up, less occluded.
 	// This is also virtually free.
 	float ao = (1.0 - (albedo_height.a * log(2.1 - ao_strength))) * (1.0 - normal_rough.y);
 	AO = clamp(1.0 - ao * ao_strength, albedo_height.a, 1.0);
 	AO_LIGHT_AFFECT = albedo_height.a;
-	
+
 }

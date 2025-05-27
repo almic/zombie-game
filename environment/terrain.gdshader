@@ -622,36 +622,36 @@ float SchlickFresnel(float u) {
 
 void light()
 {
-    float attenuation = ATTENUATION;  
-    
+    float attenuation = ATTENUATION;
+
     // Much of this code is purely copied from Godot 4.4's shader:
     // https://github.com/godotengine/godot/blob/4.4/servers/rendering/renderer_rd/shaders/scene_forward_lights_inc.glsl
 
     if (attenuation > 1e-6) {
         vec3 diffuse_light = DIFFUSE_LIGHT;
         vec3 specular_light = SPECULAR_LIGHT;
-        
+
         vec3 light_color = LIGHT_COLOR;
         vec3 backlight = BACKLIGHT;
-        
+
         vec3 albedo = ALBEDO;
         float roughness = ROUGHNESS;
         float specular = 0.5;
         float specular_amount = SPECULAR_AMOUNT;
         float metallic = METALLIC;
-        
+
         vec3 f0 = F0(metallic, specular, albedo);
-        
+
         vec3 N = NORMAL;
         vec3 L = LIGHT;
         vec3 V = VIEW;
         float A = 0.0001;
-      
+
 
         float NdotL = min(A + dot(N, L), 1.0);
         float cNdotV = max(dot(N, V), 1e-4);
         float cNdotL = max(NdotL, 0.0);
-        
+
         vec3 H = normalize(V + L);
         float cLdotH = clamp(A + dot(L, H), 0.0, 1.0);
 
@@ -671,14 +671,14 @@ void light()
 
         if (roughness > 0.0) {
             float cNdotH = clamp(A + dot(N, H), 0.0, 1.0);
-            
+
             float alpha_ggx = roughness * roughness;
 
             float D = D_GGX(cNdotH, alpha_ggx);
             float G = V_GGX(cNdotL, cNdotV, alpha_ggx);
 
             float cLdotH5 = SchlickFresnel(cLdotH);
-            
+
             // Calculate Fresnel using cheap approximate specular occlusion term from Filament:
             // https://google.github.io/filament/Filament.html#lighting/occlusion/specularocclusion
             float f90 = clamp(dot(f0, vec3(50.0 * 0.33)), metallic, 1.0);
@@ -686,7 +686,7 @@ void light()
             vec3 specular_brdf_NL = cNdotL * D * F * G;
             specular_light += specular_brdf_NL * light_color * attenuation * specular_amount;
         }
-        
+
         DIFFUSE_LIGHT = diffuse_light;
         SPECULAR_LIGHT = specular_light;
     }

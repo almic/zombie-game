@@ -21,6 +21,9 @@
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
 
+[sub_resource type="PlaneMesh" id="PlaneMesh_g0i7g"]
+orientation = 2
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
 transparency = 4
 cull_mode = 2
@@ -72,47 +75,12 @@ detiling_rotation = 0.251
 mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_036b0")])
 texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_g0i7g"]
-
 [node name="world" type="Node3D"]
 process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
 metadata/_custom_type_script = "uid://mvbofvslxl7"
-
-[node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
-data_directory = "res://terrain_data/world"
-material = ExtResource("4_2u3nc")
-assets = SubResource("Terrain3DAssets_dwbse")
-save_16_bit = true
-collision_layer = 16
-collision_mask = 0
-mesh_lods = 5
-mesh_size = 64
-cast_shadows = 2
-show_instances = false
-process_mode = 1
-top_level = true
-metadata/_edit_lock_ = true
-
-[node name="TerrainNavRegion" type="NavigationRegion3D" parent="."]
-navigation_mesh = ExtResource("11_udxuc")
-metadata/_edit_lock_ = true
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-process_mode = 3
-
-[node name="GuideDebugger" parent="CanvasLayer" instance=ExtResource("4_aqk2v")]
-visible = false
-
-[node name="pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
-unique_name_in_owner = true
-visible = false
-top_level = true
-
-[node name="player" parent="." instance=ExtResource("4_036b0")]
-transform = Transform3D(0.886341, 0, 0.463033, 0, 1, 0, -0.463033, 0, 0.886341, 14.3819, 0.034102, -6.98355)
 
 [node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun", "Moon")]
 process_mode = 1
@@ -136,7 +104,6 @@ metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
 transform = Transform3D(0.13418, 0.394191, -0.90918, 0.747885, 0.561636, 0.353883, 0.650126, -0.727446, -0.219449, 0, 0, 0)
-rotation_edit_mode = 2
 light_temperature = 5500.0
 light_specular = 0.5
 shadow_enabled = true
@@ -154,10 +121,43 @@ light_intensity_lux = 100.0
 light_temperature = 7100.0
 directional_shadow_mode = 0
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+
+[node name="GuideDebugger" parent="CanvasLayer" instance=ExtResource("4_aqk2v")]
+visible = false
+
+[node name="pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
+unique_name_in_owner = true
+visible = false
+top_level = true
+
+[node name="player" parent="." instance=ExtResource("4_036b0")]
+transform = Transform3D(0.886341, 0, 0.463033, 0, 1, 0, -0.463033, 0, 0.886341, 14.3819, 0.034102, -6.98355)
+
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.829, 0, -16.927)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.0101751, -0.999948, 0, 0.999948, -0.0101751, 0, 0, 0, 1, 24.1405, 15.6737, 3.66427)
-visible = false
+transform = Transform3D(-0.0101751, -0.999948, 0, 0.999948, -0.0101751, 0, 0, 0, 1, 24.2766, 2.30006, 3.66427)
 mesh = SubResource("PlaneMesh_g0i7g")
+
+[node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
+data_directory = "res://terrain_data/world"
+material = ExtResource("4_2u3nc")
+assets = SubResource("Terrain3DAssets_dwbse")
+save_16_bit = true
+collision_mode = 3
+collision_layer = 16
+collision_mask = 0
+mesh_lods = 5
+mesh_size = 64
+cast_shadows = 2
+show_instances = false
+process_mode = 1
+top_level = true
+metadata/_edit_lock_ = true
+
+[node name="TerrainNavRegion" type="NavigationRegion3D" parent="Terrain3D"]
+navigation_mesh = ExtResource("11_udxuc")
+metadata/_edit_lock_ = true

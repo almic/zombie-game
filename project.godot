@@ -43,6 +43,7 @@ folder_colors={
 "res://character/": "orange",
 "res://data/": "blue",
 "res://environment/": "yellow",
+"res://nav/": "blue",
 "res://particle/": "teal",
 "res://scene/": "green",
 "res://script/": "purple",

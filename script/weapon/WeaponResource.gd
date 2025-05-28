@@ -5,6 +5,8 @@
 class_name WeaponResource extends Resource
 
 @export var mesh: Mesh
+
+@export_group("Mesh", "mesh")
 @export var mesh_offset: Vector3
 
 ## The particle to use when firing. The root node MUST be a ParticleSystem, or
@@ -12,16 +14,28 @@ class_name WeaponResource extends Resource
 ## scenes each time particles should be emitted, and instead toggle the
 ## particle system directly.
 @export var particle_system: PackedScene
+
+@export_group("Particle System", "particle")
 @export var particle_offset: Vector3
 ## In Editor only, trigger the particle system for visualization
 @export var particle_test: bool
 
 ## Damage to deal on hit
-@export var damage: float
+@export_range(-50.0, 50.0, 0.01, 'or_greater', 'or_less', 'suffix:hp')
+var damage: float
+
+## How this weapon is triggered
+@export var trigger_method: TriggerResource
+
+## Sound effect for this weapon
+@export var sound_effect: WeaponAudioResource
+
+@export_group("Sound", "sound")
+## Toggle this to listen to the sound effect in-engine
+@export var sound_test: bool = false
+
+@export_group("Hit Detection", "")
 ## Maximum hit detection range
 @export var max_range: float
 ## Hit collision mask
 @export_flags_3d_physics var hit_mask: int = 8
-
-## How this weapon is triggered
-@export var trigger_method: TriggerResource

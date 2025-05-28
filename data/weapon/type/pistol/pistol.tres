@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=6 format=3 uid="uid://d3ao7jq6qeasg"]
+
+[ext_resource type="PackedScene" uid="uid://d30d6ot2ufjtr" path="res://particle/system/weapon/gunshot_small.tscn" id="1_6v0uo"]
+[ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="2_257ta"]
+[ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1v76v"]
+[ext_resource type="Resource" uid="uid://br27afoygcjl0" path="res://data/weapon/trigger/single_fire.tres" id="4_smwrr"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_poh2x"]
+size = Vector3(0.06, 0.06, 0.535)
+
+[resource]
+script = ExtResource("2_257ta")
+mesh = SubResource("BoxMesh_poh2x")
+mesh_offset = Vector3(0.225, -0.195, -0.605)
+particle_system = ExtResource("1_6v0uo")
+particle_offset = Vector3(0, 0, -0.275)
+particle_test = false
+damage = 16.0
+trigger_method = ExtResource("4_smwrr")
+sound_effect = ExtResource("3_1v76v")
+sound_test = false
+max_range = 100.0
+hit_mask = 8
+metadata/_custom_type_script = "uid://bwkctbyfo4j26"

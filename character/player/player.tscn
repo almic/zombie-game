@@ -7,7 +7,7 @@
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
 [ext_resource type="PackedScene" uid="uid://dbeh8uxaa05et" path="res://scene/weapon/weapon.tscn" id="6_noxpy"]
-[ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol.tres" id="7_0cf6c"]
+[ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="7_0cf6c"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="8_v2h1c"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_vu45j"]

@@ -16,6 +16,10 @@ run/print_header=false
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[audio]
+
+buses/default_bus_layout="uid://b0yeincxuh5vu"
+
 [autoload]
 
 GUIDE="*res://addons/guide/guide.gd"
@@ -40,6 +44,7 @@ enabled=PackedStringArray("res://addons/guide/plugin.cfg", "res://addons/terrain
 
 folder_colors={
 "res://animation/": "red",
+"res://audio/": "blue",
 "res://character/": "orange",
 "res://data/": "blue",
 "res://environment/": "yellow",

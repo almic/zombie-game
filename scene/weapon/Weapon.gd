@@ -30,12 +30,18 @@ var _weapon_trigger: GUIDEAction
 
 var _particle_system: ParticleSystem
 
+var _weapon_audio_player: WeaponAudioPlayer
+
 
 func _ready() -> void:
     mesh.mesh = weapon_type.mesh
     position = weapon_type.mesh_offset
 
     _load_particle_system()
+
+    _weapon_audio_player = WeaponAudioPlayer.new()
+    _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
+    add_child(_weapon_audio_player)
 
 func set_trigger(action: GUIDEAction) -> void:
     _weapon_trigger = action
@@ -49,6 +55,11 @@ func _process(delta: float) -> void:
                 _load_particle_system()
                 trigger_particle(true)
                 weapon_type.particle_test = false
+            if weapon_type.sound_test:
+                # re-apply the sound in case it was changed
+                _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
+                trigger_sound()
+                weapon_type.sound_test = false
         return
 
     if not do_targeting:
@@ -106,7 +117,7 @@ func trigger_weapon(activate: bool = true) -> void:
 
 ## Trigger the weapon sound
 func trigger_sound(_activate: bool = true) -> void:
-    pass
+    _weapon_audio_player.play_sound()
 
 ## Trigger the particle effect
 func trigger_particle(activate: bool = true) -> void:
@@ -135,5 +146,5 @@ func _load_particle_system() -> void:
         )
         return
     _particle_system = particle_system
-    mesh.add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
+    mesh.add_child(_particle_system)

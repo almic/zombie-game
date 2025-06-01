@@ -90,20 +90,19 @@ compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-local_time = 0.72858
+local_time = 0.5
 time_scale = 30.0
 latitude = 41.0
-sun_angular_diameter = 0.058
 moon_day_length = 239.3
 moon_orbital_period = 239.3
 moon_inclination_phase = 0.25
 moon_tilt_phase = 1.25
-moon_orbit_offset = 0.20621
+moon_orbit_offset = 0.2
 moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.13418, 0.394191, -0.90918, 0.747885, 0.561636, 0.353883, 0.650126, -0.727446, -0.219449, 0, 0, 0)
+transform = Transform3D(1, 2.42866e-08, 2.69163e-08, -3.29894e-08, 0.301704, 0.953402, 1.50341e-08, -0.953402, 0.301704, 0, 0, 0)
 light_temperature = 5500.0
 light_specular = 0.5
 shadow_enabled = true
@@ -116,8 +115,8 @@ directional_shadow_fade_start = 0.9
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.927624, 0.34346, 0.146795, 0.111253, 0.629238, -0.769209, -0.356561, -0.697206, -0.621907, 0, 0, 0)
-light_intensity_lux = 100.0
+transform = Transform3D(-0.31031, 0.0634109, -0.948518, 0.893222, 0.360945, -0.26809, 0.325363, -0.930429, -0.168645, 0, 0, 0)
+light_intensity_lux = 1000.0
 light_temperature = 7100.0
 directional_shadow_mode = 0
 

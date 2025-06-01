@@ -20,9 +20,7 @@
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_g0i7g"]
-orientation = 2
+[ext_resource type="Material" uid="uid://c3gjgfni46e62" path="res://material/level/grid_orange.tres" id="21_t6jhs"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
 transparency = 4
@@ -137,10 +135,6 @@ transform = Transform3D(0.886341, 0, 0.463033, 0, 1, 0, -0.463033, 0, 0.886341, 
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.829, 0, -16.927)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.0101751, -0.999948, 0, 0.999948, -0.0101751, 0, 0, 0, 1, 24.2766, 2.30006, 3.66427)
-mesh = SubResource("PlaneMesh_g0i7g")
-
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
 material = ExtResource("4_2u3nc")
@@ -160,3 +154,18 @@ metadata/_edit_lock_ = true
 [node name="TerrainNavRegion" type="NavigationRegion3D" parent="Terrain3D"]
 navigation_mesh = ExtResource("11_udxuc")
 metadata/_edit_lock_ = true
+
+[node name="LevelBlocking" type="CSGCombiner3D" parent="."]
+top_level = true
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+
+[node name="Cabin" type="CSGCombiner3D" parent="LevelBlocking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 8)
+top_level = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+size = Vector3(6, 0.5, 6)
+material = ExtResource("21_t6jhs")

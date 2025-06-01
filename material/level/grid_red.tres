@@ -1,0 +1,10 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://bw4sj1kv018lx"]
+
+[ext_resource type="Texture2D" uid="uid://cqgygsa3tgt1x" path="res://textures/level/blocking/grid_red.png" id="1_qleit"]
+
+[resource]
+specular_mode = 2
+albedo_texture = ExtResource("1_qleit")
+uv1_triplanar = true
+uv1_world_triplanar = true
+texture_filter = 2

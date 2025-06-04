@@ -141,7 +141,7 @@ top_level = true
 transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, -1.754, 0.65, 7.77322)
 
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
-transform = Transform3D(-4.37114e-08, -1.64203e-15, 1, 0, 1, -3.10588e-22, -1, 1.42109e-14, -4.37114e-08, -4.8, 0.65, 10)
+transform = Transform3D(-4.37114e-08, -1.64203e-15, 1, 0, 1, -3.10588e-22, -1, 1.42109e-14, -4.37114e-08, 1.35, 0.6, 6)
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -759,8 +759,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 0)
 metadata/_edit_lock_ = true
 
 [node name="Floor" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.35, 0)
-size = Vector3(2.3, 0.2, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.1, 0)
+size = Vector3(2.3, 0.7, 8)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
@@ -768,7 +768,10 @@ metadata/_edit_lock_ = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, -0.15, 0)
 metadata/_edit_lock_ = true
 
-[node name="Stairs" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Steps"]
+[node name="Front" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Patio/Steps"]
+metadata/_edit_lock_ = true
+
+[node name="Stairs" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Steps/Front"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.445, 0.22, 0)
 size = Vector3(0.9, 0.45, 1.5)
 material = ExtResource("25_1obi0")
@@ -776,10 +779,46 @@ script = ExtResource("26_1obi0")
 metadata/_custom_type_script = "uid://xajyhp2m1sdg"
 metadata/_edit_lock_ = true
 
-[node name="RampCollider" parent="LevelBlocking/Cabin/Patio/Steps" instance=ExtResource("27_xd5hc")]
+[node name="RampCollider" parent="LevelBlocking/Cabin/Patio/Steps/Front" instance=ExtResource("27_xd5hc")]
 collision_layer = 16
 collision_mask = 0
 size = Vector3(1.18, 0.6, 1.5)
+metadata/_edit_lock_ = true
+
+[node name="Left" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Patio/Steps"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -1.3, 0, -4)
+metadata/_edit_lock_ = true
+
+[node name="Stairs" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Steps/Left"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.445, 0.22, 0)
+size = Vector3(0.9, 0.45, 1.22)
+material = ExtResource("25_1obi0")
+script = ExtResource("26_1obi0")
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+metadata/_edit_lock_ = true
+
+[node name="RampCollider" parent="LevelBlocking/Cabin/Patio/Steps/Left" instance=ExtResource("27_xd5hc")]
+collision_layer = 16
+collision_mask = 0
+size = Vector3(1.18, 0.6, 1.22)
+metadata/_edit_lock_ = true
+
+[node name="Right" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Patio/Steps"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -1.3, 0, 4)
+metadata/_edit_lock_ = true
+
+[node name="Stairs" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Steps/Right"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.445, 0.22, 0)
+size = Vector3(0.9, 0.45, 1.22)
+material = ExtResource("25_1obi0")
+script = ExtResource("26_1obi0")
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+metadata/_edit_lock_ = true
+
+[node name="RampCollider" parent="LevelBlocking/Cabin/Patio/Steps/Right" instance=ExtResource("27_xd5hc")]
+collision_layer = 16
+collision_mask = 0
+size = Vector3(1.18, 0.6, 1.22)
 metadata/_edit_lock_ = true
 
 [node name="Supports" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Patio"]
@@ -844,9 +883,31 @@ metadata/_edit_lock_ = true
 
 [node name="Railing" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Patio"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6, 0.45, 0)
+metadata/_edit_lock_ = true
 
 [node name="Beam1" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Railing"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.95, -2.425)
+size = Vector3(2.45, 0.14, 0.038)
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
+
+[node name="Beam2" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Railing"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.3, -2.425)
+size = Vector3(2.45, 0.14, 0.038)
+material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
+
+[node name="Beam3" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Railing"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.95, 2.425)
+size = Vector3(2.45, 0.14, 0.038)
+material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
+
+[node name="Beam4" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Railing"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.3, 2.425)
+size = Vector3(2.45, 0.14, 0.038)
+material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="Bathroom" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.5, -2)

@@ -19,19 +19,19 @@ class_name Player extends CharacterBody3D
 @export var look_speed: float = 0.55
 
 @export_subgroup("Camera", "camera")
-@export var camera_smoothing: float = 10.0
+@export var camera_smooth_speed: float = 10.0
 @export var camera_lag_distance: float = 1.0
 
 @export_subgroup("Moving", "move")
-@export var move_acceleration: float = 20
+@export var move_acceleration: float = 20.0
 @export var move_top_speed: float = 4.8
 @export var move_friction: float = 15
 @export var move_air_ctl: float = 0.25
 @export var move_turn_speed_keep: float = 0.67
 
 @export_subgroup("Stepping", "step")
-@export var step_up_max: float = 0.4
-@export var step_down_max: float = 0.3
+@export var step_up_max: float = 0.45
+@export var step_down_max: float = 0.35
 
 @export_group("Controls")
 @export var jump: GUIDEAction
@@ -39,6 +39,9 @@ class_name Player extends CharacterBody3D
 @export var move: GUIDEAction
 @export var fire_primary: GUIDEAction
 
+
+var is_camera_smoothing: bool = false
+var camera_smooth_y: float = 0.0
 
 var is_grounded: bool = true
 var was_grounded: bool = true
@@ -86,12 +89,12 @@ func _physics_process(delta: float) -> void:
     else:
         movement = Vector3.ZERO
 
-    # Stay "on ground" while stepping
-    if not just_stepped and not is_on_floor():
+    if not is_on_floor():
         is_grounded = false
 
-        # Less control in air
-        movement *= move_air_ctl
+        # Less control in air (skip if just stepped)
+        if not just_stepped:
+            movement *= move_air_ctl
 
         # Gravity
         velocity.y -= gravity * delta
@@ -154,15 +157,18 @@ func _physics_process(delta: float) -> void:
 
     # Step up on input (stationary), use true displacment (movement * delta)
     var stepped: bool = false
-    if is_grounded and not stationary:
+    if (is_grounded or just_stepped) and not stationary:
         stepped = step_up(movement * delta)
+        if stepped:
+            start_smooth_camera()
 
     # Update position
     move_and_slide()
 
     # Step down
-    if not just_stepped and not is_grounded and was_grounded and velocity.y <= 0:
-        step_down()
+    if not (stepped or just_stepped) and was_grounded and not is_grounded and velocity.y <= 0.0:
+        if step_down():
+            start_smooth_camera()
 
     # Camera anti-jitter
     smooth_camera(delta)
@@ -223,15 +229,21 @@ func step_up(movement: Vector3) -> bool:
 
     # Back down to surface to ensure safe ground
     params.from = test_transform
-    params.motion = -up_direction * (step_up_max + 0.01)
+    params.motion = -up_direction * step_up_max
 
     # Must hit ground
     if not PhysicsServer3D.body_test_motion(rid, params, result):
         return false
 
+    # Must move us up at least epsilon amount
+    test_transform = test_transform.translated(result.get_travel())
+    const MIN_UP: float = 0.0005
+    if ((test_transform.origin - global_position) * up_direction).length() < MIN_UP:
+        return false
+
     # New "ground" must be below our max step height, very important test!
     # Otherwise, spheres/ capsules can climb up to `step + (height / 2)`!
-    if result.get_collision_point().y - global_position.y > step_up_max:
+    if result.get_collision_point().y - global_position.y - step_up_max > 0.001:
         return false
 
     # Respect floor_max_angle
@@ -244,40 +256,62 @@ func step_up(movement: Vector3) -> bool:
             collision_mask,
             [rid]
     ))
-    if not raycast or up_direction.angle_to(raycast.normal) > floor_max_angle:
+    if raycast and up_direction.angle_to(raycast.normal) > floor_max_angle:
         return false
 
     # Everything passed, shift player up for move_and_slide()
-    test_transform = test_transform.translated(result.get_travel())
-    global_position.y = test_transform.origin.y + 0.001
+    global_position.y = test_transform.origin.y
+    velocity.y = 0
 
     return true
 
-func step_down() -> void:
+func step_down() -> bool:
+    # Test if there is ground beneath
+    var drop: Vector3 = -up_direction * step_down_max
+    var space := get_world_3d().direct_space_state
+    var raycast := space.intersect_ray(PhysicsRayQueryParameters3D.create(
+            global_position,
+            global_position + drop,
+            collision_mask,
+            [get_rid()]
+    ))
+
+    if not raycast:
+        return false
+
     var result := PhysicsTestMotionResult3D.new()
     var params := PhysicsTestMotionParameters3D.new()
 
     params.from = global_transform
-    params.motion = -up_direction * step_down_max
+    params.motion = drop
     if not PhysicsServer3D.body_test_motion(get_rid(), params, result):
-        return
+        return false
 
-    position.y += result.get_travel().y
+    global_transform = global_transform.translated(result.get_travel())
     apply_floor_snap()
     is_grounded = true
+    return true
+
+func start_smooth_camera() -> void:
+    camera_smooth_y = camera_3d.global_position.y - camera_target.global_position.y
+    is_camera_smoothing = true
 
 func smooth_camera(delta: float) -> void:
-    camera_3d.global_position.x = camera_target.global_position.x
-    camera_3d.global_position.z = camera_target.global_position.z
-    #camera_3d.global_position.y = camera_target.global_position.y
+    camera_3d.global_position = camera_target.global_position
 
-    # Anti-jitter and lag limit
-    camera_3d.global_position.y = clampf(
-            lerpf(
-                    camera_3d.global_position.y,
-                    camera_target.global_position.y,
-                    camera_smoothing * delta
-            ),
-            camera_target.global_position.y - camera_lag_distance,
-            camera_target.global_position.y + camera_lag_distance
+    if not is_camera_smoothing:
+        return
+
+    # Anti-jitter with lag limit
+    camera_smooth_y = clampf(
+            lerpf(camera_smooth_y, 0.0, camera_smooth_speed * delta),
+            -camera_lag_distance,
+            +camera_lag_distance
     )
+
+    if absf(camera_smooth_y) < 0.001:
+        camera_smooth_y = 0.0
+        is_camera_smoothing = false
+        return
+
+    camera_3d.global_position.y += camera_smooth_y

@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=35 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -21,6 +21,13 @@
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
 [ext_resource type="Material" uid="uid://c3gjgfni46e62" path="res://material/level/grid_orange.tres" id="21_t6jhs"]
+[ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="22_cm2xv"]
+[ext_resource type="Material" uid="uid://vmytjr2shhek" path="res://material/level/grid_white.tres" id="23_6lidv"]
+[ext_resource type="Material" uid="uid://bw4sj1kv018lx" path="res://material/level/grid_red.tres" id="24_6hm40"]
+[ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="24_b43sk"]
+[ext_resource type="Material" uid="uid://6tvs7wudhhdq" path="res://material/level/grid_black.tres" id="25_1obi0"]
+[ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg_steps/csg_steps.gd" id="26_1obi0"]
+[ext_resource type="PackedScene" uid="uid://byx787kh4uila" path="res://scene/ramp_collider/ramp_collider.tscn" id="27_xd5hc"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
 transparency = 4
@@ -130,10 +137,10 @@ visible = false
 top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
-transform = Transform3D(0.886341, 0, 0.463033, 0, 1, 0, -0.463033, 0, 0.886341, 14.3819, 0.034102, -6.98355)
+transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 4.246, -3.50177e-07, 7.27322)
 
 [node name="zombie" parent="." instance=ExtResource("19_ckxcn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.829, 0, -16.927)
+transform = Transform3D(-4.37114e-08, -1.64203e-15, 1, 0, 1, 0, -1, 7.10543e-15, -4.37114e-08, -11.8, 0.7, 4.85)
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -157,15 +164,385 @@ metadata/_edit_lock_ = true
 
 [node name="LevelBlocking" type="CSGCombiner3D" parent="."]
 top_level = true
+calculate_tangents = false
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 
 [node name="Cabin" type="CSGCombiner3D" parent="LevelBlocking"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.15, 8)
 top_level = true
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Cabin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
-size = Vector3(6, 0.5, 6)
+[node name="Walls" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
+
+[node name="ExteriorWall" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.675, 0)
+size = Vector3(13, 3.65, 8)
 material = ExtResource("21_t6jhs")
+
+[node name="Door" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.3, 1.75, -0.25)
+operation = 2
+size = Vector3(0.5, 2.5, 1.35)
+material = ExtResource("22_cm2xv")
+
+[node name="Window" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.3, 2.25, 2)
+operation = 2
+size = Vector3(0.5, 1.5, 1)
+material = ExtResource("22_cm2xv")
+
+[node name="Interior" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.025, 0)
+operation = 2
+size = Vector3(12.2, 3.05, 7.2)
+material = ExtResource("21_t6jhs")
+
+[node name="BathroomWall" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.025, 2, -2.05)
+size = Vector3(2.15, 3, 3.1)
+material = ExtResource("21_t6jhs")
+
+[node name="BathroomInterior" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 2.025, -2.125)
+operation = 2
+size = Vector3(2, 3.05, 2.95)
+material = ExtResource("21_t6jhs")
+
+[node name="BathroomDoor" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.75, 1.675, -0.575)
+operation = 2
+size = Vector3(1, 2.35, 0.2)
+material = ExtResource("22_cm2xv")
+
+[node name="FireplaceBaseCutout" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 2.975)
+operation = 2
+size = Vector3(2.1, 0.2, 1.25)
+material = ExtResource("21_t6jhs")
+
+[node name="Chimney" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 3.65)
+
+[node name="Fireplace" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/Chimney"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0.125)
+size = Vector3(1.65, 1.85, 0.95)
+material = ExtResource("25_1obi0")
+
+[node name="Chimney" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/Chimney"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0.325)
+size = Vector3(1, 4, 0.55)
+material = ExtResource("25_1obi0")
+
+[node name="StoneBase" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/Chimney"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.325, -0.699999)
+size = Vector3(2.2, 0.65, 1.3)
+material = ExtResource("25_1obi0")
+
+[node name="Mantle" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/Chimney"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.225, -0.275)
+size = Vector3(1.75, 0.05, 0.45)
+material = ExtResource("23_6lidv")
+
+[node name="FireCutout" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Walls"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 3.65)
+operation = 2
+
+[node name="Fireplace" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/FireCutout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.525, 0.0499992)
+size = Vector3(1.2, 1.05, 0.9)
+material = ExtResource("24_6hm40")
+
+[node name="Chimney" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/FireCutout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0.324999)
+size = Vector3(0.8, 4.2, 0.35)
+material = ExtResource("24_6hm40")
+
+[node name="Slant" type="CSGPolygon3D" parent="LevelBlocking/Cabin/Walls/FireCutout"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.6, 0, 0)
+operation = 2
+polygon = PackedVector2Array(-0.15, 1.05, 0.35, 1.05, 0.35, 0.9)
+depth = 1.2
+material = ExtResource("25_1obi0")
+
+[node name="Kitchen" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.95, 0.5, -3)
+
+[node name="Counter" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Kitchen"]
+
+[node name="Counter" type="CSGBox3D" parent="LevelBlocking/Cabin/Kitchen/Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.625, 0.45, -0.125)
+size = Vector3(3.35, 0.9, 1.05)
+material = ExtResource("23_6lidv")
+
+[node name="Sink" type="CSGBox3D" parent="LevelBlocking/Cabin/Kitchen/Counter"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.475, 0.775, -0.0750003)
+operation = 2
+size = Vector3(1, 0.35, 0.7)
+material = ExtResource("24_b43sk")
+
+[node name="Fridge" type="CSGBox3D" parent="LevelBlocking/Cabin/Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.475, 1.025, 2)
+size = Vector3(0.85, 2.05, 0.9)
+material = ExtResource("25_1obi0")
+
+[node name="Stove" type="CSGBox3D" parent="LevelBlocking/Cabin/Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.474999, 0.45, 0.95)
+size = Vector3(0.85, 0.9, 1)
+material = ExtResource("25_1obi0")
+
+[node name="Pantry" type="CSGBox3D" parent="LevelBlocking/Cabin/Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.05, 1.15, -0.2)
+size = Vector3(1.4, 2.3, 0.9)
+material = ExtResource("25_1obi0")
+
+[node name="Hanging Cabinets" type="CSGBox3D" parent="LevelBlocking/Cabin/Kitchen"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.625, 1.9, -0.349999)
+size = Vector3(3.35, 0.8, 0.6)
+material = ExtResource("23_6lidv")
+
+[node name="Dining" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3, 1, -2.2)
+
+[node name="Table" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Dining"]
+
+[node name="Table" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+size = Vector3(2.5, 0.1, 1)
+material = ExtResource("25_1obi0")
+
+[node name="Leg1" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.14992, -0.0749999, 0.4)
+size = Vector3(0.1, 0.85, 0.1)
+material = ExtResource("25_1obi0")
+
+[node name="Leg2" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.14992, -0.0749999, -0.4)
+size = Vector3(0.1, 0.85, 0.1)
+material = ExtResource("25_1obi0")
+
+[node name="Leg3" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15008, -0.0749999, 0.4)
+size = Vector3(0.1, 0.85, 0.1)
+material = ExtResource("25_1obi0")
+
+[node name="Leg4" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15008, -0.0749999, -0.4)
+size = Vector3(0.1, 0.85, 0.1)
+material = ExtResource("25_1obi0")
+
+[node name="Bench1" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Dining"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.85)
+
+[node name="Bench" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -1.08033e-07)
+size = Vector3(2.3, 0.1, 0.5)
+material = ExtResource("25_1obi0")
+
+[node name="Leg1" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.999531, -0.3, -1.08033e-07)
+size = Vector3(0.1, 0.4, 0.3)
+material = ExtResource("25_1obi0")
+
+[node name="Leg2" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.00047, -0.275, -1.08033e-07)
+size = Vector3(0.1, 0.45, 0.3)
+material = ExtResource("25_1obi0")
+
+[node name="Strut" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, -1.08033e-07)
+size = Vector3(2.25, 0.1, 0.1)
+material = ExtResource("25_1obi0")
+
+[node name="Bench2" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Dining"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.85)
+
+[node name="Bench" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -1.08033e-07)
+size = Vector3(2.3, 0.1, 0.5)
+material = ExtResource("25_1obi0")
+
+[node name="Leg1" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.999531, -0.3, -1.08033e-07)
+size = Vector3(0.1, 0.4, 0.3)
+material = ExtResource("25_1obi0")
+
+[node name="Leg2" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.00047, -0.275, -1.08033e-07)
+size = Vector3(0.1, 0.45, 0.3)
+material = ExtResource("25_1obi0")
+
+[node name="Strut" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Bench2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.35, -1.08033e-07)
+size = Vector3(2.25, 0.1, 0.1)
+material = ExtResource("25_1obi0")
+
+[node name="Chair" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Dining"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.55, 0, 0)
+
+[node name="Chair" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Chair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.000443459, -0.025, 0.000207424)
+size = Vector3(0.45, 0.05, 0.45)
+material = ExtResource("25_1obi0")
+
+[node name="Back" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Chair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.200171, 0.3, 0.000170708)
+size = Vector3(0.05, 0.6, 0.45)
+material = ExtResource("25_1obi0")
+
+[node name="Leg1" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Chair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.200173, -0.275, 0.200473)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("25_1obi0")
+
+[node name="Leg2" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Chair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2, -0.275, 0.2)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("25_1obi0")
+
+[node name="Leg3" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Chair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.200112, -0.275, -0.200422)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("25_1obi0")
+
+[node name="Leg4" type="CSGBox3D" parent="LevelBlocking/Cabin/Dining/Chair"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.200005, -0.275, -0.199966)
+size = Vector3(0.05, 0.45, 0.05)
+material = ExtResource("25_1obi0")
+
+[node name="Patio" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 0)
+
+[node name="Floor" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.65, 0.35, 0)
+size = Vector3(2.3, 0.2, 8)
+material = ExtResource("25_1obi0")
+
+[node name="Steps" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Patio"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, -0.15, -0.25)
+
+[node name="Stairs" type="CSGBox3D" parent="LevelBlocking/Cabin/Patio/Steps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.445, 0.22, 0)
+size = Vector3(0.9, 0.45, 1.5)
+material = ExtResource("25_1obi0")
+script = ExtResource("26_1obi0")
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+
+[node name="RampCollider" parent="LevelBlocking/Cabin/Patio/Steps" instance=ExtResource("27_xd5hc")]
+collision_layer = 16
+collision_mask = 0
+size = Vector3(1.18, 0.6, 1.5)
+
+[node name="Bathroom" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.1, 0.5, -2)
+
+[node name="Sink" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.65, 0, 0.9)
+
+[node name="Counter" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Sink"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0249996, 0.875, 4.76837e-07)
+size = Vector3(0.75, 0.05, 0.9)
+material = ExtResource("23_6lidv")
+
+[node name="Cabinet" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Sink"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.425, 0)
+size = Vector3(0.7, 0.85, 0.9)
+material = ExtResource("25_1obi0")
+
+[node name="Sink" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Sink"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
+operation = 2
+size = Vector3(0.4, 0.2, 0.55)
+material = ExtResource("24_b43sk")
+
+[node name="Toilet" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5, 0, 0)
+
+[node name="Bowl" type="CSGCylinder3D" parent="LevelBlocking/Cabin/Bathroom/Toilet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
+radius = 0.215
+height = 0.55
+sides = 14
+material = ExtResource("25_1obi0")
+
+[node name="Tank" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Toilet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.525, 0)
+size = Vector3(0.3, 1.05, 0.5)
+material = ExtResource("25_1obi0")
+
+[node name="Shower" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.1)
+
+[node name="Tub" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom/Shower"]
+
+[node name="Tub" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Tub"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.275, 0)
+size = Vector3(2, 0.55, 1)
+material = ExtResource("23_6lidv")
+
+[node name="Cutout" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Tub"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.325, 0)
+operation = 2
+size = Vector3(1.8, 0.55, 0.8)
+material = ExtResource("24_b43sk")
+
+[node name="Faucet" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom/Shower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.8, 0)
+
+[node name="Frame" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.025, 0, 0)
+size = Vector3(0.05, 0.15, 0.4)
+material = ExtResource("23_6lidv")
+
+[node name="Faucet" type="CSGPolygon3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.035)
+polygon = PackedVector2Array(-0.2, -0.03, -0.2, -0.1, -0.27, -0.1, -0.27, -0.03, -0.249, 0.019, -0.2, 0.04, 0, 0.04, 0, -0.03)
+depth = 0.07
+material = ExtResource("25_1obi0")
+
+[node name="HandleL" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0499523, 0.0059675, -0.124521)
+
+[node name="Handle" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet/HandleL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.075, 0, -0.055)
+size = Vector3(0.03, 0.025, 0.14)
+material = ExtResource("25_1obi0")
+
+[node name="Rod" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet/HandleL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03, 0, 0)
+size = Vector3(0.06, 0.025, 0.03)
+material = ExtResource("25_1obi0")
+
+[node name="HandleR" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0.006, 0.125)
+
+[node name="Handle" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet/HandleR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.075, 0, 0.055)
+size = Vector3(0.03, 0.025, 0.14)
+material = ExtResource("25_1obi0")
+
+[node name="Rod" type="CSGBox3D" parent="LevelBlocking/Cabin/Bathroom/Shower/Faucet/HandleR"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.03, 0, 0)
+size = Vector3(0.06, 0.025, 0.03)
+material = ExtResource("25_1obi0")
+
+[node name="ShowerHead" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Bathroom/Shower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.09, 0)
+
+[node name="Spout" type="CSGPolygon3D" parent="LevelBlocking/Cabin/Bathroom/Shower/ShowerHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.02)
+polygon = PackedVector2Array(0, 0, -0.054, 0, -0.0794649, -0.0188738, -0.104532, 0.00740647, -0.08, 0.03, -0.05, 0.04, 0, 0.04)
+depth = 0.04
+material = ExtResource("25_1obi0")
+
+[node name="Head" type="CSGCylinder3D" parent="LevelBlocking/Cabin/Bathroom/Shower/ShowerHead"]
+transform = Transform3D(0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0, 0, 1, -0.134078, -0.0490013, 0)
+radius = 0.035
+height = 0.13
+sides = 10
+material = ExtResource("25_1obi0")
+
+[node name="Bed" type="CSGBox3D" parent="LevelBlocking/Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.728516, 6.5)
+size = Vector3(2, 0.457031, 1)
+material = ExtResource("23_6lidv")

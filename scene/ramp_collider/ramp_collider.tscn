@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://byx787kh4uila"]
+
+[ext_resource type="Script" uid="uid://1k24facr5qlp" path="res://scene/ramp_collider/ramp_collider.gd" id="1_ycghf"]
+
+[node name="RampCollider" type="StaticBody3D"]
+script = ExtResource("1_ycghf")
+
+[node name="CollisionPolygon3D" type="CollisionPolygon3D" parent="."]
+unique_name_in_owner = true
+polygon = PackedVector2Array(1, 0, 0, 0, 0, 1)

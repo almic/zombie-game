@@ -296,8 +296,8 @@ material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
 [node name="Chimney" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/Chimney"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 0.325)
-size = Vector3(1, 4, 0.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.239, 0.325)
+size = Vector3(1, 6.07954, 0.55)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
@@ -313,6 +313,13 @@ size = Vector3(1.75, 0.05, 0.45)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
+[node name="10FootRuler" type="Marker3D" parent="LevelBlocking/Cabin/Walls/Chimney"]
+editor_description = "Building codes dictate a +2ft minimum above any point of the building within 10ft of the chimney. This node is a ruler for that measurement."
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 6.34755, 0.0500002)
+visible = false
+gizmo_extents = 3.05
+metadata/_edit_lock_ = true
+
 [node name="FireCutout" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 3.65)
 operation = 2
@@ -325,8 +332,8 @@ material = ExtResource("24_6hm40")
 metadata/_edit_lock_ = true
 
 [node name="Chimney" type="CSGBox3D" parent="LevelBlocking/Cabin/Walls/FireCutout"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.1, 0.324999)
-size = Vector3(0.8, 4.2, 0.35)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.15, 0.324999)
+size = Vector3(0.8, 6.3, 0.35)
 material = ExtResource("24_6hm40")
 metadata/_edit_lock_ = true
 
@@ -1180,6 +1187,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, -2.5, 0)
 operation = 2
 size = Vector3(16, 5, 8)
 material = ExtResource("21_t6jhs")
+metadata/_edit_lock_ = true
+
+[node name="ChimneyCutout" type="CSGBox3D" parent="LevelBlocking/Cabin/Top/Roof"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0999999, 3.975)
+operation = 2
+size = Vector3(0.8, 0.3, 0.35)
+material = ExtResource("24_6hm40")
 metadata/_edit_lock_ = true
 
 [node name="Loft" type="CSGCombiner3D" parent="LevelBlocking/Cabin/Top"]

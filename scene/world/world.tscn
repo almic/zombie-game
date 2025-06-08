@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=41 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -29,6 +29,8 @@
 [ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg_steps/csg_steps.gd" id="26_1obi0"]
 [ext_resource type="Material" uid="uid://dw056en0eb3vg" path="res://material/level/grid_green.tres" id="27_4tdq6"]
 [ext_resource type="PackedScene" uid="uid://byx787kh4uila" path="res://scene/ramp_collider/ramp_collider.tscn" id="27_xd5hc"]
+[ext_resource type="Texture2D" uid="uid://deq7ocj5qxeq3" path="res://textures/level/map.png" id="30_avgpp"]
+[ext_resource type="Material" uid="uid://nfcagk1yn11u" path="res://material/water.tres" id="31_i8b61"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aqk2v"]
 transparency = 4
@@ -80,6 +82,16 @@ detiling_rotation = 0.251
 [sub_resource type="Terrain3DAssets" id="Terrain3DAssets_dwbse"]
 mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_036b0")])
 texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8b61"]
+albedo_texture = ExtResource("30_avgpp")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_2qcpl"]
+size = Vector2(3048, 3048)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
+material = ExtResource("31_i8b61")
+size = Vector2(4096, 4096)
 
 [node name="world" type="Node3D"]
 process_mode = 3
@@ -151,8 +163,7 @@ save_16_bit = true
 collision_mode = 3
 collision_layer = 16
 collision_mask = 0
-mesh_lods = 5
-mesh_size = 64
+mesh_size = 32
 cast_shadows = 2
 show_instances = false
 process_mode = 1
@@ -171,7 +182,7 @@ collision_layer = 16
 collision_mask = 0
 
 [node name="Cabin" type="CSGCombiner3D" parent="LevelBlocking"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0.15, 8)
+transform = Transform3D(-0.698941, 0, -0.715179, 0, 1, 0, 0.715179, 0, -0.698941, -134.262, 0.65, 476.161)
 top_level = true
 
 [node name="Walls" type="CSGCombiner3D" parent="LevelBlocking/Cabin"]
@@ -1354,3 +1365,17 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0.375, -1.2)
 size = Vector3(0.2, 0.05, 2.4)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
+
+[node name="Map" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -512)
+visible = false
+material_override = SubResource("StandardMaterial3D_i8b61")
+transparency = 0.95
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("PlaneMesh_2qcpl")
+metadata/_edit_lock_ = true
+
+[node name="WaterLevel" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+mesh = SubResource("PlaneMesh_avgpp")

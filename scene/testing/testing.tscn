@@ -185,7 +185,6 @@ compositor = ExtResource("14_pbkjr")
 script = ExtResource("12_fbl6b")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-time_enabled = null
 time_scale = 1.0
 moon_renderer = ExtResource("16_lt58v")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"

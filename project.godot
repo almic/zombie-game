@@ -59,6 +59,8 @@ folder_colors={
 
 terrain_nav_group="Used in terrain nav baking"
 zombie_target="something a zombie will chase"
+zombie="Counts as a zombie for spawning"
+zombie_spawn="Zombie spawn locations"
 
 [layer_names]
 

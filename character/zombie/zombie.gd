@@ -108,6 +108,8 @@ var _simple_move: bool = false
 ## Locomotion state machine
 var locomotion: AnimationNodeStateMachinePlayback
 
+var _is_alive = false
+
 func _ready() -> void:
     locomotion = animation_tree["parameters/Locomotion/playback"]
     locomotion.travel(anim_idle)
@@ -118,11 +120,13 @@ func _ready() -> void:
 
     connect_hurtboxes()
 
+    _is_alive = true
+
 func _process(_delta: float) -> void:
     pass
 
 func _physics_process(delta: float) -> void:
-    if not (health > 0):
+    if not _is_alive:
         return
 
     if NavigationServer3D.map_get_iteration_id(navigation.get_navigation_map()) == 0:
@@ -442,3 +446,7 @@ func on_hit(_from: Node3D, part: HurtBox, _hit: Dictionary, damage: float) -> vo
     process_mode = Node.PROCESS_MODE_DISABLED
 
     print("RAHH I DIE!")
+    _is_alive = false
+
+func is_alive() -> bool:
+    return _is_alive

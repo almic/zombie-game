@@ -1,22 +1,16 @@
-[gd_scene load_steps=48 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=36 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
 [ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/pause.tres" id="3_036b0"]
 [ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="4_2u3nc"]
 [ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="4_036b0"]
-[ext_resource type="PackedScene" uid="uid://dkr80d2pi0d41" path="res://addons/guide/debugger/guide_debugger.tscn" id="4_aqk2v"]
-[ext_resource type="Texture2D" uid="uid://dhm02ktyg4mxk" path="res://textures/terrain/grass_ground_d.jpg" id="4_hiqwa"]
-[ext_resource type="Texture2D" uid="uid://cldhykj0yqnnu" path="res://textures/terrain/grass_ground_n.jpg" id="5_2u3nc"]
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
-[ext_resource type="Texture2D" uid="uid://bysd0ff6efev7" path="res://textures/terrain/grass_rocky_d.jpg" id="6_udxuc"]
-[ext_resource type="Texture2D" uid="uid://bth8ce3x71scl" path="res://textures/terrain/grass_rocky_n.jpg" id="7_ikiii"]
 [ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
-[ext_resource type="Texture2D" uid="uid://b0qmm215ojqwq" path="res://textures/terrain/ground_mud2_d.jpg" id="8_cbp6q"]
 [ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
-[ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="9_26xuy"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
+[ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
@@ -38,57 +32,6 @@
 [ext_resource type="Curve3D" uid="uid://ss311kjgcm1s" path="res://scene/world/road_curves/elder_curve.res" id="47_dt3as"]
 [ext_resource type="Curve3D" uid="uid://3vyfumbpe2af" path="res://scene/world/road_curves/iris_curve.res" id="47_my0pb"]
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_51258"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_dprur"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_51258")
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
-
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_bc84e"]
-name = "grass"
-albedo_texture = ExtResource("4_hiqwa")
-normal_texture = ExtResource("5_2u3nc")
-normal_depth = 0.295
-roughness = 1.0
-uv_scale = 0.4
-detiling_rotation = 0.271
-detiling_shift = 0.058
-
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_wukud"]
-name = "rocky"
-id = 1
-albedo_texture = ExtResource("6_udxuc")
-normal_texture = ExtResource("7_ikiii")
-roughness = 1.0
-uv_scale = 0.4
-
-[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_il2jm"]
-name = "dirt"
-id = 2
-albedo_color = Color(0.629675, 0.629675, 0.629675, 1)
-albedo_texture = ExtResource("8_cbp6q")
-normal_texture = ExtResource("9_26xuy")
-normal_depth = 0.253
-roughness = 1.0
-uv_scale = 0.4
-detiling_rotation = 0.251
-
-[sub_resource type="Terrain3DAssets" id="Terrain3DAssets_dwbse"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_dprur")])
-texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8b61"]
 albedo_texture = ExtResource("30_avgpp")
@@ -151,11 +94,9 @@ directional_shadow_mode = 0
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 process_mode = 3
 
-[node name="GuideDebugger" parent="CanvasLayer" instance=ExtResource("4_aqk2v")]
-visible = false
-
 [node name="pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
 unique_name_in_owner = true
+process_mode = 2
 visible = false
 top_level = true
 
@@ -168,7 +109,7 @@ transform = Transform3D(-4.37114e-08, -1.64203e-15, 1, 0, 1, -3.10588e-22, -1, 1
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
 material = ExtResource("4_2u3nc")
-assets = SubResource("Terrain3DAssets_dwbse")
+assets = ExtResource("14_5enf7")
 save_16_bit = true
 collision_mode = 3
 collision_layer = 16

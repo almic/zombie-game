@@ -49,8 +49,9 @@ var just_stepped: bool = false
 
 
 func _ready() -> void:
-    hurtbox.enable()
-    hurtbox.on_hit.connect(take_hit)
+    if not Engine.is_editor_hint():
+        hurtbox.enable()
+        hurtbox.on_hit.connect(take_hit)
     aim_target.add_exception(hurtbox)
     aim_target.add_exception(self)
 

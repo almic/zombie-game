@@ -11,6 +11,9 @@ class_name DynamicDay extends WorldEnvironment
         _local_time[1] = value
 var _local_time: PackedFloat64Array = [0, 0]
 
+## If time passage happens in-game
+@export var time_enabled: bool = true
+
 ## Rate of time passage relative to real time.
 @export_range(1.0, 200.0, 0.001, 'or_greater')
 var time_scale: float = 100
@@ -237,7 +240,9 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    update_time(delta)
+    if time_enabled:
+        update_time(delta)
+
     update_lights()
 
 func update_time(delta: float) -> void:

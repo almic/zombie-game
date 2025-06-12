@@ -9,6 +9,9 @@ class_name World extends Node3D
 
 @export_category("Zombies")
 
+## If zombies should spawn
+@export var enable_spawning: bool = true
+
 ## The target number of zombies to have in the world
 @export var target_spawn_count: int = 50:
     set(value):
@@ -80,7 +83,8 @@ func _process(delta: float) -> void:
     if get_tree().paused:
         return
 
-    spawn_zombie(delta)
+    if enable_spawning:
+        spawn_zombie(delta)
 
 
 func handle_pause() -> void:

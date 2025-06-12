@@ -1,0 +1,218 @@
+[gd_scene load_steps=19 format=3 uid="uid://s1rph1k1jbkk"]
+
+[ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_00fxt"]
+[ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_5xoya"]
+[ext_resource type="Material" uid="uid://6tvs7wudhhdq" path="res://material/level/grid_black.tres" id="2_bfbgh"]
+[ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="2_bp75k"]
+[ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="2_xf1lx"]
+[ext_resource type="Material" uid="uid://vmytjr2shhek" path="res://material/level/grid_white.tres" id="3_1wv3i"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/pause.tres" id="3_ccclf"]
+[ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="3_k1437"]
+[ext_resource type="Material" uid="uid://c3gjgfni46e62" path="res://material/level/grid_orange.tres" id="4_1wv3i"]
+[ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="4_ccclf"]
+[ext_resource type="PackedScene" uid="uid://dkr80d2pi0d41" path="res://addons/guide/debugger/guide_debugger.tscn" id="5_7nsxj"]
+[ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="6_a7t8g"]
+[ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg_steps/csg_steps.gd" id="7_5xoya"]
+[ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="12_fbl6b"]
+[ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="12_nycy7"]
+[ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="13_lt58v"]
+[ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="14_pbkjr"]
+[ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="16_lt58v"]
+
+[node name="world" type="Node3D"]
+process_mode = 3
+script = ExtResource("1_00fxt")
+first_person = ExtResource("2_5xoya")
+pause = ExtResource("3_ccclf")
+enable_spawning = false
+metadata/_custom_type_script = "uid://mvbofvslxl7"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+
+[node name="pause" parent="CanvasLayer" instance=ExtResource("4_ccclf")]
+unique_name_in_owner = true
+process_mode = 2
+visible = false
+
+[node name="GuideDebugger" parent="CanvasLayer" instance=ExtResource("5_7nsxj")]
+visible = false
+
+[node name="player" parent="." instance=ExtResource("2_xf1lx")]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, 43, 0, -12)
+
+[node name="MovementTest" type="CSGCombiner3D" parent="."]
+editor_description = "Small area for movement and agent navigation testing"
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29, 0, -23.5)
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+
+[node name="bounds" type="CSGCombiner3D" parent="MovementTest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+
+[node name="floor" type="CSGBox3D" parent="MovementTest/bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+size = Vector3(30, 0.1, 25)
+material = ExtResource("2_bfbgh")
+metadata/_edit_lock_ = true
+
+[node name="wall1" type="CSGBox3D" parent="MovementTest/bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, -12.75)
+size = Vector3(31, 0.5, 0.5)
+material = ExtResource("3_1wv3i")
+metadata/_edit_lock_ = true
+
+[node name="wall2" type="CSGBox3D" parent="MovementTest/bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.25, 0.25, 0)
+size = Vector3(0.5, 0.5, 25)
+material = ExtResource("3_1wv3i")
+metadata/_edit_lock_ = true
+
+[node name="wall3" type="CSGBox3D" parent="MovementTest/bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 12.75)
+size = Vector3(31, 0.5, 0.5)
+material = ExtResource("3_1wv3i")
+metadata/_edit_lock_ = true
+
+[node name="wall4" type="CSGBox3D" parent="MovementTest/bounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.25, 0.25, 0)
+size = Vector3(0.5, 0.5, 25)
+material = ExtResource("3_1wv3i")
+metadata/_edit_lock_ = true
+
+[node name="BigBlocks" type="CSGCombiner3D" parent="MovementTest"]
+
+[node name="BigBlock1" type="CSGBox3D" parent="MovementTest/BigBlocks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.5, 1.6, 3.5)
+size = Vector3(6, 3.2, 3)
+material = ExtResource("4_1wv3i")
+
+[node name="BigBlock2" type="CSGBox3D" parent="MovementTest/BigBlocks"]
+transform = Transform3D(0.587785, 0, 0.809017, 0, 1, 0, -0.809017, 0, 0.587785, 8.5, 1.6, -5.5)
+size = Vector3(6, 3.2, 3)
+material = ExtResource("4_1wv3i")
+
+[node name="Tower" type="CSGCombiner3D" parent="MovementTest"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 0, 7)
+
+[node name="Center" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.95, 0)
+size = Vector3(2.4, 9.9, 2.4)
+material = ExtResource("6_a7t8g")
+
+[node name="Center2" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.599998, 4.95, 1.7)
+size = Vector3(1.2, 9.9, 1)
+material = ExtResource("6_a7t8g")
+
+[node name="Top" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.95, 0)
+size = Vector3(2.4, 0.1, 2.4)
+material = ExtResource("4_1wv3i")
+
+[node name="Top2" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.599998, 9.95, 1.7)
+size = Vector3(1.2, 0.1, 1)
+material = ExtResource("4_1wv3i")
+
+[node name="Steps1" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 1.7, 2, 0.800001)
+size = Vector3(4, 4, 1)
+material = ExtResource("4_1wv3i")
+script = ExtResource("7_5xoya")
+steps = 10
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+
+[node name="Landing1" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1.95, -1.7)
+size = Vector3(3.4, 3.9, 1)
+material = ExtResource("6_a7t8g")
+
+[node name="LandingTop1" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 3.95, -1.7)
+size = Vector3(3.4, 0.1, 1)
+material = ExtResource("4_1wv3i")
+
+[node name="Steps2" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.2, -1.7)
+size = Vector3(2.4, 2.4, 1)
+material = ExtResource("4_1wv3i")
+script = ExtResource("7_5xoya")
+steps = 6
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+
+[node name="Landing2" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7, 3.15, -0.5)
+size = Vector3(1, 6.3, 3.4)
+material = ExtResource("6_a7t8g")
+
+[node name="LandingTop2" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7, 6.35, -0.499998)
+size = Vector3(1, 0.1, 3.4)
+material = ExtResource("4_1wv3i")
+
+[node name="Steps3" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -1.7, 7.6, 1.90735e-06)
+size = Vector3(2.4, 2.4, 1)
+material = ExtResource("4_1wv3i")
+script = ExtResource("7_5xoya")
+steps = 6
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+
+[node name="Steps4" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.600002, 9.4, 1.7)
+size = Vector3(1.2, 1.2, 1)
+material = ExtResource("4_1wv3i")
+script = ExtResource("7_5xoya")
+metadata/_custom_type_script = "uid://xajyhp2m1sdg"
+
+[node name="Landing3" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 4.35, 1.7)
+size = Vector3(2.2, 8.7, 1)
+material = ExtResource("6_a7t8g")
+
+[node name="LandingTop3" type="CSGBox3D" parent="MovementTest/Tower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.1, 8.75, 1.7)
+size = Vector3(2.2, 0.1, 1)
+material = ExtResource("4_1wv3i")
+
+[node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun", "Moon")]
+process_mode = 1
+environment = ExtResource("12_nycy7")
+camera_attributes = ExtResource("13_lt58v")
+compositor = ExtResource("14_pbkjr")
+script = ExtResource("12_fbl6b")
+Sun = NodePath("SunLight")
+Moon = NodePath("MoonLight")
+time_enabled = null
+time_scale = 1.0
+moon_renderer = ExtResource("16_lt58v")
+metadata/_custom_type_script = "uid://nn8y8fwywgtd"
+
+[node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
+transform = Transform3D(0.562083, -0.329003, 0.758828, -0.827081, -0.22359, 0.515699, 6.07223e-08, -0.917477, -0.397789, 0, 0, 0)
+light_temperature = 5500.0
+light_specular = 0.5
+shadow_enabled = true
+shadow_bias = 0.2
+shadow_blur = 0.01
+directional_shadow_split_1 = 0.005
+directional_shadow_split_2 = 0.05
+directional_shadow_blend_splits = true
+directional_shadow_fade_start = 0.9
+directional_shadow_max_distance = 2000.0
+
+[node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
+transform = Transform3D(-0.562083, -0.259629, -0.785274, 0.827081, -0.176443, -0.533672, -3.32794e-08, -0.949453, 0.31391, 0, 0, 0)
+light_intensity_lux = 1000.0
+light_temperature = 7100.0
+directional_shadow_mode = 0
+
+[node name="Terrain3D" type="Terrain3D" parent="."]
+data_directory = "res://terrain_data/testing/"
+material = ExtResource("2_bp75k")
+assets = ExtResource("3_k1437")
+save_16_bit = true
+top_level = true
+metadata/_edit_lock_ = true

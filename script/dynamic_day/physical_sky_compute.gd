@@ -41,14 +41,15 @@ var _sky_size_changed: bool = true
 var sky_steps: int = 16
 
 ## Direction of the sun
-@export var sun_direction: Vector3
+var sun_direction: Vector3
 ## Direction of the moon
-@export var moon_direction: Vector3
+var moon_direction: Vector3
+
 ## Shadowing for eclipses, when the moon is obscuring the sun. 1.0 = no coverage,
 ## 0.0 = total coverage. Note that in the real world, even total solar eclipses
 ## aren't completely dark due to the corona and light scattered by the atmosphere.
 ## This should not be set lower than 0.01 to remain realistic.
-@export var moon_shadowing: float = 1.0
+var moon_shadowing: float = 1.0
 
 var rd: RenderingDevice
 

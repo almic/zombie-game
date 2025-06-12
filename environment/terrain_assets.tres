@@ -1,0 +1,59 @@
+[gd_resource type="Terrain3DAssets" load_steps=12 format=3 uid="uid://byfr0ftpf4tol"]
+
+[ext_resource type="Texture2D" uid="uid://dhm02ktyg4mxk" path="res://textures/terrain/grass_ground_d.jpg" id="1_2eiy4"]
+[ext_resource type="Texture2D" uid="uid://cldhykj0yqnnu" path="res://textures/terrain/grass_ground_n.jpg" id="2_3d404"]
+[ext_resource type="Texture2D" uid="uid://bysd0ff6efev7" path="res://textures/terrain/grass_rocky_d.jpg" id="3_labdp"]
+[ext_resource type="Texture2D" uid="uid://bth8ce3x71scl" path="res://textures/terrain/grass_rocky_n.jpg" id="4_wq2di"]
+[ext_resource type="Texture2D" uid="uid://b0qmm215ojqwq" path="res://textures/terrain/ground_mud2_d.jpg" id="5_1jhe2"]
+[ext_resource type="Texture2D" uid="uid://beic1misqwpoq" path="res://textures/terrain/ground_mud2_n.jpg" id="6_11ygp"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_51258"]
+transparency = 4
+cull_mode = 2
+vertex_color_use_as_albedo = true
+backlight_enabled = true
+backlight = Color(0.5, 0.5, 0.5, 1)
+distance_fade_mode = 1
+distance_fade_min_distance = 128.0
+distance_fade_max_distance = 96.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_dprur"]
+generated_type = 1
+height_offset = 0.5
+material_override = SubResource("StandardMaterial3D_51258")
+last_lod = 0
+last_shadow_lod = 0
+lod0_range = 128.0
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_bc84e"]
+name = "grass"
+albedo_texture = ExtResource("1_2eiy4")
+normal_texture = ExtResource("2_3d404")
+normal_depth = 0.295
+roughness = 1.0
+uv_scale = 0.4
+detiling_rotation = 0.271
+detiling_shift = 0.058
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_wukud"]
+name = "rocky"
+id = 1
+albedo_texture = ExtResource("3_labdp")
+normal_texture = ExtResource("4_wq2di")
+roughness = 1.0
+uv_scale = 0.4
+
+[sub_resource type="Terrain3DTextureAsset" id="Terrain3DTextureAsset_il2jm"]
+name = "dirt"
+id = 2
+albedo_color = Color(0.629675, 0.629675, 0.629675, 1)
+albedo_texture = ExtResource("5_1jhe2")
+normal_texture = ExtResource("6_11ygp")
+normal_depth = 0.253
+roughness = 1.0
+uv_scale = 0.4
+detiling_rotation = 0.251
+
+[resource]
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_dprur")])
+texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm")])

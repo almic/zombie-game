@@ -20,7 +20,7 @@
 [ext_resource type="Material" uid="uid://bw4sj1kv018lx" path="res://material/level/grid_red.tres" id="24_6hm40"]
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="24_b43sk"]
 [ext_resource type="Material" uid="uid://6tvs7wudhhdq" path="res://material/level/grid_black.tres" id="25_1obi0"]
-[ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg_steps/csg_steps.gd" id="26_1obi0"]
+[ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg/csg_steps/csg_steps.gd" id="26_1obi0"]
 [ext_resource type="Material" uid="uid://dw056en0eb3vg" path="res://material/level/grid_green.tres" id="27_4tdq6"]
 [ext_resource type="PackedScene" uid="uid://byx787kh4uila" path="res://scene/ramp_collider/ramp_collider.tscn" id="27_xd5hc"]
 [ext_resource type="Texture2D" uid="uid://deq7ocj5qxeq3" path="res://textures/level/map.png" id="30_avgpp"]
@@ -101,7 +101,7 @@ visible = false
 top_level = true
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -324.4, 2.05, -513)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -324.4, 2.05, -512)
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(-4.37114e-08, -1.64203e-15, 1, 0, 1, -3.10588e-22, -1, 1.42109e-14, -4.37114e-08, -285.95, 2.1, -358.2)

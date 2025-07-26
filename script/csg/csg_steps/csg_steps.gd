@@ -1,6 +1,6 @@
 @tool
 
-## Simple step CSG shape that can also use ramp colliders
+## Simple step CSG shape
 class_name CSGSteps3D extends CSGBox3D
 
 
@@ -8,6 +8,9 @@ class_name CSGSteps3D extends CSGBox3D
 var steps: int = 3:
     set = set_steps
 
+## Read only, purely to see the step height in the inspector
+@export_custom(0, "", PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
+var read_only_step_height: float = 0.0
 
 var steps_shape: CSGPolygon3D
 var last_size: Vector3
@@ -54,6 +57,7 @@ func create_steps() -> void:
 
 func update_steps() -> void:
     var step_height: float = size.y / steps
+    read_only_step_height = step_height
     var step_length: float = size.x / steps
 
     var step_array: PackedVector2Array = PackedVector2Array([

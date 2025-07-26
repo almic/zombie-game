@@ -211,7 +211,7 @@ func update_movement(delta: float) -> void:
 
     # Jumping
     if grounded:
-        if _wants_jump:
+        if _wants_jump and not is_jumping:
             velocity += up_direction * jump_power
             is_jumping = true
         else:
@@ -266,8 +266,8 @@ func update_movement(delta: float) -> void:
             else:
                 average_floor_normal += normal
 
-            # Gather best ground normal, most aligned with up direction
-            if not (dot - best_ground_dot > 0.01):
+            # Gather best ground normal, most aligned with up direction (and positive)
+            if not dot > 0 or not (dot - best_ground_dot > 0.01):
                 continue
             best_ground_dot = dot
 

@@ -7,6 +7,11 @@ class_name CharacterBase
 extends CharacterBody3D
 
 
+const RAD_15: float = 12.0 / PI
+
+# This value is ideal to stop slides on ramps, without sticking into the ground
+const ANTI_SLIDE_EPSILON: float = 0.000004
+
 enum GroundState
 {
     ## On solid ground that supports the body, such as terrain or a platform. Friction may be applied.
@@ -89,7 +94,6 @@ var wall_slide_cos_theta: float = -1
 @export var move_drag: float = 0.5
 ## How much speed to keep per 15 degrees of turning
 @export var move_turn_speed_keep: float = 0.67
-const RAD_15: float = 12.0 / PI
 
 
 @export_subgroup("Stepping", "step")
@@ -241,6 +245,18 @@ func update_movement(delta: float) -> void:
             break
 
         var travel: Vector3 = collisions.get_travel()
+        var remainder: Vector3 = collisions.get_remainder()
+
+        if collided:
+            # Project travel onto move direction, prevent recovery from creating
+            # unwanted sliding on slopes. Do not apply when recovery was too great
+            var move_dot_travel: float = to_move.dot(travel)
+            var move_dir: Vector3 = to_move.normalized()
+            var recovery: Vector3 = travel - move_dir * move_dot_travel
+            if recovery.length_squared() <= ANTI_SLIDE_EPSILON:
+                travel = move_dir * to_move.dot(travel)
+                remainder = to_move - travel
+
         global_position += travel
 
         if not collided:
@@ -281,7 +297,7 @@ func update_movement(delta: float) -> void:
                         .get_velocity_at_local_position(ground_details.position - body.global_position)
                 )
 
-        to_move = collisions.get_remainder()
+        to_move = remainder
 
         if best_ground_dot < floor_max_cos_theta:
             # TODO: attempt to step up on steep collisions using ray casts
@@ -307,7 +323,17 @@ func update_movement(delta: float) -> void:
         # Slide along/ with floors
         if not average_floor_normal.is_zero_approx():
             average_floor_normal = average_floor_normal.normalized()
-            to_move = to_move.slide(average_floor_normal)
+
+            # On "flat" ground, do not slide down.
+            # Do this by removing downward vertical motion before sliding
+            if up_direction.dot(average_floor_normal) >= floor_max_cos_theta:
+                var move_dot_up: float = to_move.dot(up_direction)
+                if move_dot_up < 0:
+                    to_move -= up_direction * move_dot_up
+
+            # From Godot's character body, better slide direction on slopes
+            var to_slide: Vector3 = up_direction.cross(to_move).cross(average_floor_normal).normalized()
+            to_move = to_slide * to_move.slide(average_floor_normal).length()
 
     # Update ground state
     if ground_details.has_ground():

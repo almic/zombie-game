@@ -218,6 +218,7 @@ func update_movement(delta: float) -> void:
         if _wants_jump and not is_jumping:
             velocity += up_direction * jump_power
             is_jumping = true
+            grounded = false
         else:
             is_jumping = false
     _wants_jump = false
@@ -287,15 +288,11 @@ func update_movement(delta: float) -> void:
                 continue
             best_ground_dot = dot
 
-            ground_details.normal = normal
-            ground_details.position = collisions.get_collision_point(i)
-            ground_details.body = collisions.get_collider(i)
-            if ground_details.body is PhysicsBody3D:
-                var body: PhysicsBody3D = ground_details.body as PhysicsBody3D
-                ground_details.velocity = (
-                        PhysicsServer3D.body_get_direct_state(body.get_rid())
-                        .get_velocity_at_local_position(ground_details.position - body.global_position)
-                )
+            apply_ground_details(
+                normal,
+                collisions.get_collision_point(i),
+                collisions.get_collider(i)
+            )
 
         to_move = remainder
 
@@ -335,6 +332,10 @@ func update_movement(delta: float) -> void:
             var to_slide: Vector3 = up_direction.cross(to_move).cross(average_floor_normal).normalized()
             to_move = to_slide * to_move.slide(average_floor_normal).length()
 
+    # Snap to floor if we were grounded and have moved away
+    if grounded and not ground_details.has_ground():
+        snap_down()
+
     # Update ground state
     if ground_details.has_ground():
         if best_ground_dot < floor_max_cos_theta:
@@ -344,6 +345,7 @@ func update_movement(delta: float) -> void:
     else:
         ground_state = GroundState.NOT_GROUNDED
 
+    #if snapped:
     #print(ground_state)
 
     # Compute true acceleration and velocity
@@ -485,35 +487,59 @@ func step_up() -> void:
 
 
 func snap_down() -> void:
-    pass
-    #var drop: Vector3 = -up_direction * step_down_max
-    #var space := get_world_3d().direct_space_state
-    #var raycast := space.intersect_ray(PhysicsRayQueryParameters3D.create(
-            #global_position,
-            #global_position + drop,
-            #collision_mask,
-            #[get_rid()]
-    #))
+    var drop: Vector3 = -up_direction * step_down_max
+    var space := get_world_3d().direct_space_state
+    var raycast := space.intersect_ray(PhysicsRayQueryParameters3D.create(
+            global_position,
+            global_position + drop,
+            collision_mask,
+            [get_rid()]
+    ))
 
-    #if not raycast:
-        #return
+    if not raycast:
+        return
 
-    #var result := PhysicsTestMotionResult3D.new()
-    #var params := PhysicsTestMotionParameters3D.new()
+    if up_direction.dot(raycast.normal) < floor_max_cos_theta:
+        return
 
-    #params.from = global_transform
-    #params.motion = drop
-    #if not PhysicsServer3D.body_test_motion(get_rid(), params, result):
-        #return
+    var result := PhysicsTestMotionResult3D.new()
+    var params := PhysicsTestMotionParameters3D.new()
 
-    #drop = -up_direction * -up_direction.dot(result.get_travel())
-    #global_transform = global_transform.translated(drop)
-    #apply_floor_snap()
-    #is_grounded = true
+    params.from = global_transform
+    params.motion = drop
+    if not PhysicsServer3D.body_test_motion(get_rid(), params, result):
+        return
+
+    if result.get_travel().length_squared() < ANTI_SLIDE_EPSILON:
+        return
+
+    apply_ground_details(
+        result.get_collision_normal(0),
+        result.get_collision_point(0),
+        result.get_collider(0)
+    )
+
+    drop = -up_direction * up_direction.dot(-result.get_travel())
+    global_transform = global_transform.translated(drop)
+
+
+func apply_ground_details(normal: Vector3, contact_point: Vector3, body: Object):
+    ground_details.normal = normal
+    ground_details.position = contact_point
+    ground_details.body = body
+    if ground_details.body is PhysicsBody3D:
+        var phys_body: PhysicsBody3D = ground_details.body as PhysicsBody3D
+        ground_details.velocity = (
+                PhysicsServer3D.body_get_direct_state(phys_body.get_rid())
+                .get_velocity_at_local_position(ground_details.position - phys_body.global_position)
+        )
+    else:
+        ground_details.velocity = Vector3.ZERO
 
 
 func smooth_camera(delta: float) -> void:
     camera_node.global_position = camera_target_node.global_position
+
 
 ## Override to return a fluid density from the current fluid state/ details
 func _get_density() -> float:

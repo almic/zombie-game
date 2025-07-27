@@ -333,9 +333,12 @@ func update_movement(delta: float) -> void:
             var to_slide: Vector3 = up_direction.cross(to_move).cross(average_floor_normal).normalized()
             to_move = to_slide * to_move.slide(average_floor_normal).length()
 
-    # Snap to floor if we were grounded and have moved away
-    if grounded and not ground_details.has_ground():
+    var real_velocity: Vector3 = global_position - last_position
+
+    # Snap to floor if we were grounded, no longer are, and did not move up
+    if grounded and not ground_details.has_ground() and not real_velocity.dot(up_direction) > 0:
         snap_down()
+        real_velocity = global_position - last_position
 
     # Update ground state
     if ground_details.has_ground():
@@ -350,7 +353,6 @@ func update_movement(delta: float) -> void:
     #print(ground_state)
 
     # Compute true acceleration and velocity
-    var real_velocity: Vector3 = global_position - last_position
     acceleration = real_velocity - last_velocity
     last_velocity = real_velocity
     velocity = real_velocity / delta
@@ -399,6 +401,7 @@ static func combine_velocity_limited(velocity: Vector3, to_add: Vector3, limit: 
     if limit < 0.001:
         return result
 
+    # TODO: some sign is wrong here, directional air control is wobbly
     if result.length_squared() > limit * limit:
         # additive bounds for result
         var bounds: Vector3 = to_add.normalized() * limit

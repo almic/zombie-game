@@ -246,22 +246,23 @@ func update_movement(delta: float) -> void:
             break
 
         var travel: Vector3 = collisions.get_travel()
-        var remainder: Vector3 = collisions.get_remainder()
-
-        if collided:
-            # Project travel onto move direction, prevent recovery from creating
-            # unwanted sliding on slopes. Do not apply when recovery was too great
-            var move_dot_travel: float = to_move.dot(travel)
-            var move_dir: Vector3 = to_move.normalized()
-            var recovery: Vector3 = travel - move_dir * move_dot_travel
-            if recovery.length_squared() <= ANTI_SLIDE_EPSILON:
-                travel = move_dir * to_move.dot(travel)
-                remainder = to_move - travel
-
-        global_position += travel
 
         if not collided:
+            global_position += travel
             break
+
+        var remainder: Vector3 = collisions.get_remainder()
+
+        # Project travel onto move direction, prevent recovery from creating
+        # unwanted sliding on slopes. Do not apply when recovery was too great
+        var move_dot_travel: float = to_move.dot(travel)
+        var move_dir: Vector3 = to_move.normalized()
+        var recovery: Vector3 = travel - move_dir * move_dot_travel
+        if recovery.length_squared() <= ANTI_SLIDE_EPSILON:
+            travel = move_dir * to_move.dot(travel)
+            remainder = to_move - travel
+
+        global_position += travel
 
         # Detect best floor, average normals for sliding
         var average_floor_normal: Vector3
@@ -294,11 +295,11 @@ func update_movement(delta: float) -> void:
                 collisions.get_collider(i)
             )
 
-        to_move = remainder
-
         if best_ground_dot < floor_max_cos_theta:
             # TODO: attempt to step up on steep collisions using ray casts
             pass
+
+        to_move = remainder
 
         # Slide against up direction for walls
         if not average_wall_normal.is_zero_approx():

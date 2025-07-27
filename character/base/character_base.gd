@@ -117,6 +117,7 @@ var wall_slide_cos_theta: float = -1
 ## Set this before calling `update_movement()`
 var movement_direction: Vector3 = Vector3.ZERO
 
+
 ## Computed after calling `travel_character()`
 var acceleration: Vector3 = Vector3.ZERO
 var last_velocity: Vector3 = Vector3.ZERO
@@ -174,6 +175,18 @@ func update_movement(delta: float) -> void:
     var grounded: bool = is_grounded()
     var direction: Vector3 = velocity.normalized()
 
+    # Input acceleration
+    if not stationary:
+        var speed_in_dir: float = velocity.dot(movement_direction)
+        if speed_in_dir < top_speed:
+            var movement: float = move_acceleration * delta
+
+            # air control
+            if not grounded:
+                movement *= move_air_control
+
+            velocity += movement_direction * minf(top_speed - speed_in_dir, movement)
+
     # Forces
     # Drag
     var drag: Vector3 = compute_drag(move_drag, velocity, _get_density(), _get_area())
@@ -198,20 +211,8 @@ func update_movement(delta: float) -> void:
     var gravity_force: Vector3 = gravity * -up_direction
     gravity_force *= delta
 
-    # Input acceleration
-    var movement: Vector3
-    if not stationary:
-        movement = movement_direction * move_acceleration * delta
-
-        # air control
-        if not grounded:
-            movement *= move_air_control
-
-    # Update velocity
-    # Forces
+    # Update velocity from forces
     velocity += friction + drag + gravity_force
-    # Input
-    velocity = combine_velocity_limited(velocity, movement, top_speed)
 
     # Jumping
     if grounded:
@@ -368,15 +369,15 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
     var cos_theta: float = clampf(direction.dot(wish_direction), -1.0, 1.0)
 
     # No friction if wish direction and movement match
-    if cos_theta - 1.0 > 0.0001:
+    if cos_theta - 1.0 > -0.000001:
         return Vector3.ZERO
 
-    var angle: float = cos(cos_theta)
+    var angle: float = acos(cos_theta)
 
     # More friction in similar directions, reduce slidey feel when
     # strafing perpendicular to direction of motion
-    if cos_theta > 0.0:
-        cos_theta *= cos_theta
+    if cos_theta > 0.5:
+        cos_theta = angle * (2 / PI)
 
     var loss: float = (1.0 - cos_theta) * friction
 
@@ -389,27 +390,6 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
 
     return -direction * loss + wish_direction * loss * keep
 
-## Adds two velocities while respecting and additive limit on speed
-static func combine_velocity_limited(velocity: Vector3, to_add: Vector3, limit: float) -> Vector3:
-    # Only limit if adding
-    if to_add.is_zero_approx():
-        return velocity
-
-    var result: Vector3 = velocity + to_add
-
-    # Zero/ negative limit means no limit
-    if limit < 0.001:
-        return result
-
-    # TODO: some sign is wrong here, directional air control is wobbly
-    if result.length_squared() > limit * limit:
-        # additive bounds for result
-        var bounds: Vector3 = to_add.normalized() * limit
-        for i in range(3):
-            if abs(result[i]) > abs(velocity[i]):
-                result[i] = signf(result[i]) * minf(abs(bounds[i]), abs(result[i]))
-
-    return result
 
 func step_up() -> void:
     pass

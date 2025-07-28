@@ -35,7 +35,7 @@ camera_node = NodePath("CameraTarget/Camera3D")
 camera_target_node = NodePath("CameraTarget")
 
 [node name="collider" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.865, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_qh58e")
 
 [node name="capsule" type="MeshInstance3D" parent="collider" index="0"]
@@ -47,11 +47,11 @@ skeleton = NodePath("../..")
 [node name="CameraTarget" type="Node3D" parent="." index="1"]
 unique_name_in_owner = true
 editor_description = "Target position for the Camera3D, used to smooth vertical jitter."
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.545, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraTarget" index="0"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.56, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.545, 0)
 top_level = true
 cull_mask = 524287
 current = true

@@ -72,12 +72,12 @@ class FluidDetails:
 @export var jump_power: float = 5.0
 ## Maximum walkable slope, will slide along surfaces steeper than this
 @export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,or_greater,radians_as_degrees')
-var floor_max_slope: float = PI / 3:
+var floor_max_slope: float = deg_to_rad(60.0):
     set = set_floor_max_slope
 var floor_max_cos_theta: float = -1
 ## Minimum angle to slide along walls when moving
 @export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,radians_as_degrees')
-var wall_slide_angle: float = PI / 45:
+var wall_slide_angle: float = deg_to_rad(4.0):
     set = set_wall_slide_angle
 var wall_slide_cos_theta: float = -1
 
@@ -100,7 +100,27 @@ var wall_slide_cos_theta: float = -1
 ## Maximum vertical step to take, in meters
 @export var step_up_max: float = 0.45
 ## Maximum falling step to take, in meters; ground snapping
-@export var step_down_max: float = 0.45
+@export var step_snap_down_max: float = 0.45
+## Extra forward distance test for stepping up stairs
+@export var step_up_forward_test: float = 0.15
+## Minimum forward distance when testing stair steps, can help walking up stairs
+## which the character is immediately next to, where initial acceleration may
+## not be enough.
+@export var step_up_min_forward: float = 0.04
+## The angle between the forward motion and the ground contact in which to step
+## along the contact normal. Greater angles will test along the direction of
+## motion. This allows characters to walk tangent to steps and travel up them.
+@export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,radians_as_degrees')
+var step_up_max_contact_angle: float = deg_to_rad(75.0):
+    set = set_up_max_contact_angle
+var step_up_max_contact_cos_theta: float = -1
+## Extra forward distance to test for sticking to the ground when the character
+## has upward velocity
+@export var step_snap_down_forward_test: float = 0.15
+@export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,radians_as_degrees')
+var step_snap_down_max_angle: float = deg_to_rad(5.0):
+    set = set_snap_down_max_angle
+var step_snap_down_max_cos_theta: float = -1
 
 @export_group("Camera Smoothing", "camera")
 ## The camera node
@@ -125,6 +145,10 @@ var last_velocity: Vector3 = Vector3.ZERO
 ## If the character is jumping
 var is_jumping: bool = false
 var _wants_jump: bool = false
+
+## If the camera is currently smoothing
+var is_camera_smoothing: bool = false
+var camera_smooth_offset: Vector3 = Vector3.ZERO
 
 # Ground stuff
 var ground_state: GroundState = GroundState.NOT_GROUNDED
@@ -151,6 +175,14 @@ func set_floor_max_slope(max_slope: float) -> void:
 func set_wall_slide_angle(slide_angle: float) -> void:
     wall_slide_angle = slide_angle
     wall_slide_cos_theta = cos(wall_slide_angle)
+
+func set_up_max_contact_angle(max_contact_angle: float) -> void:
+    step_up_max_contact_angle = max_contact_angle
+    step_up_max_contact_cos_theta = cos(max_contact_angle)
+
+func set_snap_down_max_angle(snap_max_angle: float) -> void:
+    step_snap_down_max_angle = snap_max_angle
+    step_snap_down_max_cos_theta = cos(snap_max_angle)
 
 ## Call when you wish for the character to do a jump. If the character is not
 ## grounded, this does nothing.
@@ -225,6 +257,7 @@ func update_movement(delta: float) -> void:
     _wants_jump = false
 
     var last_position: Vector3 = global_position
+    var step_accumulation: Vector3
     var rid: RID = get_rid()
 
     ground_details.reset()
@@ -290,21 +323,29 @@ func update_movement(delta: float) -> void:
                 continue
             best_ground_dot = dot
 
-            apply_ground_details(
+            ground_details = make_ground_details(
                 normal,
                 collisions.get_collision_point(i),
                 collisions.get_collider(i)
             )
 
-        if best_ground_dot < floor_max_cos_theta:
-            # TODO: attempt to step up on steep collisions using ray casts
-            pass
+        if not average_floor_normal.is_zero_approx():
+            average_floor_normal = average_floor_normal.normalized()
+
+        if not average_wall_normal.is_zero_approx():
+            average_wall_normal = average_wall_normal.normalized()
+
+            # Check if we have any motion left to step with here
+            if not stationary:
+                var step_start: Vector3 = global_position
+                var new_remainder: Vector3 = step_up(remainder, movement_direction, average_wall_normal)
+                step_accumulation += (global_position - step_start) - (remainder - new_remainder)
+                remainder = new_remainder
 
         to_move = remainder
 
         # Slide against up direction for walls
         if not average_wall_normal.is_zero_approx():
-            average_wall_normal = average_wall_normal.normalized()
             var lateral: Vector3 = to_move.slide(up_direction)
             var vertical: Vector3 = up_direction * up_direction.dot(to_move)
 
@@ -321,8 +362,6 @@ func update_movement(delta: float) -> void:
 
         # Slide along/ with floors
         if not average_floor_normal.is_zero_approx():
-            average_floor_normal = average_floor_normal.normalized()
-
             # On "flat" ground, do not slide down.
             # Do this by removing downward vertical motion before sliding
             if up_direction.dot(average_floor_normal) >= floor_max_cos_theta:
@@ -334,12 +373,28 @@ func update_movement(delta: float) -> void:
             var to_slide: Vector3 = up_direction.cross(to_move).cross(average_floor_normal).normalized()
             to_move = to_slide * to_move.slide(average_floor_normal).length()
 
-    var real_velocity: Vector3 = global_position - last_position
+    var real_velocity: Vector3 = (global_position - last_position) - step_accumulation
 
-    # Snap to floor if we were grounded, no longer are, and did not move up
-    if grounded and not ground_details.has_ground() and not real_velocity.dot(up_direction) > 0:
-        snap_down()
-        real_velocity = global_position - last_position
+    #if not step_accumulation.is_zero_approx():
+        #print('frame ' + str(Engine.get_physics_frames()))
+        #print('last = ' + str(last_position))
+        #print('new = ' + str(global_position))
+        #print('step = ' + str(step_accumulation))
+        #print('new velocity = ' + str(real_velocity))
+        #print('-------------------')
+
+    # Snap to floor if we just detached from the ground
+    if grounded and not ground_details.has_ground():
+        var do_forward_test: bool = real_velocity.dot(up_direction) > 0
+        var forward_test_direction: Vector3
+        if do_forward_test:
+            forward_test_direction = real_velocity.slide(up_direction)
+            if not forward_test_direction.is_zero_approx():
+                forward_test_direction = forward_test_direction.normalized()
+        if snap_down(do_forward_test, forward_test_direction):
+            pass
+            #start_camera_smooth()
+        real_velocity = (global_position - last_position) - step_accumulation
 
     # Update ground state
     if ground_details.has_ground():
@@ -391,100 +446,240 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
     return -direction * loss + wish_direction * loss * keep
 
 
-func step_up() -> void:
-    pass
-    # Basically, if our last collision left some remainder, see if we can use
-    # the remainder to step up onto an elevated surface. Only apply if the
-    # remainder is a significant portion of the total movement.
+## Tries to step up using the remainder distance, updates the ground details when
+## successful, returns the new remainder travel distance
+func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector3) -> Vector3:
+    var step_forward: Vector3 = remainder.slide(up_direction)
+    if step_forward.is_zero_approx():
+        step_forward = step_direction * step_up_min_forward
+    else:
+        var remainder_length: float = remainder.length()
+        step_forward = step_forward.normalized() * maxf(step_up_min_forward, remainder_length)
 
-    #var last_collision := get_last_slide_collision()
-    #if not last_collision:
-        #return
-#
-    #var remainder: Vector3 = last_collision.get_remainder()
-    #if remainder.is_zero_approx():
-        #return
-#
-    #var final_transform: Transform3D = global_transform
+    var step_test: Vector3 = (-contact_normal).slide(up_direction)
+    if step_test.is_zero_approx() or step_test.dot(step_direction) < step_up_max_contact_cos_theta:
+        #print('testing with forward')
+        #print('dot = ' + str(step_test.dot(step_direction)))
+        #print('max = ' + str(step_up_max_contact_cos_theta))
+        step_test = step_direction
+    else:
+        #print('testing with contact')
+        #print('dot = ' + str(step_test.dot(step_direction)))
+        #print('max = ' + str(step_up_max_contact_cos_theta))
+        step_test = step_test.normalized()
 
-    # It is likely that move_and_slide() pushed us sideways, so if we had any
-    # final motion, undo it. Otherwise, steps will be "slippery af"
-    # This test prevents us from undoing the initial motion if the collision
-    # did not result in sliding, such as when going straight into steps.
-    #if not last_collision.get_travel().is_equal_approx(get_last_motion()):
-        #final_transform = final_transform.translated(-get_last_motion())
+    step_test *= step_up_forward_test
 
-    # Test if we can "land" on an elevated platform using the remainder
-    #var result := PhysicsTestMotionResult3D.new()
-    #var params := PhysicsTestMotionParameters3D.new()
-    #var step_motion: Vector3 = up_direction * step_up_max
-#
-    #var remainder_length: float = remainder.length()
-    #if remainder_length < 0.05:
-        #remainder = (remainder / remainder_length) * 0.05
-    #var test_transform: Transform3D = final_transform.translated(remainder)
-    #test_transform = test_transform.translated(step_motion)
-#
-    #params.from = test_transform
-    #params.motion = -step_motion
+    var test_motion: PhysicsTestMotionParameters3D = PhysicsTestMotionParameters3D.new()
+    var test_result: PhysicsTestMotionResult3D = PhysicsTestMotionResult3D.new()
+    var rid: RID = get_rid()
+    var up: Vector3 = up_direction * step_up_max
 
-    # No hit, no step
-    #if not PhysicsServer3D.body_test_motion(get_rid(), params, result):
-        #return
+    # Move up
+    test_motion.from = global_transform
+    test_motion.motion = up
+    # TODO: test setting this to zero to save on time/ memory, only needed in
+    #       the final motion to get a ground
+    test_motion.max_collisions = 4
 
-    # If there was less than 0.05 movement, consider it a failure.
-    # This catches steps that would put us inside walls.
-    #if result.get_travel().length_squared() <= 0.0025:
-        #return
+    if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
+        if test_result.get_travel().length_squared() < 0.000001:
+            #print('could not move up')
+            return remainder
+        up *= test_result.get_collision_safe_fraction()
 
-    # Don't handle tiny steps that move_and_slide() can already handle
-    # Also, ensure the point of collision is not greater than the step height.
-    # This prevents round bodies from climbing extreme steps
-    #var up_distance: float = result.get_collision_point().y - global_position.y
-    #if up_distance < 0.05 or up_distance - step_up_max > 0.0:
-        #return
+    # Move forward
+    test_motion.from = test_motion.from.translated(up)
+    test_motion.motion = step_forward
 
-    # Respect floor_max_angle by testing the collision normal
-    # If the angle is too much, test with a raycast. Needed for round bodies.
-    #if not up_direction.angle_to(result.get_collision_normal()) <= floor_max_angle:
-        # Move test point against the normal so it isn't testing on the edge
-        #var test_point: Vector3 = result.get_collision_point()
-        #test_point -= result.get_collision_normal() * 0.02
-        #var test_range: Vector3 = up_direction * 0.5
-        #var raycast := get_world_3d().direct_space_state.intersect_ray(
-                #PhysicsRayQueryParameters3D.create(
-                    #test_point + test_range,
-                    #test_point - test_range,
-                    #collision_mask,
-                    #[get_rid()]
-                #)
-        #)
-        #if not raycast or up_direction.angle_to(raycast.normal) > floor_max_angle:
-            #return
+    if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
+        if test_result.get_travel().length_squared() < 0.000001:
+            #print('could not move forward')
+            return remainder
+        step_forward *= test_result.get_collision_safe_fraction()
 
-    # Passing, move player to new position
-    #global_transform = test_transform.translated(result.get_travel())
-    #apply_floor_snap()
-    #is_grounded = true
-    #is_stepping_up = true
-    #print("step up!")
+    # Move down, need a floor
+    test_motion.from = test_motion.from.translated(step_forward)
+    test_motion.motion = -up
+
+    if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
+        # If we don't hit early enough, cancel the step
+        if test_result.get_remainder().length_squared() < 0.000001:
+            #print('not high enough to step')
+            return remainder
+    else:
+        #print('missed the floor')
+        return remainder
 
 
-func snap_down() -> void:
-    var drop: Vector3 = -up_direction * step_down_max
+    var average_normal: Vector3
+    var last_normal: Vector3
+
+    var average_contact: Vector3
+
+    var best_ground_dot: float = -INF
+    var new_ground: GroundDetails
+
+    for i in range(test_result.get_collision_count()):
+        average_contact += test_result.get_collision_point(i)
+
+        var normal: Vector3 = test_result.get_collision_normal(i)
+        if normal.is_equal_approx(last_normal):
+            continue
+
+        average_normal += normal
+        last_normal = normal
+
+        var dot: float = normal.dot(up_direction)
+        if not dot > best_ground_dot:
+            continue
+
+        new_ground = make_ground_details(
+            normal,
+            test_result.get_collision_point(i),
+            test_result.get_collider(i)
+        )
+
+    # Contact point must be within step up max distance
+    average_contact /= test_result.get_collision_count()
+    average_contact -= test_motion.from.translated(-up).origin
+
+    if average_contact.dot(up_direction) > step_up_max + 0.001:
+        #print('greater than max step ' + str(average_contact.dot(up_direction)))
+        #print('contact = ' + str(average_contact))
+        #print('from = ' + str(test_motion.from.translated(-up).origin))
+        return remainder
+
+    # If the floor is too steep, try with the test forward
+    average_normal = average_normal.normalized()
+    if average_normal.dot(up_direction) < floor_max_cos_theta:
+
+        # No extra test, no step
+        if step_test.is_zero_approx():
+            #print('steep floor, no extra testing')
+            return remainder
+
+        # Move forward with the test
+        test_motion.from = global_transform.translated(up)
+        test_motion.motion = step_test
+
+        if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
+            if test_result.get_travel().length_squared() < 0.000001:
+                #print('steep floor, could not move forward')
+                return remainder
+            step_test *= test_result.get_collision_safe_fraction()
+
+        # Move down, need a floor
+        test_motion.from = test_motion.from.translated(step_test)
+        test_motion.motion = -up
+
+        if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
+            # If we don't hit early enough, cancel the step
+            if test_result.get_remainder().length_squared() < 0.000001:
+                #print('steep floor, not enough of a step')
+                return remainder
+        else:
+            #print('steep floor, missed floor')
+            return remainder
+
+        average_normal = Vector3.ZERO
+        last_normal = Vector3.ZERO
+        average_contact = Vector3.ZERO
+        best_ground_dot = -INF
+        for i in range(test_result.get_collision_count()):
+            average_contact += test_result.get_collision_point(i)
+
+            var normal: Vector3 = test_result.get_collision_normal(i)
+            if normal.is_equal_approx(last_normal):
+                continue
+
+            average_normal += normal
+            last_normal = normal
+
+            var dot: float = normal.dot(up_direction)
+            if not dot > best_ground_dot:
+                continue
+
+            new_ground = make_ground_details(
+                normal,
+                test_result.get_collision_point(i),
+                test_result.get_collider(i)
+            )
+
+        # Contact point must be within step up max distance
+        average_contact /= test_result.get_collision_count()
+        average_contact -= test_motion.from.translated(-up).origin
+
+        if average_contact.dot(up_direction) > step_up_max + 0.001:
+            #print('steep floor, greater than max step ' + str(average_contact.dot(up_direction)))
+            return remainder
+
+        average_normal = average_normal.normalized()
+        if average_normal.dot(up_direction) < floor_max_cos_theta:
+            # Use a raycast instead to
+            # Test fails too, give up
+            #print('steep floor, steep test')
+            #print('hit normal = ' + str(average_normal))
+            return remainder
+
+        # Set for the remainder update
+        step_forward = step_test
+
+    # Step passed, update position, remainder, and ground
+    up *= test_result.get_collision_safe_fraction()
+    ground_details = new_ground
+    global_transform = test_motion.from.translated(-up)
+
+    if not remainder.is_zero_approx():
+        var remainder_length: float = remainder.length()
+        remainder *= maxf(0.0, remainder_length - step_forward.length()) / remainder_length
+
+    #print('stepped up!')
+
+    return remainder
+
+
+func snap_down(do_forward_test: bool, forward: Vector3) -> bool:
+    var drop: Vector3 = -up_direction * step_snap_down_max
+    var extra_test: Vector3 = -up_direction * 0.1
     var space := get_world_3d().direct_space_state
     var raycast := space.intersect_ray(PhysicsRayQueryParameters3D.create(
             global_position,
-            global_position + drop,
+            global_position + drop + extra_test,
             collision_mask,
             [get_rid()]
     ))
 
     if not raycast:
-        return
+        #print('could not find current ground')
+        #print('frame ' + str(Engine.get_physics_frames()))
+        #print('from = ' + str(global_position))
+        #print('to = ' + str(global_position + drop))
+        #print('----------------')
+        return false
 
     if up_direction.dot(raycast.normal) < floor_max_cos_theta:
-        return
+        #print('current floor too steep')
+        return false
+
+    if do_forward_test:
+        var ground_normal = raycast.normal
+        forward *= step_snap_down_forward_test
+        forward += global_position
+        raycast = space.intersect_ray(PhysicsRayQueryParameters3D.create(
+                forward,
+                forward + drop,
+                collision_mask,
+                [get_rid()]
+        ))
+
+        if not raycast:
+            #print('forward test failed to hit')
+            return false
+
+        if ground_normal.dot(raycast.normal) <= step_snap_down_max_cos_theta:
+            #print('angle between surfaces is too great')
+            return false
 
     var result := PhysicsTestMotionResult3D.new()
     var params := PhysicsTestMotionParameters3D.new()
@@ -492,22 +687,30 @@ func snap_down() -> void:
     params.from = global_transform
     params.motion = drop
     if not PhysicsServer3D.body_test_motion(get_rid(), params, result):
-        return
+        #print('failed to hit ground')
+        return false
 
-    if result.get_travel().length_squared() < ANTI_SLIDE_EPSILON:
-        return
+    if result.get_travel().length_squared() < 0.000001:
+        #print('too little down to snap')
+        return false
 
-    apply_ground_details(
+    ground_details = make_ground_details(
         result.get_collision_normal(0),
         result.get_collision_point(0),
         result.get_collider(0)
     )
 
-    drop = -up_direction * up_direction.dot(-result.get_travel())
+    drop *= result.get_collision_safe_fraction()
     global_transform = global_transform.translated(drop)
 
+    #print('snapped down!')
 
-func apply_ground_details(normal: Vector3, contact_point: Vector3, body: Object):
+    return true
+
+
+static func make_ground_details(normal: Vector3, contact_point: Vector3, body: Object) -> GroundDetails:
+    var ground_details: GroundDetails = GroundDetails.new()
+
     ground_details.normal = normal
     ground_details.position = contact_point
     ground_details.body = body
@@ -517,12 +720,28 @@ func apply_ground_details(normal: Vector3, contact_point: Vector3, body: Object)
                 PhysicsServer3D.body_get_direct_state(phys_body.get_rid())
                 .get_velocity_at_local_position(ground_details.position - phys_body.global_position)
         )
-    else:
-        ground_details.velocity = Vector3.ZERO
 
+    return ground_details
+
+func start_camera_smooth() -> void:
+    camera_smooth_offset = camera_node.global_position - camera_target_node.global_position
+    is_camera_smoothing = true
 
 func smooth_camera(delta: float) -> void:
     camera_node.global_position = camera_target_node.global_position
+    if true or not is_camera_smoothing:
+        return
+
+    camera_smooth_offset = camera_smooth_offset.lerp(Vector3.ZERO, camera_smooth_speed * delta)
+
+    if camera_smooth_offset.length_squared() < 0.000001:
+        camera_smooth_offset = Vector3.ZERO
+        is_camera_smoothing = false
+        return
+
+    camera_smooth_offset = camera_smooth_offset.clampf(-camera_lag_distance, camera_lag_distance)
+
+    camera_node.global_position += up_direction * camera_smooth_offset.dot(up_direction)
 
 
 ## Override to return a fluid density from the current fluid state/ details

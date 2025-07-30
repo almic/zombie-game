@@ -1,4 +1,6 @@
-class_name Zombie extends CharacterBody3D
+@tool
+
+class_name Zombie extends CharacterBase
 
 @onready var navigation: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
@@ -22,13 +24,7 @@ class_name Zombie extends CharacterBody3D
 
 
 @export_group("Movement")
-@export var gravity: float = 9.81
 
-@export_subgroup("Moving", "move")
-@export var move_top_speed: float = 4.7
-@export var move_acceleration: float = 18
-@export var move_ground_friction: float = 15
-@export var move_turn_speed_keep: float = 0.6
 
 @export_subgroup("Turning", "rotate")
 ## Maximum rotation rate in radians/ second
@@ -116,70 +112,62 @@ func _ready() -> void:
 
     attack_hitbox.damage = attack_damage
 
-    navigation.velocity_computed.connect(_on_velocity_computed)
+    target_search_groups = target_search_groups.duplicate()
 
     connect_hurtboxes()
 
     _is_alive = true
 
 func _process(_delta: float) -> void:
+    if Engine.is_editor_hint():
+        return
+
     pass
 
 func _physics_process(delta: float) -> void:
+    if Engine.is_editor_hint():
+        return
+
     if not _is_alive:
         return
 
     if NavigationServer3D.map_get_iteration_id(navigation.get_navigation_map()) == 0:
         return
 
-    var new_velocity: Vector3 = velocity
+    movement_direction = Vector3.ZERO
 
     # Only path on ground
-    if not is_on_floor():
-        # Gravity
-        new_velocity.y -= gravity * delta
-
-        if navigation.avoidance_enabled:
-            navigation.velocity = new_velocity
-        else:
-            _on_velocity_computed(new_velocity)
-
+    if not is_grounded():
         # Do not spin in air
         # update_rotation()
+        update_movement(delta)
+        print('falling')
         return
 
     update_target_position(delta)
 
     if _active_target == null:
-        if new_velocity.length_squared() > 0:
-            # friction
-            new_velocity.x -= new_velocity.x * move_ground_friction * delta
-            new_velocity.z -= new_velocity.z * move_ground_friction * delta
-            _on_velocity_computed(new_velocity)
         anim_goto(locomotion, anim_idle)
+        update_movement(delta)
+        print('nobody to attack')
         return
-
-    var move_direction: Vector3
 
     # dont move if attacking
     if locomotion.get_current_node() == anim_attack:
-        move_direction = Vector3.ZERO
+        movement_direction = Vector3.ZERO
     elif _simple_move:
-        move_direction = get_simple_move_direction()
+        movement_direction = get_simple_move_direction()
     elif not navigation.is_navigation_finished():
         var next_pos: Vector3 = navigation.get_next_path_position()
-        move_direction = global_position.direction_to(next_pos)
+        movement_direction = global_position.direction_to(next_pos)
     else:
         _simple_move = true
-        move_direction = get_simple_move_direction()
+        movement_direction = get_simple_move_direction()
 
-    if is_zero_approx(move_direction.length_squared()):
-        if new_velocity.length_squared() > 0:
-            # friction
-            new_velocity.x -= new_velocity.x * move_ground_friction * delta
-            new_velocity.z -= new_velocity.z * move_ground_friction * delta
-            _on_velocity_computed(new_velocity)
+    print('moving! ' + str(movement_direction))
+    update_movement(delta)
 
+    if is_zero_approx(movement_direction.length_squared()):
         # If attacking, dont rotate and queue back to idle
         if locomotion.get_current_node() == anim_attack:
             anim_goto(locomotion, anim_idle)
@@ -193,7 +181,8 @@ func _physics_process(delta: float) -> void:
                 update_rotation(delta)
         return
 
-    # Apply ground friction opposite to movement
+    update_rotation(delta)
+
     var speed: float = velocity.length_squared()
     if is_zero_approx(speed):
         anim_goto(locomotion, anim_idle)
@@ -206,64 +195,6 @@ func _physics_process(delta: float) -> void:
             # Return to idle when too slow
             anim_goto(locomotion, anim_idle)
 
-        var friction: Vector2 = Vector2(velocity.x, velocity.z)
-        var current_direction: Vector2 = friction / speed
-        var move_dot = clampf(
-            current_direction.dot(
-                Vector2(move_direction.x, move_direction.z)
-            ),
-            -1, 1
-        )
-
-        if !is_equal_approx(move_dot, 1):
-            # More friction in similar directions, reduce slidey feel when
-            # strafing parallel to main direction
-            var inv_power = move_dot
-            if inv_power > 0:
-                inv_power *= inv_power
-
-            var friction_accel: float = (1 - inv_power) * move_ground_friction * delta
-            friction *= friction_accel
-            new_velocity.x -= friction.x
-            new_velocity.z -= friction.y
-
-            # Retain some speed when turning
-            var loss: float = speed * friction_accel
-
-            # Allow counter-strafing at "half" the normal rate, reduce
-            # jumping feel for perfect counter-strafing
-            if inv_power <= 0:
-                loss *= move_turn_speed_keep
-
-            new_velocity.x += loss * move_turn_speed_keep * move_direction.x
-            new_velocity.z += loss * move_turn_speed_keep * move_direction.z
-
-    # Accelerate up to top speed, deccel whichever way
-    var movement: Vector3 = move_direction * move_acceleration * delta
-    movement.x += new_velocity.x
-    movement.z += new_velocity.z
-
-    # Enforce maximum additional speed
-    var len_sqr: float = movement.length_squared()
-    if len_sqr > move_top_speed ** 2:
-        movement = (movement / sqrt(len_sqr)) * move_top_speed
-
-    new_velocity.x = movement.x
-    new_velocity.z = movement.z
-
-    # Must be set otherwise we get garbage velocities in our callback
-    navigation.avoidance_enabled = !_simple_move
-
-    if navigation.avoidance_enabled:
-        navigation.velocity = new_velocity
-    else:
-        _on_velocity_computed(new_velocity)
-
-    update_rotation(delta)
-
-func _on_velocity_computed(safe_velocity: Vector3) -> void:
-    velocity = safe_velocity
-    move_and_slide()
 
 func on_attack_start() -> void:
     attack_hitbox.enable()
@@ -306,13 +237,13 @@ func update_rotation(delta: float) -> void:
 
     # Turn to face current direction of motion
     var rads_to_go: float = direction.signed_angle_to(basis.z, -Vector3.UP)
-    var acceleration: float = 0
+    var rate: float = 0
     if is_zero_approx(_rotation_velocity):
         # Simply accelerate
-        acceleration = rotate_acceleration
+        rate = rotate_acceleration
     elif not is_equal_approx(signf(rads_to_go), signf(_rotation_velocity)):
         # Turning the wrong way, use decceleration speed
-        acceleration = rotate_decceleration
+        rate = rotate_decceleration
     else:
         # 1. Can we start deccelerating now and still reach the target, and
         # 2. if we did, will we reach it in no more than "stop" seconds?
@@ -321,13 +252,13 @@ func update_rotation(delta: float) -> void:
 
         if time >= time_needed and time_needed <= rotate_stop_time:
             # start slowing down
-            acceleration = -rotate_decceleration
+            rate = -rotate_decceleration
         else:
-            acceleration = rotate_acceleration
+            rate = rotate_acceleration
 
     # Accelerate to top speed
     _rotation_velocity = clampf(
-        _rotation_velocity + acceleration * delta * signf(rads_to_go),
+        _rotation_velocity + rate * delta * signf(rads_to_go),
         -rotate_top_speed, rotate_top_speed
     )
 

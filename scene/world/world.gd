@@ -1,5 +1,9 @@
 class_name World extends Node3D
 
+
+@onready var terrain_nav_region: NavigationRegion3D = %TerrainNavRegion
+
+
 @export_category("Input Mapping")
 @export var first_person: GUIDEMappingContext
 
@@ -133,8 +137,14 @@ func spawn_zombie(delta: float) -> void:
     print("Spawning zombie: " + str(spawn_point))
     var zombie: Node3D = zomb_basic_zombie.instantiate()
     add_child(zombie)
+
     zombie.global_position = spawn_point + (0.01 * Vector3.UP)
     zombie.add_to_group('zombie')
+
+    terrain_nav_region.add_child(zombie)
+
+    #if zombie is Zombie:
+        #zombie.target_search_groups.append('zombie_target')
 
 func update_spawn_points() -> void:
     _spawn_points.assign(get_tree().get_nodes_in_group('zombie_spawn'))

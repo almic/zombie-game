@@ -72,6 +72,13 @@ zombie_spawn="Zombie spawn locations"
 3d_physics/layer_4="HurtBox"
 3d_physics/layer_5="Static"
 
+[navigation]
+
+3d/default_cell_size=0.05
+3d/default_cell_height=0.05
+3d/merge_rasterizer_cell_scale=0.05
+3d/default_edge_connection_margin=0.2
+
 [physics]
 
 3d/run_on_separate_thread=true

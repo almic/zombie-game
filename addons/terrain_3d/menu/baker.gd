@@ -172,32 +172,59 @@ func find_terrain_nav_regions(p_terrain: Terrain3D) -> Array[NavigationRegion3D]
 
 func bake_nav_mesh() -> void:
 	if plugin.nav_region:
+		print('Terrain3DNavigation: Baking selected NavigationMesh.')
+		var timer: float = Time.get_unix_time_from_system()
 		# A NavigationRegion3D is selected. We only need to bake that one navmesh.
 		_bake_nav_region_nav_mesh(plugin.nav_region)
+		timer = Time.get_unix_time_from_system() - timer
 		print("Terrain3DNavigation: Finished baking 1 NavigationMesh.")
-	
+		print("Terrain3DNavigation: Process took " + str(snappedf(timer, 0.001)) + " seconds.")
+
 	elif plugin.terrain:
 		if plugin.terrain.data.get_region_count() == 0:
 			push_error("Terrain3D has no active regions to bake")
 			return
+
 		# A Terrain3D is selected. There are potentially multiple navmeshes to bake and we need to
 		# find them all. (The multiple navmesh use-case is likely on very large scenes with lots of
 		# geometry. Each navmesh in this case would define its own, non-overlapping, baking AABB, to
 		# cut down on the amount of geometry to bake. In a large open-world RPG, for instance, there
 		# could be a navmesh for each town.)
 		var nav_regions: Array[NavigationRegion3D] = find_terrain_nav_regions(plugin.terrain)
+		if nav_regions.size() < 1:
+			push_error("Terrain3D found no regions to bake")
+			return
+
+		if nav_regions.size() > 1:
+			print('Terrain3DNavigation: Baking %d NavigationMeshes.' % nav_regions.size())
+		else:
+			print('Terrain3DNavigation: Baking 1 NavigationMesh.')
+
+		var timer: float = Time.get_unix_time_from_system()
 		for nav_region in nav_regions:
 			_bake_nav_region_nav_mesh(nav_region)
-		print("Terrain3DNavigation: Finished baking %d NavigationMesh(es)." % nav_regions.size())
+		timer = Time.get_unix_time_from_system() - timer
+		if nav_regions.size() > 1:
+			print("Terrain3DNavigation: Finished baking %d NavigationMeshes." % nav_regions.size())
+		else:
+			print("Terrain3DNavigation: Finished baking 1 NavigationMesh.")
+
+		print("Terrain3DNavigation: Process took " + str(snappedf(timer, 0.001)) + " seconds.")
 
 
 func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
+	var scene_root: Node3D = p_nav_region.get_tree().edited_scene_root
+	var region_path: String = str(scene_root.get_parent().get_path_to(p_nav_region))
+
 	var nav_mesh: NavigationMesh = p_nav_region.navigation_mesh
 	assert(nav_mesh != null)
-	
+
+	print('Terrain3DNavigation: Baking NavigationRegion "' + region_path + '"')
+
 	var source_geometry_data := NavigationMeshSourceGeometryData3D.new()
-	NavigationServer3D.parse_source_geometry_data(nav_mesh, source_geometry_data, p_nav_region)
-	
+
+	var timer: float = Time.get_unix_time_from_system()
+	NavigationServer3D.parse_source_geometry_data(nav_mesh, source_geometry_data, scene_root)
 	for terrain in find_nav_region_terrains(p_nav_region):
 		var aabb: AABB = nav_mesh.filter_baking_aabb
 		aabb.position += nav_mesh.filter_baking_aabb_offset
@@ -207,17 +234,28 @@ func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
 			source_geometry_data.add_faces(faces, Transform3D.IDENTITY)
 	
 	NavigationServer3D.bake_from_source_geometry_data(nav_mesh, source_geometry_data)
-	
+	timer = Time.get_unix_time_from_system() - timer
+	print('Terrain3DNavigation: Baked NavigationRegion "' + region_path + '" in ' + str(snappedf(timer, 0.001)) + ' seconds.')
+
+	print('Terrain3DNavigation: Post-Processing nav mesh for "' + region_path + '".')
+	timer = Time.get_unix_time_from_system()
 	_postprocess_nav_mesh(nav_mesh)
-	
+	timer = Time.get_unix_time_from_system() - timer
+	print('Terrain3DNavigation: Post-Processed nav mesh for "' + region_path + '" in ' + str(snappedf(timer, 0.001)) + ' seconds.')
+
 	# Assign null first to force the debug display to actually update:
 	p_nav_region.set_navigation_mesh(null)
 	p_nav_region.set_navigation_mesh(nav_mesh)
 	
 	# Trigger save to disk if it is saved as an external file
-	if not nav_mesh.get_path().is_empty():
-		ResourceSaver.save(nav_mesh, nav_mesh.get_path(), ResourceSaver.FLAG_COMPRESS)
-	
+	var save_path: String = nav_mesh.get_path()
+	if not save_path.is_empty():
+		print('Terrain3DNavigation: Saving nav mesh to "' + save_path + '".')
+		timer = Time.get_unix_time_from_system()
+		ResourceSaver.save(nav_mesh, save_path, ResourceSaver.FLAG_COMPRESS)
+		timer = Time.get_unix_time_from_system() - timer
+		print('Terrain3DNavigation: Save completed in ' + str(snappedf(timer, 0.001)) + ' seconds.')
+
 	# Let other editor plugins and tool scripts know the nav mesh was just baked:
 	p_nav_region.bake_finished.emit()
 

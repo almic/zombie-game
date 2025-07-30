@@ -49,9 +49,8 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-enable_spawning = false
-target_spawn_count = 0
-spawn_count_extra = 1
+target_spawn_count = 10
+spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
 metadata/_custom_type_script = "uid://mvbofvslxl7"
 metadata/_edit_lock_ = true
@@ -112,7 +111,6 @@ transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -358.311, 
 transform = Transform3D(-0.258819, -1.64203e-15, -0.965926, -2.83626e-14, 1, 4.49942e-16, 0.965926, 1.42109e-14, -0.258819, -351.61, 2, -466.025)
 velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
-camera_do_smoothing = false
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -2014,106 +2012,107 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -34.9,
 size = Vector3(1.872, 1.849, 4.912)
 material = ExtResource("22_cm2xv")
 
-[node name="ZombiePlayground" type="CSGCombiner3D" parent="LevelBlocking"]
+[node name="ZombiePlayground" type="CSGCombiner3D" parent="." groups=["terrain_nav_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -354, 2, -475)
+use_collision = true
 
-[node name="Pillars" type="CSGCombiner3D" parent="LevelBlocking/ZombiePlayground"]
+[node name="Pillars" type="CSGCombiner3D" parent="ZombiePlayground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 5.6)
 
-[node name="pillar1" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar1" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.65, 0.25)
 size = Vector3(0.5, 1.3, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar4" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar4" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0.65, -2.55)
 size = Vector3(0.5, 1.3, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar5" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar5" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 0.65, -0.35)
 size = Vector3(0.5, 1.3, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar6" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar6" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.05, 0.65, 2.65)
 size = Vector3(0.5, 1.3, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar7" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar7" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 0.65, 2.85)
 size = Vector3(0.5, 1.3, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar2" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar2" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.85, 0.5, -0.55)
 size = Vector3(0.5, 1, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar8" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar8" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.75, 0.5, 0.85)
 size = Vector3(0.5, 1, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar9" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar9" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.05, 0.5, -0.95)
 size = Vector3(0.5, 1, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar10" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar10" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.85, 0.5, 1.05)
 size = Vector3(0.5, 1, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar11" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar11" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.15, 0.5, -1.35)
 size = Vector3(0.5, 1, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar3" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar3" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0.75, -2.75)
 size = Vector3(0.5, 1.5, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar12" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar12" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.85, 0.75, 1.05)
 size = Vector3(0.5, 1.5, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar13" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar13" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 0.75, 2.05)
 size = Vector3(0.5, 1.5, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar14" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar14" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.05, 0.75, -2.75)
 size = Vector3(0.5, 1.5, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="pillar15" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Pillars"]
+[node name="pillar15" type="CSGBox3D" parent="ZombiePlayground/Pillars"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.55, 0.75, -3.15)
 size = Vector3(0.5, 1.5, 0.5)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="Platform" type="CSGCombiner3D" parent="LevelBlocking/ZombiePlayground"]
+[node name="Platform" type="CSGCombiner3D" parent="ZombiePlayground"]
 transform = Transform3D(0.258819, 0, 0.965926, 0, 1, 0, -0.965926, 0, 0.258819, 5.50257, 0, 9.49754)
 
-[node name="stairs" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Platform"]
+[node name="stairs" type="CSGBox3D" parent="ZombiePlayground/Platform"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -3.29999, 1.2, -1.74831e-07)
 size = Vector3(3.6, 2.4, 1.8)
 material = ExtResource("22_cm2xv")
@@ -2122,20 +2121,20 @@ steps = 12
 metadata/_custom_type_script = "uid://xajyhp2m1sdg"
 metadata/_edit_lock_ = true
 
-[node name="platform" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Platform"]
+[node name="platform" type="CSGBox3D" parent="ZombiePlayground/Platform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.39999, 1.2, 0)
 size = Vector3(5.8, 2.4, 1.8)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="LevelBlocking/ZombiePlayground/Platform/platform"]
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="ZombiePlayground/Platform/platform"]
 transform = Transform3D(1, 0, 0, 1.64203e-15, -4.37114e-08, 1, -7.10543e-15, -1, -4.37114e-08, 0, 0, 0)
 operation = 2
 radius = 1.0
 sides = 24
 metadata/_edit_lock_ = true
 
-[node name="ramp" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Platform"]
+[node name="ramp" type="CSGBox3D" parent="ZombiePlayground/Platform"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.2, 0)
 size = Vector3(3.4, 2.4, 1.8)
 material = ExtResource("27_4tdq6")
@@ -2143,243 +2142,243 @@ script = ExtResource("30_5enf7")
 metadata/_custom_type_script = "uid://c70ichse0a8nc"
 metadata/_edit_lock_ = true
 
-[node name="Tiles" type="CSGCombiner3D" parent="LevelBlocking/ZombiePlayground"]
+[node name="Tiles" type="CSGCombiner3D" parent="ZombiePlayground"]
 transform = Transform3D(0.965926, 0, 0.258819, 0, 1, 0, -0.258819, 0, 0.965926, -8.97405, 0, 15.3971)
 
-[node name="tile1" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile1" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.04, 0)
 size = Vector3(1, 0.08, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile28" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile28" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.04, 1)
 size = Vector3(1, 0.08, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile8" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile8" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.04, -2)
 size = Vector3(1, 0.08, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile26" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile26" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.04, 0)
 size = Vector3(1, 0.08, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile2" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile2" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -1)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile22" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile22" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.05, 0)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile30" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile30" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.05, -2)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile13" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile13" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.05, -2)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile10" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile10" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.05, -2)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile34" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile34" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.05, -3)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile7" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile7" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.05, -1)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile33" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile33" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.05, 1)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile20" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile20" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, -3)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile31" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile31" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.05, -1)
 size = Vector3(1, 0.1, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile3" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile3" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.0599999, -1)
 size = Vector3(1, 0.12, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile18" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile18" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.0599999, -3)
 size = Vector3(1, 0.12, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile32" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile32" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.0599999, 1)
 size = Vector3(1, 0.12, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile15" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile15" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.0599999, -1)
 size = Vector3(1, 0.12, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile19" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile19" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.0599999, -3)
 size = Vector3(1, 0.12, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile4" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile4" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.0699999, -1)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile11" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile11" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.0699999, -2)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile27" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile27" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.0699999, 0)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile12" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile12" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.0699999, 0)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile25" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile25" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.0699999, -3)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile21" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile21" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0699999, 1)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile24" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile24" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0.0699999, -1)
 size = Vector3(1, 0.14, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile5" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile5" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0799999, -2)
 size = Vector3(1, 0.16, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile35" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile35" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.0799999, 1)
 size = Vector3(1, 0.16, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile14" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile14" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.0799999, -3)
 size = Vector3(1, 0.16, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile6" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile6" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.0899999, 0)
 size = Vector3(1, 0.18, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile17" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile17" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.0899999, -3)
 size = Vector3(1, 0.18, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile29" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile29" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0.0899999, -2)
 size = Vector3(1, 0.18, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile9" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile9" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.0899999, 0)
 size = Vector3(1, 0.18, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile16" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile16" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.0899999, 1)
 size = Vector3(1, 0.18, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="tile23" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Tiles"]
+[node name="tile23" type="CSGBox3D" parent="ZombiePlayground/Tiles"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.0899999, 1)
 size = Vector3(1, 0.18, 1)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
-[node name="Walls" type="CSGCombiner3D" parent="LevelBlocking/ZombiePlayground"]
+[node name="Walls" type="CSGCombiner3D" parent="ZombiePlayground"]
 transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -5.6, 0, -5.9799)
 
-[node name="Wall1" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Walls"]
+[node name="Wall1" type="CSGBox3D" parent="ZombiePlayground/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.3, -0.299988)
 size = Vector3(0.3, 2.6, 8)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
-[node name="Wall2" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Walls"]
+[node name="Wall2" type="CSGBox3D" parent="ZombiePlayground/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.3, -0.300018)
 size = Vector3(0.3, 2.6, 8)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="LevelBlocking/ZombiePlayground/Walls"]
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="ZombiePlayground/Walls"]
 transform = Transform3D(0, -1, -4.37114e-08, -4.37114e-08, -4.37114e-08, 1, -1, 0, -4.37114e-08, 3.84076e-09, 2.31213, -0.2)
 radius = 0.3
 height = 3.68
-sides = 14
+sides = 26
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="CSGRamp3D" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Walls"]
+[node name="CSGRamp3D" type="CSGBox3D" parent="ZombiePlayground/Walls"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.45999, 1.3, -0.199982)
 size = Vector3(2.6, 2.6, 1.8)
 material = ExtResource("27_4tdq6")
@@ -2387,7 +2386,7 @@ script = ExtResource("30_5enf7")
 metadata/_custom_type_script = "uid://c70ichse0a8nc"
 metadata/_edit_lock_ = true
 
-[node name="CSGRamp3D2" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/Walls"]
+[node name="CSGRamp3D2" type="CSGBox3D" parent="ZombiePlayground/Walls"]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, -3.45, 1.3, -0.2)
 size = Vector3(2.6, 2.6, 1.8)
 material = ExtResource("27_4tdq6")
@@ -2395,16 +2394,16 @@ script = ExtResource("30_5enf7")
 metadata/_custom_type_script = "uid://c70ichse0a8nc"
 metadata/_edit_lock_ = true
 
-[node name="halfpipe" type="CSGCombiner3D" parent="LevelBlocking/ZombiePlayground"]
+[node name="halfpipe" type="CSGCombiner3D" parent="ZombiePlayground"]
 transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, -18.9859, 0, 2.85452)
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/halfpipe"]
+[node name="CSGBox3D" type="CSGBox3D" parent="ZombiePlayground/halfpipe"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
 size = Vector3(9, 3.4, 8)
 material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="LevelBlocking/ZombiePlayground/halfpipe"]
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="ZombiePlayground/halfpipe"]
 transform = Transform3D(-4.37114e-08, 0, -1, 1, -4.37114e-08, -4.37114e-08, -4.37114e-08, -1, 0, -1, 3.38, 0)
 operation = 2
 radius = 3.25
@@ -2413,7 +2412,7 @@ sides = 34
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="LevelBlocking/ZombiePlayground/halfpipe"]
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="ZombiePlayground/halfpipe"]
 transform = Transform3D(-4.37114e-08, 0, -1, 1, -4.37114e-08, -4.37114e-08, -4.37114e-08, -1, 0, 1, 3.38, 0)
 operation = 2
 radius = 3.25
@@ -2422,7 +2421,7 @@ sides = 34
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="LevelBlocking/ZombiePlayground/halfpipe"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="ZombiePlayground/halfpipe"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.23, 0)
 operation = 2
 size = Vector3(2, 0.2, 9)
@@ -2481,37 +2480,37 @@ script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn6" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -380.6, 2.05, -493.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -373.4, 2.05, -491.2)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn7" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -361.6, 2.05, -495.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -361.6, 2.05, -492.6)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn8" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -336.4, 2.05, -494.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -344.2, 2.05, -493)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn9" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.05, -482)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -334.4, 2.05, -480.2)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn10" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -320.4, 2.05, -466.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -328.6, 2.05, -462.4)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn11" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -320.4, 2.05, -453.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -331.8, 2.05, -453.6)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
@@ -2529,31 +2528,31 @@ script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn14" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -383, 2.05, -442.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -381.8, 2.05, -445.6)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn15" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -399.4, 2.05, -450.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -393.2, 2.05, -453)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn16" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -402.6, 2.05, -464.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -394.2, 2.05, -467)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn17" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -397.6, 2.05, -479.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -391.8, 2.05, -477)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Spawn18" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -389.4, 2.05, -488)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -385.8, 2.05, -486)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"

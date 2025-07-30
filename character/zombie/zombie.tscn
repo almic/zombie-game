@@ -217,6 +217,7 @@ collider_shape = SubResource("CapsuleShape3D_d0fm7")
 top_speed = 4.7
 move_acceleration = 18.0
 move_turn_speed_keep = 0.6
+camera_do_smoothing = false
 
 [node name="collider" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.835, 0)
@@ -1894,7 +1895,6 @@ anim_player = NodePath("../AnimationPlayer")
 unique_name_in_owner = true
 path_desired_distance = 0.5
 target_desired_distance = 1.2
-path_height_offset = 0.5
 path_metadata_flags = 0
 simplify_path = true
 simplify_epsilon = 0.1

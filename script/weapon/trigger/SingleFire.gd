@@ -18,7 +18,7 @@ class_name TriggerSingleFire extends TriggerResource
 var _weapon_cycle: float = 0
 var _weapon_triggered: bool = false
 
-func update(action: GUIDEAction, base: Weapon, delta: float) -> void:
+func update(action: GUIDEAction, base: WeaponNode, delta: float) -> void:
     if action.is_completed():
         _weapon_triggered = false
 
@@ -39,7 +39,7 @@ func update(action: GUIDEAction, base: Weapon, delta: float) -> void:
 
     _trigger(base, true)
 
-func _trigger(base: Weapon, _activate: bool) -> void:
+func _trigger(base: WeaponNode, _activate: bool) -> void:
     var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
     var transform: Transform3D = base.weapon_tranform()
     var from: Vector3 = transform.origin
@@ -52,8 +52,7 @@ func _trigger(base: Weapon, _activate: bool) -> void:
     var hit := space.intersect_ray(query)
     # DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15), 5)
 
-    base.trigger_particle()
-    base.trigger_sound()
+    base.play_weapon_effects()
 
     if not hit:
         return

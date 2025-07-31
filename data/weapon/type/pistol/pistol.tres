@@ -3,17 +3,15 @@
 [ext_resource type="PackedScene" uid="uid://d30d6ot2ufjtr" path="res://particle/system/weapon/gunshot_small.tscn" id="1_6v0uo"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="2_257ta"]
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1v76v"]
+[ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="4_6v0uo"]
 [ext_resource type="Resource" uid="uid://br27afoygcjl0" path="res://data/weapon/trigger/single_fire.tres" id="4_smwrr"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_poh2x"]
-size = Vector3(0.06, 0.06, 0.535)
 
 [resource]
 script = ExtResource("2_257ta")
-mesh = SubResource("BoxMesh_poh2x")
-mesh_offset = Vector3(0.225, -0.195, -0.605)
+weapon_scene = ExtResource("4_6v0uo")
+scene_offset = Vector3(0, 0, 0)
 particle_system = ExtResource("1_6v0uo")
-particle_offset = Vector3(0, 0, -0.275)
+particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.18)
 particle_test = false
 damage = 16.0
 trigger_method = ExtResource("4_smwrr")

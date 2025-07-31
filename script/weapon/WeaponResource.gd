@@ -4,10 +4,10 @@
 ## Defines a weapon type that can be used in the world
 class_name WeaponResource extends Resource
 
-@export var mesh: Mesh
+@export var weapon_scene: PackedScene
 
-@export_group("Mesh", "mesh")
-@export var mesh_offset: Vector3
+@export_group("Scene", "scene")
+@export var scene_offset: Vector3
 
 ## The particle to use when firing. The root node MUST be a ParticleSystem, or
 ## no particles will be emitted. This is an optimization to avoid instancing

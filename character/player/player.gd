@@ -5,7 +5,7 @@ class_name Player extends CharacterBase
 @onready var camera_target: Node3D = %CameraTarget
 @onready var camera_3d: Camera3D = %Camera3D
 @onready var hurtbox: HurtBox = %Hurtbox
-@onready var weapon: Weapon = %weapon
+@onready var weapon: WeaponNode = %WeaponNode
 @onready var aim_target: RayCast3D = %AimTarget
 
 

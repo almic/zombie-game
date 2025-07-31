@@ -1,11 +1,8 @@
 @tool
+@icon("res://icon/weapon.svg")
 
 ## Manages a physical weapon that targets a RayCast3D hit point
-class_name Weapon extends Node3D
-
-
-@onready var mesh: MeshInstance3D = %mesh
-
+class_name WeaponNode extends Node3D
 
 @export var weapon_type: WeaponResource
 
@@ -28,15 +25,15 @@ var _weapon_target_amount: float = 0
 
 var _weapon_trigger: GUIDEAction
 
+var _weapon_scene: WeaponScene
+
 var _particle_system: ParticleSystem
 
 var _weapon_audio_player: WeaponAudioPlayer
 
 
 func _ready() -> void:
-    mesh.mesh = weapon_type.mesh
-    position = weapon_type.mesh_offset
-
+    _load_weapon_scene()
     _load_particle_system()
 
     _weapon_audio_player = WeaponAudioPlayer.new()
@@ -49,8 +46,8 @@ func set_trigger(action: GUIDEAction) -> void:
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
         if weapon_type:
-            mesh.mesh = weapon_type.mesh
-            position = weapon_type.mesh_offset
+            if _weapon_scene:
+                _weapon_scene.position = weapon_type.scene_offset
             if weapon_type.particle_test:
                 _load_particle_system()
                 trigger_particle(true)
@@ -65,11 +62,11 @@ func _process(delta: float) -> void:
     if not do_targeting:
         return
 
-    if _weapon_target_to.is_equal_approx(mesh.global_basis.get_rotation_quaternion()):
+    if _weapon_target_to.is_equal_approx(_weapon_scene.global_basis.get_rotation_quaternion()):
         return
 
     _weapon_target_amount += target_update_speed * delta
-    mesh.global_basis = Basis(
+    _weapon_scene.global_basis = Basis(
         _weapon_target_from.slerp(_weapon_target_to, _weapon_target_amount)
     )
 
@@ -95,7 +92,7 @@ func _physics_process(delta: float) -> void:
         # DrawLine3d.DrawLine(mesh.global_position, target.get_collision_point(), Color(0.2, 0.25, 0.8), 1)
         _weapon_target_to = Quaternion(
             Basis.looking_at(
-                mesh.global_position.direction_to(
+                _weapon_scene.global_position.direction_to(
                     target.get_collision_point()
                 ), target.basis.y
             )
@@ -104,12 +101,20 @@ func _physics_process(delta: float) -> void:
         # Aim forward
         _weapon_target_to = target.global_basis.get_rotation_quaternion()
 
-    _weapon_target_from = mesh.global_basis.get_rotation_quaternion()
+    _weapon_target_from = _weapon_scene.global_basis.get_rotation_quaternion()
     _weapon_target_amount = 0
 
 ## Get the global weapon transform
 func weapon_tranform() -> Transform3D:
-    return mesh.global_transform
+    return _weapon_scene.global_transform
+
+## Callback used by triggers to activate weapon effects
+func play_weapon_effects() -> void:
+    trigger_sound()
+    trigger_particle()
+
+    if _weapon_scene:
+        _weapon_scene.on_fire()
 
 ## Trigger the weapon
 func trigger_weapon(activate: bool = true) -> void:
@@ -125,6 +130,31 @@ func trigger_particle(activate: bool = true) -> void:
         return
 
     _particle_system.emitting = activate
+
+func _load_weapon_scene() -> void:
+    if _weapon_scene:
+        remove_child(_weapon_scene)
+        _weapon_scene.queue_free()
+        _weapon_scene = null
+
+    if not weapon_type.weapon_scene:
+        return
+
+    var weapon_scene = weapon_type.weapon_scene.instantiate()
+    if weapon_scene is not WeaponScene:
+        push_error(
+            "Weapon type \"" +
+            str(weapon_type.resource_name) +
+            "\" weapon scene \"" +
+            str(weapon_type.weapon_scene.resource_name) +
+            "\" root node is not a WeaponScene!"
+        )
+        return
+
+    _weapon_scene = weapon_scene
+
+    add_child(_weapon_scene)
+    _weapon_scene.position = weapon_type.scene_offset
 
 func _load_particle_system() -> void:
     if _particle_system:
@@ -146,5 +176,6 @@ func _load_particle_system() -> void:
         )
         return
     _particle_system = particle_system
+
+    add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
-    mesh.add_child(_particle_system)

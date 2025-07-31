@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://lum7snfoxdml"]
+
+[ext_resource type="Script" uid="uid://ddecsnlrrapmh" path="res://scene/weapon/WeaponScene.gd" id="1_rs8p0"]
+[ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="2_b3nnr"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_it0b4"]
+size = Vector3(0.08, 0.18, 0.32)
+
+[node name="Pistol" type="Node3D"]
+script = ExtResource("1_rs8p0")
+metadata/_custom_type_script = "uid://ddecsnlrrapmh"
+
+[node name="proto mesh" type="CSGCombiner3D" parent="."]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="proto mesh"]
+size = Vector3(0.06, 0.06, 0.3)
+material = ExtResource("2_b3nnr")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="proto mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0.1)
+size = Vector3(0.06, 0.1, 0.1)
+material = ExtResource("2_b3nnr")
+
+[node name="Collider" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.98023e-08, -0.05, 2.98023e-08)
+shape = SubResource("BoxShape3D_it0b4")
+disabled = true

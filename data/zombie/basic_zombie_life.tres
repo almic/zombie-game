@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="LifeResource" load_steps=2 format=3 uid="uid://bir81u7q2ypbn"]
+
+[ext_resource type="Script" uid="uid://cugishrosnaex" path="res://script/combat/LifeResource.gd" id="1_31qnm"]
+
+[resource]
+resource_local_to_scene = true
+script = ExtResource("1_31qnm")
+health = 100.0
+metadata/_custom_type_script = "uid://cugishrosnaex"

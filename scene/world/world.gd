@@ -110,20 +110,20 @@ func spawn_zombie(delta: float) -> void:
     if _spawn_timer > 0:
         return
 
-    print("Running zombie spawn")
+    #print("Running zombie spawn")
     update_zombie_counts()
     var chance: float = clampf(compute_spawn_chance(), 0.0, 1.0)
 
     _spawn_timer = spawn_timer_minimum + ((spawn_timer_maximum - spawn_timer_minimum) * (1.0 - chance))
-    print("Next timer: " + str(_spawn_timer))
-    print("Chance: " + str(chance))
+    #print("Next timer: " + str(_spawn_timer))
+    #print("Chance: " + str(chance))
 
     if chance <= 0:
-        print("Zero chance")
+        #print("Zero chance")
         return
 
     if randf() > chance:
-        print("Random fail")
+        #print("Random fail")
         return
 
     # Spawn a zombie
@@ -131,20 +131,18 @@ func spawn_zombie(delta: float) -> void:
 
     # No spawn point
     if not spawn_point.is_finite():
-        print("No suitable spawn point")
+        #print("No suitable spawn point")
         return
 
-    print("Spawning zombie: " + str(spawn_point))
+    #print("Spawning zombie: " + str(spawn_point))
     var zombie: Node3D = zomb_basic_zombie.instantiate()
     add_child(zombie)
 
     zombie.global_position = spawn_point + (0.01 * Vector3.UP)
     zombie.add_to_group('zombie')
 
-    terrain_nav_region.add_child(zombie)
-
-    #if zombie is Zombie:
-        #zombie.target_search_groups.append('zombie_target')
+    if zombie is Zombie:
+        zombie.target_search_groups.append('zombie_target')
 
 func update_spawn_points() -> void:
     _spawn_points.assign(get_tree().get_nodes_in_group('zombie_spawn'))
@@ -158,7 +156,7 @@ func update_zombie_counts() -> void:
             alive += 1
 
     _zombies_alive = alive
-    print("Zombie count: " + str(_zombies_alive))
+    #print("Zombie count: " + str(_zombies_alive))
 
 func compute_spawn_power() -> void:
     _spawn_rate_power = (

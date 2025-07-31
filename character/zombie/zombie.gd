@@ -5,6 +5,7 @@ class_name Zombie extends CharacterBase
 @onready var navigation: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
 @onready var attack_hitbox: HitBox = %AttackHitbox
+@onready var bone_simulator: PhysicalBoneSimulator3D = %PhysicalBoneSimulator3D
 
 ## Body Region Hurtboxes
 @onready var head: HurtBox = %head
@@ -77,7 +78,7 @@ var _simple_move: bool = false
 @export_group("Combat")
 
 ## Health
-@export var health: float = 100
+@export var life: LifeResource
 
 ## How much damage to deal
 @export var attack_damage: float = 0.0:
@@ -104,19 +105,21 @@ var _simple_move: bool = false
 ## Locomotion state machine
 var locomotion: AnimationNodeStateMachinePlayback
 
-var _is_alive = false
-
 func _ready() -> void:
+    # Animate in editor
     locomotion = animation_tree["parameters/Locomotion/playback"]
     locomotion.travel(anim_idle)
+
+    if Engine.is_editor_hint():
+        return
 
     attack_hitbox.damage = attack_damage
 
     target_search_groups = target_search_groups.duplicate()
 
     connect_hurtboxes()
-
-    _is_alive = true
+    life.died.connect(on_death)
+    life.check_health()
 
 func _process(_delta: float) -> void:
     if Engine.is_editor_hint():
@@ -128,7 +131,7 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    if not _is_alive:
+    if not life.is_alive:
         return
 
     if NavigationServer3D.map_get_iteration_id(navigation.get_navigation_map()) == 0:
@@ -141,7 +144,6 @@ func _physics_process(delta: float) -> void:
         # Do not spin in air
         # update_rotation()
         update_movement(delta)
-        print('falling')
         return
 
     update_target_position(delta)
@@ -149,7 +151,6 @@ func _physics_process(delta: float) -> void:
     if _active_target == null:
         anim_goto(locomotion, anim_idle)
         update_movement(delta)
-        print('nobody to attack')
         return
 
     # dont move if attacking
@@ -164,7 +165,6 @@ func _physics_process(delta: float) -> void:
         _simple_move = true
         movement_direction = get_simple_move_direction()
 
-    print('moving! ' + str(movement_direction))
     update_movement(delta)
 
     if is_zero_approx(movement_direction.length_squared()):
@@ -346,38 +346,30 @@ func anim_goto(
     state_machine.travel(state, reset)
 
 func connect_hurtboxes() -> void:
-    for part in [
-        head,
-        body,
+    life.connect_hurtbox(head, mult_head)
+    life.connect_hurtbox(body, mult_body)
+
+    for arm_part in [
         arm_l_1, arm_l_2, hand_l,
-        arm_r_1, arm_r_2, hand_r,
+        arm_r_1, arm_r_2, hand_r
+    ]:
+        life.connect_hurtbox(arm_part, mult_arm)
+
+    for leg_part in [
         leg_l_1, leg_l_2, foot_l,
         leg_r_1, leg_r_2, foot_r
     ]:
-        part.on_hit.connect(on_hit)
+        life.connect_hurtbox(leg_part, mult_leg)
 
-func on_hit(_from: Node3D, part: HurtBox, _hit: Dictionary, damage: float) -> void:
-    if part == head:
-        print("headshot!")
-        damage *= mult_head
-    elif part == body:
-        print("body shot!")
-        damage *= mult_body
-    elif part in [arm_l_1, arm_l_2, hand_l, arm_r_1, arm_r_2, hand_r]:
-        print("arm shot!")
-        damage *= mult_arm
-    elif part in [leg_l_1, leg_l_2, foot_l, leg_r_1, leg_r_2, foot_r]:
-        print("leg shot!")
-        damage *= mult_leg
-
-    health -= damage
-    if health > 0:
-        return
-
-    process_mode = Node.PROCESS_MODE_DISABLED
-
-    print("RAHH I DIE!")
-    _is_alive = false
+func on_death() -> void:
+    #print("RAHH I DIE!")
+    collider.disabled = true
+    animation_tree.active = false
+    bone_simulator.active = true
+    #bone_simulator.process_mode = Node.PROCESS_MODE_PAUSABLE
+    bone_simulator.physical_bones_start_simulation()
+    #process_mode = Node.PROCESS_MODE_DISABLED
+    get_tree().create_timer(10.0).timeout.connect(queue_free)
 
 func is_alive() -> bool:
-    return _is_alive
+    return life.is_alive

@@ -1,8 +1,9 @@
-[gd_scene load_steps=48 format=3 uid="uid://vvkd1vnbarkk"]
+[gd_scene load_steps=50 format=3 uid="uid://vvkd1vnbarkk"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="FontFile" uid="uid://cu8bvod6tnnwr" path="res://addons/guide/ui/renderers/keyboard/Lato-Black.ttf" id="1_uiaus"]
 [ext_resource type="Script" uid="uid://yc5h3mnfmgmn" path="res://character/zombie/zombie.gd" id="2_t0jn8"]
+[ext_resource type="Resource" uid="uid://bir81u7q2ypbn" path="res://data/zombie/basic_zombie_life.tres" id="3_0bopv"]
 [ext_resource type="ArrayMesh" uid="uid://b4lot0o7tuu4k" path="res://model/zombie/romero.res" id="3_eseir"]
 [ext_resource type="AnimationLibrary" uid="uid://g7yly4yxa66j" path="res://animation/zombie/zombie_anim_lib.res" id="4_7nqyo"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="5_7nqyo"]
@@ -25,6 +26,9 @@ text = "O ~ O"
 font = ExtResource("1_uiaus")
 font_size = 15
 depth = 0.1
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_0bopv"]
+radius = 0.033534
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_eseir"]
 radius = 0.12225
@@ -205,7 +209,7 @@ target_update_distance = 0.5
 anim_idle = "idle"
 anim_attack = "attack"
 anim_run = "run"
-health = 100.0
+life = ExtResource("3_0bopv")
 attack_damage = 0.0
 mult_head = 3.0
 mult_body = 1.0
@@ -703,7 +707,82 @@ gi_mode = 0
 mesh = ExtResource("3_eseir")
 
 [node name="PhysicalBoneSimulator3D" type="PhysicalBoneSimulator3D" parent="Skeleton3D" index="1"]
+unique_name_in_owner = true
 visible = false
+active = false
+
+[node name="hips" type="PhysicalBone3D" parent="Skeleton3D/PhysicalBoneSimulator3D" index="0"]
+transform = Transform3D(0.993535, -0.0257345, -0.110572, 0.010608, 0.990752, -0.13527, 0.11303, 0.133222, 0.98462, -0.0173798, 1.04272, -0.0285177)
+joint_type = 5
+body_offset = Transform3D(1, -1.25729e-07, -4.90248e-06, 1.23866e-07, 1, -8.31485e-06, 4.90248e-06, 8.29995e-06, 1, 0, 0, 0)
+bone_name = "mixamorig5_Hips"
+joint_constraints/x/linear_limit_enabled = true
+joint_constraints/x/linear_limit_upper = 0.0
+joint_constraints/x/linear_limit_lower = 0.0
+joint_constraints/x/linear_limit_softness = 0.7
+joint_constraints/x/linear_spring_enabled = false
+joint_constraints/x/linear_spring_stiffness = 0.0
+joint_constraints/x/linear_spring_damping = 0.0
+joint_constraints/x/linear_equilibrium_point = 0.0
+joint_constraints/x/linear_restitution = 0.5
+joint_constraints/x/linear_damping = 1.0
+joint_constraints/x/angular_limit_enabled = true
+joint_constraints/x/angular_limit_upper = 0.0
+joint_constraints/x/angular_limit_lower = 0.0
+joint_constraints/x/angular_limit_softness = 0.5
+joint_constraints/x/angular_restitution = 0.0
+joint_constraints/x/angular_damping = 1.0
+joint_constraints/x/erp = 0.5
+joint_constraints/x/angular_spring_enabled = false
+joint_constraints/x/angular_spring_stiffness = 0.0
+joint_constraints/x/angular_spring_damping = 0.0
+joint_constraints/x/angular_equilibrium_point = 0.0
+joint_constraints/y/linear_limit_enabled = true
+joint_constraints/y/linear_limit_upper = 0.0
+joint_constraints/y/linear_limit_lower = 0.0
+joint_constraints/y/linear_limit_softness = 0.7
+joint_constraints/y/linear_spring_enabled = false
+joint_constraints/y/linear_spring_stiffness = 0.0
+joint_constraints/y/linear_spring_damping = 0.0
+joint_constraints/y/linear_equilibrium_point = 0.0
+joint_constraints/y/linear_restitution = 0.5
+joint_constraints/y/linear_damping = 1.0
+joint_constraints/y/angular_limit_enabled = true
+joint_constraints/y/angular_limit_upper = 0.0
+joint_constraints/y/angular_limit_lower = 0.0
+joint_constraints/y/angular_limit_softness = 0.5
+joint_constraints/y/angular_restitution = 0.0
+joint_constraints/y/angular_damping = 1.0
+joint_constraints/y/erp = 0.5
+joint_constraints/y/angular_spring_enabled = false
+joint_constraints/y/angular_spring_stiffness = 0.0
+joint_constraints/y/angular_spring_damping = 0.0
+joint_constraints/y/angular_equilibrium_point = 0.0
+joint_constraints/z/linear_limit_enabled = true
+joint_constraints/z/linear_limit_upper = 0.0
+joint_constraints/z/linear_limit_lower = 0.0
+joint_constraints/z/linear_limit_softness = 0.7
+joint_constraints/z/linear_spring_enabled = false
+joint_constraints/z/linear_spring_stiffness = 0.0
+joint_constraints/z/linear_spring_damping = 0.0
+joint_constraints/z/linear_equilibrium_point = 0.0
+joint_constraints/z/linear_restitution = 0.5
+joint_constraints/z/linear_damping = 1.0
+joint_constraints/z/angular_limit_enabled = true
+joint_constraints/z/angular_limit_upper = 0.0
+joint_constraints/z/angular_limit_lower = 0.0
+joint_constraints/z/angular_limit_softness = 0.5
+joint_constraints/z/angular_restitution = 0.0
+joint_constraints/z/angular_damping = 1.0
+joint_constraints/z/erp = 0.5
+joint_constraints/z/angular_spring_enabled = false
+joint_constraints/z/angular_spring_stiffness = 0.0
+joint_constraints/z/angular_spring_damping = 0.0
+joint_constraints/z/angular_equilibrium_point = 0.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Skeleton3D/PhysicalBoneSimulator3D/hips" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.20053e-10, -0.0463647, -9.02219e-10)
+shape = SubResource("SphereShape3D_0bopv")
 
 [node name="Physical Bone mixamorig5_Spine" type="PhysicalBone3D" parent="Skeleton3D/PhysicalBoneSimulator3D" index="0"]
 transform = Transform3D(0.984923, -0.0762776, -0.155267, 0.0723856, 0.996908, -0.0305763, 0.157119, 0.0188762, 0.987399, -0.0109357, 1.13998, -0.026597)

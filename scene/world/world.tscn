@@ -1,4 +1,4 @@
-[gd_scene load_steps=37 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=39 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -10,6 +10,7 @@
 [ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
+[ext_resource type="Script" uid="uid://cugishrosnaex" path="res://script/combat/LifeResource.gd" id="12_a331h"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
@@ -33,6 +34,12 @@
 [ext_resource type="Curve3D" uid="uid://ss311kjgcm1s" path="res://scene/world/road_curves/elder_curve.res" id="47_dt3as"]
 [ext_resource type="Curve3D" uid="uid://3vyfumbpe2af" path="res://scene/world/road_curves/iris_curve.res" id="47_my0pb"]
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
+
+[sub_resource type="Resource" id="Resource_a331h"]
+resource_local_to_scene = true
+script = ExtResource("12_a331h")
+health = 100.0
+metadata/_custom_type_script = "uid://cugishrosnaex"
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8b61"]
 albedo_texture = ExtResource("30_avgpp")
@@ -108,9 +115,10 @@ process_mode = 1
 transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -358.311, 2.05, -461.641)
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
-transform = Transform3D(-0.258819, -1.64203e-15, -0.965926, -2.83626e-14, 1, 4.49942e-16, 0.965926, 1.42109e-14, -0.258819, -351.61, 2, -466.025)
+transform = Transform3D(-0.258819, -2.23517e-08, -0.965926, 1.49012e-08, 1, -5.33531e-08, 0.965926, -2.98023e-08, -0.258819, -350.752, 2.04, -466.481)
 velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
+life = SubResource("Resource_a331h")
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"

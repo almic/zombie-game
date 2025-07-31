@@ -10,7 +10,7 @@ class_name Player extends CharacterBase
 
 
 @export_group("Combat")
-@export var health: float = 100
+@export var life: LifeResource
 
 @export_group("Movement")
 @export var look_speed: float = 0.55
@@ -29,13 +29,18 @@ var score: int = 0:
 func _ready() -> void:
     super._ready()
 
-    if not Engine.is_editor_hint():
-        hurtbox.enable()
-        hurtbox.on_hit.connect(take_hit)
+    if Engine.is_editor_hint():
+        return
+
     aim_target.add_exception(hurtbox)
     aim_target.add_exception(self)
 
     weapon.set_trigger(fire_primary)
+
+    connect_hurtboxes()
+    life.died.connect(on_death)
+    life.hurt.connect(on_hurt)
+    life.check_health()
 
 func _process(_delta: float) -> void:
     if Engine.is_editor_hint():
@@ -65,14 +70,15 @@ func _physics_process(delta: float) -> void:
 
     update_movement(delta)
 
-func take_hit(_from: Node3D, _to: HurtBox, _hit: Dictionary, damage: float) -> void:
-    # take damage
-    health -= damage
+func on_hurt(_from: Node3D, _part: HurtBox, _damage: float, _hit: Dictionary) -> void:
+    get_tree().call_group('hud', 'update_health', life.health / life.max_health)
 
-    if health > 0:
-        return
 
-    print("gah... dead!")
+func on_death() -> void:
+    print('Gah! I died!')
+
+    get_tree().call_group('world', 'on_player_death')
+
 
 func set_score(value: int) -> void:
     if score == value:
@@ -81,3 +87,7 @@ func set_score(value: int) -> void:
     score = value
 
     get_tree().call_group('hud', 'update_score', score)
+
+func connect_hurtboxes() -> void:
+    hurtbox.enable()
+    life.connect_hurtbox(hurtbox)

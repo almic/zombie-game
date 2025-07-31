@@ -64,7 +64,10 @@ var _spawn_timer: float = 0
 
 
 @onready var pause_menu: Control = %pause
+@onready var gameover_screen: GameoverScreen = %gameover
 
+
+var is_gameover: bool = false
 
 var _zombies: Array[Zombie] = []
 var _zombies_alive: int = 0
@@ -92,7 +95,7 @@ func _process(delta: float) -> void:
 
 
 func handle_pause() -> void:
-    if not pause.is_triggered():
+    if is_gameover or not pause.is_triggered():
         return
 
     if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
@@ -103,6 +106,18 @@ func handle_pause() -> void:
         Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
         get_tree().paused = true
         pause_menu.visible = true
+
+func handle_gameover() -> void:
+    if is_gameover:
+        return
+
+    is_gameover = true
+
+    Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+
+    gameover_screen.process_mode = Node.PROCESS_MODE_INHERIT
+    gameover_screen.visible = true
+    gameover_screen.play_gameover()
 
 
 func spawn_zombie(delta: float) -> void:
@@ -142,6 +157,7 @@ func spawn_zombie(delta: float) -> void:
     zombie.add_to_group('zombie')
 
     if zombie is Zombie:
+        zombie.attack_damage = 20
         zombie.target_search_groups.append('zombie_target')
 
 func update_spawn_points() -> void:
@@ -173,7 +189,7 @@ func compute_spawn_chance() -> float:
     return -pow((float(_zombies_alive) / float(limit)), _spawn_rate_power) + 1.0
 
 func select_zombie_spawn() -> Vector3:
-    var spawns: Array[SpawnPoint] = _spawn_points
+    var spawns: Array[SpawnPoint] = _spawn_points.duplicate()
 
     while len(spawns) > 0:
         var spawn: SpawnPoint = spawns.pick_random() as SpawnPoint
@@ -202,3 +218,6 @@ func select_zombie_spawn() -> Vector3:
         return spawn.global_position
 
     return Vector3(INF, INF, INF)
+
+func on_player_death() -> void:
+    handle_gameover()

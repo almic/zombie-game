@@ -4,6 +4,7 @@ class_name LifeResource extends Resource
 signal died()
 signal hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary)
 
+@export var max_health: float = 100.0
 @export var health: float = 100.0
 
 var is_alive: bool = true

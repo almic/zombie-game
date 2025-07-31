@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=41 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -9,6 +9,7 @@
 [ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
 [ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
+[ext_resource type="PackedScene" uid="uid://bb3wt0w01eidc" path="res://ui/gameover.tscn" id="11_18ff0"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
 [ext_resource type="Script" uid="uid://cugishrosnaex" path="res://script/combat/LifeResource.gd" id="12_a331h"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
@@ -35,9 +36,17 @@
 [ext_resource type="Curve3D" uid="uid://3vyfumbpe2af" path="res://scene/world/road_curves/iris_curve.res" id="47_my0pb"]
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
 
+[sub_resource type="Resource" id="Resource_18ff0"]
+resource_local_to_scene = true
+script = ExtResource("12_a331h")
+max_health = 100.0
+health = 100.0
+metadata/_custom_type_script = "uid://cugishrosnaex"
+
 [sub_resource type="Resource" id="Resource_a331h"]
 resource_local_to_scene = true
 script = ExtResource("12_a331h")
+max_health = 100.0
 health = 100.0
 metadata/_custom_type_script = "uid://cugishrosnaex"
 
@@ -51,7 +60,7 @@ size = Vector2(3048, 3048)
 material = ExtResource("31_i8b61")
 size = Vector2(4096, 4096)
 
-[node name="world" type="Node3D"]
+[node name="world" type="Node3D" groups=["world"]]
 process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
@@ -110,12 +119,18 @@ process_mode = 2
 visible = false
 top_level = true
 
+[node name="gameover" parent="CanvasLayer" instance=ExtResource("11_18ff0")]
+unique_name_in_owner = true
+process_mode = 4
+visible = false
+
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
-transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -358.311, 2.05, -461.641)
+transform = Transform3D(0.707107, 0, -0.707106, 0, 1, 0, 0.707106, 0, 0.707107, -363.876, 2.05, -473.859)
+life = SubResource("Resource_18ff0")
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
-transform = Transform3D(-0.258819, -2.23517e-08, -0.965926, 1.49012e-08, 1, -5.33531e-08, 0.965926, -2.98023e-08, -0.258819, -350.752, 2.04, -466.481)
+transform = Transform3D(0.707107, -1.99303e-07, -0.707107, 1.63913e-07, 1, 0, 0.707107, 8.9407e-08, 0.707107, -347.773, 4.49153, -467.621)
 velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
@@ -2023,6 +2038,8 @@ material = ExtResource("22_cm2xv")
 [node name="ZombiePlayground" type="CSGCombiner3D" parent="." groups=["terrain_nav_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -354, 2, -475)
 use_collision = true
+collision_layer = 16
+collision_mask = 0
 
 [node name="Pillars" type="CSGCombiner3D" parent="ZombiePlayground"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7, 0, 5.6)

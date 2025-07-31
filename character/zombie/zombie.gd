@@ -5,7 +5,7 @@ class_name Zombie extends CharacterBase
 @onready var navigation: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
 @onready var attack_hitbox: HitBox = %AttackHitbox
-@onready var bone_simulator: PhysicalBoneSimulator3D = %PhysicalBoneSimulator3D
+@onready var bone_simulator: PhysicalBoneSimulator3D = %BoneSimulator
 
 ## Body Region Hurtboxes
 @onready var head: HurtBox = %head

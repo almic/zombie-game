@@ -58,4 +58,7 @@ func _trigger(base: WeaponNode, _activate: bool) -> void:
         return
 
     if hit.collider is HurtBox:
-        hit.collider.do_hit(base, hit, base.weapon_type.damage)
+        var from_node: Node3D = base
+        if base.controller:
+            from_node = base.controller
+        hit.collider.do_hit(from_node, hit, base.weapon_type.damage)

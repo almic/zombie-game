@@ -2,6 +2,7 @@ class_name LifeResource extends Resource
 
 
 signal died()
+signal hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary)
 
 @export var health: float = 100.0
 
@@ -13,15 +14,16 @@ func connect_hurtbox(hurt_box: HurtBox, multiplier: float = 1.0) -> void:
     _hurtboxes.set(hurt_box.get_rid(), multiplier)
     hurt_box.on_hit.connect(_on_hit)
 
-func check_health() -> void:
+func check_health(emit_died: bool = true) -> void:
     if health > 0.0001:
         return
 
     if is_alive:
         is_alive = false
-        died.emit()
+        if emit_died:
+            died.emit()
 
-func _on_hit(_from: Node3D, part: HurtBox, _hit: Dictionary, damage: float) -> void:
+func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> void:
     if not is_alive:
         return
 
@@ -29,6 +31,12 @@ func _on_hit(_from: Node3D, part: HurtBox, _hit: Dictionary, damage: float) -> v
     if not _hurtboxes.has(part_id):
         return
 
-    health -= damage * _hurtboxes.get(part_id, 1.0)
+    damage *= _hurtboxes.get(part_id, 1.0)
+    health -= damage
 
-    check_health()
+    check_health(false)
+
+    hurt.emit(from, part, damage, hit)
+
+    if not is_alive:
+        died.emit()

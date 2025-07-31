@@ -4,6 +4,8 @@
 ## Manages a physical weapon that targets a RayCast3D hit point
 class_name WeaponNode extends Node3D
 
+@export var controller: Node3D
+
 @export var weapon_type: WeaponResource
 
 ## If the weapon should align itself with the target RayCast3D. You should

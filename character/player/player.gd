@@ -22,6 +22,10 @@ class_name Player extends CharacterBase
 @export var fire_primary: GUIDEAction
 
 
+var score: int = 0:
+    set = set_score
+
+
 func _ready() -> void:
     super._ready()
 
@@ -69,3 +73,11 @@ func take_hit(_from: Node3D, _to: HurtBox, _hit: Dictionary, damage: float) -> v
         return
 
     print("gah... dead!")
+
+func set_score(value: int) -> void:
+    if score == value:
+        return
+
+    score = value
+
+    get_tree().call_group('hud', 'update_score', score)

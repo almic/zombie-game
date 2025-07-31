@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=17 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -10,6 +10,7 @@
 [ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="7_0cf6c"]
 [ext_resource type="Script" uid="uid://n578e74oit7v" path="res://script/weapon/WeaponNode.gd" id="7_qh58e"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="8_v2h1c"]
+[ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="9_hr31g"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
 radius = 0.34
@@ -18,6 +19,18 @@ height = 1.7
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_glpr6"]
 radius = 0.34
 height = 1.7
+
+[sub_resource type="LabelSettings" id="LabelSettings_qh58e"]
+font_size = 40
+font_color = Color(0.740137, 0.925364, 1, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hr31g"]
+font_size = 40
+font_color = Color(1, 0.926099, 0.725471, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_wfnr8"]
 
@@ -56,15 +69,16 @@ top_level = true
 cull_mask = 524287
 current = true
 
-[node name="WeaponNode" type="Node3D" parent="CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("target")]
+[node name="WeaponNode" type="Node3D" parent="CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
+controller = NodePath("../../..")
 weapon_type = ExtResource("7_0cf6c")
 target = NodePath("../AimTarget")
 metadata/_custom_type_script = "uid://n578e74oit7v"
 
-[node name="hud" type="Control" parent="CameraTarget/Camera3D" index="1"]
+[node name="hud" type="Control" parent="CameraTarget/Camera3D" index="1" groups=["hud"]]
 clip_contents = true
 layout_mode = 3
 anchors_preset = 15
@@ -73,8 +87,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("9_hr31g")
+metadata/_custom_type_script = "uid://dpfyrr2a6s6u0"
 
-[node name="center" type="CenterContainer" parent="CameraTarget/Camera3D/hud" index="0"]
+[node name="crosshair_root" type="CenterContainer" parent="CameraTarget/Camera3D/hud" index="0"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -82,15 +98,44 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="crosshair_ctl" type="Control" parent="CameraTarget/Camera3D/hud/center" index="0"]
+[node name="crosshair_ctl" type="Control" parent="CameraTarget/Camera3D/hud/crosshair_root" index="0"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CrossHair" type="Node2D" parent="CameraTarget/Camera3D/hud/center/crosshair_ctl" index="0"]
+[node name="CrossHair" type="Node2D" parent="CameraTarget/Camera3D/hud/crosshair_root/crosshair_ctl" index="0"]
 script = ExtResource("8_v2h1c")
 center_enabled = true
 center_size = 1.4
 metadata/_custom_type_script = "uid://b8ty0aywli1vd"
+
+[node name="score_container" type="Control" parent="CameraTarget/Camera3D/hud" index="1"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = -65.0
+offset_right = 65.0
+offset_bottom = -40.0
+grow_vertical = 0
+pivot_offset = Vector2(1.45519e-11, 25)
+
+[node name="score_label" type="Label" parent="CameraTarget/Camera3D/hud/score_container" index="0"]
+layout_mode = 2
+offset_right = 48.0
+offset_bottom = 23.0
+text = "Score:"
+label_settings = SubResource("LabelSettings_qh58e")
+metadata/_edit_lock_ = true
+
+[node name="score_value" type="Label" parent="CameraTarget/Camera3D/hud/score_container" index="1"]
+unique_name_in_owner = true
+layout_mode = 2
+offset_left = 132.0
+offset_right = 315.0
+offset_bottom = 55.0
+text = "0"
+label_settings = SubResource("LabelSettings_hr31g")
 
 [node name="AimTarget" type="RayCast3D" parent="CameraTarget/Camera3D" index="2"]
 unique_name_in_owner = true

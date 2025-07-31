@@ -105,6 +105,9 @@ var _simple_move: bool = false
 ## Locomotion state machine
 var locomotion: AnimationNodeStateMachinePlayback
 
+## The last player who damaged the zombie
+var last_player_damage: Player
+
 func _ready() -> void:
     # Animate in editor
     locomotion = animation_tree["parameters/Locomotion/playback"]
@@ -119,6 +122,7 @@ func _ready() -> void:
 
     connect_hurtboxes()
     life.died.connect(on_death)
+    life.hurt.connect(on_hurt)
     life.check_health()
 
 func _process(_delta: float) -> void:
@@ -362,6 +366,9 @@ func connect_hurtboxes() -> void:
         life.connect_hurtbox(leg_part, mult_leg)
 
 func on_death() -> void:
+    if last_player_damage:
+        last_player_damage.score += 100
+
     #print("RAHH I DIE!")
     collider.disabled = true
     animation_tree.active = false
@@ -370,6 +377,19 @@ func on_death() -> void:
     bone_simulator.physical_bones_start_simulation()
     #process_mode = Node.PROCESS_MODE_DISABLED
     get_tree().create_timer(10.0).timeout.connect(queue_free)
+
+func on_hurt(from: Node3D, part: HurtBox, _damage: float, _hit: Dictionary) -> void:
+    var player: Player = from as Player
+    if not player:
+        return
+
+    last_player_damage = from
+
+    if life.is_alive:
+        if part == head:
+            last_player_damage.score += 25
+        else:
+            last_player_damage.score += 10
 
 func is_alive() -> bool:
     return life.is_alive

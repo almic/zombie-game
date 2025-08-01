@@ -102,8 +102,6 @@ var _simple_move: bool = false
 ## How nearly facing the target in order to attack, use cos() to get your desired value
 @export var attack_facing: float = 0.996
 
-## Path to animation state machine
-const state_machine_path: String = "parameters/Locomotion/playback"
 ## Locomotion state machine, needed to check some state information
 var anim_state_machine: AnimationNodeStateMachine
 ## Locomotion state machine playback
@@ -118,8 +116,8 @@ var last_hits: Array[Dictionary] = []
 
 func _ready() -> void:
     # Animate in editor
-    anim_state_machine = (animation_tree.tree_root as AnimationNodeBlendTree).get_node("Locomotion")
-    locomotion = animation_tree[state_machine_path]
+    anim_state_machine = animation_tree.tree_root
+    locomotion = animation_tree["parameters/playback"]
     locomotion.travel(anim_idle)
 
     if Engine.is_editor_hint():
@@ -361,6 +359,9 @@ func anim_goto(
     state_machine.travel(state, reset)
 
 func connect_hurtboxes() -> void:
+    head.enable()
+    body.enable()
+
     life.connect_hurtbox(head, mult_head)
     life.connect_hurtbox(body, mult_body)
 
@@ -368,12 +369,14 @@ func connect_hurtboxes() -> void:
         arm_l_1, arm_l_2, hand_l,
         arm_r_1, arm_r_2, hand_r
     ]:
+        arm_part.enable()
         life.connect_hurtbox(arm_part, mult_arm)
 
     for leg_part in [
         leg_l_1, leg_l_2, foot_l,
         leg_r_1, leg_r_2, foot_r
     ]:
+        leg_part.enable()
         life.connect_hurtbox(leg_part, mult_leg)
 
 

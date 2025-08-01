@@ -33,6 +33,9 @@ func play_sound() -> void:
         _player.stop_stream(id)
     _ids_no_overlap.clear()
 
+    if not weapon_sound_resource:
+        return
+
     _play_resource(weapon_sound_resource.transient, false)
     _play_resource(weapon_sound_resource.tail, false)
 

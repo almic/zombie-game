@@ -10,13 +10,13 @@ size = Vector3(0.08, 0.18, 0.32)
 script = ExtResource("1_rs8p0")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="proto mesh" type="CSGCombiner3D" parent="."]
+[node name="protomesh" type="CSGCombiner3D" parent="."]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="proto mesh"]
+[node name="CSGBox3D" type="CSGBox3D" parent="protomesh"]
 size = Vector3(0.06, 0.06, 0.3)
 material = ExtResource("2_b3nnr")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="proto mesh"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0.1)
 size = Vector3(0.06, 0.1, 0.1)
 material = ExtResource("2_b3nnr")

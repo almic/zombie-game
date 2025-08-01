@@ -1,0 +1,43 @@
+[gd_resource type="AnimationNodeStateMachine" load_steps=9 format=3 uid="uid://doyn6aqoxbrjx"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7nqyo"]
+animation = &"zombie_anim_lib/attack_a"
+use_custom_timeline = true
+timeline_length = 1.817
+stretch_time_scale = true
+start_offset = 0.3
+loop_mode = 0
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_eseir"]
+animation = &"zombie_anim_lib/idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lnshm"]
+animation = &"zombie_anim_lib/run_a"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_7nqyo"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x5rsa"]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ogcpr"]
+xfade_time = 0.15
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i82o5"]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x4h2d"]
+xfade_time = 0.59
+switch_mode = 2
+
+[resource]
+resource_local_to_scene = true
+states/Start/position = Vector2(177, 92)
+states/attack/node = SubResource("AnimationNodeAnimation_7nqyo")
+states/attack/position = Vector2(387, 209)
+states/idle/node = SubResource("AnimationNodeAnimation_eseir")
+states/idle/position = Vector2(387, 92)
+states/run/node = SubResource("AnimationNodeAnimation_lnshm")
+states/run/position = Vector2(615, 92)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_7nqyo"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_x5rsa"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_ogcpr"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_i82o5"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_x4h2d")]
+graph_offset = Vector2(51, -8)

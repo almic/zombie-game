@@ -11,6 +11,8 @@ var is_alive: bool = true
 
 var _hurtboxes: Dictionary = {}
 
+var _last_hitbox_frame: int = -1
+
 func connect_hurtbox(hurt_box: HurtBox, multiplier: float = 1.0) -> void:
     _hurtboxes.set(hurt_box.get_rid(), multiplier)
     hurt_box.on_hit.connect(_on_hit)
@@ -28,11 +30,19 @@ func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> voi
     if not is_alive:
         return
 
+    var is_hitbox: bool = hit.has('is_hitbox')
+    if is_hitbox:
+        var frame: int = Engine.get_physics_frames()
+        if _last_hitbox_frame == frame:
+            return
+        _last_hitbox_frame = frame
+
     var part_id: RID = part.get_rid()
     if not _hurtboxes.has(part_id):
         return
 
-    damage *= _hurtboxes.get(part_id, 1.0)
+    if not is_hitbox:
+        damage *= _hurtboxes.get(part_id, 1.0)
     health -= damage
 
     check_health(false)

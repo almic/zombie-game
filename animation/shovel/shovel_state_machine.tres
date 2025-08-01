@@ -1,0 +1,51 @@
+[gd_resource type="AnimationNodeStateMachine" load_steps=11 format=3 uid="uid://cge6nx617hw5s"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_xqlci"]
+animation = &"shovel/idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mmdjg"]
+animation = &"shovel/swing"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_vp50e"]
+animation = &"shovel/walk"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vp50e"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_lnh3l"]
+xfade_time = 0.1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_q0o5f"]
+xfade_time = 0.5
+switch_mode = 2
+advance_mode = 2
+advance_condition = &"idle"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_f88ye"]
+xfade_time = 0.25
+advance_mode = 2
+advance_condition = &"walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_sc0qs"]
+xfade_time = 0.5
+advance_mode = 2
+advance_condition = &"idle"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6ipqu"]
+xfade_time = 0.2
+switch_mode = 2
+advance_mode = 2
+advance_condition = &"walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_bekfq"]
+xfade_time = 0.1
+
+[resource]
+states/shovel_idle/node = SubResource("AnimationNodeAnimation_xqlci")
+states/shovel_idle/position = Vector2(349, 100)
+states/shovel_swing/node = SubResource("AnimationNodeAnimation_mmdjg")
+states/shovel_swing/position = Vector2(474, 18)
+states/shovel_walk/node = SubResource("AnimationNodeAnimation_vp50e")
+states/shovel_walk/position = Vector2(604, 100)
+transitions = ["Start", "shovel_idle", SubResource("AnimationNodeStateMachineTransition_vp50e"), "shovel_idle", "shovel_swing", SubResource("AnimationNodeStateMachineTransition_lnh3l"), "shovel_swing", "shovel_idle", SubResource("AnimationNodeStateMachineTransition_q0o5f"), "shovel_idle", "shovel_walk", SubResource("AnimationNodeStateMachineTransition_f88ye"), "shovel_walk", "shovel_idle", SubResource("AnimationNodeStateMachineTransition_sc0qs"), "shovel_swing", "shovel_walk", SubResource("AnimationNodeStateMachineTransition_6ipqu"), "shovel_walk", "shovel_swing", SubResource("AnimationNodeStateMachineTransition_bekfq")]
+graph_offset = Vector2(28, -65)

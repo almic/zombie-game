@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=5 format=3 uid="uid://bcd20ysn860xe"]
+
+[ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_rk4e1"]
+[ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="2_hy3h1"]
+[ext_resource type="Script" uid="uid://b24e01klhc4bl" path="res://script/weapon/trigger/MeleeTrigger.gd" id="2_r7eaj"]
+
+[sub_resource type="Resource" id="Resource_vhskp"]
+script = ExtResource("2_r7eaj")
+delay = 0.1
+duration = 0.08
+cycle_time = 0.6
+metadata/_custom_type_script = "uid://b24e01klhc4bl"
+
+[resource]
+script = ExtResource("1_rk4e1")
+weapon_scene = ExtResource("2_hy3h1")
+scene_offset = Vector3(0.03, -0.125, 1.45519e-11)
+particle_offset = Vector3(0, 0, 0)
+particle_test = false
+damage = 100.0
+trigger_method = SubResource("Resource_vhskp")
+sound_test = false
+max_range = 0.0
+hit_mask = 8
+metadata/_custom_type_script = "uid://bwkctbyfo4j26"

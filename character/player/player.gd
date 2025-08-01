@@ -11,6 +11,7 @@ class_name Player extends CharacterBase
 
 @export_group("Combat")
 @export var life: LifeResource
+@export var right_hand: bool = true
 
 @export_group("Movement")
 @export var look_speed: float = 0.55
@@ -62,8 +63,10 @@ func _physics_process(delta: float) -> void:
 
     if is_zero_approx(move_length):
         movement_direction = Vector3.ZERO
+        weapon._weapon_scene.on_walking(false)
     else:
         movement_direction = basis * move.value_axis_3d.normalized()
+        weapon._weapon_scene.on_walking()
 
     if jump.is_triggered() or jump.is_ongoing():
         do_jump()
@@ -87,6 +90,9 @@ func set_score(value: int) -> void:
     score = value
 
     get_tree().call_group('hud', 'update_score', score)
+
+func swap_hand(_time: float = 0.0) -> void:
+    print('player swaps hand!')
 
 func connect_hurtboxes() -> void:
     hurtbox.enable()

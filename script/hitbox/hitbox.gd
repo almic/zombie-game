@@ -25,9 +25,13 @@ func _ready() -> void:
     area_entered.connect(_on_hurtbox)
     _node_owner = get_node(hitbox_owner)
 
+func is_enabled() -> bool:
+    return monitoring
+
 func enable() -> void:
     monitoring = true
 
+    # TODO: this never does anything as the list isn't updated yet
     # Check for any overlapping hurtboxes
     for area in get_overlapping_areas():
         if area is HurtBox:
@@ -43,4 +47,8 @@ func _on_hurtbox(hurtbox: HurtBox) -> void:
         return
 
     _cached_hurtboxes.append(id)
-    hurtbox.do_hit(_node_owner, {}, damage)
+    hurtbox.do_hit(_node_owner, {
+        'position': hurtbox.global_position,
+        'from': _node_owner.global_position,
+        'is_hitbox': true
+    }, damage)

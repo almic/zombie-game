@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=22 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -8,10 +8,11 @@
 [ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/jump.tres" id="4_wfnr8"]
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
-[ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="7_0cf6c"]
 [ext_resource type="Script" uid="uid://n578e74oit7v" path="res://script/weapon/WeaponNode.gd" id="7_qh58e"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="8_v2h1c"]
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="9_hr31g"]
+[ext_resource type="Resource" uid="uid://bcd20ysn860xe" path="res://data/weapon/type/shovel/shovel.tres" id="9_vuhga"]
+[ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="13_jo6ux"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
 radius = 0.34
@@ -41,10 +42,14 @@ bg_color = Color(1, 0.258138, 0.322135, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_wfnr8"]
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
+
 [node name="player" node_paths=PackedStringArray("camera_node", "camera_target_node") groups=["zombie_target"] instance=ExtResource("1_g20gq")]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 collision_mask = 19
 script = ExtResource("1_y482n")
 life = ExtResource("3_lqp71")
+right_hand = true
 look_speed = 0.55
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
@@ -71,17 +76,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.545, 0)
 
 [node name="Camera3D" type="Camera3D" parent="CameraTarget" index="0"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.545, 0)
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.545, 0)
 top_level = true
 cull_mask = 524287
 current = true
 
-[node name="WeaponNode" type="Node3D" parent="CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "target")]
+[node name="WeaponNode" type="Node3D" parent="CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "hitbox", "target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
 controller = NodePath("../../..")
-weapon_type = ExtResource("7_0cf6c")
+hitbox = NodePath("../../../Hitbox")
+weapon_type = ExtResource("9_vuhga")
 target = NodePath("../AimTarget")
 metadata/_custom_type_script = "uid://n578e74oit7v"
 
@@ -200,3 +206,18 @@ metadata/_custom_type_script = "uid://cx8x5g2jhcrm6"
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("SphereShape3D_wfnr8")
 debug_color = Color(0.998291, 0, 0.145787, 0.42)
+
+[node name="Hitbox" type="Area3D" parent="." index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -1.01)
+collision_layer = 0
+collision_mask = 0
+monitoring = false
+monitorable = false
+script = ExtResource("13_jo6ux")
+hitbox_owner = NodePath("..")
+metadata/_custom_type_script = "uid://dc77cbpvaw8jo"
+
+[node name="collider" type="CollisionShape3D" parent="Hitbox" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1, 1.45519e-11)
+shape = SubResource("CylinderShape3D_i6sc0")
+debug_color = Color(1, 0, 0.145, 1)

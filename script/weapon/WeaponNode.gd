@@ -6,6 +6,9 @@ class_name WeaponNode extends Node3D
 
 @export var controller: Node3D
 
+## Activated by weapons that use hitboxes
+@export var hitbox: HitBox
+
 @export var weapon_type: WeaponResource
 
 ## If the weapon should align itself with the target RayCast3D. You should
@@ -135,6 +138,7 @@ func trigger_particle(activate: bool = true) -> void:
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:
+        _weapon_scene.swap_hand.disconnect(on_swap_hand)
         remove_child(_weapon_scene)
         _weapon_scene.queue_free()
         _weapon_scene = null
@@ -157,6 +161,7 @@ func _load_weapon_scene() -> void:
 
     add_child(_weapon_scene)
     _weapon_scene.position = weapon_type.scene_offset
+    _weapon_scene.swap_hand.connect(on_swap_hand)
 
 func _load_particle_system() -> void:
     if _particle_system:
@@ -181,3 +186,10 @@ func _load_particle_system() -> void:
 
     add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
+
+func on_swap_hand(time: float) -> void:
+    if not controller:
+        return
+
+    if controller.has_method('swap_hand'):
+        controller.swap_hand(time)

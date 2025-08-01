@@ -77,7 +77,7 @@ func _ready() -> void:
     GUIDE.enable_mapping_context(first_person)
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
-    # Engine.time_scale = 0.334
+    # Engine.time_scale = 0.25
     spawn_rate_at_target = spawn_rate_at_target
     _spawn_timer = spawn_timer_minimum
 

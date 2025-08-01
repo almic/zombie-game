@@ -102,7 +102,11 @@ var _simple_move: bool = false
 ## How nearly facing the target in order to attack, use cos() to get your desired value
 @export var attack_facing: float = 0.996
 
-## Locomotion state machine
+## Path to animation state machine
+const state_machine_path: String = "parameters/Locomotion/playback"
+## Locomotion state machine, needed to check some state information
+var anim_state_machine: AnimationNodeStateMachine
+## Locomotion state machine playback
 var locomotion: AnimationNodeStateMachinePlayback
 
 ## The last player who damaged the zombie
@@ -110,7 +114,8 @@ var last_player_damage: Player
 
 func _ready() -> void:
     # Animate in editor
-    locomotion = animation_tree["parameters/Locomotion/playback"]
+    anim_state_machine = (animation_tree.tree_root as AnimationNodeBlendTree).get_node("Locomotion")
+    locomotion = animation_tree[state_machine_path]
     locomotion.travel(anim_idle)
 
     if Engine.is_editor_hint():
@@ -370,12 +375,8 @@ func on_death() -> void:
         last_player_damage.score += 100
 
     #print("RAHH I DIE!")
-    collider.disabled = true
-    animation_tree.active = false
-    bone_simulator.active = true
-    #bone_simulator.process_mode = Node.PROCESS_MODE_PAUSABLE
-    bone_simulator.physical_bones_start_simulation()
-    #process_mode = Node.PROCESS_MODE_DISABLED
+    ragdoll()
+
     get_tree().create_timer(10.0).timeout.connect(queue_free)
 
 func on_hurt(from: Node3D, part: HurtBox, _damage: float, _hit: Dictionary) -> void:
@@ -393,3 +394,166 @@ func on_hurt(from: Node3D, part: HurtBox, _damage: float, _hit: Dictionary) -> v
 
 func is_alive() -> bool:
     return life.is_alive
+
+static func get_animation_bone_transform(animation: Animation, bone_name: String, time: float, back: bool = false) -> Transform3D:
+    var track_id_pos: int = animation.find_track('Skeleton3D:' + bone_name, Animation.TYPE_POSITION_3D)
+    var track_id_rot: int = animation.find_track('Skeleton3D:' + bone_name, Animation.TYPE_ROTATION_3D)
+
+    var bone_pos: Vector3
+    var bone_quat: Quaternion
+
+    if track_id_pos == -1:
+        bone_pos = Vector3.ZERO
+    else:
+        bone_pos = animation.position_track_interpolate(track_id_pos, time, back)
+
+    if track_id_rot == -1:
+        bone_quat = Quaternion()
+    else:
+        bone_quat = animation.rotation_track_interpolate(track_id_rot, time, back)
+
+    return Transform3D(Basis(bone_quat), bone_pos)
+
+
+# Activates ragdoll and applies small impulses to match the animation
+func ragdoll() -> void:
+
+    var skeleton: Skeleton3D = bone_simulator.get_skeleton()
+    var bone_list: Array[PhysicalBone3D]
+    bone_list.assign(bone_simulator.get_children().filter(func (node): return node is PhysicalBone3D))
+
+    # The current node, and the fade_from node, animations
+    var current_node: AnimationNodeAnimation = anim_state_machine.get_node(locomotion.get_current_node())
+    var current_animation: Animation = animation_tree.get_animation(current_node.animation)
+
+    var delta: float = get_physics_process_delta_time()
+    var c_time: float = locomotion.get_current_play_position()
+    var l_time: float = c_time - delta
+    if l_time < 0.0:
+        l_time += current_animation.length
+
+    # Get every bone's current and last position, in local space
+    var bone_transforms: Dictionary = {}
+    for bone in bone_list:
+        var bone_id: int = bone.get_bone_id()
+        var bone_name: String = skeleton.get_bone_name(bone_id)
+
+        if bone_transforms.has(bone_name):
+            bone_transforms[bone_name].physical = true
+            continue
+
+        var current: Transform3D = get_animation_bone_transform(current_animation, bone_name, c_time)
+        var last: Transform3D = get_animation_bone_transform(current_animation, bone_name, l_time, true)
+
+        var child_name: String = skeleton.get_bone_name(skeleton.get_bone_children(bone_id)[0])
+        var child: Transform3D = get_animation_bone_transform(current_animation, child_name, c_time)
+
+        bone_transforms[bone_name] = {
+            'id': bone_id,
+            'current': current,
+            'last': last,
+            'size': child.origin,
+            'physical': true
+        }
+
+        # Collect parents, in case some of them do not have a physical bone
+        bone_id = skeleton.get_bone_parent(bone_id)
+        while bone_id >= 0:
+            bone_name = skeleton.get_bone_name(bone_id)
+
+            # Already got this one and its parents, done
+            if bone_transforms.has(bone_name):
+                break
+
+            current = get_animation_bone_transform(current_animation, bone_name, c_time)
+            last = get_animation_bone_transform(current_animation, bone_name, l_time, true)
+
+            child_name = skeleton.get_bone_name(skeleton.get_bone_children(bone_id)[0])
+            child = get_animation_bone_transform(current_animation, child_name, c_time)
+
+            bone_transforms[bone_name] = {
+                'id': bone_id,
+                'current': current,
+                'last': last,
+                'size': child.origin
+            }
+            bone_id = skeleton.get_bone_parent(bone_id)
+
+    # Convert to global transforms, same as Godot does it
+    var bone_chain: Array[String]
+    var global_c_pose: Transform3D
+    var global_l_pose: Transform3D
+    for bone in bone_transforms:
+        bone_chain.clear()
+        global_c_pose = Transform3D.IDENTITY
+        global_l_pose = Transform3D.IDENTITY
+
+        var bone_id: int = bone_transforms[bone].id
+
+        while bone_id >= 0:
+            # Can stop when we reach a calculated bone
+            var bone_name: String = skeleton.get_bone_name(bone_id)
+            if bone_transforms[bone_name].has('calculated'):
+                global_c_pose = bone_transforms[bone_name].current
+                global_l_pose = bone_transforms[bone_name].last
+                break
+            bone_chain.append(bone_name)
+            bone_id = skeleton.get_bone_parent(bone_id)
+
+        if bone_chain.size() == 0:
+            continue
+
+        # Go backwards through the list, applying transforms
+        for bone_chain_index in range(bone_chain.size() - 1, -1, -1):
+            var bone_name: String = bone_chain[bone_chain_index]
+            global_c_pose *= bone_transforms[bone_name].current
+            global_l_pose *= bone_transforms[bone_name].last
+            bone_transforms[bone_name].current = global_c_pose
+            bone_transforms[bone_name].last = global_l_pose
+            bone_transforms[bone_name].calculated = true
+
+    # Get velocities here, stored as IDs for quicker lookup
+    var bone_velocities: Dictionary = {}
+    for bone in bone_transforms:
+        # Skip bones that aren't physical
+        if not bone_transforms[bone].has('physical'):
+            continue
+
+        var current_transform: Transform3D = bone_transforms[bone].current
+        var last_transform: Transform3D = bone_transforms[bone].last
+
+        # Linear displacement
+        var pos_diff: Vector3 = current_transform.origin - last_transform.origin
+
+        # Angular impulse calculation. The rotations are applied as impulses to
+        # the end of the bones, giving accurate spins as opposed to angular
+        # velocities which are applied to the middle of the shape.
+        var current_quat: Quaternion = current_transform.basis.get_rotation_quaternion()
+        var last_quat: Quaternion = last_transform.basis.get_rotation_quaternion()
+        var quat_diff: Quaternion = current_quat * last_quat.inverse()
+
+        var bone_size: Vector3 = bone_transforms[bone].size
+        var angular_displacement: Vector3 = quat_diff * bone_size
+        # Get vector perpendicular to the bone for the impulse direction
+        var impulse_dir: Vector3 = bone_size.cross(angular_displacement)
+        if not impulse_dir.is_zero_approx():
+            impulse_dir = impulse_dir.cross(bone_size).normalized()
+        angular_displacement -= bone_size
+
+        var bone_id: int = bone_transforms[bone].id
+        bone_velocities[bone_id] = {
+            'linear': pos_diff / delta,
+            'impulse_position': bone_size,
+            'impulse': impulse_dir * angular_displacement / delta
+        }
+
+    collider.disabled = true
+    animation_tree.active = false
+    bone_simulator.active = true
+    bone_simulator.physical_bones_start_simulation()
+
+    # Apply impulses here
+    for bone in bone_list:
+        var velocities: Dictionary = bone_velocities[bone.get_bone_id()]
+        bone.linear_velocity = 1.0 * velocities.linear + velocity
+        bone.apply_impulse(1.0 * velocities.impulse, velocities.impulse_position)

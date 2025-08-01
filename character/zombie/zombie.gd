@@ -112,6 +112,10 @@ var locomotion: AnimationNodeStateMachinePlayback
 ## The last player who damaged the zombie
 var last_player_damage: Player
 
+## Most recent impacts from damage
+var last_hits: Array[Dictionary] = []
+
+
 func _ready() -> void:
     # Animate in editor
     anim_state_machine = (animation_tree.tree_root as AnimationNodeBlendTree).get_node("Locomotion")
@@ -124,6 +128,7 @@ func _ready() -> void:
     attack_hitbox.damage = attack_damage
 
     target_search_groups = target_search_groups.duplicate()
+    last_hits = last_hits.duplicate()
 
     connect_hurtboxes()
     life.died.connect(on_death)
@@ -135,6 +140,7 @@ func _process(_delta: float) -> void:
         return
 
     pass
+
 
 func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
@@ -370,6 +376,7 @@ func connect_hurtboxes() -> void:
     ]:
         life.connect_hurtbox(leg_part, mult_leg)
 
+
 func on_death() -> void:
     if last_player_damage:
         last_player_damage.score += 100
@@ -377,9 +384,48 @@ func on_death() -> void:
     #print("RAHH I DIE!")
     ragdoll()
 
+    var frame: int = Engine.get_physics_frames()
+    var physics_delta: float = get_physics_process_delta_time()
+    var delta: float
+    for hit in last_hits:
+        delta = (frame - hit.time) * physics_delta
+
+        # Impact too long ago
+        if delta > 0.25:
+            break
+
+        # Power calculation, continue in case an older hit has more power
+        var power: float = lerpf(hit.damage * 0.5, 0, delta / 0.25)
+        if power <= 0.001:
+            continue
+
+        var impulse: Vector3 = (hit.hit.position - hit.hit.from).normalized()
+        impulse *= power
+
+        var bone_attachment: BoneAttachment3D = hit.part.get_parent() as BoneAttachment3D
+        if not bone_attachment:
+            push_warning('Zombie has a bad hurtbox! Parent is not a bone attachment!')
+            continue
+
+        var impulse_point: Vector3 = hit.hit.position - bone_attachment.global_position
+
+        # TODO: this is super bad, make it faster
+        for child in bone_simulator.get_children():
+            var bone: PhysicalBone3D = child as PhysicalBone3D
+            if not bone:
+                continue
+
+            if bone.get_bone_id() != bone_attachment.bone_idx:
+                continue
+
+            bone.apply_impulse(impulse, impulse_point)
+            break
+
+
     get_tree().create_timer(10.0).timeout.connect(queue_free)
 
-func on_hurt(from: Node3D, part: HurtBox, _damage: float, _hit: Dictionary) -> void:
+
+func on_hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary) -> void:
     var player: Player = from as Player
     if not player:
         return
@@ -391,6 +437,17 @@ func on_hurt(from: Node3D, part: HurtBox, _damage: float, _hit: Dictionary) -> v
             last_player_damage.score += 25
         else:
             last_player_damage.score += 10
+
+    # TODO: this could probably be better
+    last_hits.insert(0, {
+        'part': part,
+        'damage': damage,
+        'hit': hit,
+        'time': Engine.get_physics_frames()
+    })
+
+    last_hits = last_hits.slice(0, 10)
+
 
 func is_alive() -> bool:
     return life.is_alive

@@ -61,4 +61,5 @@ func _trigger(base: WeaponNode, _activate: bool) -> void:
         var from_node: Node3D = base
         if base.controller:
             from_node = base.controller
+        hit['from'] = from
         hit.collider.do_hit(from_node, hit, base.weapon_type.damage)

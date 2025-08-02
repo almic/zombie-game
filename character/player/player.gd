@@ -45,6 +45,9 @@ func _ready() -> void:
     aim_target.add_exception(self)
 
     weapon_node.set_trigger(fire_primary)
+    # TODO: TEMP! REMOVE ME!!
+    #weapon_node.top_level = true
+    #weapon_node.global_position = global_position + Vector3.UP * 1.5
 
     connect_hurtboxes()
     life.died.connect(on_death)

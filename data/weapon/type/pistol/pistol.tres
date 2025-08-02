@@ -20,5 +20,5 @@ trigger_method = ExtResource("4_smwrr")
 sound_effect = ExtResource("3_1v76v")
 sound_test = false
 max_range = 100.0
-hit_mask = 8
+hit_mask = 28
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

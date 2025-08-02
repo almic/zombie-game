@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=6 format=3 uid="uid://df0njg4igaivy"]
+
+[ext_resource type="PackedScene" uid="uid://d30d6ot2ufjtr" path="res://particle/system/weapon/gunshot_small.tscn" id="1_6yt5i"]
+[ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_y8x2t"]
+[ext_resource type="Resource" uid="uid://dpnmn1uwo1d0q" path="res://data/weapon/trigger/shotgun_shell.tres" id="2_yambn"]
+[ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1fb0h"]
+[ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="5_1fb0h"]
+
+[resource]
+script = ExtResource("1_y8x2t")
+name = "Shotgun"
+weapon_scene = ExtResource("5_1fb0h")
+scene_offset = Vector3(0, 0, 0)
+particle_system = ExtResource("1_6yt5i")
+particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.84)
+particle_test = false
+slot = 3
+damage = 20.0
+trigger_method = ExtResource("2_yambn")
+sound_effect = ExtResource("3_1fb0h")
+sound_test = false
+max_range = 100.0
+hit_mask = 28
+metadata/_custom_type_script = "uid://bwkctbyfo4j26"

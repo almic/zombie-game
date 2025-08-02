@@ -1,4 +1,4 @@
-[gd_scene load_steps=41 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=47 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -13,6 +13,10 @@
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
 [ext_resource type="Script" uid="uid://cugishrosnaex" path="res://script/combat/LifeResource.gd" id="12_a331h"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
+[ext_resource type="Resource" uid="uid://bcd20ysn860xe" path="res://data/weapon/type/shovel/shovel.tres" id="15_4duv0"]
+[ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="15_d2i0j"]
+[ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="17_lpj8c"]
+[ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="18_udj0i"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
@@ -28,6 +32,7 @@
 [ext_resource type="Script" uid="uid://c70ichse0a8nc" path="res://script/csg/csg_ramp/csg_ramp.gd" id="30_5enf7"]
 [ext_resource type="Texture2D" uid="uid://deq7ocj5qxeq3" path="res://textures/level/map.png" id="30_avgpp"]
 [ext_resource type="Material" uid="uid://nfcagk1yn11u" path="res://material/water.tres" id="31_i8b61"]
+[ext_resource type="Script" uid="uid://bd4h6hrne4un5" path="res://script/pickup/pickup.gd" id="36_ddy8d"]
 [ext_resource type="Script" uid="uid://0egn31rtalxq" path="res://script/spawning/spawn_point.gd" id="38_4duv0"]
 [ext_resource type="Curve3D" uid="uid://127ohk5nm1v2" path="res://scene/world/road_curves/able_curve.res" id="44_3wrw6"]
 [ext_resource type="Curve3D" uid="uid://cxge5cmkgb7d3" path="res://scene/world/road_curves/cherry_curve1.res" id="45_x3qer"]
@@ -49,6 +54,9 @@ script = ExtResource("12_a331h")
 max_health = 100.0
 health = 100.0
 metadata/_custom_type_script = "uid://cugishrosnaex"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d2i0j"]
+radius = 0.6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8b61"]
 albedo_texture = ExtResource("30_avgpp")
@@ -126,7 +134,7 @@ visible = false
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
-transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -333.6, 2.02, -460)
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -327.66, 2.02, -454.343)
 life = SubResource("Resource_18ff0")
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -134,6 +142,38 @@ transform = Transform3D(0.866026, -1.99303e-07, -0.5, 2.14103e-07, 1, 2.70686e-0
 velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
+
+[node name="PickupShovel" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.1, -455.6)
+script = ExtResource("36_ddy8d")
+item_resource = ExtResource("15_4duv0")
+item_scene = ExtResource("15_d2i0j")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="PickupShovel"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupShovel/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_d2i0j")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="PickupPistol" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.1, -458.2)
+script = ExtResource("36_ddy8d")
+item_resource = ExtResource("17_lpj8c")
+item_scene = ExtResource("18_udj0i")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="PickupPistol"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupPistol/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_d2i0j")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -1360,6 +1400,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -59, 0, 189)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -21)
 size = Vector3(17.8, 0.1, 50)
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="AbleStreetCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.43271, -0.05, -73.5373)
@@ -1376,15 +1417,18 @@ path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="CurvePath" type="Path3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 curve = ExtResource("44_3wrw6")
+metadata/_edit_lock_ = true
 
 [node name="AbleStreet2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0, -344.5)
 size = Vector3(17.8, 0.1, 289)
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="BriskStreet" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets"]
 
@@ -1513,6 +1557,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9)
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 94.5, 0, 0)
 size = Vector3(17.8, 0.1, 287)
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="IrisRoadCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -49, -0.05, 0)
@@ -1529,6 +1574,7 @@ path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="CurvePath" type="Path3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/IrisRoadCurve"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
@@ -1538,6 +1584,7 @@ curve = ExtResource("47_my0pb")
 transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -100, 0, 42)
 size = Vector3(17.8, 0.1, 26)
 material = ExtResource("25_1obi0")
+metadata/_edit_lock_ = true
 
 [node name="Lanes" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 0, 0)

@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="GUIDEAction" load_steps=2 format=3 uid="uid://dkxs81p2pc2v5"]
+
+[ext_resource type="Script" uid="uid://vmrd1cavtwcx" path="res://addons/guide/guide_action.gd" id="1_le8ys"]
+
+[resource]
+script = ExtResource("1_le8ys")
+name = &""
+action_value_type = 0
+block_lower_priority_actions = true
+emit_as_godot_actions = false
+is_remappable = true
+display_name = "Next Weapon"
+display_category = ""
+metadata/_custom_type_script = "uid://vmrd1cavtwcx"

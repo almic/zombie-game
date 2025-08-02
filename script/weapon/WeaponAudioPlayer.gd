@@ -17,9 +17,10 @@ var _ids_overlap: PackedInt64Array = []
 
 func _ready() -> void:
     var stream_poly = AudioStreamPolyphonic.new()
-    # Double polyphony, we will still manage streams, but this prevents
-    # failure to play on the same tick we stop a stream
-    stream_poly.polyphony = 2 * weapon_sound_resource.polyphony
+    if weapon_sound_resource:
+        # Double polyphony, we will still manage streams, but this prevents
+        # failure to play on the same tick we stop a stream
+        stream_poly.polyphony = 2 * weapon_sound_resource.polyphony
     stream = stream_poly
 
     # Silly, MUST call play() before requesting the playback object
@@ -50,6 +51,10 @@ func play_sound() -> void:
     _play_resource(weapon_sound_resource.mech, true)
 
 func _play_resource(sound: SoundResource, overlap: bool) -> int:
+    if not weapon_sound_resource:
+        push_warning('WeaponAudioPlayer._play_resource() called without a weapon sound!')
+        return INVALID
+
     if not sound:
         return INVALID
 

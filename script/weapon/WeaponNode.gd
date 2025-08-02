@@ -9,7 +9,8 @@ class_name WeaponNode extends Node3D
 ## Activated by weapons that use hitboxes
 @export var hitbox: HitBox
 
-@export var weapon_type: WeaponResource
+@export var weapon_type: WeaponResource:
+    set = load_weapon_type
 
 ## If the weapon should align itself with the target RayCast3D. You should
 ## disable this for melee weapons.
@@ -38,11 +39,7 @@ var _weapon_audio_player: WeaponAudioPlayer
 
 
 func _ready() -> void:
-    _load_weapon_scene()
-    _load_particle_system()
-
     _weapon_audio_player = WeaponAudioPlayer.new()
-    _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
     add_child(_weapon_audio_player)
 
 func set_trigger(action: GUIDEAction) -> void:
@@ -64,7 +61,10 @@ func _process(delta: float) -> void:
                 weapon_type.sound_test = false
         return
 
-    if not do_targeting:
+    if weapon_type:
+        weapon_type.trigger_method.update_input(self, _weapon_trigger)
+
+    if not do_targeting or not _weapon_scene:
         return
 
     if _weapon_target_to.is_equal_approx(_weapon_scene.global_basis.get_rotation_quaternion()):
@@ -79,13 +79,10 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    weapon_type.trigger_method.update(
-        _weapon_trigger,
-        self,
-        delta
-    )
+    if weapon_type:
+        weapon_type.trigger_method.tick(self, delta)
 
-    if not do_targeting:
+    if not do_targeting or not _weapon_scene:
         return
 
     _weapon_target_tick += 1
@@ -136,6 +133,18 @@ func trigger_particle(activate: bool = true) -> void:
 
     _particle_system.emitting = activate
 
+func load_weapon_type(type: WeaponResource) -> void:
+    weapon_type = type
+
+    _load_weapon_scene()
+    _load_particle_system()
+
+    if not weapon_type:
+        return
+
+    _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
+
+
 func _load_weapon_scene() -> void:
     if _weapon_scene:
         _weapon_scene.swap_hand.disconnect(on_swap_hand)
@@ -143,7 +152,7 @@ func _load_weapon_scene() -> void:
         _weapon_scene.queue_free()
         _weapon_scene = null
 
-    if not weapon_type.weapon_scene:
+    if not weapon_type or not weapon_type.weapon_scene:
         return
 
     var weapon_scene = weapon_type.weapon_scene.instantiate()
@@ -162,6 +171,7 @@ func _load_weapon_scene() -> void:
     add_child(_weapon_scene)
     _weapon_scene.position = weapon_type.scene_offset
     _weapon_scene.swap_hand.connect(on_swap_hand)
+    _weapon_scene.on_ready()
 
 func _load_particle_system() -> void:
     if _particle_system:
@@ -169,7 +179,7 @@ func _load_particle_system() -> void:
         _particle_system.queue_free()
         _particle_system = null
 
-    if not weapon_type.particle_system:
+    if not weapon_type or not weapon_type.particle_system:
         return
 
     var particle_system = weapon_type.particle_system.instantiate()

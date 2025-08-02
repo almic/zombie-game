@@ -11,7 +11,6 @@ script = ExtResource("1_m2s3f")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
 [node name="protomesh" type="CSGCombiner3D" parent="."]
-transform = Transform3D(0.820488, 0.571663, -3.04786e-09, -0.569465, 0.817335, -0.087597, -0.0500759, 0.0718724, 0.996156, 0.0351285, 0.0169148, 0.0111946)
 
 [node name="handle" type="CSGCylinder3D" parent="protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.98455e-08, -0.15, 1.45519e-11)
@@ -46,12 +45,9 @@ libraries = {
 
 [node name="AnimationTree" type="AnimationTree" parent="."]
 unique_name_in_owner = true
+active = false
 root_node = NodePath("%AnimationTree/..")
 tree_root = ExtResource("5_t6r7u")
 anim_player = NodePath("../AnimationPlayer")
 parameters/conditions/idle = false
 parameters/conditions/walking = false
-
-[node name="camera pos for animating" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.19, 0.351, 0.6)
-visible = false

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=23 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -9,9 +9,10 @@
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
 [ext_resource type="Script" uid="uid://n578e74oit7v" path="res://script/weapon/WeaponNode.gd" id="7_qh58e"]
+[ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/weapon_next.tres" id="8_muf2e"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="8_v2h1c"]
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="9_hr31g"]
-[ext_resource type="Resource" uid="uid://bcd20ysn860xe" path="res://data/weapon/type/shovel/shovel.tres" id="9_vuhga"]
+[ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/weapon_prev.tres" id="9_jo6ux"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="13_jo6ux"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
@@ -55,6 +56,8 @@ jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
 fire_primary = ExtResource("5_eu8pa")
+weapon_next = ExtResource("8_muf2e")
+weapon_previous = ExtResource("9_jo6ux")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
 camera_node = NodePath("CameraTarget/Camera3D")
 camera_target_node = NodePath("CameraTarget")
@@ -87,7 +90,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
 controller = NodePath("../../..")
 hitbox = NodePath("../../../Hitbox")
-weapon_type = ExtResource("9_vuhga")
 target = NodePath("../AimTarget")
 metadata/_custom_type_script = "uid://n578e74oit7v"
 
@@ -196,6 +198,7 @@ collide_with_areas = true
 
 [node name="Hurtbox" type="Area3D" parent="." index="2"]
 unique_name_in_owner = true
+visible = false
 collision_layer = 8
 collision_mask = 0
 monitoring = false
@@ -209,6 +212,7 @@ debug_color = Color(0.998291, 0, 0.145787, 0.42)
 
 [node name="Hitbox" type="Area3D" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -1.01)
+visible = false
 collision_layer = 0
 collision_mask = 0
 monitoring = false

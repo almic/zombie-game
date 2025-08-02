@@ -2,7 +2,10 @@
 @icon("res://icon/weapon.svg")
 
 ## Defines a weapon type that can be used in the world
-class_name WeaponResource extends Resource
+class_name WeaponResource extends PickupResource
+
+## Weapon name in UI elements
+@export var name: String
 
 @export var weapon_scene: PackedScene
 
@@ -19,6 +22,9 @@ class_name WeaponResource extends Resource
 @export var particle_offset: Vector3
 ## In Editor only, trigger the particle system for visualization
 @export var particle_test: bool
+
+@export_range(0, 9, 1)
+var slot: int = 0
 
 ## Damage to deal on hit
 @export_range(-50.0, 50.0, 0.01, 'or_greater', 'or_less', 'suffix:hp')

@@ -5,7 +5,7 @@ class_name Player extends CharacterBase
 @onready var camera_target: Node3D = %CameraTarget
 @onready var camera_3d: Camera3D = %Camera3D
 @onready var hurtbox: HurtBox = %Hurtbox
-@onready var weapon: WeaponNode = %WeaponNode
+@onready var weapon_node: WeaponNode = %WeaponNode
 @onready var aim_target: RayCast3D = %AimTarget
 
 
@@ -21,14 +21,22 @@ class_name Player extends CharacterBase
 @export var look: GUIDEAction
 @export var move: GUIDEAction
 @export var fire_primary: GUIDEAction
+@export var weapon_next: GUIDEAction
+@export var weapon_previous: GUIDEAction
 
 
 var score: int = 0:
     set = set_score
 
 
+var weapons: Dictionary = {}
+var weapon_index: int = 0
+
+
 func _ready() -> void:
     super._ready()
+
+    weapons = weapons.duplicate()
 
     if Engine.is_editor_hint():
         return
@@ -36,7 +44,7 @@ func _ready() -> void:
     aim_target.add_exception(hurtbox)
     aim_target.add_exception(self)
 
-    weapon.set_trigger(fire_primary)
+    weapon_node.set_trigger(fire_primary)
 
     connect_hurtboxes()
     life.died.connect(on_death)
@@ -55,23 +63,60 @@ func _process(_delta: float) -> void:
         -89, 89
     )
 
-func _physics_process(delta: float) -> void:
-    if Engine.is_editor_hint():
-        return
-
     var move_length: float = move.value_axis_3d.length()
 
     if is_zero_approx(move_length):
         movement_direction = Vector3.ZERO
-        weapon._weapon_scene.on_walking(false)
     else:
         movement_direction = basis * move.value_axis_3d.normalized()
-        weapon._weapon_scene.on_walking()
+
+    if weapon_node._weapon_scene:
+        weapon_node._weapon_scene.on_walking(!movement_direction.is_zero_approx())
+
 
     if jump.is_triggered() or jump.is_ongoing():
         do_jump()
 
+
+    var next_weapon_dir: int = 0
+    if weapon_next.is_triggered():
+        next_weapon_dir += 1
+    if weapon_previous.is_triggered():
+        next_weapon_dir -= 1
+
+    if next_weapon_dir != 0:
+        var max_loop: int = 10
+        var next_slot: int = weapon_index + next_weapon_dir
+        var found: bool = false
+
+        while next_slot != weapon_index and max_loop > 0:
+            max_loop -= 1
+
+            if next_slot < 1:
+                next_slot = 10
+            elif next_slot > 10:
+                next_slot = 1
+
+            if weapons.has(next_slot):
+                found = true
+                break
+
+            next_slot += next_weapon_dir
+
+        if found:
+            select_weapon(next_slot)
+
+
+
+func _physics_process(delta: float) -> void:
+    if Engine.is_editor_hint():
+        return
+
+    # NOTE: Only process input in _process(), so we do not
+    # miss inputs shorter than a physics frame.
+
     update_movement(delta)
+
 
 func on_hurt(_from: Node3D, _part: HurtBox, _damage: float, _hit: Dictionary) -> void:
     get_tree().call_group('hud', 'update_health', life.health / life.max_health)
@@ -82,6 +127,16 @@ func on_death() -> void:
 
     get_tree().call_group('world', 'on_player_death')
 
+func select_weapon(slot: int) -> void:
+    if not weapons.has(slot):
+        push_warning('Cannot select weapon ' + str(slot) + '!')
+        return
+
+    if weapon_index == slot:
+        return
+
+    weapon_index = slot
+    weapon_node.weapon_type = weapons[slot]
 
 func set_score(value: int) -> void:
     if score == value:
@@ -93,6 +148,20 @@ func set_score(value: int) -> void:
 
 func swap_hand(_time: float = 0.0) -> void:
     print('player swaps hand!')
+
+func pickup_item(item: Pickup) -> void:
+    if item.item_resource is WeaponResource:
+        var weapon: WeaponResource = item.item_resource as WeaponResource
+        if weapons.has(weapon.slot):
+            print('Already have slot ' + str(weapon.slot))
+            return
+
+        weapons[weapon.slot] = weapon
+        print('Picked up ' + str(weapon.name) + '!')
+        item.queue_free()
+
+        if weapon_index == 0:
+            select_weapon(weapon.slot)
 
 func connect_hurtboxes() -> void:
     hurtbox.enable()

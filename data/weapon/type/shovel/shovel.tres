@@ -13,10 +13,12 @@ metadata/_custom_type_script = "uid://b24e01klhc4bl"
 
 [resource]
 script = ExtResource("1_rk4e1")
+name = "Shovel"
 weapon_scene = ExtResource("2_hy3h1")
 scene_offset = Vector3(0.03, -0.125, 1.45519e-11)
 particle_offset = Vector3(0, 0, 0)
 particle_test = false
+slot = 2
 damage = 100.0
 trigger_method = SubResource("Resource_vhskp")
 sound_test = false

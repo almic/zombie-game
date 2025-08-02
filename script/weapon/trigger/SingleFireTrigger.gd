@@ -6,40 +6,31 @@
 ## and sound on each fire.
 class_name TriggerSingleFire extends TriggerResource
 
-## Weapon cycle time, minimum time between consecutive fires
-@export var cycle_time: float
 
 ## If the trigger may be held to automatically fire, or if it must be
 ## released to fire again. This should not be used to create rapid firing
 ## weapons as it triggers particles and sound on each trigger.
 @export var automatic_fire: bool
 
-# For weapon cycling
-var _weapon_cycle: float = 0
-var _weapon_triggered: bool = false
+var _released: bool = false
 
-func update(action: GUIDEAction, base: WeaponNode, delta: float) -> void:
+func update_input(_base: WeaponNode, action: GUIDEAction) -> void:
     if action.is_completed():
+        _released = true
         _weapon_triggered = false
 
-    if _weapon_cycle > 0:
-        _weapon_cycle -= delta
-        if _weapon_cycle > 0:
-            return
-
     # wait for trigger to release for non-automatic
-    if not automatic_fire and _weapon_triggered:
+    if _weapon_triggered and not automatic_fire:
         return
 
     if action.is_triggered():
-        _weapon_cycle = cycle_time
         _weapon_triggered = true
-    else:
+
+
+func _update_trigger(base: WeaponNode, delta: float) -> void:
+    if not _released or not _weapon_triggered or not is_cycled():
         return
 
-    _trigger(base, true)
-
-func _trigger(base: WeaponNode, _activate: bool) -> void:
     var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
     var transform: Transform3D = base.weapon_tranform()
     var from: Vector3 = transform.origin
@@ -53,6 +44,8 @@ func _trigger(base: WeaponNode, _activate: bool) -> void:
     # DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15), 5)
 
     base.play_weapon_effects()
+    start_cycle()
+    _released = false
 
     if not hit:
         return

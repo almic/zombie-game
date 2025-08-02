@@ -4,6 +4,6 @@
 
 [resource]
 script = ExtResource("1_n6fqj")
-cycle_time = 0.1
-automatic_fire = true
+automatic_fire = false
+cycle_time = 0.22
 metadata/_custom_type_script = "uid://crckednuhsmu2"

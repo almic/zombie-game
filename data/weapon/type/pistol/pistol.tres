@@ -8,11 +8,13 @@
 
 [resource]
 script = ExtResource("2_257ta")
+name = "Pistol"
 weapon_scene = ExtResource("4_6v0uo")
 scene_offset = Vector3(0, 0, 0)
 particle_system = ExtResource("1_6v0uo")
 particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.18)
 particle_test = false
+slot = 1
 damage = 16.0
 trigger_method = ExtResource("4_smwrr")
 sound_effect = ExtResource("3_1v76v")

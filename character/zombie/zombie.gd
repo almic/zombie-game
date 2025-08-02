@@ -26,7 +26,6 @@ class_name Zombie extends CharacterBase
 
 @export_group("Movement")
 
-
 @export_subgroup("Turning", "rotate")
 ## Maximum rotation rate in radians/ second
 @export var rotate_top_speed: float = TAU
@@ -44,6 +43,10 @@ class_name Zombie extends CharacterBase
 var _rotation_velocity: float = 0
 
 @export_group("Target Detection", "target")
+
+## If this zombie seeks out new targets
+@export var target_enabled: bool = true
+
 ## How far to be aware of potential targets
 @export var target_search_radius: float = 50
 
@@ -112,6 +115,14 @@ var last_player_damage: Player
 
 ## Most recent impacts from damage
 var last_hits: Array[Dictionary] = []
+
+
+var sleep_min_travel: float = 0.001
+var sleep_timeout: float = 0.5
+var sleep_wakeup: float = 1.0
+
+var _sleep_timeout_time: float = 0.0
+var _sleep_wakeup_time: float = 0.0
 
 
 func _ready() -> void:
@@ -215,6 +226,23 @@ func on_attack_start() -> void:
 func on_attack_end() -> void:
     attack_hitbox.disable()
 
+func update_movement(delta: float) -> void:
+
+    if _sleep_wakeup_time > 0.0:
+        _sleep_wakeup_time -= delta
+        return
+
+    super.update_movement(delta)
+
+    if last_velocity.length_squared() < sleep_min_travel:
+        if _sleep_timeout_time > sleep_timeout:
+            _sleep_wakeup_time = sleep_wakeup
+        else:
+            _sleep_timeout_time += delta
+    else:
+        _sleep_timeout_time = 0.0
+
+
 func update_rotation(delta: float) -> void:
     var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)
     var stationary: float = direction.length_squared() < 0.5
@@ -285,6 +313,9 @@ func get_simple_move_direction() -> Vector3:
     return Vector3.ZERO
 
 func update_target_position(delta: float) -> void:
+    if not target_enabled:
+        return
+
     if _active_target != null:
         # check to update target position
         if _target_update_accumulator < target_update_rate:

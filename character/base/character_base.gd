@@ -141,7 +141,7 @@ var step_snap_down_max_cos_theta: float = -1
 var movement_direction: Vector3 = Vector3.ZERO
 
 
-## Computed after calling `travel_character()`
+## Computed after calling `update_movement()`
 var acceleration: Vector3 = Vector3.ZERO
 var last_velocity: Vector3 = Vector3.ZERO
 
@@ -204,7 +204,6 @@ func is_grounded() -> bool:
 ## stepping and sliding as needed. This will also compute an acceleration that
 ## can be used with animations.
 func update_movement(delta: float) -> void:
-
     # Prepare variables
     var stationary: bool = movement_direction.is_zero_approx()
     var grounded: bool = is_grounded()
@@ -293,7 +292,11 @@ func update_movement(delta: float) -> void:
     var collisions: PhysicsTestMotionResult3D = PhysicsTestMotionResult3D.new()
     var move: PhysicsTestMotionParameters3D = PhysicsTestMotionParameters3D.new()
     var to_move: Vector3 = velocity * delta
+
+    #print('------')
+    #var loop_start = Time.get_ticks_usec()
     for step in range(4):
+        #var other_start = Time.get_ticks_usec()
         if to_move.is_zero_approx():
             break
 
@@ -302,7 +305,11 @@ func update_movement(delta: float) -> void:
         move.max_collisions = 4
         move.recovery_as_collision = true
 
+        #var move_start = Time.get_ticks_usec()
         var collided: bool = PhysicsServer3D.body_test_motion(rid, move, collisions)
+        #var move_end = Time.get_ticks_usec()
+        #print('move: ' + str(move_end - move_start))
+
         if _handle_movement_collisions(collided, collisions):
             break
 
@@ -328,7 +335,10 @@ func update_movement(delta: float) -> void:
         # Detect best floor, average normals for sliding
         var average_floor_normal: Vector3 = Vector3.ZERO
         var average_wall_normal: Vector3 = Vector3.ZERO
+        var wall_point: Vector3 = Vector3.ZERO
+        var walls_hit: int = 0
         var last_normal: Vector3 = Vector3.ZERO
+
         for i in range(collisions.get_collision_count()):
             var normal: Vector3 = collisions.get_collision_normal(i)
 
@@ -342,6 +352,8 @@ func update_movement(delta: float) -> void:
             # Gather average slide direction
             if dot < floor_max_cos_theta:
                 average_wall_normal += normal
+                wall_point += collisions.get_collision_point(i)
+                walls_hit += 1
             else:
                 average_floor_normal += normal
 
@@ -350,7 +362,8 @@ func update_movement(delta: float) -> void:
                 continue
             best_ground_dot = dot
 
-            ground_details = make_ground_details(
+            apply_ground_details(
+                ground_details,
                 normal,
                 collisions.get_collision_point(i),
                 collisions.get_collider(i)
@@ -363,8 +376,12 @@ func update_movement(delta: float) -> void:
             average_wall_normal = average_wall_normal.normalized()
 
             # Try to step up with remaining motion, if moving
-            if not stationary and grounded:
-                remainder = step_up(remainder, movement_direction, average_wall_normal)
+            if step < 2 and not stationary and grounded:
+                var ray_point: Vector3 = wall_point / walls_hit
+                ray_point = ray_point.slide(up_direction)
+                ray_point += up_direction * up_direction.dot(global_position)
+                #ray_point += up_direction * 0.001
+                remainder = step_up(remainder, movement_direction, average_wall_normal, ray_point)
 
         if remainder.is_zero_approx():
             break
@@ -393,8 +410,17 @@ func update_movement(delta: float) -> void:
             var to_slide: Vector3 = up_direction.cross(to_move).cross(average_floor_normal).normalized()
             to_move = to_slide * to_move.slide(average_floor_normal).length()
 
+        #var other_end = Time.get_ticks_usec()
+        #print('other: ' + str(other_end - other_start))
+
         if to_move.dot(velocity) < 0.0:
             break
+
+        if to_move.is_zero_approx():
+            break
+
+    #var loop_end = Time.get_ticks_usec()
+    #print('loop: ' + str(loop_end - loop_start))
 
     var real_velocity: Vector3 = (global_position - last_position) - snap_accumulation
 
@@ -480,7 +506,7 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
 
 ## Tries to step up using the remainder distance, updates the ground details when
 ## successful, returns the new remainder travel distance
-func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector3) -> Vector3:
+func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector3, ray_point: Vector3) -> Vector3:
     var added_delta: Vector3 = Vector3.ZERO
 
     var step_forward: Vector3 = remainder.slide(up_direction)
@@ -508,6 +534,27 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
 
     step_test *= step_up_forward_test
 
+    # Do simple raycast checks to see if we might have a reasonable step to
+    # search for. This should prevent us from running tests if the ground is
+    # already flat.
+
+    var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+    var query := PhysicsRayQueryParameters3D.create(
+            (ray_point + step_forward + up_direction * step_up_max),
+            (ray_point + step_forward),
+            collision_mask
+    )
+    var hit := space.intersect_ray(query)
+    if not hit:
+        if step_test.is_zero_approx():
+            return remainder
+
+        query.to = ray_point + step_test
+        query.from = query.to + up_direction * step_up_max
+        hit = space.intersect_ray(query)
+        if not hit:
+            return remainder
+
     var test_motion: PhysicsTestMotionParameters3D = PhysicsTestMotionParameters3D.new()
     var test_result: PhysicsTestMotionResult3D = PhysicsTestMotionResult3D.new()
     var rid: RID = get_rid()
@@ -516,9 +563,7 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
     # Move up
     test_motion.from = global_transform
     test_motion.motion = up
-    # TODO: test setting this to zero to save on time/ memory, only needed in
-    #       the final motion to get a ground
-    test_motion.max_collisions = 4
+    test_motion.max_collisions = 0
 
     if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
         if test_result.get_travel().length_squared() < 0.000001:
@@ -542,6 +587,7 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
     # Move down, need a floor
     test_motion.from = test_motion.from.translated(step_forward)
     test_motion.motion = -up
+    test_motion.max_collisions = 4
 
     if PhysicsServer3D.body_test_motion(rid, test_motion, test_result):
         # If we don't hit early enough, cancel the step
@@ -557,7 +603,7 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
     var average_contact: Vector3 = Vector3.ZERO
 
     var best_ground_dot: float = -INF
-    var new_ground: GroundDetails
+    var new_ground: GroundDetails = GroundDetails.new()
 
     for i in range(test_result.get_collision_count()):
         average_contact += test_result.get_collision_point(i)
@@ -573,7 +619,8 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
         if not dot > best_ground_dot:
             continue
 
-        new_ground = make_ground_details(
+        apply_ground_details(
+            new_ground,
             normal,
             test_result.get_collision_point(i),
             test_result.get_collider(i)
@@ -636,7 +683,8 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
             if not dot > best_ground_dot:
                 continue
 
-            new_ground = make_ground_details(
+            apply_ground_details(
+                new_ground,
                 normal,
                 test_result.get_collision_point(i),
                 test_result.get_collider(i)
@@ -715,7 +763,8 @@ func snap_down(do_forward_test: bool, forward: Vector3) -> bool:
     if result.get_travel().length_squared() < 0.000001:
         return false
 
-    ground_details = make_ground_details(
+    apply_ground_details(
+        ground_details,
         result.get_collision_normal(0),
         result.get_collision_point(0),
         result.get_collider(0)
@@ -731,11 +780,8 @@ func snap_down(do_forward_test: bool, forward: Vector3) -> bool:
 
     return true
 
-
-static func make_ground_details(normal: Vector3, contact_point: Vector3, body: Object) -> GroundDetails:
-    @warning_ignore('shadowed_variable')
-    var ground_details: GroundDetails = GroundDetails.new()
-
+@warning_ignore('shadowed_variable')
+static func apply_ground_details(ground_details: GroundDetails, normal: Vector3, contact_point: Vector3, body: Object) -> void:
     ground_details.normal = normal
     ground_details.position = contact_point
     ground_details.body = body
@@ -746,8 +792,6 @@ static func make_ground_details(normal: Vector3, contact_point: Vector3, body: O
             ground_details.velocity = (
                     body_state.get_velocity_at_local_position(ground_details.position - phys_body.global_position)
             )
-
-    return ground_details
 
 
 func start_camera_smooth() -> void:

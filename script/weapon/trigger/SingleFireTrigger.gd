@@ -28,7 +28,10 @@ func update_input(_base: WeaponNode, action: GUIDEAction) -> void:
 
 
 func _update_trigger(base: WeaponNode, delta: float) -> void:
-    if not _released or not _weapon_triggered or not is_cycled():
+    if not _weapon_triggered or not is_cycled():
+        return
+
+    if not automatic_fire and not _released:
         return
 
     var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state

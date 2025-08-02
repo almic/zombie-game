@@ -25,6 +25,8 @@ func _ready() -> void:
     area_entered.connect(_on_hurtbox)
     _node_owner = get_node(hitbox_owner)
 
+    _cached_hurtboxes = _cached_hurtboxes.duplicate()
+
 func is_enabled() -> bool:
     return monitoring
 
@@ -50,5 +52,5 @@ func _on_hurtbox(hurtbox: HurtBox) -> void:
     hurtbox.do_hit(_node_owner, {
         'position': hurtbox.global_position,
         'from': _node_owner.global_position,
-        'is_hitbox': true
+        'hitbox': self.get_rid().get_id()
     }, damage)

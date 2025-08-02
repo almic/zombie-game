@@ -359,6 +359,9 @@ func anim_goto(
     state_machine.travel(state, reset)
 
 func connect_hurtboxes() -> void:
+    life.add_hitbox_exception(attack_hitbox)
+    life.add_group_exception('zombie')
+
     head.enable()
     body.enable()
 

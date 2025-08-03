@@ -1,14 +1,17 @@
-[gd_scene load_steps=4 format=3 uid="uid://27ly31oguhqu"]
+[gd_scene load_steps=6 format=3 uid="uid://27ly31oguhqu"]
 
-[ext_resource type="Script" uid="uid://ddecsnlrrapmh" path="res://scene/weapon/WeaponScene.gd" id="1_qam34"]
+[ext_resource type="Script" uid="uid://dwx27jk1jkh6f" path="res://scene/weapon/shotgun/shotgun.gd" id="1_5xwbe"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_b2l83"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_5xwbe"]
+[ext_resource type="AnimationLibrary" uid="uid://djg6grfbejyql" path="res://animation/shotgun/shotgun_animation.res" id="4_5xwbe"]
+[ext_resource type="AnimationNodeStateMachine" uid="uid://bl25ib5vtmv8u" path="res://animation/shotgun/shotgun_state_machine.tres" id="5_5vrc4"]
 
 [node name="Shotgun" type="Node3D"]
-script = ExtResource("1_qam34")
+script = ExtResource("1_5xwbe")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
 [node name="protomesh" type="CSGCombiner3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0)
 
 [node name="pump" type="CSGBox3D" parent="protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.065225, -0.27)
@@ -38,3 +41,14 @@ material = ExtResource("3_5xwbe")
 transform = Transform3D(1, 0, 0, 0, 0.906308, -0.422618, 0, 0.422618, 0.906308, 1.45519e-11, -0.101998, 0.447011)
 size = Vector3(0.07, 0.11543, 0.38)
 material = ExtResource("2_b2l83")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+&"shotgun": ExtResource("4_5xwbe")
+}
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/..")
+tree_root = ExtResource("5_5vrc4")
+anim_player = NodePath("../AnimationPlayer")

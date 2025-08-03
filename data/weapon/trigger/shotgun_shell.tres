@@ -5,8 +5,8 @@
 [resource]
 script = ExtResource("1_ofy70")
 bullets = 12
-spread = 0.0872665
-clustering = 0.5
+spread = 0.0785398
+clustering = 0.75
 automatic_fire = false
-cycle_time = 0.1
+cycle_time = 0.8
 metadata/_custom_type_script = "uid://blamt5l6p6jrp"

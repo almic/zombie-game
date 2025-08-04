@@ -27,8 +27,20 @@ func add_hitbox_exception(hit_box: HitBox) -> void:
     _hitboxes.append(id)
 
 func connect_hurtbox(hurt_box: HurtBox, multiplier: float = 1.0) -> void:
-    _hurtboxes.set(hurt_box.get_rid(), multiplier)
+    _hurtboxes.set(hurt_box, multiplier)
     hurt_box.on_hit.connect(_on_hit)
+
+func enable_hurtboxes() -> void:
+    for item in _hurtboxes:
+        var hurtbox: HurtBox = item as HurtBox
+        if hurtbox:
+            hurtbox.enable()
+
+func disable_hurtboxes() -> void:
+    for item in _hurtboxes:
+        var hurtbox: HurtBox = item as HurtBox
+        if hurtbox:
+            hurtbox.disable()
 
 func check_health(emit_died: bool = true) -> void:
     if health > 0.0001:
@@ -53,8 +65,7 @@ func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> voi
             return
         _last_hitbox_frame = frame
 
-    var part_id: RID = part.get_rid()
-    if not _hurtboxes.has(part_id):
+    if not _hurtboxes.has(part):
         return
 
     if from:
@@ -63,7 +74,7 @@ func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> voi
                 return
 
     if not is_hitbox:
-        damage *= _hurtboxes.get(part_id, 1.0)
+        damage *= _hurtboxes.get(part, 1.0)
     health -= damage
 
     check_health(false)

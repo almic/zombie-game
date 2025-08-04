@@ -1,4 +1,4 @@
-[gd_scene load_steps=49 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=52 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -36,7 +36,9 @@
 [ext_resource type="Material" uid="uid://nfcagk1yn11u" path="res://material/water.tres" id="31_i8b61"]
 [ext_resource type="Script" uid="uid://bd4h6hrne4un5" path="res://script/pickup/pickup.gd" id="36_ddy8d"]
 [ext_resource type="Script" uid="uid://0egn31rtalxq" path="res://script/spawning/spawn_point.gd" id="38_4duv0"]
+[ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="43_0wajj"]
 [ext_resource type="Curve3D" uid="uid://127ohk5nm1v2" path="res://scene/world/road_curves/able_curve.res" id="44_3wrw6"]
+[ext_resource type="PackedScene" uid="uid://u117tr8ds8nh" path="res://scene/item/buckshot_pile.tscn" id="44_mhi7v"]
 [ext_resource type="Curve3D" uid="uid://cxge5cmkgb7d3" path="res://scene/world/road_curves/cherry_curve1.res" id="45_x3qer"]
 [ext_resource type="Curve3D" uid="uid://cflspy060bwc5" path="res://scene/world/road_curves/cherry_curve2.res" id="46_x3qer"]
 [ext_resource type="Curve3D" uid="uid://ss311kjgcm1s" path="res://scene/world/road_curves/elder_curve.res" id="47_dt3as"]
@@ -69,6 +71,8 @@ size = Vector2(3048, 3048)
 [sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
 material = ExtResource("31_i8b61")
 size = Vector2(4096, 4096)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mhi7v"]
 
 [node name="world" type="Node3D" groups=["world"]]
 process_mode = 3
@@ -148,7 +152,7 @@ life = SubResource("Resource_a331h")
 [node name="PickupShovel" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.1, -455.6)
 script = ExtResource("36_ddy8d")
-item_resource = ExtResource("15_4duv0")
+item_type = ExtResource("15_4duv0")
 item_scene = ExtResource("15_d2i0j")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
@@ -164,7 +168,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 [node name="PickupPistol" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.1, -458.2)
 script = ExtResource("36_ddy8d")
-item_resource = ExtResource("17_lpj8c")
+item_type = ExtResource("17_lpj8c")
 item_scene = ExtResource("18_udj0i")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
@@ -180,7 +184,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 [node name="PickupShotgun" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -372.4, 5.3, -467.4)
 script = ExtResource("36_ddy8d")
-item_resource = ExtResource("19_udj0i")
+item_type = ExtResource("19_udj0i")
 item_scene = ExtResource("20_b8n2p")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
@@ -2648,3 +2652,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -385.8, 2.05, -486)
 top_level = true
 script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Pickup" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -383.4, 2.2, -469)
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("43_0wajj")
+item_count = 200
+item_scene = ExtResource("44_mhi7v")
+item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, -1.5708)
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="Pickup"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pickup/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_mhi7v")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)

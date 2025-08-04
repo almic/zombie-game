@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=19 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -10,9 +10,9 @@
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
 [ext_resource type="Script" uid="uid://n578e74oit7v" path="res://script/weapon/WeaponNode.gd" id="7_qh58e"]
 [ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/weapon_next.tres" id="8_muf2e"]
-[ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="8_v2h1c"]
-[ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="9_hr31g"]
 [ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/weapon_prev.tres" id="9_jo6ux"]
+[ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/reload.tres" id="10_muf2e"]
+[ext_resource type="PackedScene" uid="uid://duylaogq2cjd6" path="res://ui/hud.tscn" id="11_vuhga"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="13_jo6ux"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
@@ -22,24 +22,6 @@ height = 1.7
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_glpr6"]
 radius = 0.34
 height = 1.7
-
-[sub_resource type="LabelSettings" id="LabelSettings_qh58e"]
-font_size = 40
-font_color = Color(0.740137, 0.925364, 1, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
-
-[sub_resource type="LabelSettings" id="LabelSettings_hr31g"]
-font_size = 40
-font_color = Color(1, 0.926099, 0.725471, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr31g"]
-bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lqp71"]
-bg_color = Color(1, 0.258138, 0.322135, 1)
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_wfnr8"]
 
@@ -58,6 +40,7 @@ move = ExtResource("2_otwb2")
 fire_primary = ExtResource("5_eu8pa")
 weapon_next = ExtResource("8_muf2e")
 weapon_previous = ExtResource("9_jo6ux")
+reload = ExtResource("10_muf2e")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
 camera_node = NodePath("CameraTarget/Camera3D")
 camera_target_node = NodePath("CameraTarget")
@@ -93,99 +76,7 @@ hitbox = NodePath("../../../Hitbox")
 target = NodePath("../AimTarget")
 metadata/_custom_type_script = "uid://n578e74oit7v"
 
-[node name="hud" type="Control" parent="CameraTarget/Camera3D" index="1" groups=["hud"]]
-clip_contents = true
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
-script = ExtResource("9_hr31g")
-metadata/_custom_type_script = "uid://dpfyrr2a6s6u0"
-
-[node name="crosshair_root" type="CenterContainer" parent="CameraTarget/Camera3D/hud" index="0"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="crosshair_ctl" type="Control" parent="CameraTarget/Camera3D/hud/crosshair_root" index="0"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="CrossHair" type="Node2D" parent="CameraTarget/Camera3D/hud/crosshair_root/crosshair_ctl" index="0"]
-script = ExtResource("8_v2h1c")
-center_enabled = true
-center_size = 1.4
-metadata/_custom_type_script = "uid://b8ty0aywli1vd"
-
-[node name="score_container" type="Control" parent="CameraTarget/Camera3D/hud" index="1"]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = -65.0
-offset_right = 65.0
-offset_bottom = -40.0
-grow_vertical = 0
-pivot_offset = Vector2(1.45519e-11, 25)
-
-[node name="score_label" type="Label" parent="CameraTarget/Camera3D/hud/score_container" index="0"]
-layout_mode = 2
-offset_right = 48.0
-offset_bottom = 23.0
-text = "Score:"
-label_settings = SubResource("LabelSettings_qh58e")
-metadata/_edit_lock_ = true
-
-[node name="score_value" type="Label" parent="CameraTarget/Camera3D/hud/score_container" index="1"]
-unique_name_in_owner = true
-layout_mode = 2
-offset_left = 132.0
-offset_right = 315.0
-offset_bottom = 55.0
-text = "0"
-label_settings = SubResource("LabelSettings_hr31g")
-
-[node name="health_container" type="Control" parent="CameraTarget/Camera3D/hud" index="2"]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -20.0
-offset_top = -55.0
-offset_right = 20.0
-offset_bottom = -15.0
-grow_horizontal = 2
-grow_vertical = 0
-
-[node name="health_bar" type="ProgressBar" parent="CameraTarget/Camera3D/hud/health_container" index="0"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -13.5
-offset_right = 250.0
-offset_bottom = 13.5
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_font_sizes/font_size = 19
-theme_override_styles/background = SubResource("StyleBoxFlat_hr31g")
-theme_override_styles/fill = SubResource("StyleBoxFlat_lqp71")
-max_value = 1.0
-value = 1.0
-show_percentage = false
+[node name="hud" parent="CameraTarget/Camera3D" index="1" instance=ExtResource("11_vuhga")]
 
 [node name="AimTarget" type="RayCast3D" parent="CameraTarget/Camera3D" index="2"]
 unique_name_in_owner = true

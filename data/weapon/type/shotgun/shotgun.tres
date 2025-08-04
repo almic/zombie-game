@@ -1,24 +1,40 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=6 format=3 uid="uid://df0njg4igaivy"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=9 format=3 uid="uid://df0njg4igaivy"]
 
 [ext_resource type="PackedScene" uid="uid://d272705u8gln4" path="res://particle/system/weapon/gunshot_big.tscn" id="1_1fb0h"]
+[ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_uhuv2"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_y8x2t"]
-[ext_resource type="Resource" uid="uid://dpnmn1uwo1d0q" path="res://data/weapon/trigger/shotgun_shell.tres" id="2_yambn"]
+[ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="2_b3bfv"]
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1fb0h"]
 [ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="5_1fb0h"]
+[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="7_jxl5a"]
+
+[sub_resource type="Resource" id="Resource_6v8yj"]
+script = ExtResource("7_jxl5a")
+automatic_fire = false
+cycle_time = 0.8
+is_melee = false
+metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]
 script = ExtResource("1_y8x2t")
 name = "Shotgun"
-weapon_scene = ExtResource("5_1fb0h")
+slot = 3
+trigger_mechanism = SubResource("Resource_6v8yj")
+can_chamber = true
+chamber_on_fire = true
+projectile_spread = 0.0785398
+projectile_clustering = 0.75
+projectile_range = 100.0
+projectile_hit_mask = 124
+ammo_reserve_size = 6
+ammo_can_mix = false
+ammo_reversed_use = true
+ammo_supported = Array[ExtResource("1_uhuv2")]([ExtResource("2_b3bfv")])
+scene = ExtResource("5_1fb0h")
 scene_offset = Vector3(0, 0, 0)
-particle_system = ExtResource("1_1fb0h")
+particle_scene = ExtResource("1_1fb0h")
 particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.88)
 particle_test = false
-slot = 3
-damage = 20.0
-trigger_method = ExtResource("2_yambn")
 sound_effect = ExtResource("3_1fb0h")
 sound_test = false
-max_range = 100.0
-hit_mask = 28
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

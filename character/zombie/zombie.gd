@@ -393,9 +393,6 @@ func connect_hurtboxes() -> void:
     life.add_hitbox_exception(attack_hitbox)
     life.add_group_exception('zombie')
 
-    head.enable()
-    body.enable()
-
     life.connect_hurtbox(head, mult_head)
     life.connect_hurtbox(body, mult_body)
 
@@ -403,15 +400,15 @@ func connect_hurtboxes() -> void:
         arm_l_1, arm_l_2, hand_l,
         arm_r_1, arm_r_2, hand_r
     ]:
-        arm_part.enable()
         life.connect_hurtbox(arm_part, mult_arm)
 
     for leg_part in [
         leg_l_1, leg_l_2, foot_l,
         leg_r_1, leg_r_2, foot_r
     ]:
-        leg_part.enable()
         life.connect_hurtbox(leg_part, mult_leg)
+
+    life.enable_hurtboxes()
 
 
 func on_death() -> void:
@@ -419,6 +416,7 @@ func on_death() -> void:
         last_player_damage.score += 100
 
     #print("RAHH I DIE!")
+    life.disable_hurtboxes()
     ragdoll()
 
     var frame: int = Engine.get_physics_frames()
@@ -432,12 +430,11 @@ func on_death() -> void:
             break
 
         # Power calculation, continue in case an older hit has more power
-        var power: float = lerpf(hit.damage * 0.5, 0, delta / 0.25)
+        var power: float = lerpf(hit.hit.power, 0, delta / 0.25)
         if power <= 0.001:
             continue
 
-        var impulse: Vector3 = (hit.hit.position - hit.hit.from).normalized()
-        impulse *= power
+        var impulse: Vector3 = hit.hit.direction * power
 
         var bone_attachment: BoneAttachment3D = hit.part.get_parent() as BoneAttachment3D
         if not bone_attachment:

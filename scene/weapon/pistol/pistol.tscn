@@ -6,8 +6,10 @@
 [sub_resource type="BoxShape3D" id="BoxShape3D_it0b4"]
 size = Vector3(0.08, 0.18, 0.32)
 
-[node name="Pistol" type="Node3D"]
+[node name="Pistol" type="Node3D" node_paths=PackedStringArray("projectile_marker", "particle_marker")]
 script = ExtResource("1_rs8p0")
+projectile_marker = NodePath("protomesh/barrel")
+particle_marker = NodePath("protomesh/barrel")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
 [node name="protomesh" type="CSGCombiner3D" parent="."]
@@ -20,6 +22,9 @@ material = ExtResource("2_b3nnr")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0.1)
 size = Vector3(0.06, 0.1, 0.1)
 material = ExtResource("2_b3nnr")
+
+[node name="barrel" type="Marker3D" parent="protomesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.18)
 
 [node name="Collider" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.98023e-08, -0.05, 2.98023e-08)

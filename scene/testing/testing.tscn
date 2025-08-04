@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://s1rph1k1jbkk"]
+[gd_scene load_steps=29 format=3 uid="uid://s1rph1k1jbkk"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_00fxt"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_5xoya"]
@@ -23,6 +23,7 @@
 [ext_resource type="Script" uid="uid://bd4h6hrne4un5" path="res://script/pickup/pickup.gd" id="21_yc4p8"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="23_f812r"]
 [ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="23_w286s"]
+[ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="24_k6jip"]
 [ext_resource type="Script" uid="uid://0egn31rtalxq" path="res://script/spawning/spawn_point.gd" id="24_w286s"]
 
 [sub_resource type="Resource" id="Resource_8y2pe"]
@@ -352,9 +353,11 @@ top_level = true
 metadata/_edit_lock_ = true
 
 [node name="Pickup" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, -31.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 32, 0, -33.5)
 script = ExtResource("21_yc4p8")
-item_resource = ExtResource("23_w286s")
+item_type = ExtResource("23_w286s")
+item_count = 4
+item_scene = ExtResource("24_k6jip")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
 [node name="Area3D" type="Area3D" parent="Pickup"]
@@ -374,9 +377,3 @@ life = SubResource("Resource_w286s")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0.1, -22)
 script = ExtResource("24_w286s")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Marker3D" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.99, 0.00087, -32.04)
-
-[node name="Marker3D2" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.99, 0.45087, -32.04)

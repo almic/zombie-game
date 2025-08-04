@@ -1,10 +1,12 @@
-## Implements a trigger method for weapons, controlling how a weapon activates,
-## how it spaws particles, and how it hits targets.
-class_name TriggerResource extends Resource
+## Implements a trigger method for weapons, controlling how a weapon activates.
+class_name TriggerMechanism extends Resource
 
 
 ## Weapon cycle time, minimum time between consecutive triggers
 @export var cycle_time: float = 1.0
+
+## If this mechanism uses hitboxes instead of projectiles
+@export var is_melee: bool = false
 
 ## For weapon cycling
 @warning_ignore('unused_private_class_variable')
@@ -21,33 +23,48 @@ var _weapon_triggered: bool = false:
             _weapon_triggered = true
             _has_ticked = false
 
-## Toggled by update_input and tick to prevent missed input
-@warning_ignore('unused_private_class_variable')
+## Toggled by update_input and tick to prevent missed input.
 var _has_ticked: bool = false
 
-## Called once per frame, implement per trigger type. Returns true if the weapon
-## should be triggered.
-@warning_ignore('unused_parameter')
-func update_input(base: WeaponNode, action: GUIDEAction) -> void:
-    pass
+## Tracks the physics tick that the weapon started cycling.
+var _cycle_started: bool = false
+
 
 ## Handles actual weapon trigger.
 func tick(base: WeaponNode, delta: float) -> void:
     _has_ticked = true
+    _cycle_started = false
 
     if _weapon_cycle > 0.0:
         _weapon_cycle -= delta
 
-    _update_trigger(base, delta)
+    if _should_trigger():
+        start_cycle()
+
+    if is_melee:
+        _update_melee(base, delta)
 
 func start_cycle() -> void:
     _weapon_cycle = cycle_time
+    _cycle_started = true
 
 func is_cycled() -> bool:
     return not _weapon_cycle > 0.0
 
+func is_cycle_started() -> bool:
+    return _cycle_started
+
+
+## Called once per frame, implement per trigger type.
+@warning_ignore('unused_parameter')
+func update_input(action: GUIDEAction) -> void:
+    pass
 
 ## Handles actual weapon trigger, implement per trigger type.
+func _should_trigger() -> bool:
+    return false
+
+## Handles melee weapon trigger, implement per trigger type.
 @warning_ignore('unused_parameter')
-func _update_trigger(base: WeaponNode, delta: float) -> void:
+func _update_melee(base: WeaponNode, delta: float) -> void:
     pass

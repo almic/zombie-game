@@ -23,6 +23,7 @@ class_name Player extends CharacterBase
 @export var fire_primary: GUIDEAction
 @export var weapon_next: GUIDEAction
 @export var weapon_previous: GUIDEAction
+@export var reload: GUIDEAction
 
 
 var score: int = 0:
@@ -31,6 +32,8 @@ var score: int = 0:
 
 var weapons: Dictionary = {}
 var weapon_index: int = 0
+
+var ammo_bank: Dictionary = {}
 
 
 func _ready() -> void:
@@ -45,6 +48,9 @@ func _ready() -> void:
     aim_target.add_exception(self)
 
     weapon_node.set_trigger(fire_primary)
+    weapon_node.set_reload(reload)
+    weapon_node.set_ammo_bank(ammo_bank)
+
     # TODO: TEMP! REMOVE ME!!
     #weapon_node.top_level = true
     #weapon_node.global_position = global_position + Vector3.UP * 1.5
@@ -110,7 +116,6 @@ func _process(_delta: float) -> void:
             select_weapon(next_slot)
 
 
-
 func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
@@ -149,12 +154,28 @@ func set_score(value: int) -> void:
 
     get_tree().call_group('hud', 'update_score', score)
 
+func update_ammo() -> void:
+    if not weapon_node.weapon_type:
+        return
+
+    var load: int = weapon_node.weapon_type.get_reserve_total()
+    if weapon_node.weapon_type.is_chambered():
+        load += 1
+    var type: int = weapon_node.weapon_type.get_reserve_type()
+
+    if type == 0:
+        type = weapon_node.weapon_type.get_default_ammo_type()
+
+    var stock: int = ammo_bank.get(type, {'amount': 0}).amount
+
+    get_tree().call_group('hud', 'update_ammo', load, stock)
+
 func swap_hand(_time: float = 0.0) -> void:
     print('player swaps hand!')
 
 func pickup_item(item: Pickup) -> void:
-    if item.item_resource is WeaponResource:
-        var weapon: WeaponResource = item.item_resource as WeaponResource
+    if item.item_type is WeaponResource:
+        var weapon: WeaponResource = item.item_type as WeaponResource
         if weapons.has(weapon.slot):
             print('Already have slot ' + str(weapon.slot))
             return
@@ -165,6 +186,24 @@ func pickup_item(item: Pickup) -> void:
 
         if weapon_index == 0:
             select_weapon(weapon.slot)
+
+        # Weapon comes with ammo, preload it with first ammo type
+        if item.item_count > 0:
+            var ammo_type: int = weapon.get_default_ammo_type()
+            weapon.load_rounds(ammo_type, item.item_count)
+            update_ammo()
+
+    elif item.item_type is AmmoResource:
+        var ammo: AmmoResource = item.item_type as AmmoResource
+        if not ammo_bank.has(ammo.ammo_type):
+            ammo_bank.set(ammo.ammo_type, {
+                'amount': 0,
+                'ammo': ammo
+            })
+        ammo_bank.get(ammo.ammo_type).amount += item.item_count
+        update_ammo()
+
+        item.queue_free()
 
 func connect_hurtboxes() -> void:
     hurtbox.enable()

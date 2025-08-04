@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="MeleeTrigger" load_steps=2 format=3 uid="uid://ngc8usjfa32"]
 
-[ext_resource type="Script" uid="uid://b24e01klhc4bl" path="res://script/weapon/trigger/MeleeTrigger.gd" id="1_0sndv"]
+[ext_resource type="Script" uid="uid://b24e01klhc4bl" path="res://script/weapon/trigger/MeleeMechanism.gd" id="1_0sndv"]
 
 [resource]
 script = ExtResource("1_0sndv")

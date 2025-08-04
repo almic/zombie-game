@@ -22,6 +22,8 @@ class_name WeaponNode extends Node3D
 ## Frequency of target position checks in physics frames.
 @export var target_update_rate: int = 3
 
+## Ammo bank to use for weapons
+var _ammo_bank: Dictionary
 
 # For moving weapon to face target
 var _weapon_target_from: Quaternion
@@ -30,6 +32,7 @@ var _weapon_target_tick: int = 0
 var _weapon_target_amount: float = 0
 
 var _weapon_trigger: GUIDEAction
+var _weapon_reload: GUIDEAction
 
 var _weapon_scene: WeaponScene
 
@@ -42,8 +45,14 @@ func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
     add_child(_weapon_audio_player)
 
+func set_ammo_bank(ammo: Dictionary) -> void:
+    _ammo_bank = ammo
+
 func set_trigger(action: GUIDEAction) -> void:
     _weapon_trigger = action
+
+func set_reload(action: GUIDEAction) -> void:
+    _weapon_reload = action
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
@@ -62,7 +71,11 @@ func _process(delta: float) -> void:
         return
 
     if weapon_type:
-        weapon_type.trigger_method.update_input(self, _weapon_trigger)
+        weapon_type.trigger_mechanism.update_input(_weapon_trigger)
+        if check_reload():
+            _weapon_scene.on_reload()
+            if controller.has_method('update_ammo'):
+                controller.update_ammo()
 
     if not do_targeting or not _weapon_scene:
         return
@@ -80,7 +93,15 @@ func _physics_process(delta: float) -> void:
         return
 
     if weapon_type:
-        weapon_type.trigger_method.tick(self, delta)
+        weapon_type.trigger_mechanism.tick(self, delta)
+        if weapon_type.trigger_mechanism.is_cycle_started():
+            if weapon_type.is_chambered() or weapon_type.get_reserve_total() > 0:
+                play_weapon_effects()
+                weapon_type.fire_projectiles(self)
+                if controller.has_method('update_ammo'):
+                    controller.update_ammo()
+            else:
+                print('click! no ammo!')
 
     if not do_targeting or not _weapon_scene:
         return
@@ -110,6 +131,64 @@ func _physics_process(delta: float) -> void:
 func weapon_tranform() -> Transform3D:
     return _weapon_scene.global_transform
 
+## Get the transform of the weapon projectile marker
+func weapon_projectile_transform() -> Transform3D:
+    if _weapon_scene and _weapon_scene.projectile_marker:
+        return _weapon_scene.projectile_marker.transform
+    return weapon_tranform()
+
+## Checks if the weapon should reload
+func check_reload() -> bool:
+    if not _weapon_reload.is_triggered():
+        return false
+
+    if not weapon_type or not _ammo_bank:
+        return false
+
+    var reserve_total: int = weapon_type.get_reserve_total()
+    if reserve_total >= weapon_type.ammo_reserve_size:
+        print('Fully loaded!')
+        return false
+
+    # Find first supported ammo type
+    # TODO: support multiple ammo types per weapon
+    var stock: Dictionary
+    var supported: Dictionary = weapon_type.get_supported_ammunition()
+    for ammo_type in _ammo_bank:
+        if supported.has(ammo_type):
+            stock = _ammo_bank.get(ammo_type)
+            break
+
+    if not stock:
+        print('No supported ammo in stock!')
+        return false
+
+    if stock.amount < 1:
+        print('Stock is empty!')
+        return false
+
+    var ammo_type: int = stock.ammo.ammo_type
+
+    if weapon_type.ammo_can_mix:
+        stock.amount -= 1
+        weapon_type.load_rounds(ammo_type, 1)
+    else:
+        var reserve_type: int = weapon_type.get_reserve_type()
+        if reserve_type > 0 and ammo_type != reserve_type:
+            _ammo_bank.set(ammo_type, _ammo_bank.get(ammo_type, 0) + reserve_total)
+        var amount: int = mini(stock.amount, weapon_type.ammo_reserve_size - reserve_total)
+        stock.amount -= amount
+        weapon_type.load_rounds(ammo_type, amount)
+
+    if weapon_type.can_chamber:
+        weapon_type.charge_weapon()
+
+    print('reserve: ' + str(weapon_type.get_reserve_total()))
+    print('chambered: ' + str(weapon_type.is_chambered()))
+
+
+    return true
+
 ## Callback used by triggers to activate weapon effects
 func play_weapon_effects() -> void:
     trigger_sound()
@@ -120,7 +199,7 @@ func play_weapon_effects() -> void:
 
 ## Trigger the weapon
 func trigger_weapon(activate: bool = true) -> void:
-    weapon_type.trigger_method._trigger(self, activate)
+    weapon_type.trigger_mechanism._trigger(self, activate)
 
 ## Trigger the weapon sound
 func trigger_sound(_activate: bool = true) -> void:
@@ -152,16 +231,16 @@ func _load_weapon_scene() -> void:
         _weapon_scene.queue_free()
         _weapon_scene = null
 
-    if not weapon_type or not weapon_type.weapon_scene:
+    if not weapon_type or not weapon_type.scene:
         return
 
-    var weapon_scene = weapon_type.weapon_scene.instantiate()
+    var weapon_scene = weapon_type.scene.instantiate()
     if weapon_scene is not WeaponScene:
         push_error(
             "Weapon type \"" +
             str(weapon_type.resource_name) +
             "\" weapon scene \"" +
-            str(weapon_type.weapon_scene.resource_name) +
+            str(weapon_type.scene.resource_name) +
             "\" root node is not a WeaponScene!"
         )
         return
@@ -179,16 +258,16 @@ func _load_particle_system() -> void:
         _particle_system.queue_free()
         _particle_system = null
 
-    if not weapon_type or not weapon_type.particle_system:
+    if not weapon_type or not weapon_type.particle_scene:
         return
 
-    var particle_system = weapon_type.particle_system.instantiate()
+    var particle_system = weapon_type.particle_scene.instantiate()
     if particle_system is not ParticleSystem:
         push_error(
             "Weapon type \"" +
             str(weapon_type.resource_name) +
             "\" particle system \"" +
-            str(weapon_type.particle_system.resource_name) +
+            str(weapon_type.particle_scene.resource_name) +
             "\" root node is not a ParticleSystem!"
         )
         return

@@ -1,20 +1,24 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=4 format=3 uid="uid://bcd20ysn860xe"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=3 format=3 uid="uid://bcd20ysn860xe"]
 
+[ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_hy3h1"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_rk4e1"]
-[ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="2_hy3h1"]
-[ext_resource type="Resource" uid="uid://ngc8usjfa32" path="res://data/weapon/trigger/melee_trigger.tres" id="2_r7eaj"]
 
 [resource]
 script = ExtResource("1_rk4e1")
 name = "Shovel"
-weapon_scene = ExtResource("2_hy3h1")
+slot = 2
+can_chamber = false
+chamber_on_fire = false
+projectile_spread = 0.0872665
+projectile_clustering = 0.5
+projectile_range = 0.0
+projectile_hit_mask = 8
+ammo_reserve_size = 10
+ammo_can_mix = false
+ammo_reversed_use = false
+ammo_supported = Array[ExtResource("1_hy3h1")]([])
 scene_offset = Vector3(0.03, -0.125, 1.45519e-11)
 particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.84)
 particle_test = false
-slot = 2
-damage = 100.0
-trigger_method = ExtResource("2_r7eaj")
 sound_test = false
-max_range = 0.0
-hit_mask = 8
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

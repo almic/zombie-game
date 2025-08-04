@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dyi2igdvm8b7w"]
+
+[ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="1_ieoa5"]
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_pmj2x"]
+
+[node name="Buckshot" type="CSGCombiner3D"]
+
+[node name="shell" type="CSGCylinder3D" parent="."]
+radius = 0.018
+height = 0.076
+material = ExtResource("1_ieoa5")
+
+[node name="primer" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.053, 1.45519e-11)
+radius = 0.019
+height = 0.03
+material = ExtResource("2_pmj2x")

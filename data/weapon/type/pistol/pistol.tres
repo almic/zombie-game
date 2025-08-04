@@ -1,24 +1,48 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=6 format=3 uid="uid://d3ao7jq6qeasg"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=9 format=3 uid="uid://d3ao7jq6qeasg"]
 
+[ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_3vreh"]
 [ext_resource type="PackedScene" uid="uid://d30d6ot2ufjtr" path="res://particle/system/weapon/gunshot_small.tscn" id="1_6v0uo"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="2_257ta"]
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1v76v"]
 [ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="4_6v0uo"]
-[ext_resource type="Resource" uid="uid://br27afoygcjl0" path="res://data/weapon/trigger/single_fire.tres" id="4_smwrr"]
+[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="6_1v76v"]
+
+[sub_resource type="Resource" id="Resource_smwrr"]
+script = ExtResource("1_3vreh")
+ammo_type = 1
+damage = 16.8
+impulse_power = 10.0
+projectiles = 1
+metadata/_custom_type_script = "uid://br0bn4v8ti7u5"
+
+[sub_resource type="Resource" id="Resource_1v76v"]
+resource_local_to_scene = true
+script = ExtResource("6_1v76v")
+automatic_fire = false
+cycle_time = 0.22
+is_melee = false
+metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]
 script = ExtResource("2_257ta")
 name = "Pistol"
-weapon_scene = ExtResource("4_6v0uo")
-scene_offset = Vector3(0, 0, 0)
-particle_system = ExtResource("1_6v0uo")
-particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.18)
-particle_test = false
 slot = 1
-damage = 16.8
-trigger_method = ExtResource("4_smwrr")
+trigger_mechanism = SubResource("Resource_1v76v")
+can_chamber = true
+chamber_on_fire = true
+projectile_spread = 0.00174533
+projectile_clustering = 0.0
+projectile_range = 100.0
+projectile_hit_mask = 124
+ammo_reserve_size = 13
+ammo_can_mix = false
+ammo_reversed_use = false
+ammo_supported = Array[ExtResource("1_3vreh")]([SubResource("Resource_smwrr")])
+scene = ExtResource("4_6v0uo")
+scene_offset = Vector3(0, 0, 0)
+particle_scene = ExtResource("1_6v0uo")
+particle_offset = Vector3(1.45519e-11, 1.45519e-11, 1.45519e-11)
+particle_test = false
 sound_effect = ExtResource("3_1v76v")
 sound_test = false
-max_range = 100.0
-hit_mask = 28
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

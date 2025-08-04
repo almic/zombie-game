@@ -2,7 +2,7 @@
 @icon("res://icon/weapon_trigger.svg")
 
 ## Melee trigger, toggles a hitbox which can trigger hurtboxes.
-class_name MeleeTrigger extends TriggerResource
+class_name MeleeMechanism extends TriggerMechanism
 
 
 ## After triggering, how long to delay before enabling the hitbox.
@@ -17,20 +17,18 @@ var duration: float = 1.0
 var _hitbox_timer: float
 
 
-func update_input(_base: WeaponNode, action: GUIDEAction) -> void:
+func update_input(action: GUIDEAction) -> void:
     _weapon_triggered = action.is_triggered()
 
 
-func _update_trigger(base: WeaponNode, delta: float) -> void:
-    if _weapon_triggered and is_cycled() and base.hitbox:
-        _hitbox_timer = delay + duration
-        base.play_weapon_effects()
-        start_cycle()
+func _should_trigger() -> bool:
+    if not _weapon_triggered or not is_cycled():
+        return false
 
-    _update_hitbox(base, delta)
+    _hitbox_timer = delay + duration
+    return true
 
-
-func _update_hitbox(base: WeaponNode, delta: float) -> void:
+func _update_melee(base: WeaponNode, delta: float) -> void:
     if not base.hitbox:
         return
 

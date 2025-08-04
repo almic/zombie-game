@@ -4,7 +4,13 @@ class_name Pickup extends Marker3D
 
 
 ## The resource that identifies this item type
-@export var item_resource: PickupResource
+@export var item_type: PickupResource
+
+## How much of the item exists
+@export var item_count: int = 0
+
+
+@export_group("Visual", "item")
 
 ## Scene spawned to display the item in game
 @export var item_scene: PackedScene:

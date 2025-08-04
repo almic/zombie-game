@@ -1,0 +1,174 @@
+[gd_scene load_steps=10 format=3 uid="uid://duylaogq2cjd6"]
+
+[ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
+[ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_qh58e"]
+font_size = 40
+font_color = Color(0.740137, 0.925364, 1, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="LabelSettings" id="LabelSettings_hr31g"]
+font_size = 40
+font_color = Color(1, 0.926099, 0.725471, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="LabelSettings" id="LabelSettings_muf2e"]
+font_size = 40
+font_color = Color(1, 0.926099, 0.725471, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="LabelSettings" id="LabelSettings_jo6ux"]
+font_size = 40
+font_color = Color(0.740137, 0.925364, 1, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="LabelSettings" id="LabelSettings_fkbv7"]
+font_size = 40
+font_color = Color(1, 0.926099, 0.725471, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr31g"]
+bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lqp71"]
+bg_color = Color(1, 0.258138, 0.322135, 1)
+
+[node name="hud" type="Control" groups=["hud"]]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_276te")
+metadata/_custom_type_script = "uid://dpfyrr2a6s6u0"
+
+[node name="crosshair_root" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="crosshair_ctl" type="Control" parent="crosshair_root"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CrossHair" type="Node2D" parent="crosshair_root/crosshair_ctl"]
+script = ExtResource("2_546lt")
+center_enabled = true
+center_size = 1.4
+metadata/_custom_type_script = "uid://b8ty0aywli1vd"
+
+[node name="score_container" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = -65.0
+offset_right = 65.0
+offset_bottom = -40.0
+grow_vertical = 0
+pivot_offset = Vector2(1.45519e-11, 25)
+metadata/_edit_lock_ = true
+
+[node name="score_label" type="Label" parent="score_container"]
+layout_mode = 2
+offset_right = 48.0
+offset_bottom = 23.0
+text = "Score:"
+label_settings = SubResource("LabelSettings_qh58e")
+metadata/_edit_lock_ = true
+
+[node name="score_value" type="Label" parent="score_container"]
+unique_name_in_owner = true
+layout_mode = 2
+offset_left = 132.0
+offset_right = 315.0
+offset_bottom = 55.0
+text = "0"
+label_settings = SubResource("LabelSettings_hr31g")
+metadata/_edit_lock_ = true
+
+[node name="ammo_container" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 25.0
+offset_top = -120.0
+offset_right = 65.0
+offset_bottom = -80.0
+grow_vertical = 0
+metadata/_edit_lock_ = true
+
+[node name="HFlowContainer" type="HFlowContainer" parent="ammo_container"]
+layout_mode = 0
+offset_right = 351.0
+offset_bottom = 40.0
+metadata/_edit_lock_ = true
+
+[node name="ammo_load" type="Label" parent="ammo_container/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+label_settings = SubResource("LabelSettings_muf2e")
+metadata/_edit_lock_ = true
+
+[node name="ammo_sep" type="Label" parent="ammo_container/HFlowContainer"]
+layout_mode = 2
+text = "/"
+label_settings = SubResource("LabelSettings_jo6ux")
+metadata/_edit_lock_ = true
+
+[node name="ammo_stock" type="Label" parent="ammo_container/HFlowContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "0"
+label_settings = SubResource("LabelSettings_fkbv7")
+metadata/_edit_lock_ = true
+
+[node name="health_container" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -55.0
+offset_right = 20.0
+offset_bottom = -15.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="health_bar" type="ProgressBar" parent="health_container"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -250.0
+offset_top = -13.5
+offset_right = 250.0
+offset_bottom = 13.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 19
+theme_override_styles/background = SubResource("StyleBoxFlat_hr31g")
+theme_override_styles/fill = SubResource("StyleBoxFlat_lqp71")
+max_value = 1.0
+value = 1.0
+show_percentage = false

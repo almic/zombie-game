@@ -13,6 +13,8 @@ ammo_type = 1
 damage = 16.8
 impulse_power = 10.0
 projectiles = 1
+projectile_spread = 0.0872665
+projectile_clustering = 0.5
 metadata/_custom_type_script = "uid://br0bn4v8ti7u5"
 
 [sub_resource type="Resource" id="Resource_1v76v"]
@@ -32,8 +34,7 @@ melee_impact = 0.0
 trigger_mechanism = SubResource("Resource_1v76v")
 can_chamber = true
 chamber_on_fire = true
-projectile_spread = 0.00174533
-projectile_clustering = 0.0
+projectile_inaccuracy = 0.0
 projectile_range = 100.0
 projectile_hit_mask = 24
 ammo_reserve_size = 13

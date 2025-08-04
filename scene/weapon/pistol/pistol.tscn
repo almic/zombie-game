@@ -1,32 +1,41 @@
-[gd_scene load_steps=4 format=3 uid="uid://lum7snfoxdml"]
+[gd_scene load_steps=6 format=3 uid="uid://lum7snfoxdml"]
 
-[ext_resource type="Script" uid="uid://ddecsnlrrapmh" path="res://scene/weapon/WeaponScene.gd" id="1_rs8p0"]
+[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_gv2v7"]
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="2_b3nnr"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_b3nnr"]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_it0b4"]
+graph_offset = Vector2(-164, 79)
+nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_b3nnr")
+nodes/StateMachine/position = Vector2(-40, 140)
+node_connections = [&"output", 0, &"StateMachine"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_it0b4"]
 size = Vector3(0.08, 0.18, 0.32)
 
-[node name="Pistol" type="Node3D" node_paths=PackedStringArray("projectile_marker", "particle_marker")]
-script = ExtResource("1_rs8p0")
-projectile_marker = NodePath("protomesh/barrel")
-particle_marker = NodePath("protomesh/barrel")
-metadata/_custom_type_script = "uid://ddecsnlrrapmh"
+[node name="Pistol" node_paths=PackedStringArray("projectile_marker", "particle_marker") instance=ExtResource("1_gv2v7")]
+projectile_marker = NodePath("Mesh/protomesh/barrel")
+particle_marker = NodePath("Mesh/protomesh/barrel")
 
-[node name="protomesh" type="CSGCombiner3D" parent="."]
+[node name="protomesh" type="CSGCombiner3D" parent="Mesh" index="0"]
 
-[node name="CSGBox3D" type="CSGBox3D" parent="protomesh"]
+[node name="CSGBox3D" type="CSGBox3D" parent="Mesh/protomesh" index="0"]
 size = Vector3(0.06, 0.06, 0.3)
 material = ExtResource("2_b3nnr")
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="protomesh"]
+[node name="CSGBox3D2" type="CSGBox3D" parent="Mesh/protomesh" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.08, 0.1)
 size = Vector3(0.06, 0.1, 0.1)
 material = ExtResource("2_b3nnr")
 
-[node name="barrel" type="Marker3D" parent="protomesh"]
+[node name="barrel" type="Marker3D" parent="Mesh/protomesh" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.18)
 
-[node name="Collider" type="CollisionShape3D" parent="."]
+[node name="AnimationTree" parent="." index="2"]
+tree_root = SubResource("AnimationNodeBlendTree_it0b4")
+
+[node name="Collider" type="CollisionShape3D" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.98023e-08, -0.05, 2.98023e-08)
 shape = SubResource("BoxShape3D_it0b4")
 disabled = true

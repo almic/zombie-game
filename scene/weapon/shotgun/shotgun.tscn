@@ -1,54 +1,69 @@
-[gd_scene load_steps=6 format=3 uid="uid://27ly31oguhqu"]
+[gd_scene load_steps=9 format=3 uid="uid://27ly31oguhqu"]
 
-[ext_resource type="Script" uid="uid://dwx27jk1jkh6f" path="res://scene/weapon/shotgun/shotgun.gd" id="1_5xwbe"]
+[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_gv2v7"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_b2l83"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_5xwbe"]
+[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/buckshot_shell.tscn" id="4_5vrc4"]
 [ext_resource type="AnimationLibrary" uid="uid://djg6grfbejyql" path="res://animation/shotgun/shotgun_animation.res" id="4_5xwbe"]
-[ext_resource type="AnimationNodeStateMachine" uid="uid://bl25ib5vtmv8u" path="res://animation/shotgun/shotgun_state_machine.tres" id="5_5vrc4"]
+[ext_resource type="Animation" uid="uid://cy51f58abidvc" path="res://animation/shotgun/shotgun_RESET.res" id="5_l0phi"]
+[ext_resource type="AnimationNodeBlendTree" uid="uid://beoalomd6acor" path="res://animation/shotgun/shotgun_anim_tree.tres" id="7_l0phi"]
 
-[node name="Shotgun" type="Node3D"]
-script = ExtResource("1_5xwbe")
-metadata/_custom_type_script = "uid://ddecsnlrrapmh"
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_tcdbf"]
+_data = {
+&"RESET": ExtResource("5_l0phi")
+}
 
-[node name="protomesh" type="CSGCombiner3D" parent="."]
+[node name="Shotgun" node_paths=PackedStringArray("projectile_marker", "particle_marker") instance=ExtResource("1_gv2v7")]
+projectile_marker = NodePath("Mesh/protomesh/BarrelMarker")
+particle_marker = NodePath("Mesh/protomesh/BarrelMarker")
+
+[node name="protomesh" type="CSGCombiner3D" parent="Mesh" index="0"]
 transform = Transform3D(1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0)
 
-[node name="pump" type="CSGBox3D" parent="protomesh"]
+[node name="pump" type="CSGBox3D" parent="Mesh/protomesh" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.065225, -0.27)
 size = Vector3(0.065, 0.07125, 0.22)
 material = ExtResource("2_b2l83")
 
-[node name="barrel" type="CSGCylinder3D" parent="protomesh"]
+[node name="barrel" type="CSGCylinder3D" parent="Mesh/protomesh" index="1"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -2.42445e-08, -0.41375)
 radius = 0.03
 height = 0.8275
 sides = 6
 material = ExtResource("3_5xwbe")
 
-[node name="thing" type="CSGCylinder3D" parent="protomesh"]
+[node name="thing" type="CSGCylinder3D" parent="Mesh/protomesh" index="2"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -0.06, -0.348437)
 radius = 0.03
 height = 0.696875
 sides = 6
 material = ExtResource("3_5xwbe")
 
-[node name="body" type="CSGBox3D" parent="protomesh"]
+[node name="body" type="CSGBox3D" parent="Mesh/protomesh" index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.0312341, 0.15)
 size = Vector3(0.07, 0.12224, 0.3)
 material = ExtResource("3_5xwbe")
 
-[node name="stock" type="CSGBox3D" parent="protomesh"]
+[node name="stock" type="CSGBox3D" parent="Mesh/protomesh" index="4"]
 transform = Transform3D(1, 0, 0, 0, 0.906308, -0.422618, 0, 0.422618, 0.906308, 1.45519e-11, -0.101998, 0.447011)
 size = Vector3(0.07, 0.11543, 0.38)
 material = ExtResource("2_b2l83")
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh/protomesh" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.84)
+
+[node name="RoundReloadMarker" type="Marker3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.999998, 0, 0, 0, 0.999999, 0, 0, 0)
+visible = false
+
+[node name="Buckshot" parent="RoundReloadMarker" index="0" instance=ExtResource("4_5vrc4")]
+
+[node name="AnimationPlayer" parent="." index="2"]
 libraries = {
+&"": SubResource("AnimationLibrary_tcdbf"),
 &"shotgun": ExtResource("4_5xwbe")
 }
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
-unique_name_in_owner = true
-root_node = NodePath("%AnimationTree/..")
-tree_root = ExtResource("5_5vrc4")
-anim_player = NodePath("../AnimationPlayer")
+[node name="AnimationTree" parent="." index="3"]
+tree_root = ExtResource("7_l0phi")
+parameters/TimeSeek/seek_request = -1.0

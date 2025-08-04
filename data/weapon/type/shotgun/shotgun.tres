@@ -1,10 +1,11 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=9 format=3 uid="uid://df0njg4igaivy"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=10 format=3 uid="uid://df0njg4igaivy"]
 
 [ext_resource type="PackedScene" uid="uid://d272705u8gln4" path="res://particle/system/weapon/gunshot_big.tscn" id="1_1fb0h"]
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_uhuv2"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_y8x2t"]
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="2_b3bfv"]
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1fb0h"]
+[ext_resource type="Resource" uid="uid://nqh0w26v06v4" path="res://data/weapon/ammo/slug.tres" id="3_jxl5a"]
 [ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="5_1fb0h"]
 [ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="7_jxl5a"]
 
@@ -23,15 +24,14 @@ melee_damage = 0.0
 melee_impact = 0.0
 trigger_mechanism = SubResource("Resource_6v8yj")
 can_chamber = true
-chamber_on_fire = true
-projectile_spread = 0.0785398
-projectile_clustering = 0.75
+chamber_on_fire = false
+projectile_inaccuracy = 0.5
 projectile_range = 100.0
 projectile_hit_mask = 24
 ammo_reserve_size = 6
-ammo_can_mix = false
+ammo_can_mix = true
 ammo_reversed_use = true
-ammo_supported = Array[ExtResource("1_uhuv2")]([ExtResource("2_b3bfv")])
+ammo_supported = Array[ExtResource("1_uhuv2")]([ExtResource("2_b3bfv"), ExtResource("3_jxl5a")])
 scene = ExtResource("5_1fb0h")
 scene_offset = Vector3(0, 0, 0)
 particle_scene = ExtResource("1_1fb0h")

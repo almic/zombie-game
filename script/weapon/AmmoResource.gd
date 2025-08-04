@@ -17,3 +17,12 @@ var impulse_power: float = 10.0
 ## Number of projectiles
 @export_range(1, 12, 1, 'or_greater')
 var projectiles: int = 1
+
+## Spread, or inaccuracy, of the weapon
+@export_range(0.0, 10.0, 0.001, 'or_greater', 'radians_as_degrees')
+var projectile_spread: float = PI / 36
+
+## Clustering of projectiles within the spread. 0.0 means a totally
+## random spread, 1.0 means the projectiles cluster towards the middle.
+@export_range(0.0, 1.0, 0.001)
+var projectile_clustering: float = 0.5

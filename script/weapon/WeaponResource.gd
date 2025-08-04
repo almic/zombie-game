@@ -36,17 +36,13 @@ var melee_impact: float = 0.0
 
 @export_group("Ballistics", "projectile")
 
-## Spread, or inaccuracy, of the weapon
-@export_range(0.0, 10.0, 0.001, 'or_greater', 'radians_as_degrees')
-var projectile_spread: float = PI / 36
-
-## Clustering of projectiles within the spread. 0.0 means a totally
-## random spread, 1.0 means the projectiles cluster towards the middle.
+## How much of an effect ammo type spread has in this weapon.
+## This only matters if the ammo type already has spread.
 @export_range(0.0, 1.0, 0.001)
-var projectile_clustering: float = 0.5
+var projectile_inaccuracy: float = 0.0
 
 ## Maximum hit detection range
-@export var projectile_range: float
+@export var projectile_range: float = 100.0
 
 ## Hit collision mask
 @export_flags_3d_physics var projectile_hit_mask: int = 8
@@ -113,7 +109,6 @@ func get_supported_ammunition() -> Dictionary:
 
     return _ammo_cache
 
-
 func get_reserve_total() -> int:
     if ammo_can_mix:
         return _mixed_reserve.size()
@@ -131,6 +126,8 @@ func get_default_ammo_type() -> int:
 func is_chambered() -> bool:
     return _chambered_round_type > 0
 
+func is_reserve_full() -> bool:
+    return not get_reserve_total() < ammo_reserve_size
 
 func charge_weapon() -> bool:
     if not can_chamber or _chambered_round_type != 0:
@@ -231,11 +228,11 @@ func fire_projectiles(base: WeaponNode) -> void:
         projectile_forward = forward
 
         # Random scatter, pick 2 angles, add them to the forward, normalize
-        if projectile_spread > 0.0:
+        if projectile_inaccuracy > 0.0 and ammo.projectile_spread > 0.0:
             var spread: float = randf_range(0.0, 1.0)
-            if projectile_clustering < 1.0:
-                spread = lerp(sqrt(spread), spread, projectile_clustering)
-            spread *= projectile_spread
+            if ammo.projectile_clustering < 1.0:
+                spread = lerp(sqrt(spread), spread, ammo.projectile_clustering)
+            spread *= ammo.projectile_spread * projectile_inaccuracy
 
             projectile_forward = projectile_forward.rotated(right, spread)
             projectile_forward = projectile_forward.rotated(forward, randf_range(0.0, TAU))

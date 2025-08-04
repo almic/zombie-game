@@ -26,33 +26,26 @@ var _weapon_triggered: bool = false:
 ## Toggled by update_input and tick to prevent missed input.
 var _has_ticked: bool = false
 
-## Tracks the physics tick that the weapon started cycling.
-var _cycle_started: bool = false
-
 
 ## Handles actual weapon trigger.
-func tick(base: WeaponNode, delta: float) -> void:
+func tick(base: WeaponNode, delta: float) -> bool:
     _has_ticked = true
-    _cycle_started = false
 
     if _weapon_cycle > 0.0:
         _weapon_cycle -= delta
 
-    if _should_trigger():
-        start_cycle()
+    var result: bool = _should_trigger()
 
     if is_melee:
         _update_melee(base, delta)
 
+    return result
+
 func start_cycle() -> void:
     _weapon_cycle = cycle_time
-    _cycle_started = true
 
 func is_cycled() -> bool:
     return not _weapon_cycle > 0.0
-
-func is_cycle_started() -> bool:
-    return _cycle_started
 
 
 ## Called once per frame, implement per trigger type.

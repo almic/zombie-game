@@ -8,4 +8,6 @@ ammo_type = 2
 damage = 20.0
 impulse_power = 25.0
 projectiles = 12
+projectile_spread = 0.15708
+projectile_clustering = 0.75
 metadata/_custom_type_script = "uid://br0bn4v8ti7u5"

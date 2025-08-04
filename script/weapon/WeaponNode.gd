@@ -24,6 +24,7 @@ class_name WeaponNode extends Node3D
 
 ## Ammo bank to use for weapons
 var _ammo_bank: Dictionary
+var _ammo_stock: Dictionary
 
 # For moving weapon to face target
 var _weapon_target_from: Quaternion
@@ -33,6 +34,12 @@ var _weapon_target_amount: float = 0
 
 var _weapon_trigger: GUIDEAction
 var _weapon_reload: GUIDEAction
+
+const WEAPON_BUFFER_TIME: float = 0.2
+var _weapon_trigger_buffered: float = 0
+
+var _weapon_reload_time: int
+var _weapon_reload_full_reload: bool = false
 
 var _weapon_scene: WeaponScene
 
@@ -72,10 +79,7 @@ func _process(delta: float) -> void:
 
     if weapon_type:
         weapon_type.trigger_mechanism.update_input(_weapon_trigger)
-        if check_reload():
-            _weapon_scene.on_reload()
-            if controller.has_method('update_ammo'):
-                controller.update_ammo()
+        update_reload()
 
     if not do_targeting or not _weapon_scene:
         return
@@ -92,18 +96,7 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    if weapon_type:
-        weapon_type.trigger_mechanism.tick(self, delta)
-        if weapon_type.trigger_mechanism.is_cycle_started():
-            if weapon_type.trigger_mechanism.is_melee:
-                play_weapon_effects()
-            elif weapon_type.is_chambered() or weapon_type.get_reserve_total() > 0:
-                play_weapon_effects()
-                weapon_type.fire_projectiles(self)
-                if controller.has_method('update_ammo'):
-                    controller.update_ammo()
-            else:
-                print('click! no ammo!')
+    update_trigger(delta)
 
     if not do_targeting or not _weapon_scene:
         return
@@ -139,18 +132,78 @@ func weapon_projectile_transform() -> Transform3D:
         return _weapon_scene.projectile_marker.global_transform
     return weapon_tranform()
 
-## Checks if the weapon should reload
-func check_reload() -> bool:
+func update_trigger(delta: float) -> void:
+    if not weapon_type:
+        return
+
+    var fired: bool = weapon_type.trigger_mechanism.tick(self, delta)
+
+    if _weapon_trigger_buffered > 0.0:
+        _weapon_trigger_buffered -= delta
+    elif not fired:
+        return
+
+    if weapon_type.trigger_mechanism.is_melee:
+        do_weapon_fire()
+        return
+
+    if weapon_type.can_chamber:
+        if weapon_type.is_chambered():
+            if _weapon_scene.can_fire:
+                do_weapon_fire()
+            elif fired:
+                _weapon_trigger_buffered = WEAPON_BUFFER_TIME
+                print('not ready to fire!')
+        elif weapon_type.get_reserve_total() > 0:
+            _weapon_scene.on_charge()
+        else:
+            print('click! no reserve!')
+
+        return
+
+    if weapon_type.get_reserve_total() > 0:
+        if _weapon_scene.can_fire:
+            do_weapon_fire()
+        elif fired:
+            _weapon_trigger_buffered = WEAPON_BUFFER_TIME
+            print('not ready to fire!')
+        return
+
+    print('click! no reserve!')
+
+## Handles reloading logic
+func update_reload() -> void:
+    # If we try to fire, cancel a full reload
+    if _weapon_reload_full_reload and _weapon_trigger.is_triggered():
+        _weapon_reload_full_reload = false
+
+        if weapon_type.can_chamber and not weapon_type.is_chambered():
+            _weapon_scene.on_charge()
+
     if not _weapon_reload.is_triggered():
-        return false
+        if _weapon_reload_time == 0:
+            return
+
+        var elapsed: int = Time.get_ticks_msec() - _weapon_reload_time
+        print('Held for: ' + str(elapsed))
+        if elapsed < 500:
+            _weapon_reload_full_reload = true
+            print('Doing full reload!')
+
+        _weapon_reload_time = 0
+        return
+
+    # Holding down reload, just let things happen
+    if _weapon_reload_time > 0:
+        return
 
     if not weapon_type or not _ammo_bank:
-        return false
+        return
 
     var reserve_total: int = weapon_type.get_reserve_total()
     if reserve_total >= weapon_type.ammo_reserve_size:
         print('Fully loaded!')
-        return false
+        return
 
     # Find first supported ammo type
     # TODO: support multiple ammo types per weapon
@@ -163,33 +216,27 @@ func check_reload() -> bool:
 
     if not stock:
         print('No supported ammo in stock!')
-        return false
+        return
 
     if stock.amount < 1:
         print('Stock is empty!')
-        return false
+        return
 
-    var ammo_type: int = stock.ammo.ammo_type
+    _ammo_stock = stock
 
-    if weapon_type.ammo_can_mix:
-        stock.amount -= 1
-        weapon_type.load_rounds(ammo_type, 1)
-    else:
-        var reserve_type: int = weapon_type.get_reserve_type()
-        if reserve_type > 0 and ammo_type != reserve_type:
-            _ammo_bank.set(ammo_type, _ammo_bank.get(ammo_type, 0) + reserve_total)
-        var amount: int = mini(stock.amount, weapon_type.ammo_reserve_size - reserve_total)
-        stock.amount -= amount
-        weapon_type.load_rounds(ammo_type, amount)
+    _weapon_scene.on_reload()
+    _weapon_reload_time = Time.get_ticks_msec()
 
-    if weapon_type.can_chamber:
-        weapon_type.charge_weapon()
+func do_weapon_fire() -> void:
+    play_weapon_effects()
 
-    print('reserve: ' + str(weapon_type.get_reserve_total()))
-    print('chambered: ' + str(weapon_type.is_chambered()))
+    weapon_type.trigger_mechanism.start_cycle()
 
+    if not weapon_type.trigger_mechanism.is_melee:
+        weapon_type.fire_projectiles(self)
 
-    return true
+    if controller.has_method('update_ammo'):
+        controller.update_ammo()
 
 ## Callback used by triggers to activate weapon effects
 func play_weapon_effects() -> void:
@@ -217,6 +264,11 @@ func trigger_particle(activate: bool = true) -> void:
 func load_weapon_type(type: WeaponResource) -> void:
     weapon_type = type
 
+    _weapon_trigger_buffered = 0
+
+    _weapon_reload_full_reload = false
+    _weapon_reload_time = 0
+
     _load_weapon_scene()
     _load_particle_system()
 
@@ -228,7 +280,10 @@ func load_weapon_type(type: WeaponResource) -> void:
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:
-        _weapon_scene.swap_hand.disconnect(on_swap_hand)
+        _weapon_scene.swap_hand.disconnect(on_weapon_swap_hand)
+        _weapon_scene.charged.disconnect(on_weapon_charged)
+        _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
+        _weapon_scene.round_loaded.disconnect(on_weapon_round_loaded)
         remove_child(_weapon_scene)
         _weapon_scene.queue_free()
         _weapon_scene = null
@@ -251,7 +306,10 @@ func _load_weapon_scene() -> void:
 
     add_child(_weapon_scene)
     _weapon_scene.position = weapon_type.scene_offset
-    _weapon_scene.swap_hand.connect(on_swap_hand)
+    _weapon_scene.swap_hand.connect(on_weapon_swap_hand)
+    _weapon_scene.charged.connect(on_weapon_charged)
+    _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
+    _weapon_scene.round_loaded.connect(on_weapon_round_loaded)
     _weapon_scene.on_ready()
 
 func _load_particle_system() -> void:
@@ -278,9 +336,51 @@ func _load_particle_system() -> void:
     add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
-func on_swap_hand(time: float) -> void:
+func on_weapon_swap_hand(time: float) -> void:
     if not controller:
         return
 
     if controller.has_method('swap_hand'):
         controller.swap_hand(time)
+
+func on_weapon_charged() -> void:
+    if not weapon_type:
+        return
+
+    if not weapon_type.charge_weapon():
+        print('Nothing to charge!')
+
+func on_weapon_reload_loop() -> void:
+    if not (_weapon_reload.is_triggered() or _weapon_reload_full_reload):
+        return
+
+    if _ammo_stock.amount < 1 or weapon_type.is_reserve_full():
+        _weapon_reload_full_reload = false
+        if weapon_type.can_chamber and not weapon_type.is_chambered():
+            _weapon_scene.on_charge()
+    else:
+        _weapon_scene.on_reload_continue()
+
+func on_weapon_round_loaded() -> void:
+    if not weapon_type:
+        return
+
+    var reserve_total: int = weapon_type.get_reserve_total()
+    var ammo_type: int = _ammo_stock.ammo.ammo_type
+
+    if weapon_type.ammo_can_mix:
+        _ammo_stock.amount -= 1
+        weapon_type.load_rounds(ammo_type, 1)
+    else:
+        var reserve_type: int = weapon_type.get_reserve_type()
+        if reserve_type > 0 and ammo_type != reserve_type:
+            _ammo_bank.set(ammo_type, _ammo_bank.get(ammo_type, 0) + reserve_total)
+        var amount: int = mini(_ammo_stock.amount, weapon_type.ammo_reserve_size - reserve_total)
+        _ammo_stock.amount -= amount
+        weapon_type.load_rounds(ammo_type, amount)
+
+    if controller.has_method('update_ammo'):
+        controller.update_ammo()
+
+    print('reserve: ' + str(weapon_type.get_reserve_total()))
+    print('chambered: ' + str(weapon_type.is_chambered()))

@@ -1,0 +1,86 @@
+[gd_resource type="AnimationNodeBlendTree" load_steps=22 format=3 uid="uid://beoalomd6acor"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_5vrc4"]
+animation = &"shotgun/charge"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l0phi"]
+animation = &"shotgun/fire"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tcdbf"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_buw5u"]
+animation = &"shotgun/reload"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_4n4b1"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6odb4"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2eyu6"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0gknc"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_frpds"]
+switch_mode = 2
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_80h2j"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_110y3"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0rrth"]
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_w2fqa"]
+advance_mode = 2
+advance_expression = "not is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4x3cd"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_k0jwh"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_lclvh"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_omj23"]
+switch_mode = 2
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qk4g3"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_o2kmi"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_cbg81"]
+states/charge/node = SubResource("AnimationNodeAnimation_5vrc4")
+states/charge/position = Vector2(476, 26)
+states/fire/node = SubResource("AnimationNodeAnimation_l0phi")
+states/fire/position = Vector2(313, -35)
+states/idle/node = SubResource("AnimationNodeAnimation_tcdbf")
+states/idle/position = Vector2(313, 100)
+states/reload/node = SubResource("AnimationNodeAnimation_buw5u")
+states/reload/position = Vector2(476, 178)
+states/walk/node = SubResource("AnimationNodeAnimation_4n4b1")
+states/walk/position = Vector2(633, 100)
+transitions = ["idle", "fire", SubResource("AnimationNodeStateMachineTransition_6odb4"), "fire", "charge", SubResource("AnimationNodeStateMachineTransition_2eyu6"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_0gknc"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_frpds"), "walk", "reload", SubResource("AnimationNodeStateMachineTransition_80h2j"), "idle", "reload", SubResource("AnimationNodeStateMachineTransition_110y3"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_0rrth"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_w2fqa"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_4x3cd"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_k0jwh"), "reload", "idle", SubResource("AnimationNodeStateMachineTransition_lclvh"), "reload", "walk", SubResource("AnimationNodeStateMachineTransition_omj23"), "Start", "idle", SubResource("AnimationNodeStateMachineTransition_qk4g3"), "charge", "fire", SubResource("AnimationNodeStateMachineTransition_o2kmi")]
+graph_offset = Vector2(-18, -67)
+
+[sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_o2kmi"]
+
+[resource]
+graph_offset = Vector2(-85, 14)
+nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_cbg81")
+nodes/StateMachine/position = Vector2(60, 80)
+nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_o2kmi")
+nodes/TimeSeek/position = Vector2(380, 60)
+nodes/output/position = Vector2(620, 80)
+node_connections = [&"TimeSeek", 0, &"StateMachine", &"output", 0, &"TimeSeek"]

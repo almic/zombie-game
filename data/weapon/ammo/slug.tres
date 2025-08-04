@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AmmoResource" load_steps=2 format=3 uid="uid://nqh0w26v06v4"]
+
+[ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_xqace"]
+
+[resource]
+script = ExtResource("1_xqace")
+ammo_type = 3
+damage = 40.0
+impulse_power = 18.0
+projectiles = 1
+projectile_spread = 0.0436332
+projectile_clustering = 1.0
+metadata/_custom_type_script = "uid://br0bn4v8ti7u5"

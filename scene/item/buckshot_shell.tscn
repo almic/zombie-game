@@ -6,12 +6,13 @@
 [node name="Buckshot" type="CSGCombiner3D"]
 
 [node name="shell" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 radius = 0.018
 height = 0.076
 material = ExtResource("1_ieoa5")
 
 [node name="primer" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.053, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 2.33126e-09, 0.053)
 radius = 0.019
 height = 0.03
 material = ExtResource("2_pmj2x")

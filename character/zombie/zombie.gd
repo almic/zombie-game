@@ -416,7 +416,6 @@ func on_death() -> void:
         last_player_damage.score += 100
 
     #print("RAHH I DIE!")
-    life.disable_hurtboxes()
     ragdoll()
 
     var frame: int = Engine.get_physics_frames()
@@ -436,41 +435,31 @@ func on_death() -> void:
 
         var impulse: Vector3 = hit.hit.direction * power
 
-        var bone_attachment: BoneAttachment3D = hit.part.get_parent() as BoneAttachment3D
-        if not bone_attachment:
-            push_warning('Zombie has a bad hurtbox! Parent is not a bone attachment!')
-            continue
-
-        var impulse_point: Vector3 = hit.hit.position - bone_attachment.global_position
-
-        # TODO: this is super bad, make it faster
-        for child in bone_simulator.get_children():
-            var bone: PhysicalBone3D = child as PhysicalBone3D
-            if not bone:
-                continue
-
-            if bone.get_bone_id() != bone_attachment.bone_idx:
-                continue
-
-            bone.apply_impulse(impulse, impulse_point)
-            break
-
+        do_part_impulse(hit.part, impulse, hit.hit.position)
 
     get_tree().create_timer(10.0).timeout.connect(queue_free)
 
 
 func on_hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary) -> void:
+    # Only apply impulses after death
+    if not life.is_alive:
+        if bone_simulator.is_simulating_physics():
+            if hit.has('hitbox'):
+                pass
+            else:
+                do_part_impulse(part, hit.direction * hit.power, hit.position)
+        return
+
     var player: Player = from as Player
     if not player:
         return
 
     last_player_damage = from
 
-    if life.is_alive:
-        if part == head:
-            last_player_damage.score += 25
-        else:
-            last_player_damage.score += 10
+    if part == head:
+        last_player_damage.score += 25
+    else:
+        last_player_damage.score += 10
 
     # TODO: this could probably be better
     last_hits.insert(0, {
@@ -482,6 +471,26 @@ func on_hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary) -> voi
 
     last_hits = last_hits.slice(0, 10)
 
+func do_part_impulse(part: HurtBox, impulse: Vector3, point: Vector3) -> void:
+
+    var bone_attachment: BoneAttachment3D = part.get_parent() as BoneAttachment3D
+    if not bone_attachment:
+        push_warning('Zombie has a bad hurtbox! Parent is not a bone attachment!')
+        return
+
+    point -= bone_attachment.global_position
+
+    # TODO: this is super bad, make it faster. Needs a map?
+    for child in bone_simulator.get_children():
+        var bone: PhysicalBone3D = child as PhysicalBone3D
+        if not bone:
+            continue
+
+        if bone.get_bone_id() != bone_attachment.bone_idx:
+            continue
+
+        bone.apply_impulse(impulse, point)
+        break
 
 func is_alive() -> bool:
     return life.is_alive

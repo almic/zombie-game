@@ -14,6 +14,6 @@ func update_score(score: int) -> void:
 func update_health(health: float) -> void:
     health_bar.value = health
 
-func update_ammo(load: int, stock: int) -> void:
-    ammo_load.text = str(load)
+func update_ammo(load_amount, stock) -> void:
+    ammo_load.text = str(load_amount)
     ammo_stock.text = str(stock)

@@ -12,6 +12,17 @@ class_name WeaponResource extends PickupResource
 @export_range(1, 10, 1)
 var slot: int = 1
 
+## Melee damage of the weapon
+@export_range(-50.0, 50.0, 0.1, 'or_greater', 'or_less', 'suffix:hp')
+var melee_damage: float = 0.0
+
+## Impact force for melee
+@export_range(0.0, 50.0, 0.01, 'or_greater', 'or_less', 'suffix:N')
+var melee_impact: float = 0.0
+
+
+@export_group("Mechanism")
+
 ## How this weapon is triggered
 @export var trigger_mechanism: TriggerMechanism
 
@@ -113,6 +124,8 @@ func get_reserve_type() -> int:
     return _simple_reserve_type
 
 func get_default_ammo_type() -> int:
+    if ammo_supported.size() < 1:
+        return 0
     return ammo_supported.front().ammo_type
 
 func is_chambered() -> bool:
@@ -227,8 +240,6 @@ func fire_projectiles(base: WeaponNode) -> void:
             projectile_forward = projectile_forward.rotated(right, spread)
             projectile_forward = projectile_forward.rotated(forward, randf_range(0.0, TAU))
 
-            #print('random: ' + str(random_forward))
-
         var to: Vector3 = from - projectile_forward * projectile_range
         var query := PhysicsRayQueryParameters3D.create(from, to, projectile_hit_mask)
 
@@ -258,9 +269,7 @@ func fire_projectiles(base: WeaponNode) -> void:
             # NOTE: i do not understand why this is different than the impulse direction...
             hit.direction = -projectile_forward
             hit.collider.do_hit(from_node, hit, ammo.damage)
-        elif hit.collider is PhysicalBone3D:
-            # TODO!!!!
-            pass
+
 
     #print('max y: ' + str(max_y))
     #print('avg y: ' + str(avg_y / bullets))

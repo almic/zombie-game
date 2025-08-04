@@ -95,7 +95,9 @@ func _physics_process(delta: float) -> void:
     if weapon_type:
         weapon_type.trigger_mechanism.tick(self, delta)
         if weapon_type.trigger_mechanism.is_cycle_started():
-            if weapon_type.is_chambered() or weapon_type.get_reserve_total() > 0:
+            if weapon_type.trigger_mechanism.is_melee:
+                play_weapon_effects()
+            elif weapon_type.is_chambered() or weapon_type.get_reserve_total() > 0:
                 play_weapon_effects()
                 weapon_type.fire_projectiles(self)
                 if controller.has_method('update_ammo'):
@@ -134,7 +136,7 @@ func weapon_tranform() -> Transform3D:
 ## Get the transform of the weapon projectile marker
 func weapon_projectile_transform() -> Transform3D:
     if _weapon_scene and _weapon_scene.projectile_marker:
-        return _weapon_scene.projectile_marker.transform
+        return _weapon_scene.projectile_marker.global_transform
     return weapon_tranform()
 
 ## Checks if the weapon should reload

@@ -6,6 +6,6 @@
 script = ExtResource("1_j6sir")
 ammo_type = 2
 damage = 20.0
-impulse_power = 50.0
+impulse_power = 25.0
 projectiles = 12
 metadata/_custom_type_script = "uid://br0bn4v8ti7u5"

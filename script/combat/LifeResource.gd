@@ -44,6 +44,7 @@ func disable_hurtboxes() -> void:
 
 func check_health(emit_died: bool = true) -> void:
     if health > 0.0001:
+        is_alive = true
         return
 
     if is_alive:
@@ -52,9 +53,6 @@ func check_health(emit_died: bool = true) -> void:
             died.emit()
 
 func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> void:
-    if not is_alive:
-        return
-
     var is_hitbox: bool = hit.has('hitbox')
     if is_hitbox:
         if _hitboxes.has(hit.hitbox):
@@ -75,11 +73,17 @@ func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> voi
 
     if not is_hitbox:
         damage *= _hurtboxes.get(part, 1.0)
+
+    var was_alive: bool = is_alive
+
     health -= damage
 
     check_health(false)
 
+    if not is_alive:
+        health = 0
+
     hurt.emit(from, part, damage, hit)
 
-    if not is_alive:
+    if was_alive and not is_alive:
         died.emit()

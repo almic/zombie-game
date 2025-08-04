@@ -1,12 +1,25 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=3 format=3 uid="uid://bcd20ysn860xe"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=6 format=3 uid="uid://bcd20ysn860xe"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_hy3h1"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_rk4e1"]
+[ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="2_vhskp"]
+[ext_resource type="Script" uid="uid://b24e01klhc4bl" path="res://script/weapon/trigger/MeleeMechanism.gd" id="4_olet3"]
+
+[sub_resource type="Resource" id="Resource_mihyk"]
+script = ExtResource("4_olet3")
+delay = 0.1
+duration = 0.08
+cycle_time = 0.6
+is_melee = true
+metadata/_custom_type_script = "uid://b24e01klhc4bl"
 
 [resource]
 script = ExtResource("1_rk4e1")
 name = "Shovel"
 slot = 2
+melee_damage = 100.0
+melee_impact = 100.0
+trigger_mechanism = SubResource("Resource_mihyk")
 can_chamber = false
 chamber_on_fire = false
 projectile_spread = 0.0872665
@@ -17,6 +30,7 @@ ammo_reserve_size = 10
 ammo_can_mix = false
 ammo_reversed_use = false
 ammo_supported = Array[ExtResource("1_hy3h1")]([])
+scene = ExtResource("2_vhskp")
 scene_offset = Vector3(0.03, -0.125, 1.45519e-11)
 particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.84)
 particle_test = false

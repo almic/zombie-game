@@ -145,6 +145,7 @@ func select_weapon(slot: int) -> void:
 
     weapon_index = slot
     weapon_node.weapon_type = weapons[slot]
+    update_ammo()
 
 func set_score(value: int) -> void:
     if score == value:
@@ -158,9 +159,13 @@ func update_ammo() -> void:
     if not weapon_node.weapon_type:
         return
 
-    var load: int = weapon_node.weapon_type.get_reserve_total()
+    if weapon_node.weapon_type.trigger_mechanism.is_melee:
+        get_tree().call_group('hud', 'update_ammo', '-', '-')
+        return
+
+    var load_amount: int = weapon_node.weapon_type.get_reserve_total()
     if weapon_node.weapon_type.is_chambered():
-        load += 1
+        load_amount += 1
     var type: int = weapon_node.weapon_type.get_reserve_type()
 
     if type == 0:
@@ -168,7 +173,7 @@ func update_ammo() -> void:
 
     var stock: int = ammo_bank.get(type, {'amount': 0}).amount
 
-    get_tree().call_group('hud', 'update_ammo', load, stock)
+    get_tree().call_group('hud', 'update_ammo', load_amount, stock)
 
 func swap_hand(_time: float = 0.0) -> void:
     print('player swaps hand!')

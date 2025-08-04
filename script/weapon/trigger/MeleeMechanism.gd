@@ -39,6 +39,6 @@ func _update_melee(base: WeaponNode, delta: float) -> void:
         if _hitbox_timer <= 0.0:
             base.hitbox.disable()
     elif _hitbox_timer > 0.0 and _hitbox_timer <= duration:
-        base.hitbox.damage = base.weapon_type.damage
-        base.hitbox.collision_mask = base.weapon_type.hit_mask
+        base.hitbox.damage = base.weapon_type.melee_damage
+        base.hitbox.collision_mask = base.weapon_type.projectile_hit_mask
         base.hitbox.enable()

@@ -5,11 +5,13 @@ class_name WeaponScene extends Node3D
 
 @onready var animation_tree: AnimationTree = %AnimationTree
 var anim_state: AnimationNodeStateMachinePlayback
-var anim_player: AnimationPlayer
 
 
 ## For animations that change the main hand
 signal swap_hand(time: float)
+
+## Weapon has fired
+signal fired()
 
 ## For animations that load individual rounds
 signal round_loaded()
@@ -29,29 +31,39 @@ signal charged()
 @export var particle_marker: Marker3D
 
 
-var _reload_loop_start_time: float = 0
+var _reload_loop_start_time: float = -1
 
 var is_walking: bool = false
 
-var can_fire: bool = false
+var anim_locked: bool = false
 
 
 func _ready() -> void:
     animation_tree.active = false
-    anim_player = animation_tree.get_node(animation_tree.anim_player) as AnimationPlayer
     anim_state = animation_tree['parameters/StateMachine/playback']
+    animation_tree.animation_started.connect(_anim_start)
 
 func _seek(time: float) -> void:
     animation_tree['parameters/TimeSeek/seek_request'] = time
+
+func _travel(to_node: StringName) -> void:
+    anim_state.travel(to_node)
 
 func _reload_loop_start() -> void:
     _reload_loop_start_time = anim_state.get_current_play_position()
 
 func _reload_loop_end() -> void:
     reload_loop.emit()
+    _reload_loop_start_time = -1
 
-func _ready_to_fire() -> void:
-    can_fire = true
+func _lock_anim() -> void:
+    anim_locked = true
+
+func _unlock_anim() -> void:
+    anim_locked = false
+
+func _emit_fired() -> void:
+    fired.emit()
 
 func _emit_swap_hand(time: float) -> void:
     swap_hand.emit(time)
@@ -62,34 +74,40 @@ func _emit_round_loaded() -> void:
 func _emit_charged() -> void:
     charged.emit()
 
+func _anim_start(anim: StringName) -> void:
+    anim_locked = false
+
 
 ## Weapon is ready to be used
-func on_ready() -> void:
+func goto_ready() -> void:
     animation_tree.active = true
 
-## Weapon has been triggered
-func on_fire() -> void:
-    can_fire = false
-    if anim_state.get_fading_from_node():
-        # If we are in the middle of a transition, we must teleport
-        anim_state.start('fire', true)
-    else:
-        anim_state.travel('fire')
+    var anim: StringName = &'idle'
+    if is_walking:
+        anim = &'walk'
+
+    anim_state.travel(anim)
+
+## Weapon should fire
+func goto_fire() -> void:
+    anim_state.travel(&'fire')
+    var path := anim_state.get_travel_path()
+    var thing := anim_state.get_current_node()
+    pass
 
 ## Weapon starts to reload
-func on_reload() -> void:
-    can_fire = false
-    anim_state.travel('reload')
+func goto_reload() -> void:
+    anim_state.travel(&'reload')
 
 ## Weapon continues (loops) the reload
-func on_reload_continue() -> void:
-    if _reload_loop_start_time > 0:
+func goto_reload_continue() -> void:
+    if _reload_loop_start_time >= 0:
         _seek(_reload_loop_start_time)
 
-func on_charge() -> void:
-    can_fire = false
-    anim_state.travel('charge')
+## Weapon should charge (put one in the chamber)
+func goto_charge() -> void:
+    anim_state.travel(&'charge')
 
 ## Controller is walking with the weapon
-func on_walking(walking: bool = true) -> void:
+func set_walking(walking: bool = true) -> void:
     is_walking = walking

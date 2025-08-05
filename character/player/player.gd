@@ -80,7 +80,7 @@ func _process(_delta: float) -> void:
         movement_direction = basis * move.value_axis_3d.normalized()
 
     if weapon_node._weapon_scene:
-        weapon_node._weapon_scene.on_walking(!movement_direction.is_zero_approx())
+        weapon_node._weapon_scene.set_walking(!movement_direction.is_zero_approx())
 
 
     if jump.is_triggered() or jump.is_ongoing():

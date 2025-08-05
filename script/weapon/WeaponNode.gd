@@ -35,8 +35,21 @@ var _weapon_target_amount: float = 0
 var _weapon_trigger: GUIDEAction
 var _weapon_reload: GUIDEAction
 
-const WEAPON_BUFFER_TIME: float = 0.2
+var _weapon_charge_to_fire: bool = false
+
+const WEAPON_TRIGGER_BUFFER: float = 0.5
+const WEAPON_CHARGE_BUFFER: float = 1.0
+const WEAPON_RELOAD_BUFFER: float = 0.9
+
+# Fire buffering, to shoot when not ready
 var _weapon_trigger_buffered: float = 0
+# This is needed in case the weapon is empty, so it doesn't look
+# like we can charge-to-fire. If the weapon charges in this time,
+# make it a charge-to-fire.
+var _weapon_charge_buffered: float = 0
+# This is needed in case the reserve is full, but a shot was fired
+# and a charge may provide room to reload
+var _weapon_reload_buffered: float = 0
 
 var _weapon_reload_time: int
 var _weapon_reload_full_reload: bool = false
@@ -79,7 +92,7 @@ func _process(delta: float) -> void:
 
     if weapon_type:
         weapon_type.trigger_mechanism.update_input(_weapon_trigger)
-        update_reload()
+        update_reload(delta)
 
     if not do_targeting or not _weapon_scene:
         return
@@ -136,6 +149,9 @@ func update_trigger(delta: float) -> void:
     if not weapon_type:
         return
 
+    if _weapon_charge_buffered > 0.0:
+        _weapon_charge_buffered -= delta
+
     var fired: bool = weapon_type.trigger_mechanism.tick(self, delta)
 
     if _weapon_trigger_buffered > 0.0:
@@ -144,51 +160,54 @@ func update_trigger(delta: float) -> void:
         return
 
     if weapon_type.trigger_mechanism.is_melee:
-        do_weapon_fire()
+        _weapon_scene.goto_fire()
         return
 
     if weapon_type.can_chamber:
         if weapon_type.is_chambered():
-            if _weapon_scene.can_fire:
-                do_weapon_fire()
+            if not _weapon_scene.anim_locked:
+                _weapon_scene.goto_fire()
             elif fired:
-                _weapon_trigger_buffered = WEAPON_BUFFER_TIME
+                _weapon_trigger_buffered = WEAPON_TRIGGER_BUFFER
                 print('not ready to fire!')
         elif weapon_type.get_reserve_total() > 0:
-            _weapon_scene.on_charge()
+            print('charging to shoot!!!!!!')
+            _weapon_scene.goto_charge()
+            _weapon_charge_to_fire = true
         else:
+            _weapon_charge_buffered = WEAPON_CHARGE_BUFFER
             print('click! no reserve!')
 
         return
 
     if weapon_type.get_reserve_total() > 0:
-        if _weapon_scene.can_fire:
-            do_weapon_fire()
+        if not _weapon_scene.anim_locked:
+            _weapon_scene.goto_fire()
         elif fired:
-            _weapon_trigger_buffered = WEAPON_BUFFER_TIME
+            _weapon_trigger_buffered = WEAPON_TRIGGER_BUFFER
             print('not ready to fire!')
         return
 
     print('click! no reserve!')
 
 ## Handles reloading logic
-func update_reload() -> void:
-    # If we try to fire, cancel a full reload
-    if _weapon_reload_full_reload and _weapon_trigger.is_triggered():
-        _weapon_reload_full_reload = false
+func update_reload(delta: float) -> void:
+    if _weapon_reload_buffered > 0.0:
+        _weapon_reload_buffered -= delta
 
-        if weapon_type.can_chamber and not weapon_type.is_chambered():
-            _weapon_scene.on_charge()
+    # If we try to fire, cancel reloads
+    if _weapon_trigger.is_triggered():
+        _weapon_reload_full_reload = false
+        _weapon_reload_buffered = 0.0
+        return
 
     if not _weapon_reload.is_triggered():
         if _weapon_reload_time == 0:
             return
 
         var elapsed: int = Time.get_ticks_msec() - _weapon_reload_time
-        print('Held for: ' + str(elapsed))
         if elapsed < 500:
             _weapon_reload_full_reload = true
-            print('Doing full reload!')
 
         _weapon_reload_time = 0
         return
@@ -202,6 +221,7 @@ func update_reload() -> void:
 
     var reserve_total: int = weapon_type.get_reserve_total()
     if reserve_total >= weapon_type.ammo_reserve_size:
+        _weapon_reload_buffered = WEAPON_RELOAD_BUFFER
         print('Fully loaded!')
         return
 
@@ -224,31 +244,13 @@ func update_reload() -> void:
 
     _ammo_stock = stock
 
-    _weapon_scene.on_reload()
+    _weapon_scene.goto_reload()
+    _weapon_charge_to_fire = false
     _weapon_reload_time = Time.get_ticks_msec()
 
-func do_weapon_fire() -> void:
-    play_weapon_effects()
-
-    weapon_type.trigger_mechanism.start_cycle()
-
-    if not weapon_type.trigger_mechanism.is_melee:
-        weapon_type.fire_projectiles(self)
-
-    if controller.has_method('update_ammo'):
-        controller.update_ammo()
-
-## Callback used by triggers to activate weapon effects
-func play_weapon_effects() -> void:
-    trigger_sound()
-    trigger_particle()
-
-    if _weapon_scene:
-        _weapon_scene.on_fire()
-
 ## Trigger the weapon
-func trigger_weapon(activate: bool = true) -> void:
-    weapon_type.trigger_mechanism._trigger(self, activate)
+func trigger_weapon(_activate: bool = true) -> void:
+    _weapon_scene.goto_fire()
 
 ## Trigger the weapon sound
 func trigger_sound(_activate: bool = true) -> void:
@@ -280,10 +282,12 @@ func load_weapon_type(type: WeaponResource) -> void:
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:
+        _weapon_scene.fired.disconnect(on_weapon_fire)
         _weapon_scene.swap_hand.disconnect(on_weapon_swap_hand)
         _weapon_scene.charged.disconnect(on_weapon_charged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
         _weapon_scene.round_loaded.disconnect(on_weapon_round_loaded)
+
         remove_child(_weapon_scene)
         _weapon_scene.queue_free()
         _weapon_scene = null
@@ -306,11 +310,12 @@ func _load_weapon_scene() -> void:
 
     add_child(_weapon_scene)
     _weapon_scene.position = weapon_type.scene_offset
+    _weapon_scene.fired.connect(on_weapon_fire)
     _weapon_scene.swap_hand.connect(on_weapon_swap_hand)
     _weapon_scene.charged.connect(on_weapon_charged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
     _weapon_scene.round_loaded.connect(on_weapon_round_loaded)
-    _weapon_scene.on_ready()
+    _weapon_scene.goto_ready()
 
 func _load_particle_system() -> void:
     if _particle_system:
@@ -333,8 +338,27 @@ func _load_particle_system() -> void:
         return
     _particle_system = particle_system
 
-    add_child(_particle_system)
+    if _weapon_scene.particle_marker:
+        _weapon_scene.particle_marker.add_child(_particle_system)
+    else:
+        add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
+
+func on_weapon_fire() -> void:
+    if not Engine.is_in_physics_frame():
+        get_tree().physics_frame.connect(on_weapon_fire, Object.CONNECT_ONE_SHOT)
+        return
+
+    trigger_sound()
+    trigger_particle()
+
+    weapon_type.trigger_mechanism.start_cycle()
+
+    if not weapon_type.trigger_mechanism.is_melee:
+        weapon_type.fire_projectiles(self)
+
+    if controller.has_method('update_ammo'):
+        controller.update_ammo()
 
 func on_weapon_swap_hand(time: float) -> void:
     if not controller:
@@ -347,19 +371,32 @@ func on_weapon_charged() -> void:
     if not weapon_type:
         return
 
-    if not weapon_type.charge_weapon():
+    if weapon_type.charge_weapon():
+        if _weapon_charge_to_fire:
+            _weapon_scene.goto_fire()
+        elif _weapon_reload_buffered > 0.0:
+            _weapon_scene.goto_reload()
+            _weapon_reload_buffered = 0.0
+        print('charged!')
+    else:
         print('Nothing to charge!')
 
-func on_weapon_reload_loop() -> void:
-    if not (_weapon_reload.is_triggered() or _weapon_reload_full_reload):
-        return
+    _weapon_charge_to_fire = false
 
-    if _ammo_stock.amount < 1 or weapon_type.is_reserve_full():
-        _weapon_reload_full_reload = false
-        if weapon_type.can_chamber and not weapon_type.is_chambered():
-            _weapon_scene.on_charge()
-    else:
-        _weapon_scene.on_reload_continue()
+func on_weapon_reload_loop() -> void:
+    if _weapon_reload_full_reload or _weapon_reload.is_triggered():
+        if _ammo_stock.amount > 0 and not weapon_type.is_reserve_full():
+            _weapon_scene.goto_reload_continue()
+            return
+
+    _weapon_reload_full_reload = false
+
+    if weapon_type.can_chamber and not weapon_type.is_chambered():
+        _weapon_scene.goto_charge()
+        if _weapon_charge_buffered > 0.0:
+            _weapon_charge_to_fire = true
+            _weapon_charge_buffered = 0.0
+
 
 func on_weapon_round_loaded() -> void:
     if not weapon_type:

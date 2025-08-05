@@ -34,6 +34,7 @@ var _weapon_target_amount: float = 0
 
 var _weapon_trigger: GUIDEAction
 var _weapon_reload: GUIDEAction
+var _weapon_ammo_switch: GUIDEAction
 
 var _weapon_charge_to_fire: bool = false
 var _weapon_round_chambered: int = 0
@@ -66,8 +67,12 @@ func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
     add_child(_weapon_audio_player)
 
+
 func set_ammo_bank(ammo: Dictionary) -> void:
     _ammo_bank = ammo
+
+func set_ammo_switch(action: GUIDEAction) -> void:
+    _weapon_ammo_switch = action
 
 func set_trigger(action: GUIDEAction) -> void:
     _weapon_trigger = action
@@ -93,6 +98,10 @@ func _process(delta: float) -> void:
 
     if weapon_type:
         weapon_type.trigger_mechanism.update_input(_weapon_trigger)
+
+        if _weapon_ammo_switch.is_triggered():
+            switch_ammo()
+
         update_reload(delta)
 
     if not do_targeting or not _weapon_scene:
@@ -146,6 +155,34 @@ func weapon_projectile_transform() -> Transform3D:
         return _weapon_scene.projectile_marker.global_transform
     return weapon_tranform()
 
+## Switches ammo types
+func switch_ammo() -> void:
+    var last_type: int
+    if _ammo_stock:
+        last_type = _ammo_stock.ammo.ammo_type
+
+    _ammo_stock = _get_next_ammo()
+
+    if _ammo_stock and last_type == _ammo_stock.ammo.ammo_type:
+        return
+
+    _update_controller_ammo()
+
+    if not _weapon_scene or not _ammo_stock:
+        return
+
+    # Put the reload mesh on the weapon
+    var ammo_type: AmmoResource = _ammo_stock.ammo
+    if _weapon_scene.reload_marker and ammo_type.scene_round:
+        # Expect only one child max, so just remove and break
+        for child in _weapon_scene.reload_marker.get_children():
+            _weapon_scene.reload_marker.remove_child(child)
+            break
+
+        var round_node: Node3D = ammo_type.scene_round.instantiate()
+        _weapon_scene.reload_marker.add_child(round_node)
+
+## Triggers the firing of a weapon
 func update_trigger(delta: float) -> void:
     if not weapon_type:
         return
@@ -226,32 +263,15 @@ func update_reload(delta: float) -> void:
         print('Fully loaded!')
         return
 
-    # Find first supported ammo type
-    # TODO: support multiple ammo types per weapon
-    var stock: Dictionary
-    var supported: Dictionary = weapon_type.get_supported_ammunition()
-    for ammo_type in _ammo_bank:
-        if supported.has(ammo_type):
-            stock = _ammo_bank.get(ammo_type)
-            break
-
-    if not stock:
+    if not _ammo_stock:
         print('No supported ammo in stock!')
         return
 
-    if stock.amount < 1:
+    if _ammo_stock.amount < 1:
         print('Stock is empty!')
         return
 
-    _ammo_stock = stock
-
     _weapon_scene.goto_reload()
-
-    # Put the reload mesh on the weapon
-    var ammo_type: AmmoResource = _ammo_stock.ammo
-    if _weapon_scene.reload_marker and ammo_type.scene_round:
-        var round: Node3D = ammo_type.scene_round.instantiate()
-        _weapon_scene.reload_marker.add_child(round)
 
     _weapon_charge_to_fire = false
     _weapon_reload_time = Time.get_ticks_msec()
@@ -274,6 +294,8 @@ func trigger_particle(activate: bool = true) -> void:
 func load_weapon_type(type: WeaponResource) -> void:
     weapon_type = type
 
+    _ammo_stock = {}
+
     _weapon_trigger_buffered = 0
 
     _weapon_reload_full_reload = false
@@ -286,6 +308,7 @@ func load_weapon_type(type: WeaponResource) -> void:
         return
 
     _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
+    switch_ammo()
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:
@@ -353,6 +376,56 @@ func _load_particle_system() -> void:
         add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
+func _get_next_ammo() -> Dictionary:
+    if not weapon_type:
+        return {}
+
+    var supported: Dictionary = weapon_type.get_supported_ammunition()
+
+    var ids: Array[int]
+    ids.assign(_ammo_bank.keys())
+    ids.filter(func (t): return supported.has(t))
+
+    var size: int = ids.size()
+    if size == 0:
+        return {}
+    elif size == 1:
+        return _ammo_bank.get(ids[0])
+
+    ids.sort()
+
+    var next_index: int = -1
+    var first_index: int = size
+    if _ammo_stock:
+        next_index = ids.find(_ammo_stock.ammo.ammo_type)
+        if next_index != -1:
+            first_index = next_index
+    next_index += 1
+
+    var max_loop: int = size
+    var type: int
+
+    while next_index != first_index and max_loop > 0:
+        max_loop -= 1
+
+        if next_index >= size:
+            next_index = 0
+
+        type = ids[next_index]
+
+        if _ammo_bank.has(type):
+            return _ammo_bank.get(type)
+
+        next_index += 1
+
+    return {}
+
+func _update_controller_ammo() -> void:
+    if not controller or not controller.has_method('update_ammo'):
+        return
+
+    controller.update_ammo()
+
 func on_weapon_fire() -> void:
     if not Engine.is_in_physics_frame():
         get_tree().physics_frame.connect(on_weapon_fire, Object.CONNECT_ONE_SHOT)
@@ -366,8 +439,7 @@ func on_weapon_fire() -> void:
     if not weapon_type.trigger_mechanism.is_melee:
         weapon_type.fire_projectiles(self)
 
-    if controller.has_method('update_ammo'):
-        controller.update_ammo()
+    _update_controller_ammo()
 
 func on_weapon_swap_hand(time: float) -> void:
     if not controller:
@@ -469,7 +541,6 @@ func on_weapon_round_ejected() -> void:
 
     round_body.apply_impulse(forward * force, impulse_point)
 
-
 func on_weapon_round_loaded() -> void:
     if not weapon_type:
         return
@@ -488,8 +559,7 @@ func on_weapon_round_loaded() -> void:
         _ammo_stock.amount -= amount
         weapon_type.load_rounds(ammo_type, amount)
 
-    if controller.has_method('update_ammo'):
-        controller.update_ammo()
+    _update_controller_ammo()
 
     print('reserve: ' + str(weapon_type.get_reserve_total()))
     print('chambered: ' + str(weapon_type.is_chambered()))

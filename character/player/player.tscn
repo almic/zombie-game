@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=20 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -12,6 +12,7 @@
 [ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/weapon_next.tres" id="8_muf2e"]
 [ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/weapon_prev.tres" id="9_jo6ux"]
 [ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/reload.tres" id="10_muf2e"]
+[ext_resource type="Resource" uid="uid://bc4fyxn7gu6kv" path="res://data/input/actions/weapon_ammo_switch.tres" id="11_jo6ux"]
 [ext_resource type="PackedScene" uid="uid://duylaogq2cjd6" path="res://ui/hud.tscn" id="11_vuhga"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="13_jo6ux"]
 
@@ -41,6 +42,7 @@ fire_primary = ExtResource("5_eu8pa")
 weapon_next = ExtResource("8_muf2e")
 weapon_previous = ExtResource("9_jo6ux")
 reload = ExtResource("10_muf2e")
+switch_ammo = ExtResource("11_jo6ux")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
 camera_node = NodePath("CameraTarget/Camera3D")
 camera_target_node = NodePath("CameraTarget")

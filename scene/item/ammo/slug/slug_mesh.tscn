@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://bbo086srtmsay"]
+
+[ext_resource type="Material" uid="uid://c2wbqqh50nomx" path="res://material/level/flat_green.tres" id="1_hckw3"]
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_hckw3"]
+[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_y7ha5"]
+
+[node name="SlugMesh" type="CSGCombiner3D"]
+
+[node name="shell" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.019)
+radius = 0.018
+height = 0.068
+material = ExtResource("1_hckw3")
+
+[node name="slug_cut" type="CSGCylinder3D" parent="shell"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.027, 1.11022e-16)
+operation = 2
+radius = 0.015
+height = 0.014
+material = ExtResource("1_hckw3")
+
+[node name="primer" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.034)
+radius = 0.019
+height = 0.038
+material = ExtResource("2_hckw3")
+
+[node name="slug" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.036)
+radius = 0.016
+material = ExtResource("3_y7ha5")

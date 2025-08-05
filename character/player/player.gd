@@ -24,6 +24,7 @@ class_name Player extends CharacterBase
 @export var weapon_next: GUIDEAction
 @export var weapon_previous: GUIDEAction
 @export var reload: GUIDEAction
+@export var switch_ammo: GUIDEAction
 
 
 var score: int = 0:
@@ -49,11 +50,8 @@ func _ready() -> void:
 
     weapon_node.set_trigger(fire_primary)
     weapon_node.set_reload(reload)
+    weapon_node.set_ammo_switch(switch_ammo)
     weapon_node.set_ammo_bank(ammo_bank)
-
-    # TODO: TEMP! REMOVE ME!!
-    #weapon_node.top_level = true
-    #weapon_node.global_position = global_position + Vector3.UP * 1.5
 
     connect_hurtboxes()
     life.died.connect(on_death)
@@ -166,12 +164,10 @@ func update_ammo() -> void:
     var load_amount: int = weapon_node.weapon_type.get_reserve_total()
     if weapon_node.weapon_type.is_chambered():
         load_amount += 1
-    var type: int = weapon_node.weapon_type.get_reserve_type()
 
-    if type == 0:
-        type = weapon_node.weapon_type.get_default_ammo_type()
-
-    var stock: int = ammo_bank.get(type, {'amount': 0}).amount
+    var stock: int = 0
+    if weapon_node._ammo_stock:
+        stock = weapon_node._ammo_stock.amount
 
     get_tree().call_group('hud', 'update_ammo', load_amount, stock)
 
@@ -206,6 +202,11 @@ func pickup_item(item: Pickup) -> void:
                 'ammo': ammo
             })
         ammo_bank.get(ammo.ammo_type).amount += item.item_count
+
+        # If holding a weapon with no ammo stock, get next ammo
+        if weapon_index and not weapon_node._ammo_stock.get('amount', 0):
+            weapon_node.switch_ammo()
+
         update_ammo()
 
         item.queue_free()

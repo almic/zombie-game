@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://qvqv51oiedra"]
+
+[ext_resource type="PackedScene" uid="uid://bbo086srtmsay" path="res://scene/item/ammo/slug/slug_mesh.tscn" id="1_4ul0k"]
+
+[node name="SlugPile" type="Node3D"]
+
+[node name="Slug" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0.02)
+
+[node name="Slug2" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0.06)
+
+[node name="Slug3" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.02)
+
+[node name="Slug4" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.06)
+
+[node name="Slug5" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.1)
+
+[node name="Slug6" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, 1.45519e-11)
+
+[node name="Slug7" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, 0.04)
+
+[node name="Slug8" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, -0.04)
+
+[node name="Slug9" parent="." instance=ExtResource("1_4ul0k")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, -0.08)

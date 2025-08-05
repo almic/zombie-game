@@ -86,7 +86,7 @@ func _emit_round_loaded() -> void:
 func _emit_charged() -> void:
     charged.emit()
 
-func _anim_start(anim: StringName) -> void:
+func _anim_start(_anim: StringName) -> void:
     anim_locked = false
 
 
@@ -103,9 +103,6 @@ func goto_ready() -> void:
 ## Weapon should fire
 func goto_fire() -> void:
     anim_state.travel(&'fire')
-    var path := anim_state.get_travel_path()
-    var thing := anim_state.get_current_node()
-    pass
 
 ## Weapon starts to reload
 func goto_reload() -> void:

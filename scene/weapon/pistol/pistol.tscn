@@ -18,6 +18,9 @@ size = Vector3(0.08, 0.18, 0.32)
 projectile_marker = NodePath("Mesh/protomesh/barrel")
 particle_marker = NodePath("Mesh/protomesh/barrel")
 
+[node name="Mesh" parent="." index="0"]
+unique_name_in_owner = true
+
 [node name="protomesh" type="CSGCombiner3D" parent="Mesh" index="0"]
 
 [node name="CSGBox3D" type="CSGBox3D" parent="Mesh/protomesh" index="0"]

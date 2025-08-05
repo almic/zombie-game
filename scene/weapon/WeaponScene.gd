@@ -3,6 +3,7 @@
 class_name WeaponScene extends Node3D
 
 
+@onready var mesh: Node3D = %Mesh
 @onready var animation_tree: AnimationTree = %AnimationTree
 var anim_state: AnimationNodeStateMachinePlayback
 
@@ -12,6 +13,9 @@ signal swap_hand(time: float)
 
 ## Weapon has fired
 signal fired()
+
+## A round ejects from the gun
+signal round_ejected()
 
 ## For animations that load individual rounds
 signal round_loaded()
@@ -23,12 +27,17 @@ signal reload_loop()
 signal charged()
 
 
+## Location of round ejection
+@export var eject_marker: Marker3D
 
 ## Location to create projectiles from
 @export var projectile_marker: Marker3D
 
 ## Location of the particle system
 @export var particle_marker: Marker3D
+
+## Location of reload mesh (round / magazine)
+@export var reload_marker: Marker3D
 
 
 var _reload_loop_start_time: float = -1
@@ -67,6 +76,9 @@ func _emit_fired() -> void:
 
 func _emit_swap_hand(time: float) -> void:
     swap_hand.emit(time)
+
+func _emit_round_ejected() -> void:
+    round_ejected.emit()
 
 func _emit_round_loaded() -> void:
     round_loaded.emit()

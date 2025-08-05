@@ -36,6 +36,7 @@ var _weapon_trigger: GUIDEAction
 var _weapon_reload: GUIDEAction
 
 var _weapon_charge_to_fire: bool = false
+var _weapon_round_chambered: int = 0
 
 const WEAPON_TRIGGER_BUFFER: float = 0.5
 const WEAPON_CHARGE_BUFFER: float = 1.0
@@ -245,6 +246,13 @@ func update_reload(delta: float) -> void:
     _ammo_stock = stock
 
     _weapon_scene.goto_reload()
+
+    # Put the reload mesh on the weapon
+    var ammo_type: AmmoResource = _ammo_stock.ammo
+    if _weapon_scene.reload_marker and ammo_type.scene_round:
+        var round: Node3D = ammo_type.scene_round.instantiate()
+        _weapon_scene.reload_marker.add_child(round)
+
     _weapon_charge_to_fire = false
     _weapon_reload_time = Time.get_ticks_msec()
 
@@ -279,13 +287,13 @@ func load_weapon_type(type: WeaponResource) -> void:
 
     _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
 
-
 func _load_weapon_scene() -> void:
     if _weapon_scene:
         _weapon_scene.fired.disconnect(on_weapon_fire)
         _weapon_scene.swap_hand.disconnect(on_weapon_swap_hand)
         _weapon_scene.charged.disconnect(on_weapon_charged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
+        _weapon_scene.round_ejected.disconnect(on_weapon_round_ejected)
         _weapon_scene.round_loaded.disconnect(on_weapon_round_loaded)
 
         remove_child(_weapon_scene)
@@ -314,6 +322,7 @@ func _load_weapon_scene() -> void:
     _weapon_scene.swap_hand.connect(on_weapon_swap_hand)
     _weapon_scene.charged.connect(on_weapon_charged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
+    _weapon_scene.round_ejected.connect(on_weapon_round_ejected)
     _weapon_scene.round_loaded.connect(on_weapon_round_loaded)
     _weapon_scene.goto_ready()
 
@@ -371,7 +380,9 @@ func on_weapon_charged() -> void:
     if not weapon_type:
         return
 
-    if weapon_type.charge_weapon():
+    _weapon_round_chambered = weapon_type.charge_weapon()
+
+    if _weapon_round_chambered:
         if _weapon_charge_to_fire:
             _weapon_scene.goto_fire()
         elif _weapon_reload_buffered > 0.0:
@@ -396,6 +407,67 @@ func on_weapon_reload_loop() -> void:
         if _weapon_charge_buffered > 0.0:
             _weapon_charge_to_fire = true
             _weapon_charge_buffered = 0.0
+
+func on_weapon_round_ejected() -> void:
+    if not _weapon_round_chambered:
+        return
+
+    if not weapon_type or not weapon_type.ammo_expend_enabled:
+        return
+
+    if not _weapon_scene or not _weapon_scene.eject_marker:
+        return
+
+    var ammo_type: AmmoResource = weapon_type.get_supported_ammunition().get(_weapon_round_chambered)
+    if not ammo_type or not ammo_type.scene_expended:
+        return
+
+    var round_node: Node3D = ammo_type.scene_expended.instantiate()
+
+    var eject_location: Vector3 = _weapon_scene.eject_marker.global_position
+    var eject_rotation: Basis = _weapon_scene.eject_marker.global_basis
+
+    get_tree().current_scene.add_child(round_node)
+    get_tree().create_timer(10.0, false, true).timeout.connect(round_node.queue_free)
+
+    round_node.global_position = eject_location
+    round_node.global_basis = eject_rotation
+
+    _weapon_round_chambered = 0
+
+    # If not a physics body, we are done (weird?)
+    var round_body: RigidBody3D = round_node as RigidBody3D
+    if not round_body:
+        return
+
+    if controller.has_method('get_velocity'):
+        round_body.linear_velocity = controller.get_velocity()
+
+    var eject_basis: Basis = _weapon_scene.mesh.basis
+    eject_basis = Basis.looking_at(
+            -weapon_type.ammo_expend_direction,
+            eject_basis.z.cross(weapon_type.ammo_expend_direction)
+    )
+    eject_basis *= _weapon_scene.global_basis
+
+    var forward: Vector3 = eject_basis.z
+    var force: float = weapon_type.ammo_expend_force
+
+    # Randomize direction
+    if weapon_type.ammo_expend_direction_range > 0.0:
+        var right: Vector3 = eject_basis.x
+        var spread: float = sqrt(randf_range(0.0, 1.0))
+        spread *= weapon_type.ammo_expend_direction_range
+        forward = forward.rotated(right, spread)
+        forward = forward.rotated(eject_basis.z, randf_range(0.0, TAU))
+
+    # Randomize force
+    if weapon_type.ammo_expend_force_range > 0.0:
+        force += randf_range(0, weapon_type.ammo_expend_force_range) * 2 - weapon_type.ammo_expend_force_range
+
+    var impulse_point: Vector3 = round_node.global_basis.z * 0.08
+
+    round_body.apply_impulse(forward * force, impulse_point)
 
 
 func on_weapon_round_loaded() -> void:

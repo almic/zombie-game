@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://u117tr8ds8nh"]
 
-[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/buckshot_shell.tscn" id="1_6qurv"]
+[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/ammo/buckshot/buckshot_mesh.tscn" id="1_6qurv"]
 
 [node name="BuckshotPile" type="Node3D"]
 

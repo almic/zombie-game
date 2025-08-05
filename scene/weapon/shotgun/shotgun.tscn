@@ -1,9 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://27ly31oguhqu"]
+[gd_scene load_steps=8 format=3 uid="uid://27ly31oguhqu"]
 
 [ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_gv2v7"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_b2l83"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_5xwbe"]
-[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/buckshot_shell.tscn" id="4_5vrc4"]
 [ext_resource type="AnimationLibrary" uid="uid://djg6grfbejyql" path="res://animation/shotgun/shotgun_animation.res" id="4_5xwbe"]
 [ext_resource type="Animation" uid="uid://cy51f58abidvc" path="res://animation/shotgun/shotgun_RESET.res" id="5_l0phi"]
 [ext_resource type="AnimationNodeBlendTree" uid="uid://beoalomd6acor" path="res://animation/shotgun/shotgun_anim_tree.tres" id="7_l0phi"]
@@ -13,9 +12,11 @@ _data = {
 &"RESET": ExtResource("5_l0phi")
 }
 
-[node name="Shotgun" node_paths=PackedStringArray("projectile_marker", "particle_marker") instance=ExtResource("1_gv2v7")]
+[node name="Shotgun" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker") instance=ExtResource("1_gv2v7")]
+eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/protomesh/BarrelMarker")
 particle_marker = NodePath("Mesh/protomesh/BarrelMarker")
+reload_marker = NodePath("RoundReloadMarker")
 
 [node name="protomesh" type="CSGCombiner3D" parent="Mesh" index="0"]
 transform = Transform3D(1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0)
@@ -52,11 +53,12 @@ material = ExtResource("2_b2l83")
 [node name="BarrelMarker" type="Marker3D" parent="Mesh/protomesh" index="5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.84)
 
+[node name="EjectMarker" type="Marker3D" parent="Mesh" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0, 0.08)
+
 [node name="RoundReloadMarker" type="Marker3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 0.999998, 0, 0, 0, 0.999999, 0, 0, 0)
 visible = false
-
-[node name="Buckshot" parent="RoundReloadMarker" index="0" instance=ExtResource("4_5vrc4")]
 
 [node name="AnimationPlayer" parent="." index="2"]
 libraries = {

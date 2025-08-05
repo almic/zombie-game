@@ -65,9 +65,35 @@ var ammo_reserve_size: int = 10
 @export var ammo_supported: Array[AmmoResource]
 
 
+@export_subgroup("Expended Ammo", "ammo_expend")
+
+## If ammo expends from the weapon when fired
+@export var ammo_expend_enabled: bool = false
+
+## The direction of expended ammo, relative to the Eject Marker on
+## the Weapon Scene.
+@export var ammo_expend_direction: Vector3 = Vector3.RIGHT:
+    set(value):
+        ammo_expend_direction = value.normalized()
+
+## Deviation angle for expended direction.
+@export_range(0.0, 10.0, 0.001, 'or_greater', 'radians_as_degrees')
+var ammo_expend_direction_range: float = 0.0
+
+## The force applied to rounds when expended. Take care of large
+## values for light rounds.
+@export_range(0.0, 1.0, 0.001, 'or_greater', 'suffix:N')
+var ammo_expend_force: float = 0.0
+
+## Deviation range of force for expended rounds.
+@export_range(0.0, 0.5, 0.001, 'or_greater', 'suffix:N')
+var ammo_expend_force_range: float = 0.0
+
+
 @export_group("Scene", "")
 @export var scene: PackedScene
 @export var scene_offset: Vector3
+@export var scene_magazine: PackedScene
 
 
 @export_group("Particle System", "particle")
@@ -129,22 +155,22 @@ func is_chambered() -> bool:
 func is_reserve_full() -> bool:
     return not get_reserve_total() < ammo_reserve_size
 
-func charge_weapon() -> bool:
+func charge_weapon() -> int:
     if not can_chamber or _chambered_round_type != 0:
-        return false
+        return 0
 
     if not ammo_can_mix:
         if _simple_reserve_total < 1:
-            return false
+            return 0
 
         _simple_reserve_total -= 1
         _chambered_round_type = _simple_reserve_type
 
-        return true
+        return _chambered_round_type
 
     var size: int = _mixed_reserve.size()
     if size < 1:
-        return false
+        return 0
 
     if ammo_reversed_use:
         _chambered_round_type = _mixed_reserve[size - 1]
@@ -153,7 +179,7 @@ func charge_weapon() -> bool:
         _chambered_round_type = _mixed_reserve[0]
         _mixed_reserve.remove_at(0)
 
-    return true
+    return _chambered_round_type
 
 
 func load_rounds(type: int, count: int) -> void:

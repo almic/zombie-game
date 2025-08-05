@@ -38,7 +38,7 @@
 [ext_resource type="Script" uid="uid://0egn31rtalxq" path="res://script/spawning/spawn_point.gd" id="38_4duv0"]
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="43_0wajj"]
 [ext_resource type="Curve3D" uid="uid://127ohk5nm1v2" path="res://scene/world/road_curves/able_curve.res" id="44_3wrw6"]
-[ext_resource type="PackedScene" uid="uid://u117tr8ds8nh" path="res://scene/item/buckshot_pile.tscn" id="44_mhi7v"]
+[ext_resource type="PackedScene" uid="uid://u117tr8ds8nh" path="res://scene/item/ammo/buckshot/buckshot_pile.tscn" id="44_mhi7v"]
 [ext_resource type="Resource" uid="uid://dbg6mglqc5jqu" path="res://data/weapon/ammo/9mm.tres" id="45_51258"]
 [ext_resource type="Curve3D" uid="uid://cxge5cmkgb7d3" path="res://scene/world/road_curves/cherry_curve1.res" id="45_x3qer"]
 [ext_resource type="Curve3D" uid="uid://cflspy060bwc5" path="res://scene/world/road_curves/cherry_curve2.res" id="46_x3qer"]

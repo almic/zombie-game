@@ -26,3 +26,12 @@ var projectile_spread: float = PI / 36
 ## random spread, 1.0 means the projectiles cluster towards the middle.
 @export_range(0.0, 1.0, 0.001)
 var projectile_clustering: float = 0.5
+
+
+@export_group("Display", "scene")
+
+## Scene used for a fresh round
+@export var scene_round: PackedScene
+
+## Scene used for an expended (used) round
+@export var scene_expended: PackedScene

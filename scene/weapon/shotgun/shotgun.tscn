@@ -18,6 +18,9 @@ projectile_marker = NodePath("Mesh/protomesh/BarrelMarker")
 particle_marker = NodePath("Mesh/protomesh/BarrelMarker")
 reload_marker = NodePath("RoundReloadMarker")
 
+[node name="Mesh" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
 [node name="protomesh" type="CSGCombiner3D" parent="Mesh" index="0"]
 transform = Transform3D(1, 0, 0, 0, 0.999999, 0, 0, 0, 0.999999, 0, 0, 0)
 

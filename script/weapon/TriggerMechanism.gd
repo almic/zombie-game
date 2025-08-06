@@ -5,9 +5,6 @@ class_name TriggerMechanism extends Resource
 ## Weapon cycle time, minimum time between consecutive triggers
 @export var cycle_time: float = 1.0
 
-## If this mechanism uses hitboxes instead of projectiles
-@export var is_melee: bool = false
-
 ## For weapon cycling
 @warning_ignore('unused_private_class_variable')
 var _weapon_cycle: float = 0
@@ -28,16 +25,13 @@ var _has_ticked: bool = false
 
 
 ## Handles actual weapon trigger.
-func tick(base: WeaponNode, delta: float) -> bool:
+func tick(delta: float) -> bool:
     _has_ticked = true
 
     if _weapon_cycle > 0.0:
         _weapon_cycle -= delta
 
     var result: bool = _should_trigger()
-
-    if is_melee:
-        _update_melee(base, delta)
 
     return result
 
@@ -56,8 +50,3 @@ func update_input(action: GUIDEAction) -> void:
 ## Handles actual weapon trigger, implement per trigger type.
 func _should_trigger() -> bool:
     return false
-
-## Handles melee weapon trigger, implement per trigger type.
-@warning_ignore('unused_parameter')
-func _update_melee(base: WeaponNode, delta: float) -> void:
-    pass

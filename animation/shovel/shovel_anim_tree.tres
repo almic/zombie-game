@@ -12,6 +12,7 @@ animation = &"shovel/walk"
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_t6r7u"]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5ffy0"]
+xfade_time = 0.2
 switch_mode = 2
 advance_mode = 2
 advance_expression = "is_walking"
@@ -27,7 +28,9 @@ advance_mode = 2
 advance_expression = "is_walking"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_av2sp"]
+xfade_time = 0.2
 switch_mode = 2
+advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qr2j5"]
 advance_mode = 2

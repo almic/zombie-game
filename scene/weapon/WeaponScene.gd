@@ -14,6 +14,9 @@ signal swap_hand(time: float)
 ## Weapon has fired
 signal fired()
 
+## Weapon has melee'd
+signal melee()
+
 ## A round ejects from the gun
 signal round_ejected()
 
@@ -74,6 +77,9 @@ func _unlock_anim() -> void:
 func _emit_fired() -> void:
     fired.emit()
 
+func _emit_melee() -> void:
+    melee.emit()
+
 func _emit_swap_hand(time: float) -> void:
     swap_hand.emit(time)
 
@@ -103,6 +109,10 @@ func goto_ready() -> void:
 ## Weapon should fire
 func goto_fire() -> void:
     anim_state.travel(&'fire')
+
+## Weapon should melee
+func goto_melee() -> void:
+    anim_state.travel(&'melee')
 
 ## Weapon starts to reload
 func goto_reload() -> void:

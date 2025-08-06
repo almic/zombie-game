@@ -33,6 +33,7 @@ var _weapon_target_tick: int = 0
 var _weapon_target_amount: float = 0
 
 var _weapon_trigger: GUIDEAction
+var _weapon_melee: GUIDEAction
 var _weapon_reload: GUIDEAction
 var _weapon_ammo_switch: GUIDEAction
 
@@ -41,6 +42,7 @@ var _weapon_round_chambered: int = 0
 
 const WEAPON_TRIGGER_BUFFER: float = 0.5
 const WEAPON_CHARGE_BUFFER: float = 1.0
+const WEAPON_MELEE_BUFFER: float = 0.4
 const WEAPON_RELOAD_BUFFER: float = 0.9
 
 # Fire buffering, to shoot when not ready
@@ -49,9 +51,13 @@ var _weapon_trigger_buffered: float = 0
 # like we can charge-to-fire. If the weapon charges in this time,
 # make it a charge-to-fire.
 var _weapon_charge_buffered: float = 0
+# Melee buffering, when animations cannot immediately stop
+var _weapon_melee_buffered: float = 0
 # This is needed in case the reserve is full, but a shot was fired
 # and a charge may provide room to reload
 var _weapon_reload_buffered: float = 0
+
+var _weapon_melee_ready: bool = true
 
 var _weapon_reload_time: int
 var _weapon_reload_full_reload: bool = false
@@ -76,6 +82,9 @@ func set_ammo_switch(action: GUIDEAction) -> void:
 
 func set_trigger(action: GUIDEAction) -> void:
     _weapon_trigger = action
+
+func set_melee(action: GUIDEAction) -> void:
+    _weapon_melee = action
 
 func set_reload(action: GUIDEAction) -> void:
     _weapon_reload = action
@@ -103,6 +112,7 @@ func _process(delta: float) -> void:
             switch_ammo()
 
         update_reload(delta)
+        update_melee(delta)
 
     if not do_targeting or not _weapon_scene:
         return
@@ -190,14 +200,14 @@ func update_trigger(delta: float) -> void:
     if _weapon_charge_buffered > 0.0:
         _weapon_charge_buffered -= delta
 
-    var fired: bool = weapon_type.trigger_mechanism.tick(self, delta)
+    var fired: bool = weapon_type.trigger_mechanism.tick(delta)
 
     if _weapon_trigger_buffered > 0.0:
         _weapon_trigger_buffered -= delta
     elif not fired:
         return
 
-    if weapon_type.trigger_mechanism.is_melee:
+    if weapon_type.melee_is_primary:
         _weapon_scene.goto_fire()
         return
 
@@ -228,13 +238,31 @@ func update_trigger(delta: float) -> void:
 
     print('click! no reserve!')
 
+func update_melee(delta: float) -> void:
+
+    if _weapon_melee_buffered > 0.0:
+        _weapon_melee_buffered -= delta
+
+    if _weapon_melee.is_triggered():
+        if _weapon_melee_ready:
+            _weapon_melee_buffered = WEAPON_MELEE_BUFFER
+            _weapon_melee_ready = false
+    else:
+        _weapon_melee_ready = true
+
+    if _weapon_melee_buffered > 0.0:
+        if weapon_type.melee_is_primary:
+            _weapon_scene.goto_fire()
+        else:
+            _weapon_scene.goto_melee()
+
 ## Handles reloading logic
 func update_reload(delta: float) -> void:
     if _weapon_reload_buffered > 0.0:
         _weapon_reload_buffered -= delta
 
     # If we try to fire, cancel reloads
-    if _weapon_trigger.is_triggered():
+    if _weapon_trigger.is_triggered() or _weapon_melee.is_triggered():
         _weapon_reload_full_reload = false
         _weapon_reload_buffered = 0.0
         return
@@ -313,6 +341,7 @@ func load_weapon_type(type: WeaponResource) -> void:
 func _load_weapon_scene() -> void:
     if _weapon_scene:
         _weapon_scene.fired.disconnect(on_weapon_fire)
+        _weapon_scene.melee.disconnect(on_weapon_melee)
         _weapon_scene.swap_hand.disconnect(on_weapon_swap_hand)
         _weapon_scene.charged.disconnect(on_weapon_charged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
@@ -342,6 +371,7 @@ func _load_weapon_scene() -> void:
     add_child(_weapon_scene)
     _weapon_scene.position = weapon_type.scene_offset
     _weapon_scene.fired.connect(on_weapon_fire)
+    _weapon_scene.melee.connect(on_weapon_melee)
     _weapon_scene.swap_hand.connect(on_weapon_swap_hand)
     _weapon_scene.charged.connect(on_weapon_charged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
@@ -420,6 +450,11 @@ func _get_next_ammo() -> Dictionary:
 
     return {}
 
+func get_controller_aim_transform() -> Transform3D:
+    if not controller or not controller.has_method('get_aim_transform'):
+        return Transform3D.IDENTITY
+    return controller.get_aim_transform()
+
 func _update_controller_ammo() -> void:
     if not controller or not controller.has_method('update_ammo'):
         return
@@ -427,6 +462,11 @@ func _update_controller_ammo() -> void:
     controller.update_ammo()
 
 func on_weapon_fire() -> void:
+    if not weapon_type:
+        return
+
+    _weapon_trigger_buffered = 0.0
+
     if not Engine.is_in_physics_frame():
         get_tree().physics_frame.connect(on_weapon_fire, Object.CONNECT_ONE_SHOT)
         return
@@ -436,10 +476,26 @@ func on_weapon_fire() -> void:
 
     weapon_type.trigger_mechanism.start_cycle()
 
-    if not weapon_type.trigger_mechanism.is_melee:
+    if weapon_type.melee_is_primary:
+        _weapon_melee_ready = true
+        _weapon_melee_buffered = 0.0
+        weapon_type.fire_melee(self)
+    else:
         weapon_type.fire_projectiles(self)
+        _update_controller_ammo()
 
-    _update_controller_ammo()
+
+func on_weapon_melee() -> void:
+    if not weapon_type:
+        return
+
+    _weapon_melee_buffered = 0.0
+
+    if not Engine.is_in_physics_frame():
+        get_tree().physics_frame.connect(on_weapon_melee, Object.CONNECT_ONE_SHOT)
+        return
+
+    weapon_type.fire_melee(self)
 
 func on_weapon_swap_hand(time: float) -> void:
     if not controller:

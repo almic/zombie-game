@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=21 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -9,6 +9,7 @@
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
 [ext_resource type="Script" uid="uid://n578e74oit7v" path="res://script/weapon/WeaponNode.gd" id="7_qh58e"]
+[ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/melee.tres" id="8_fkbv7"]
 [ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/weapon_next.tres" id="8_muf2e"]
 [ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/weapon_prev.tres" id="9_jo6ux"]
 [ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/reload.tres" id="10_muf2e"]
@@ -39,6 +40,7 @@ jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
 fire_primary = ExtResource("5_eu8pa")
+melee = ExtResource("8_fkbv7")
 weapon_next = ExtResource("8_muf2e")
 weapon_previous = ExtResource("9_jo6ux")
 reload = ExtResource("10_muf2e")

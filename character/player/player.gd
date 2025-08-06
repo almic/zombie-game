@@ -21,6 +21,7 @@ class_name Player extends CharacterBase
 @export var look: GUIDEAction
 @export var move: GUIDEAction
 @export var fire_primary: GUIDEAction
+@export var melee: GUIDEAction
 @export var weapon_next: GUIDEAction
 @export var weapon_previous: GUIDEAction
 @export var reload: GUIDEAction
@@ -49,6 +50,7 @@ func _ready() -> void:
     aim_target.add_exception(self)
 
     weapon_node.set_trigger(fire_primary)
+    weapon_node.set_melee(melee)
     weapon_node.set_reload(reload)
     weapon_node.set_ammo_switch(switch_ammo)
     weapon_node.set_ammo_bank(ammo_bank)
@@ -199,3 +201,9 @@ func pickup_item(item: Pickup) -> void:
 func connect_hurtboxes() -> void:
     hurtbox.enable()
     life.connect_hurtbox(hurtbox)
+
+func get_hurtboxes() -> Array[HurtBox]:
+    return [hurtbox]
+
+func get_aim_transform() -> Transform3D:
+    return camera_3d.global_transform

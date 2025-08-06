@@ -12,6 +12,11 @@ class_name WeaponResource extends PickupResource
 @export_range(1, 10, 1)
 var slot: int = 1
 
+@export_group("Melee", "melee")
+
+## The weapon's primary fire is a melee attack
+@export var melee_is_primary: bool = false
+
 ## Melee damage of the weapon
 @export_range(-50.0, 50.0, 0.1, 'or_greater', 'or_less', 'suffix:hp')
 var melee_damage: float = 0.0
@@ -19,6 +24,13 @@ var melee_damage: float = 0.0
 ## Impact force for melee
 @export_range(0.0, 50.0, 0.01, 'or_greater', 'or_less', 'suffix:N')
 var melee_impact: float = 0.0
+
+## Range of the melee
+@export_range(0.0, 10.0, 0.01, 'or_greater', 'suffix:m')
+var melee_range: float = 2.0
+
+@export_flags_3d_physics
+var melee_collision: int = 8
 
 
 @export_group("Mechanism")
@@ -297,7 +309,43 @@ func fire_projectiles(base: WeaponNode) -> void:
             hit.direction = -projectile_forward
             hit.collider.do_hit(from_node, hit, ammo.damage)
 
-
     #print('max y: ' + str(max_y))
     #print('avg y: ' + str(avg_y / bullets))
     #print('hits: ' + str(total_hits))
+
+func fire_melee(base: WeaponNode) -> void:
+    var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
+    var transform: Transform3D = base.get_controller_aim_transform()
+
+    var from: Vector3 = transform.origin
+    var forward: Vector3 = transform.basis.z
+    var to: Vector3 = from - forward * melee_range
+    var query := PhysicsRayQueryParameters3D.create(
+            from,
+            to,
+            melee_collision
+    )
+
+    query.collide_with_areas = true
+    query.collide_with_bodies = true
+
+    if base.controller.has_method('get_hurtboxes'):
+        var hurtboxes: Array[RID]
+        hurtboxes.assign(base.controller.get_hurtboxes().map(func (h): return h.get_rid()))
+        query.exclude = hurtboxes
+
+    var hit := space.intersect_ray(query)
+
+    if not hit:
+        return
+
+    if hit.collider is HurtBox:
+        #total_hits += 1
+        var from_node: Node3D = base
+        if base.controller:
+            from_node = base.controller
+        hit.power = melee_impact
+        hit.from = from
+        # NOTE: i do not understand why this is different than the impulse direction...
+        hit.direction = -forward
+        hit.collider.do_hit(from_node, hit, melee_damage)

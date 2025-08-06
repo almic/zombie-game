@@ -411,6 +411,16 @@ func connect_hurtboxes() -> void:
     life.enable_hurtboxes()
 
 
+func get_hurtboxes() -> Array[HurtBox]:
+    return [
+        head, body,
+        arm_l_1, arm_l_2, hand_l,
+        arm_r_1, arm_r_2, hand_r,
+        leg_l_1, leg_l_2, foot_l,
+        leg_r_1, leg_r_2, foot_r
+    ]
+
+
 func on_death() -> void:
     if last_player_damage:
         last_player_damage.score += 100

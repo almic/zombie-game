@@ -1,25 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://duylaogq2cjd6"]
+[gd_scene load_steps=10 format=3 uid="uid://duylaogq2cjd6"]
 
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_qh58e"]
-font_size = 40
-font_color = Color(0.740137, 0.925364, 1, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
-
-[sub_resource type="LabelSettings" id="LabelSettings_hr31g"]
-font_size = 40
-font_color = Color(1, 0.926099, 0.725471, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
-
-[sub_resource type="LabelSettings" id="LabelSettings_276te"]
-font_size = 40
-font_color = Color(1, 0.92549, 0.72549, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
+[ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="2_en2x2"]
+[ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="3_1v5rv"]
+[ext_resource type="Texture2D" uid="uid://catrmqsiu168b" path="res://icon/shotgun_side.png" id="5_q43x7"]
+[ext_resource type="Texture2D" uid="uid://bpmt8s8xbbk32" path="res://icon/buckshot_side.png" id="6_1v5rv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr31g"]
 bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
@@ -27,25 +13,34 @@ bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lqp71"]
 bg_color = Color(1, 0.258138, 0.322135, 1)
 
-[node name="hud" type="Control" groups=["hud"]]
+[sub_resource type="LabelSettings" id="LabelSettings_276te"]
+font_size = 40
+font_color = Color(1, 0.92549, 0.72549, 1)
+shadow_size = 3
+shadow_color = Color(0, 0, 0, 0.501961)
+
+[node name="hud" type="MarginContainer" groups=["hud"]]
 clip_contents = true
-layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 script = ExtResource("1_276te")
-metadata/_custom_type_script = "uid://dpfyrr2a6s6u0"
+_preview_weapon = ExtResource("2_en2x2")
+_preview_weapon_ammo_mix = PackedInt32Array(2, 3)
+_preview_stock_ammo = {
+"ammo": ExtResource("3_1v5rv"),
+"amount": 8
+}
 
 [node name="crosshair_root" type="CenterContainer" parent="."]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+layout_mode = 2
 
 [node name="crosshair_ctl" type="Control" parent="crosshair_root"]
 layout_mode = 2
@@ -57,121 +52,69 @@ center_enabled = true
 center_size = 1.4
 metadata/_custom_type_script = "uid://b8ty0aywli1vd"
 
-[node name="score_container" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 0
-pivot_offset = Vector2(1.45519e-11, 25)
+[node name="score_container" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 
-[node name="HFlowContainer" type="HFlowContainer" parent="score_container"]
-layout_mode = 0
-offset_left = 20.0
-offset_right = 228.0
-offset_bottom = 55.0
-
-[node name="score_label" type="Label" parent="score_container/HFlowContainer"]
+[node name="score_label" type="Label" parent="score_container"]
 layout_mode = 2
 text = "Score:"
-label_settings = SubResource("LabelSettings_qh58e")
 
-[node name="gap" type="Control" parent="score_container/HFlowContainer"]
+[node name="gap" type="Control" parent="score_container"]
 layout_mode = 2
 
-[node name="score_value" type="Label" parent="score_container/HFlowContainer"]
+[node name="score_value" type="Label" parent="score_container"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_type_variation = &"NumberLabel"
 text = "0"
-label_settings = SubResource("LabelSettings_hr31g")
 
-[node name="weapon_container" type="Control" parent="."]
-layout_mode = 1
-anchor_top = 1.0
-anchor_bottom = 1.0
-grow_vertical = 0
-
-[node name="flow" type="VFlowContainer" parent="weapon_container"]
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -108.0
-offset_right = 398.0
-grow_vertical = 0
-last_wrap_alignment = 1
-
-[node name="weapon" type="Control" parent="weapon_container/flow"]
-layout_mode = 2
-size_flags_vertical = 2
-
-[node name="weapon_flow" type="HFlowContainer" parent="weapon_container/flow/weapon"]
-layout_mode = 1
-offset_right = 412.0
-offset_bottom = 52.0
-size_flags_horizontal = 0
-size_flags_vertical = 0
-size_flags_stretch_ratio = 0.0
-
-[node name="weapon_texture" type="TextureRect" parent="weapon_container/flow/weapon/weapon_flow"]
+[node name="health_bar" type="ProgressBar" parent="."]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(500, 35)
 layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-
-[node name="gap" type="Control" parent="weapon_container/flow/weapon/weapon_flow"]
-layout_mode = 2
-
-[node name="stock_texture" type="TextureRect" parent="weapon_container/flow/weapon/weapon_flow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 4
-
-[node name="gap2" type="Control" parent="weapon_container/flow/weapon/weapon_flow"]
-layout_mode = 2
-
-[node name="stock_amount" type="Label" parent="weapon_container/flow/weapon/weapon_flow"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-label_settings = SubResource("LabelSettings_276te")
-
-[node name="ammo" type="Control" parent="weapon_container/flow"]
-layout_mode = 2
-size_flags_vertical = 2
-
-[node name="ammo_flow" type="HFlowContainer" parent="weapon_container/flow/ammo"]
-unique_name_in_owner = true
-layout_mode = 0
-offset_right = 257.0
-offset_bottom = 52.0
-
-[node name="health_container" type="Control" parent="."]
-layout_mode = 1
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -20.0
-offset_right = 20.0
-offset_bottom = 40.0
-grow_horizontal = 2
-
-[node name="health_bar" type="ProgressBar" parent="health_container"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -13.5
-offset_right = 250.0
-offset_bottom = 13.5
-grow_horizontal = 2
-grow_vertical = 2
+size_flags_horizontal = 4
 theme_override_font_sizes/font_size = 19
 theme_override_styles/background = SubResource("StyleBoxFlat_hr31g")
 theme_override_styles/fill = SubResource("StyleBoxFlat_lqp71")
 max_value = 1.0
 value = 1.0
 show_percentage = false
+
+[node name="weapon_box" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+alignment = 2
+
+[node name="weapon_box" type="HBoxContainer" parent="weapon_box"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.0
+
+[node name="weapon_texture" type="TextureRect" parent="weapon_box/weapon_box"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("5_q43x7")
+
+[node name="stock_texture" type="TextureRect" parent="weapon_box/weapon_box"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+texture = ExtResource("6_1v5rv")
+
+[node name="stock_amount" type="Label" parent="weapon_box/weapon_box"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+text = "8"
+label_settings = SubResource("LabelSettings_276te")
+
+[node name="ammo_flow" type="HBoxContainer" parent="weapon_box"]
+unique_name_in_owner = true
+layout_mode = 2

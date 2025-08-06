@@ -1,0 +1,14 @@
+[gd_resource type="Theme" load_steps=4 format=3 uid="uid://bgdmd3jv5h7md"]
+
+[ext_resource type="FontFile" uid="uid://bvx338xec6xwa" path="res://font/Ovo-Regular.ttf" id="1_4mq11"]
+[ext_resource type="FontFile" uid="uid://bybftiog3uc0n" path="res://font/Yrsa-VariableFont_wght.ttf" id="1_udl1o"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4mq11"]
+
+[resource]
+default_font = ExtResource("1_udl1o")
+default_font_size = 25
+NumberLabel/base_type = &"Label"
+NumberLabel/fonts/font = ExtResource("1_4mq11")
+PanelBlank/base_type = &"PanelContainer"
+PanelBlank/styles/panel = SubResource("StyleBoxEmpty_4mq11")

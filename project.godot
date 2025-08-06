@@ -35,6 +35,8 @@ window/size/viewport_width=1280
 window/size/viewport_height=720
 window/size/borderless=true
 window/size/sharp_corners=true
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [editor_plugins]
 
@@ -63,6 +65,12 @@ zombie="Counts as a zombie for spawning"
 zombie_spawn="Zombie spawn locations"
 hud="A HUD node"
 world="ZA WARUDO"
+
+[gui]
+
+theme/custom="uid://bgdmd3jv5h7md"
+theme/custom_font="uid://bybftiog3uc0n"
+theme/default_font_hinting=2
 
 [layer_names]
 

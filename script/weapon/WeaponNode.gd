@@ -460,9 +460,7 @@ func on_weapon_charged() -> void:
         elif _weapon_reload_buffered > 0.0:
             _weapon_scene.goto_reload()
             _weapon_reload_buffered = 0.0
-        print('charged!')
-    else:
-        print('Nothing to charge!')
+        _update_controller_ammo()
 
     _weapon_charge_to_fire = false
 

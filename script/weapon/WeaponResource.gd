@@ -90,7 +90,8 @@ var ammo_expend_force: float = 0.0
 var ammo_expend_force_range: float = 0.0
 
 
-@export_group("Scene", "")
+@export_group("Display", "")
+@export var ui_texture: Texture2D
 @export var scene: PackedScene
 @export var scene_offset: Vector3
 @export var scene_magazine: PackedScene
@@ -134,6 +135,9 @@ func get_supported_ammunition() -> Dictionary:
         _is_ammo_cached = true
 
     return _ammo_cache
+
+func get_mixed_reserve() -> PackedInt32Array:
+    return _mixed_reserve
 
 func get_reserve_total() -> int:
     if ammo_can_mix:

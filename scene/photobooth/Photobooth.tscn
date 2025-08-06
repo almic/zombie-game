@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://bf1k5ehfxhlct"]
+
+[ext_resource type="Script" uid="uid://dph67clkgrjv8" path="res://scene/photobooth/photobooth.gd" id="1_nf7f5"]
+[ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="2_vd35b"]
+[ext_resource type="PackedScene" uid="uid://bbo086srtmsay" path="res://scene/item/ammo/slug/slug_mesh.tscn" id="3_bhagj"]
+[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/ammo/buckshot/buckshot_mesh.tscn" id="4_jwu63"]
+
+[sub_resource type="Environment" id="Environment_bhagj"]
+background_mode = 1
+background_color = Color(1, 1, 1, 1)
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jwu63"]
+exposure_multiplier = 0.0
+
+[node name="Photobooth" type="SubViewport"]
+transparent_bg = true
+msaa_3d = 3
+screen_space_aa = 1
+size = Vector2i(256, 256)
+script = ExtResource("1_nf7f5")
+filename = "buckshot_side"
+metadata/_custom_type_script = "uid://dph67clkgrjv8"
+
+[node name="Camera3D" type="Camera3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1)
+projection = 1
+current = true
+size = 0.125
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_bhagj")
+camera_attributes = SubResource("CameraAttributesPractical_jwu63")
+
+[node name="Shotgun" parent="." instance=ExtResource("2_vd35b")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.095, 1.45519e-11, 1.45519e-11)
+visible = false
+
+[node name="SlugMesh" parent="." instance=ExtResource("3_bhagj")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+visible = false
+
+[node name="BuckshotMesh" parent="." instance=ExtResource("4_jwu63")]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)

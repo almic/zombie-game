@@ -28,7 +28,9 @@ var projectile_spread: float = PI / 36
 var projectile_clustering: float = 0.5
 
 
-@export_group("Display", "scene")
+@export_group("Display", "")
+
+@export var ui_texture: Texture2D
 
 ## Scene used for a fresh round
 @export var scene_round: PackedScene

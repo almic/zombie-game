@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://duylaogq2cjd6"]
+[gd_scene load_steps=8 format=3 uid="uid://duylaogq2cjd6"]
 
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
@@ -15,21 +15,9 @@ font_color = Color(1, 0.926099, 0.725471, 1)
 shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.501961)
 
-[sub_resource type="LabelSettings" id="LabelSettings_muf2e"]
+[sub_resource type="LabelSettings" id="LabelSettings_276te"]
 font_size = 40
-font_color = Color(1, 0.926099, 0.725471, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
-
-[sub_resource type="LabelSettings" id="LabelSettings_jo6ux"]
-font_size = 40
-font_color = Color(0.740137, 0.925364, 1, 1)
-shadow_size = 3
-shadow_color = Color(0, 0, 0, 0.501961)
-
-[sub_resource type="LabelSettings" id="LabelSettings_fkbv7"]
-font_size = 40
-font_color = Color(1, 0.926099, 0.725471, 1)
+font_color = Color(1, 0.92549, 0.72549, 1)
 shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.501961)
 
@@ -71,86 +59,101 @@ metadata/_custom_type_script = "uid://b8ty0aywli1vd"
 
 [node name="score_container" type="Control" parent="."]
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = -65.0
-offset_right = 65.0
-offset_bottom = -40.0
-grow_vertical = 0
+anchors_preset = 0
 pivot_offset = Vector2(1.45519e-11, 25)
-metadata/_edit_lock_ = true
 
-[node name="score_label" type="Label" parent="score_container"]
+[node name="HFlowContainer" type="HFlowContainer" parent="score_container"]
+layout_mode = 0
+offset_left = 20.0
+offset_right = 228.0
+offset_bottom = 55.0
+
+[node name="score_label" type="Label" parent="score_container/HFlowContainer"]
 layout_mode = 2
-offset_right = 48.0
-offset_bottom = 23.0
 text = "Score:"
 label_settings = SubResource("LabelSettings_qh58e")
-metadata/_edit_lock_ = true
 
-[node name="score_value" type="Label" parent="score_container"]
+[node name="gap" type="Control" parent="score_container/HFlowContainer"]
+layout_mode = 2
+
+[node name="score_value" type="Label" parent="score_container/HFlowContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-offset_left = 132.0
-offset_right = 315.0
-offset_bottom = 55.0
 text = "0"
 label_settings = SubResource("LabelSettings_hr31g")
-metadata/_edit_lock_ = true
 
-[node name="ammo_container" type="Control" parent="."]
+[node name="weapon_container" type="Control" parent="."]
+layout_mode = 1
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+
+[node name="flow" type="VFlowContainer" parent="weapon_container"]
 layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 25.0
-offset_top = -120.0
-offset_right = 65.0
-offset_bottom = -80.0
+offset_left = 20.0
+offset_top = -108.0
+offset_right = 398.0
 grow_vertical = 0
-metadata/_edit_lock_ = true
+last_wrap_alignment = 1
 
-[node name="HFlowContainer" type="HFlowContainer" parent="ammo_container"]
+[node name="weapon" type="Control" parent="weapon_container/flow"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="weapon_flow" type="HFlowContainer" parent="weapon_container/flow/weapon"]
+layout_mode = 1
+offset_right = 412.0
+offset_bottom = 52.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.0
+
+[node name="weapon_texture" type="TextureRect" parent="weapon_container/flow/weapon/weapon_flow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="gap" type="Control" parent="weapon_container/flow/weapon/weapon_flow"]
+layout_mode = 2
+
+[node name="stock_texture" type="TextureRect" parent="weapon_container/flow/weapon/weapon_flow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="gap2" type="Control" parent="weapon_container/flow/weapon/weapon_flow"]
+layout_mode = 2
+
+[node name="stock_amount" type="Label" parent="weapon_container/flow/weapon/weapon_flow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+label_settings = SubResource("LabelSettings_276te")
+
+[node name="ammo" type="Control" parent="weapon_container/flow"]
+layout_mode = 2
+size_flags_vertical = 2
+
+[node name="ammo_flow" type="HFlowContainer" parent="weapon_container/flow/ammo"]
+unique_name_in_owner = true
 layout_mode = 0
-offset_right = 351.0
-offset_bottom = 40.0
-metadata/_edit_lock_ = true
-
-[node name="ammo_load" type="Label" parent="ammo_container/HFlowContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "0"
-label_settings = SubResource("LabelSettings_muf2e")
-metadata/_edit_lock_ = true
-
-[node name="ammo_sep" type="Label" parent="ammo_container/HFlowContainer"]
-layout_mode = 2
-text = "/"
-label_settings = SubResource("LabelSettings_jo6ux")
-metadata/_edit_lock_ = true
-
-[node name="ammo_stock" type="Label" parent="ammo_container/HFlowContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "0"
-label_settings = SubResource("LabelSettings_fkbv7")
-metadata/_edit_lock_ = true
+offset_right = 257.0
+offset_bottom = 52.0
 
 [node name="health_container" type="Control" parent="."]
 layout_mode = 1
-anchors_preset = 7
+anchors_preset = 5
 anchor_left = 0.5
-anchor_top = 1.0
 anchor_right = 0.5
-anchor_bottom = 1.0
 offset_left = -20.0
-offset_top = -55.0
 offset_right = 20.0
-offset_bottom = -15.0
+offset_bottom = 40.0
 grow_horizontal = 2
-grow_vertical = 0
 
 [node name="health_bar" type="ProgressBar" parent="health_container"]
 unique_name_in_owner = true

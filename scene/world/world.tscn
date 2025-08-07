@@ -154,6 +154,7 @@ life = SubResource("Resource_18ff0")
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(0.866026, -1.99303e-07, -0.5, 2.14103e-07, 1, 2.70686e-08, 0.5, 8.9407e-08, 0.866026, -322.256, 2.01153, -470.173)
 velocity = Vector3(0, -938.906, 0)
+target_enabled = false
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
 

@@ -16,8 +16,8 @@ class_name SingleFireMechanism extends TriggerMechanism
 var _released: bool = false
 
 
-func update_input(action: GUIDEAction) -> void:
-    if action.is_completed():
+func update_trigger(triggered: bool) -> void:
+    if not triggered:
         _released = true
         _weapon_triggered = false
 
@@ -25,11 +25,11 @@ func update_input(action: GUIDEAction) -> void:
     if _weapon_triggered and not automatic_fire:
         return
 
-    if action.is_triggered():
+    if triggered:
         _weapon_triggered = true
 
 
-func _should_trigger() -> bool:
+func should_trigger() -> bool:
     if not _weapon_triggered or not is_cycled():
         return false
 

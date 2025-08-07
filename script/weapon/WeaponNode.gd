@@ -1,10 +1,15 @@
 @tool
 @icon("res://icon/weapon.svg")
 
-## Manages a physical weapon that targets a RayCast3D hit point
+## Links the weapon's visual with the weapon's logical components.
+## Also turns the weapon for targetting.
 class_name WeaponNode extends Node3D
 
-@export var controller: Node3D
+
+signal ammo_updated()
+
+
+@export var controller: CharacterBase
 
 ## Activated by weapons that use hitboxes
 @export var hitbox: HitBox
@@ -23,8 +28,7 @@ class_name WeaponNode extends Node3D
 @export var target_update_rate: int = 3
 
 ## Ammo bank to use for weapons
-var _ammo_bank: Dictionary
-var _ammo_stock: Dictionary
+var ammo_bank: Dictionary
 
 # For moving weapon to face target
 var _weapon_target_from: Quaternion
@@ -32,35 +36,14 @@ var _weapon_target_to: Quaternion
 var _weapon_target_tick: int = 0
 var _weapon_target_amount: float = 0
 
-var _weapon_trigger: GUIDEAction
-var _weapon_melee: GUIDEAction
-var _weapon_reload: GUIDEAction
-var _weapon_ammo_switch: GUIDEAction
+var full_reload: bool = false:
+    set = set_full_reload
 
-var _weapon_charge_to_fire: bool = false
-var _weapon_round_chambered: int = 0
+var continue_reload: bool = false:
+    set = set_continue_reload
 
-const WEAPON_TRIGGER_BUFFER: float = 0.5
-const WEAPON_CHARGE_BUFFER: float = 1.0
-const WEAPON_MELEE_BUFFER: float = 0.4
-const WEAPON_RELOAD_BUFFER: float = 0.9
-
-# Fire buffering, to shoot when not ready
-var _weapon_trigger_buffered: float = 0
-# This is needed in case the weapon is empty, so it doesn't look
-# like we can charge-to-fire. If the weapon charges in this time,
-# make it a charge-to-fire.
-var _weapon_charge_buffered: float = 0
-# Melee buffering, when animations cannot immediately stop
-var _weapon_melee_buffered: float = 0
-# This is needed in case the reserve is full, but a shot was fired
-# and a charge may provide room to reload
-var _weapon_reload_buffered: float = 0
-
-var _weapon_melee_ready: bool = true
-
-var _weapon_reload_time: int
-var _weapon_reload_full_reload: bool = false
+var continue_unload: bool = false:
+    set = set_continue_unload
 
 var _weapon_scene: WeaponScene
 
@@ -68,26 +51,13 @@ var _particle_system: ParticleSystem
 
 var _weapon_audio_player: WeaponAudioPlayer
 
+var melee_excluded_hurtboxes: Array[RID]
+
 
 func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
     add_child(_weapon_audio_player)
 
-
-func set_ammo_bank(ammo: Dictionary) -> void:
-    _ammo_bank = ammo
-
-func set_ammo_switch(action: GUIDEAction) -> void:
-    _weapon_ammo_switch = action
-
-func set_trigger(action: GUIDEAction) -> void:
-    _weapon_trigger = action
-
-func set_melee(action: GUIDEAction) -> void:
-    _weapon_melee = action
-
-func set_reload(action: GUIDEAction) -> void:
-    _weapon_reload = action
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
@@ -105,31 +75,11 @@ func _process(delta: float) -> void:
                 weapon_type.sound_test = false
         return
 
-    if weapon_type:
-        weapon_type.trigger_mechanism.update_input(_weapon_trigger)
+    update_targetting(delta)
 
-        if _weapon_ammo_switch.is_triggered():
-            switch_ammo()
-
-        update_reload(delta)
-        update_melee(delta)
-
-    if not do_targeting or not _weapon_scene:
-        return
-
-    if _weapon_target_to.is_equal_approx(_weapon_scene.global_basis.get_rotation_quaternion()):
-        return
-
-    _weapon_target_amount += target_update_speed * delta
-    _weapon_scene.global_basis = Basis(
-        _weapon_target_from.slerp(_weapon_target_to, _weapon_target_amount)
-    )
-
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
     if Engine.is_editor_hint():
         return
-
-    update_trigger(delta)
 
     if not do_targeting or not _weapon_scene:
         return
@@ -155,6 +105,18 @@ func _physics_process(delta: float) -> void:
     _weapon_target_from = _weapon_scene.global_basis.get_rotation_quaternion()
     _weapon_target_amount = 0
 
+func update_targetting(delta: float) -> void:
+    if not do_targeting or not _weapon_scene:
+        return
+
+    if _weapon_target_to.is_equal_approx(_weapon_scene.global_basis.get_rotation_quaternion()):
+        return
+
+    _weapon_target_amount += target_update_speed * delta
+    _weapon_scene.global_basis = Basis(
+        _weapon_target_from.slerp(_weapon_target_to, _weapon_target_amount)
+    )
+
 ## Get the global weapon transform
 func weapon_tranform() -> Transform3D:
     return _weapon_scene.global_transform
@@ -165,148 +127,87 @@ func weapon_projectile_transform() -> Transform3D:
         return _weapon_scene.projectile_marker.global_transform
     return weapon_tranform()
 
-## Switches ammo types
-func switch_ammo() -> void:
-    var last_type: int
-    if _ammo_stock:
-        last_type = _ammo_stock.ammo.ammo_type
+func aim_target_transform() -> Transform3D:
+    return target.global_transform
 
-    _ammo_stock = _get_next_ammo()
+func set_full_reload(value: bool) -> void:
+    full_reload = value
 
-    if _ammo_stock and last_type == _ammo_stock.ammo.ammo_type:
+func set_continue_reload(value: bool) -> void:
+    continue_reload = value
+
+func set_continue_unload(value: bool) -> void:
+    continue_unload = value
+
+func set_melee_excluded_hurboxes(hurtboxes: Array[HurtBox]) -> void:
+    melee_excluded_hurtboxes.assign(hurtboxes.map(func (h): return h.get_rid()))
+
+func set_walking(walking: bool) -> void:
+    if not _weapon_scene:
         return
 
-    _update_controller_ammo()
+    _weapon_scene.is_walking = walking
 
-    if not _weapon_scene or not _ammo_stock:
-        return
+## Switches ammo types, returns true if successful
+func switch_ammo() -> bool:
+    # There is no animation to switch ammo type, so just pass to weapon
+    if not weapon_type:
+        return false
+
+    if not weapon_type.switch_ammo():
+        return false
+
+    ammo_updated.emit()
+
+    if not _weapon_scene:
+        return true
 
     # Put the reload mesh on the weapon
-    var ammo_type: AmmoResource = _ammo_stock.ammo
-    if _weapon_scene.reload_marker and ammo_type.scene_round:
-        # Expect only one child max, so just remove and break
-        for child in _weapon_scene.reload_marker.get_children():
-            _weapon_scene.reload_marker.remove_child(child)
-            break
+    _weapon_scene.set_reload_ammo(weapon_type.ammo_stock.ammo)
+    return true
 
-        var round_node: Node3D = ammo_type.scene_round.instantiate()
-        _weapon_scene.reload_marker.add_child(round_node)
+## Updates weapon trigger, returns true if the weapon is going to fire
+func update_trigger(triggered: bool, delta: float) -> bool:
+    var mechanism: TriggerMechanism = weapon_type.trigger_mechanism
 
-## Triggers the firing of a weapon
-func update_trigger(delta: float) -> void:
-    if not weapon_type:
-        return
+    mechanism.tick(delta)
+    mechanism.update_trigger(triggered)
 
-    if _weapon_charge_buffered > 0.0:
-        _weapon_charge_buffered -= delta
+    if not mechanism.should_trigger() or not weapon_type.can_fire():
+        return false
 
-    var fired: bool = weapon_type.trigger_mechanism.tick(delta)
+    return _weapon_scene.goto_fire()
 
-    if _weapon_trigger_buffered > 0.0:
-        _weapon_trigger_buffered -= delta
-    elif not fired:
-        return
+## The weapon should charge, returns true if the weapon is going to charge
+func charge() -> bool:
+    if not weapon_type.can_charge():
+        return false
 
-    if weapon_type.melee_is_primary:
-        _weapon_scene.goto_fire()
-        return
+    return _weapon_scene.goto_charge()
 
-    if weapon_type.can_chamber:
-        if weapon_type.is_chambered():
-            if not _weapon_scene.anim_locked:
-                _weapon_scene.goto_fire()
-            elif fired:
-                _weapon_trigger_buffered = WEAPON_TRIGGER_BUFFER
-                print('not ready to fire!')
-        elif weapon_type.get_reserve_total() > 0:
-            print('charging to shoot!!!!!!')
-            _weapon_scene.goto_charge()
-            _weapon_charge_to_fire = true
-        else:
-            _weapon_charge_buffered = WEAPON_CHARGE_BUFFER
-            print('click! no reserve!')
+## The weapon should do a melee, returns true if the weapon is going to melee
+func melee() -> bool:
+    if not weapon_type.can_melee():
+        return false
 
-        return
+    return _weapon_scene.goto_melee()
 
-    if weapon_type.get_reserve_total() > 0:
-        if not _weapon_scene.anim_locked:
-            _weapon_scene.goto_fire()
-        elif fired:
-            _weapon_trigger_buffered = WEAPON_TRIGGER_BUFFER
-            print('not ready to fire!')
-        return
+## The weapon should reload, returns true if the weapon is going to reload
+func reload() -> bool:
+    if not weapon_type.can_reload():
+        return false
 
-    print('click! no reserve!')
+    return _weapon_scene.goto_reload()
 
-func update_melee(delta: float) -> void:
+## The weapon should unload, returns true if the weapon is going to unload
+func unload() -> bool:
+    if not weapon_type.can_unload():
+        return false
 
-    if _weapon_melee_buffered > 0.0:
-        _weapon_melee_buffered -= delta
+    return _weapon_scene.goto_unload()
 
-    if _weapon_melee.is_triggered():
-        if _weapon_melee_ready:
-            _weapon_melee_buffered = WEAPON_MELEE_BUFFER
-            _weapon_melee_ready = false
-    else:
-        _weapon_melee_ready = true
-
-    if _weapon_melee_buffered > 0.0:
-        if weapon_type.melee_is_primary:
-            _weapon_scene.goto_fire()
-        else:
-            _weapon_scene.goto_melee()
-
-## Handles reloading logic
-func update_reload(delta: float) -> void:
-    if _weapon_reload_buffered > 0.0:
-        _weapon_reload_buffered -= delta
-
-    # If we try to fire, cancel reloads
-    if _weapon_trigger.is_triggered() or _weapon_melee.is_triggered():
-        _weapon_reload_full_reload = false
-        _weapon_reload_buffered = 0.0
-        return
-
-    if not _weapon_reload.is_triggered():
-        if _weapon_reload_time == 0:
-            return
-
-        var elapsed: int = Time.get_ticks_msec() - _weapon_reload_time
-        if elapsed < 500:
-            _weapon_reload_full_reload = true
-
-        _weapon_reload_time = 0
-        return
-
-    # Holding down reload, just let things happen
-    if _weapon_reload_time > 0:
-        return
-
-    if not weapon_type or not _ammo_bank:
-        return
-
-    var reserve_total: int = weapon_type.get_reserve_total()
-    if reserve_total >= weapon_type.ammo_reserve_size:
-        _weapon_reload_buffered = WEAPON_RELOAD_BUFFER
-        print('Fully loaded!')
-        return
-
-    if not _ammo_stock:
-        print('No supported ammo in stock!')
-        return
-
-    if _ammo_stock.amount < 1:
-        print('Stock is empty!')
-        return
-
-    _weapon_scene.goto_reload()
-
-    _weapon_charge_to_fire = false
-    _weapon_reload_time = Time.get_ticks_msec()
-
-## Trigger the weapon
-func trigger_weapon(_activate: bool = true) -> void:
-    _weapon_scene.goto_fire()
+func has_ammo_stock() -> bool:
+    return not weapon_type.ammo_stock.is_empty()
 
 ## Trigger the weapon sound
 func trigger_sound(_activate: bool = true) -> void:
@@ -322,12 +223,8 @@ func trigger_particle(activate: bool = true) -> void:
 func load_weapon_type(type: WeaponResource) -> void:
     weapon_type = type
 
-    _ammo_stock = {}
-
-    _weapon_trigger_buffered = 0
-
-    _weapon_reload_full_reload = false
-    _weapon_reload_time = 0
+    full_reload = false
+    continue_reload = false
 
     _load_weapon_scene()
     _load_particle_system()
@@ -335,18 +232,20 @@ func load_weapon_type(type: WeaponResource) -> void:
     if not weapon_type:
         return
 
+    weapon_type.ammo_bank = ammo_bank
+
     _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
-    switch_ammo()
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:
         _weapon_scene.fired.disconnect(on_weapon_fire)
         _weapon_scene.melee.disconnect(on_weapon_melee)
-        _weapon_scene.swap_hand.disconnect(on_weapon_swap_hand)
         _weapon_scene.charged.disconnect(on_weapon_charged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
+        _weapon_scene.unload_loop.disconnect(on_weapon_unload_loop)
         _weapon_scene.round_ejected.disconnect(on_weapon_round_ejected)
         _weapon_scene.round_loaded.disconnect(on_weapon_round_loaded)
+        _weapon_scene.round_unloaded.disconnect(on_weapon_round_unloaded)
 
         remove_child(_weapon_scene)
         _weapon_scene.queue_free()
@@ -372,11 +271,12 @@ func _load_weapon_scene() -> void:
     _weapon_scene.position = weapon_type.scene_offset
     _weapon_scene.fired.connect(on_weapon_fire)
     _weapon_scene.melee.connect(on_weapon_melee)
-    _weapon_scene.swap_hand.connect(on_weapon_swap_hand)
     _weapon_scene.charged.connect(on_weapon_charged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
+    _weapon_scene.unload_loop.connect(on_weapon_unload_loop)
     _weapon_scene.round_ejected.connect(on_weapon_round_ejected)
     _weapon_scene.round_loaded.connect(on_weapon_round_loaded)
+    _weapon_scene.round_unloaded.connect(on_weapon_round_unloaded)
     _weapon_scene.goto_ready()
 
 func _load_particle_system() -> void:
@@ -406,66 +306,9 @@ func _load_particle_system() -> void:
         add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
-func _get_next_ammo() -> Dictionary:
-    if not weapon_type:
-        return {}
-
-    var supported: Dictionary = weapon_type.get_supported_ammunition()
-
-    var ids: Array[int]
-    ids.assign(_ammo_bank.keys())
-    ids.filter(func (t): return supported.has(t))
-
-    var size: int = ids.size()
-    if size == 0:
-        return {}
-    elif size == 1:
-        return _ammo_bank.get(ids[0])
-
-    ids.sort()
-
-    var next_index: int = -1
-    var first_index: int = size
-    if _ammo_stock:
-        next_index = ids.find(_ammo_stock.ammo.ammo_type)
-        if next_index != -1:
-            first_index = next_index
-    next_index += 1
-
-    var max_loop: int = size
-    var type: int
-
-    while next_index != first_index and max_loop > 0:
-        max_loop -= 1
-
-        if next_index >= size:
-            next_index = 0
-
-        type = ids[next_index]
-
-        if _ammo_bank.has(type):
-            return _ammo_bank.get(type)
-
-        next_index += 1
-
-    return {}
-
-func get_controller_aim_transform() -> Transform3D:
-    if not controller or not controller.has_method('get_aim_transform'):
-        return Transform3D.IDENTITY
-    return controller.get_aim_transform()
-
-func _update_controller_ammo() -> void:
-    if not controller or not controller.has_method('update_ammo'):
-        return
-
-    controller.update_ammo()
-
 func on_weapon_fire() -> void:
     if not weapon_type:
         return
-
-    _weapon_trigger_buffered = 0.0
 
     if not Engine.is_in_physics_frame():
         get_tree().physics_frame.connect(on_weapon_fire, Object.CONNECT_ONE_SHOT)
@@ -474,22 +317,12 @@ func on_weapon_fire() -> void:
     trigger_sound()
     trigger_particle()
 
-    weapon_type.trigger_mechanism.start_cycle()
-
-    if weapon_type.melee_is_primary:
-        _weapon_melee_ready = true
-        _weapon_melee_buffered = 0.0
-        weapon_type.fire_melee(self)
-    else:
-        weapon_type.fire_projectiles(self)
-        _update_controller_ammo()
-
+    if weapon_type.fire(self):
+        ammo_updated.emit()
 
 func on_weapon_melee() -> void:
     if not weapon_type:
         return
-
-    _weapon_melee_buffered = 0.0
 
     if not Engine.is_in_physics_frame():
         get_tree().physics_frame.connect(on_weapon_melee, Object.CONNECT_ONE_SHOT)
@@ -497,123 +330,51 @@ func on_weapon_melee() -> void:
 
     weapon_type.fire_melee(self)
 
-func on_weapon_swap_hand(time: float) -> void:
-    if not controller:
-        return
-
-    if controller.has_method('swap_hand'):
-        controller.swap_hand(time)
-
 func on_weapon_charged() -> void:
-    if not weapon_type:
+    if not weapon_type or not weapon_type.can_charge():
         return
 
-    _weapon_round_chambered = weapon_type.charge_weapon()
-
-    if _weapon_round_chambered:
-        if _weapon_charge_to_fire:
-            _weapon_scene.goto_fire()
-        elif _weapon_reload_buffered > 0.0:
-            _weapon_scene.goto_reload()
-            _weapon_reload_buffered = 0.0
-        _update_controller_ammo()
-
-    _weapon_charge_to_fire = false
+    weapon_type.charge_weapon()
 
 func on_weapon_reload_loop() -> void:
-    if _weapon_reload_full_reload or _weapon_reload.is_triggered():
-        if _ammo_stock.amount > 0 and not weapon_type.is_reserve_full():
+    if full_reload or continue_reload:
+        if weapon_type.can_reload():
             _weapon_scene.goto_reload_continue()
             return
 
-    _weapon_reload_full_reload = false
+    full_reload = false
 
-    if weapon_type.can_chamber and not weapon_type.is_chambered():
-        _weapon_scene.goto_charge()
-        if _weapon_charge_buffered > 0.0:
-            _weapon_charge_to_fire = true
-            _weapon_charge_buffered = 0.0
-
-func on_weapon_round_ejected() -> void:
-    if not _weapon_round_chambered:
-        return
-
-    if not weapon_type or not weapon_type.ammo_expend_enabled:
-        return
-
-    if not _weapon_scene or not _weapon_scene.eject_marker:
-        return
-
-    var ammo_type: AmmoResource = weapon_type.get_supported_ammunition().get(_weapon_round_chambered)
-    if not ammo_type or not ammo_type.scene_expended:
-        return
-
-    var round_node: Node3D = ammo_type.scene_expended.instantiate()
-
-    var eject_location: Vector3 = _weapon_scene.eject_marker.global_position
-    var eject_rotation: Basis = _weapon_scene.eject_marker.global_basis
-
-    get_tree().current_scene.add_child(round_node)
-    get_tree().create_timer(10.0, false, true).timeout.connect(round_node.queue_free)
-
-    round_node.global_position = eject_location
-    round_node.global_basis = eject_rotation
-
-    _weapon_round_chambered = 0
-
-    # If not a physics body, we are done (weird?)
-    var round_body: RigidBody3D = round_node as RigidBody3D
-    if not round_body:
-        return
-
-    if controller.has_method('get_velocity'):
-        round_body.linear_velocity = controller.get_velocity()
-
-    var eject_basis: Basis = _weapon_scene.mesh.basis
-    eject_basis = Basis.looking_at(
-            -weapon_type.ammo_expend_direction,
-            eject_basis.z.cross(weapon_type.ammo_expend_direction)
-    )
-    eject_basis *= _weapon_scene.global_basis
-
-    var forward: Vector3 = eject_basis.z
-    var force: float = weapon_type.ammo_expend_force
-
-    # Randomize direction
-    if weapon_type.ammo_expend_direction_range > 0.0:
-        var right: Vector3 = eject_basis.x
-        var spread: float = sqrt(randf_range(0.0, 1.0))
-        spread *= weapon_type.ammo_expend_direction_range
-        forward = forward.rotated(right, spread)
-        forward = forward.rotated(eject_basis.z, randf_range(0.0, TAU))
-
-    # Randomize force
-    if weapon_type.ammo_expend_force_range > 0.0:
-        force += randf_range(0, weapon_type.ammo_expend_force_range) * 2 - weapon_type.ammo_expend_force_range
-
-    var impulse_point: Vector3 = round_node.global_basis.z * 0.08
-
-    round_body.apply_impulse(forward * force, impulse_point)
+func on_weapon_unload_loop() -> void:
+    if continue_unload:
+        _weapon_scene.goto_unload_continue()
 
 func on_weapon_round_loaded() -> void:
     if not weapon_type:
         return
 
-    var reserve_total: int = weapon_type.get_reserve_total()
-    var ammo_type: int = _ammo_stock.ammo.ammo_type
+    weapon_type.load_rounds()
+    ammo_updated.emit()
 
-    if weapon_type.ammo_can_mix:
-        _ammo_stock.amount -= 1
-        weapon_type.load_rounds(ammo_type, 1)
-    else:
-        var reserve_type: int = weapon_type.get_reserve_type()
-        if reserve_type > 0 and ammo_type != reserve_type:
-            _ammo_bank.set(ammo_type, _ammo_bank.get(ammo_type, 0) + reserve_total)
-        var amount: int = mini(_ammo_stock.amount, weapon_type.ammo_reserve_size - reserve_total)
-        _ammo_stock.amount -= amount
-        weapon_type.load_rounds(ammo_type, amount)
+func on_weapon_round_ejected() -> void:
+    if not weapon_type or not weapon_type.can_eject():
+        return
 
-    _update_controller_ammo()
+    var round_dict: Dictionary = weapon_type.get_round_to_eject()
 
-    print('reserve: ' + str(weapon_type.get_reserve_total()))
-    print('chambered: ' + str(weapon_type.is_chambered()))
+    if weapon_type.eject_round():
+        ammo_updated.emit()
+
+    _weapon_scene.eject_round(
+        round_dict,
+        controller.velocity,
+        weapon_type.ammo_expend_direction,
+        weapon_type.ammo_expend_direction_range,
+        weapon_type.ammo_expend_force,
+        weapon_type.ammo_expend_force_range,
+    )
+
+func on_weapon_round_unloaded() -> void:
+    # NOTE: keeping this for naming, in the event a weapon is made that
+    #       does something else, but these are fundamentally the same
+    #       operation in all currently planned weapons.
+    on_weapon_round_ejected()

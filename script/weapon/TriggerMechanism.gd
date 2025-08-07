@@ -24,16 +24,12 @@ var _weapon_triggered: bool = false:
 var _has_ticked: bool = false
 
 
-## Handles actual weapon trigger.
-func tick(delta: float) -> bool:
+## Handles weapon cycle
+func tick(delta: float) -> void:
     _has_ticked = true
 
     if _weapon_cycle > 0.0:
         _weapon_cycle -= delta
-
-    var result: bool = _should_trigger()
-
-    return result
 
 func start_cycle() -> void:
     _weapon_cycle = cycle_time
@@ -41,12 +37,11 @@ func start_cycle() -> void:
 func is_cycled() -> bool:
     return not _weapon_cycle > 0.0
 
-
 ## Called once per frame, implement per trigger type.
 @warning_ignore('unused_parameter')
-func update_input(action: GUIDEAction) -> void:
+func update_trigger(triggered: bool) -> void:
     pass
 
 ## Handles actual weapon trigger, implement per trigger type.
-func _should_trigger() -> bool:
+func should_trigger() -> bool:
     return false

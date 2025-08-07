@@ -4,7 +4,7 @@ class_name AmmoResource extends PickupResource
 
 ## Unique type ID. Weapons support ammo by type IDs.
 @export_range(1, 10, 1, 'or_greater')
-var ammo_type: int = 1
+var type: int = 1
 
 ## Damage per projectile.
 @export_range(-50.0, 50.0, 0.1, 'or_greater', 'or_less', 'suffix:hp')
@@ -36,4 +36,7 @@ var projectile_clustering: float = 0.5
 @export var scene_round: PackedScene
 
 ## Scene used for an expended (used) round
-@export var scene_expended: PackedScene
+@export var scene_round_expended: PackedScene
+
+## Scene used for an fresh, unloading round
+@export var scene_round_unloaded: PackedScene

@@ -4,8 +4,10 @@
 
 [resource]
 script = ExtResource("1_sq8w0")
-ammo_type = 1
+type = 1
 damage = 16.8
 impulse_power = 10.0
 projectiles = 1
+projectile_spread = 0.0872665
+projectile_clustering = 0.5
 metadata/_custom_type_script = "uid://br0bn4v8ti7u5"

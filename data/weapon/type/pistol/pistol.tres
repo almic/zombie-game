@@ -22,13 +22,13 @@ resource_local_to_scene = true
 script = ExtResource("6_1v76v")
 automatic_fire = false
 cycle_time = 0.22
-is_melee = false
 metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]
 script = ExtResource("2_257ta")
 name = "Pistol"
 slot = 1
+melee_is_primary = false
 melee_damage = 0.0
 melee_impact = 0.0
 melee_range = 2.0

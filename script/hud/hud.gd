@@ -92,15 +92,17 @@ func update_score(score: int) -> void:
 func update_health(health: float) -> void:
     health_bar.value = health
 
-func update_weapon_ammo(weapon: WeaponResource, ammo_stock: Dictionary) -> void:
+func update_weapon_ammo(weapon: WeaponResource) -> void:
 
     for child in ammo_flow.get_children():
         ammo_flow.remove_child(child)
         child.queue_free()
 
-    if ammo_stock:
-        stock_texture.texture = ammo_stock.ammo.ui_texture
-        stock_amount.text = str(ammo_stock.amount)
+    var stock: Dictionary = weapon.ammo_stock
+
+    if stock:
+        stock_texture.texture = stock.ammo.ui_texture
+        stock_amount.text = str(stock.amount)
     else:
         stock_texture.texture = null
         stock_amount.text = ''

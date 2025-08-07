@@ -42,9 +42,6 @@ var melee_collision: int = 8
 ## capacity is reserve + 1
 @export var can_chamber: bool = false
 
-## If the weapon automatically chambers the next round when fired
-@export var chamber_on_fire: bool = false
-
 
 @export_group("Ballistics", "projectile")
 
@@ -126,6 +123,14 @@ var ammo_expend_force_range: float = 0.0
 @export var sound_test: bool = false
 
 
+## Ammo bank to use for the weapon
+var ammo_bank: Dictionary:
+    set = set_ammo_bank
+
+## Current ammo stock used for actions
+var ammo_stock: Dictionary
+
+
 # Cached map of supported ammo IDs to ammo resource
 var _ammo_cache: Dictionary
 var _is_ammo_cached: bool = false
@@ -135,15 +140,85 @@ var _simple_reserve_total: int = 0
 var _simple_reserve_type: int = 0
 
 var _chambered_round_type: int = 0
+var _chambered_round_live: bool = false
 
 var _mixed_reserve: PackedInt32Array = []
 
+
+func switch_ammo() -> bool:
+    var last_type: int
+    if ammo_stock:
+        last_type = ammo_stock.ammo.type
+
+    var next_ammo_stock: Dictionary = get_next_ammo()
+
+    if ammo_stock and last_type == next_ammo_stock.ammo.type:
+        return false
+
+    ammo_stock = next_ammo_stock
+    return true
+
+## Eject the chambered round. Returns true if it was live and recovered to ammo bank
+func eject_round() -> bool:
+    var recovered: bool = false
+    if _chambered_round_live:
+        # Recover round to ammo stock
+        var stock: Dictionary = ammo_bank.get(_chambered_round_type)
+        if stock:
+            stock.amount += 1
+            recovered = true
+
+    _chambered_round_type = 0
+    _chambered_round_live = false
+
+    return recovered
+
+func get_next_ammo() -> Dictionary:
+    var supported: Dictionary = get_supported_ammunition()
+
+    var ids: Array[int]
+    ids.assign(ammo_bank.keys())
+    ids.filter(func (t): return supported.has(t))
+
+    var size: int = ids.size()
+    if size == 0:
+        return {}
+    elif size == 1:
+        return ammo_bank.get(ids[0])
+
+    ids.sort()
+
+    var next_index: int = -1
+    var first_index: int = size
+    if ammo_stock:
+        next_index = ids.find(ammo_stock.ammo.type)
+        if next_index != -1:
+            first_index = next_index
+    next_index += 1
+
+    var max_loop: int = size
+    var type: int
+
+    while next_index != first_index and max_loop > 0:
+        max_loop -= 1
+
+        if next_index >= size:
+            next_index = 0
+
+        type = ids[next_index]
+
+        if ammo_bank.has(type):
+            return ammo_bank.get(type)
+
+        next_index += 1
+
+    return {}
 
 func get_supported_ammunition() -> Dictionary:
     if not _is_ammo_cached:
         _ammo_cache = {}
         for ammo in ammo_supported:
-            _ammo_cache.set(ammo.ammo_type, ammo)
+            _ammo_cache.set(ammo.type, ammo)
         _is_ammo_cached = true
 
     return _ammo_cache
@@ -160,10 +235,18 @@ func get_reserve_total() -> int:
 func get_reserve_type() -> int:
     return _simple_reserve_type
 
-func get_default_ammo_type() -> int:
-    if ammo_supported.size() < 1:
-        return 0
-    return ammo_supported.front().ammo_type
+func get_default_ammo() -> AmmoResource:
+    return ammo_supported[0]
+
+func get_round_to_eject() -> Dictionary:
+    return {
+        'is_live': _chambered_round_live,
+        'ammo': ammo_bank.get(_chambered_round_type).ammo
+    }
+
+func set_ammo_bank(value: Dictionary) -> void:
+    ammo_bank = value
+    ammo_stock = {}
 
 func is_chambered() -> bool:
     return _chambered_round_type > 0
@@ -171,22 +254,72 @@ func is_chambered() -> bool:
 func is_reserve_full() -> bool:
     return not get_reserve_total() < ammo_reserve_size
 
-func charge_weapon() -> int:
-    if not can_chamber or _chambered_round_type != 0:
-        return 0
+func can_eject() -> bool:
+    return is_chambered()
+
+func can_fire() -> bool:
+    if can_chamber:
+        return is_chambered()
+
+    return get_reserve_total() > 0
+
+func can_melee() -> bool:
+    # NOTE: for now, all weapons can melee
+    return true
+
+func can_charge() -> bool:
+    if not can_chamber or is_chambered():
+        return false
 
     if not ammo_can_mix:
-        if _simple_reserve_total < 1:
-            return 0
+        return _simple_reserve_total > 0
 
+    return _mixed_reserve.size() > 0
+
+func can_reload() -> bool:
+    if get_reserve_total() >= ammo_reserve_size:
+        return false
+
+    if not ammo_stock:
+        print('No supported ammo in stock!')
+        return false
+
+    if ammo_stock.amount < 1:
+        print('Stock is empty!')
+        return false
+
+    return true
+
+func can_unload() -> bool:
+    # NOTE: weapon unloading should always eject a chambered
+    #       round as part of the animation.
+    return is_chambered() or get_reserve_total() > 0
+
+## Charges the weapon; puts one in the chamber
+func charge_weapon() -> void:
+    # NOTE: This is for debugging, should be removed later
+    if not can_chamber:
+        push_error('Weapon cannot be chambered! This is a mistake! Investigate!')
+
+    if _chambered_round_type != 0:
+        push_error('Weapon is chambered, but is also charging! This is a mistake! Investigate!')
+
+    if not ammo_can_mix:
         _simple_reserve_total -= 1
-        _chambered_round_type = _simple_reserve_type
 
-        return _chambered_round_type
+        # NOTE: This is for debugging, should be removed later
+        if _simple_reserve_total < 0:
+            push_error('Weapon created negative ammo! This is a mistake! Investigate!')
+
+        _chambered_round_type = _simple_reserve_type
+        _chambered_round_live = true
+
+        return
 
     var size: int = _mixed_reserve.size()
     if size < 1:
-        return 0
+        push_error('Weapon tried to charge with no mixed reserve! This is a mistake! Investigate!')
+        return
 
     if ammo_reversed_use:
         _chambered_round_type = _mixed_reserve[size - 1]
@@ -195,12 +328,24 @@ func charge_weapon() -> int:
         _chambered_round_type = _mixed_reserve[0]
         _mixed_reserve.remove_at(0)
 
-    return _chambered_round_type
+    _chambered_round_live = true
 
+func load_rounds() -> void:
+    var reserve_total: int = get_reserve_total()
+    var count: int = 0
 
-func load_rounds(type: int, count: int) -> void:
+    if ammo_can_mix:
+        count = 1
+    else:
+        count = mini(ammo_stock.amount, ammo_reserve_size - reserve_total)
+
+    # NOTE: This is for debugging, should be removed later
     if count < 1:
+        push_error('Weapon cannot load! This is a mistake! Investigate!')
         return
+
+    var type: int = ammo_stock.ammo.type
+    ammo_stock.amount -= count
 
     if ammo_can_mix:
         var size: int = _mixed_reserve.size()
@@ -208,38 +353,63 @@ func load_rounds(type: int, count: int) -> void:
 
         _mixed_reserve.resize(new_size)
 
+        # NOTE: This is for debugging, should be removed later
+        if not get_supported_ammunition().has(type):
+            push_error('Weapon is loading an unsupported type! This is a mistake! Investigate!')
+
         for i in range(size, new_size):
             _mixed_reserve[i] = type
 
+        # NOTE: This is for debugging, should be removed later
+        if new_size > ammo_reserve_size:
+            push_error('Weapon is over loaded! This is a mistake! Investigate!')
+
         return
 
-    if type != _simple_reserve_type:
-        _simple_reserve_type = type
-        _simple_reserve_total = count
-    else:
-        _simple_reserve_total += count
+    # NOTE: This is for debugging, should be removed later
+    if _simple_reserve_type != 0 and type != _simple_reserve_type:
+        push_error('Weapon is simple loading a different type! This is a mistake! Investigate!')
 
+    _simple_reserve_type = type
+    _simple_reserve_total += count
 
-## Fires the next loaded projectile, updates ammo reserves
-func fire_projectiles(base: WeaponNode) -> void:
+    # NOTE: This is for debugging, should be removed later
+    if _simple_reserve_total > ammo_reserve_size:
+        push_error('Weapon is over loaded! This is a mistake! Investigate!')
+
+## Fires the weapon, returns true if ammo reserve changed
+func fire(base: WeaponNode) -> bool:
+    trigger_mechanism.start_cycle()
+
+    if melee_is_primary:
+        fire_melee(base)
+        return false
+
+    return fire_projectiles(base)
+
+## Fires the next loaded projectile, returns true if ammo reserves changed
+func fire_projectiles(base: WeaponNode) -> bool:
+    var updated_ammo: bool = false
     var ammo_cache: Dictionary = get_supported_ammunition()
     var ammo: AmmoResource
 
-    if can_chamber and is_chambered():
+    if is_chambered():
         ammo = ammo_cache.get(_chambered_round_type)
-        _chambered_round_type = 0
+        _chambered_round_live = false
+        updated_ammo = true
     else:
         if not ammo_can_mix:
             if _simple_reserve_total < 1:
                 push_error("Firing weapon with no reserve! WeaponNode should not allow this!")
-                return
+                return false
             ammo = ammo_cache.get(_simple_reserve_type)
             _simple_reserve_total -= 1
+            updated_ammo = true
         else:
             var size: int = _mixed_reserve.size()
             if size < 1:
                 push_error("Firing weapon with no mixed reserve! WeaponNode should not allow this!")
-                return
+                return false
 
             if ammo_reversed_use:
                 ammo = ammo_cache.get(_mixed_reserve[size - 1])
@@ -248,22 +418,17 @@ func fire_projectiles(base: WeaponNode) -> void:
                 ammo = ammo_cache.get(_mixed_reserve[0])
                 _mixed_reserve.remove_at(0)
 
+            updated_ammo = true
+
     if not ammo:
         push_error("Firing weapon got no ammo to fire! Investigate!")
-        return
-
-    if chamber_on_fire:
-        charge_weapon()
+        return updated_ammo
 
     var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
     var transform: Transform3D = base.weapon_projectile_transform()
     var from: Vector3 = transform.origin
     var forward: Vector3 = transform.basis.z
     var right: Vector3 = transform.basis.x
-
-    #var max_y: float = 0.0
-    #var avg_y: float = 0.0
-    #var total_hits: int = 0
 
     var projectile_forward: Vector3
     for i in range(ammo.projectiles):
@@ -288,10 +453,6 @@ func fire_projectiles(base: WeaponNode) -> void:
         var hit := space.intersect_ray(query)
         if hit:
             to = hit.position
-            #var y_diff: float = abs(from.y - to.y)
-            #avg_y += y_diff
-            #if y_diff > max_y:
-                #max_y = y_diff
 
         #DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15, 0.2), 5)
 
@@ -299,7 +460,6 @@ func fire_projectiles(base: WeaponNode) -> void:
             continue
 
         if hit.collider is HurtBox:
-            #total_hits += 1
             var from_node: Node3D = base
             if base.controller:
                 from_node = base.controller
@@ -309,13 +469,11 @@ func fire_projectiles(base: WeaponNode) -> void:
             hit.direction = -projectile_forward
             hit.collider.do_hit(from_node, hit, ammo.damage)
 
-    #print('max y: ' + str(max_y))
-    #print('avg y: ' + str(avg_y / bullets))
-    #print('hits: ' + str(total_hits))
+    return updated_ammo
 
 func fire_melee(base: WeaponNode) -> void:
     var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
-    var transform: Transform3D = base.get_controller_aim_transform()
+    var transform: Transform3D = base.aim_target_transform()
 
     var from: Vector3 = transform.origin
     var forward: Vector3 = transform.basis.z
@@ -328,11 +486,7 @@ func fire_melee(base: WeaponNode) -> void:
 
     query.collide_with_areas = true
     query.collide_with_bodies = true
-
-    if base.controller.has_method('get_hurtboxes'):
-        var hurtboxes: Array[RID]
-        hurtboxes.assign(base.controller.get_hurtboxes().map(func (h): return h.get_rid()))
-        query.exclude = hurtboxes
+    query.exclude = base.melee_excluded_hurtboxes
 
     var hit := space.intersect_ray(query)
 

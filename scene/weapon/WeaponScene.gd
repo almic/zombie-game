@@ -2,6 +2,14 @@
 
 class_name WeaponScene extends Node3D
 
+const IDLE = &'idle'
+const WALK = &'walk'
+const FIRE = &'fire'
+const MELEE = &'melee'
+const CHARGE = &'charge'
+const RELOAD = &'reload'
+const UNLOAD = &'unload'
+
 
 @onready var mesh: Node3D = %Mesh
 @onready var animation_tree: AnimationTree = %AnimationTree
@@ -23,8 +31,14 @@ signal round_ejected()
 ## For animations that load individual rounds
 signal round_loaded()
 
+## For animations that unload individual rounds
+signal round_unloaded()
+
 ## For weapons that use a looping reload
 signal reload_loop()
+
+## For weapons that use a looping unload
+signal unload_loop()
 
 ## For animations that charge the gun (to put one in the chamber)
 signal charged()
@@ -44,22 +58,21 @@ signal charged()
 
 
 var _reload_loop_start_time: float = -1
+var _unload_loop_start_time: float = -1
 
+var is_anim_traveling: bool = false
 var is_walking: bool = false
 
+var anim_target: StringName = &''
 var anim_locked: bool = false
+
 
 
 func _ready() -> void:
     animation_tree.active = false
     anim_state = animation_tree['parameters/StateMachine/playback']
-    animation_tree.animation_started.connect(_anim_start)
+    animation_tree.animation_started.connect(_on_anim_start)
 
-func _seek(time: float) -> void:
-    animation_tree['parameters/TimeSeek/seek_request'] = time
-
-func _travel(to_node: StringName) -> void:
-    anim_state.travel(to_node)
 
 func _reload_loop_start() -> void:
     _reload_loop_start_time = anim_state.get_current_play_position()
@@ -67,6 +80,13 @@ func _reload_loop_start() -> void:
 func _reload_loop_end() -> void:
     reload_loop.emit()
     _reload_loop_start_time = -1
+
+func _unload_loop_start() -> void:
+    _unload_loop_start_time = anim_state.get_current_play_position()
+
+func _unload_loop_end() -> void:
+    unload_loop.emit()
+    _unload_loop_start_time = -1
 
 func _lock_anim() -> void:
     anim_locked = true
@@ -89,43 +109,183 @@ func _emit_round_ejected() -> void:
 func _emit_round_loaded() -> void:
     round_loaded.emit()
 
+func _emit_round_unloaded() -> void:
+    round_unloaded.emit()
+
 func _emit_charged() -> void:
     charged.emit()
 
-func _anim_start(_anim: StringName) -> void:
+
+func _on_anim_start(anim: StringName) -> void:
     anim_locked = false
 
+    if anim == anim_target:
+        is_anim_traveling = false
+        anim_target = &''
 
-## Weapon is ready to be used
-func goto_ready() -> void:
-    animation_tree.active = true
+func set_reload_ammo(ammo: AmmoResource) -> void:
+    if not reload_marker:
+        return
 
-    var anim: StringName = &'idle'
-    if is_walking:
-        anim = &'walk'
+    # Expect only one child max, so just remove and break
+    for child in reload_marker.get_children():
+        reload_marker.remove_child(child)
+        break
 
+    var reload_scene: PackedScene = ammo.scene_round
+    var round_node: Node3D = reload_scene.instantiate()
+    reload_marker.add_child(round_node)
+
+func eject_round(
+        round_dict: Dictionary,
+        velocity: Vector3,
+        direction: Vector3,
+        direction_range: float,
+        force: float,
+        force_range: float
+) -> void:
+    if not eject_marker:
+        return
+
+    var round_scene: PackedScene
+    var ttl: float
+
+    if round_dict.is_live:
+        round_scene = round_dict.ammo.scene_round_unloaded
+        ttl = 0.3
+    else:
+        round_scene = round_dict.ammo.scene_round_expended
+        ttl = 10.0
+
+    if not round_scene:
+        return
+
+    var round_node: Node3D = round_scene.instantiate()
+    get_tree().current_scene.add_child(round_node)
+    get_tree().create_timer(ttl, false, true).timeout.connect(round_node.queue_free)
+
+    round_node.global_position = eject_marker.global_position
+    round_node.global_basis = eject_marker.global_basis
+
+    # If not a physics body, we are done (weird?)
+    var round_body: RigidBody3D = round_node as RigidBody3D
+    if not round_body:
+        return
+
+    round_body.linear_velocity = velocity
+
+    var eject_basis: Basis = mesh.basis
+    eject_basis = Basis.looking_at(
+            -direction,
+            eject_basis.z.cross(direction)
+    )
+    eject_basis *= global_basis
+
+    var forward: Vector3 = eject_basis.z
+
+    # Randomize direction
+    if direction_range > 0.0:
+        var right: Vector3 = eject_basis.x
+        var spread: float = sqrt(randf_range(0.0, 1.0))
+        spread *= direction_range
+        forward = forward.rotated(right, spread)
+        forward = forward.rotated(eject_basis.z, randf_range(0.0, TAU))
+
+    # Randomize force
+    if force_range > 0.0:
+        force += randf_range(0, force_range) * 2 - force_range
+
+    var impulse_point: Vector3 = round_node.global_basis.z * 0.08
+
+    round_body.apply_impulse(forward * force, impulse_point)
+
+
+func seek(time: float) -> void:
+    animation_tree['parameters/TimeSeek/seek_request'] = time
+
+func travel(anim: StringName) -> void:
+    is_anim_traveling = true
+    anim_target = anim
     anim_state.travel(anim)
 
+## Weapon is ready to be used
+func goto_ready() -> bool:
+    animation_tree.active = true
+
+    if is_walking:
+        travel(WALK)
+    else:
+        travel(IDLE)
+
+    return true
+
 ## Weapon should fire
-func goto_fire() -> void:
-    anim_state.travel(&'fire')
+func goto_fire() -> bool:
+    if not is_idle():
+        return false
+
+    travel(FIRE)
+    return true
 
 ## Weapon should melee
-func goto_melee() -> void:
-    anim_state.travel(&'melee')
+func goto_melee() -> bool:
+    travel(MELEE)
+    return true
 
 ## Weapon starts to reload
-func goto_reload() -> void:
-    anim_state.travel(&'reload')
+func goto_reload() -> bool:
+    if not is_idle() and not is_state(UNLOAD):
+        return false
+
+    travel(RELOAD)
+    return true
 
 ## Weapon continues (loops) the reload
-func goto_reload_continue() -> void:
+func goto_reload_continue() -> bool:
+    if not is_state(RELOAD):
+        return false
+
     if _reload_loop_start_time >= 0:
-        _seek(_reload_loop_start_time)
+        seek(_reload_loop_start_time)
+        return true
+
+    return false
+
+## Weapon starts to unload
+func goto_unload() -> bool:
+    if not is_idle() and not is_state(RELOAD):
+        return false
+
+    travel(UNLOAD)
+    return true
+
+## Weapon continues (loops) the reload
+func goto_unload_continue() -> bool:
+    if not is_state(UNLOAD):
+        return false
+
+    if _unload_loop_start_time >= 0:
+        seek(_unload_loop_start_time)
+        return true
+
+    return false
 
 ## Weapon should charge (put one in the chamber)
-func goto_charge() -> void:
-    anim_state.travel(&'charge')
+func goto_charge() -> bool:
+    if not is_idle():
+        return false
+
+    travel(CHARGE)
+    return true
+
+## If the animation state is an 'idle' or 'walk' state
+func is_idle() -> bool:
+    var state: StringName = anim_state.get_current_node()
+    return state == IDLE or state == WALK
+
+## If the animation state matches the given state
+func is_state(anim: StringName) -> bool:
+    return anim == anim_state.get_current_node()
 
 ## Controller is walking with the weapon
 func set_walking(walking: bool = true) -> void:

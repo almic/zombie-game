@@ -115,7 +115,7 @@ func update_weapon_ammo(weapon: WeaponResource) -> void:
 
     var ammo: Dictionary = weapon.get_supported_ammunition()
 
-    if weapon.can_chamber and weapon._chambered_round_type:
+    if weapon.is_chambered() and weapon.get_chamber_round().is_live:
         _add_ammo_reserve(weapon._chambered_round_type, ammo)
 
     if weapon.ammo_can_mix:

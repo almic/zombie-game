@@ -44,9 +44,22 @@ var ammo_bank: Dictionary = {}
 ## Melee can be activated
 var _melee_ready: bool = true
 
+## Fire may be buffered
+var _fire_can_buffer: bool = true
+
 ## Timer for doing a full reload.
 ## Tap to full reload, hold for controlled reload.
 var _weapon_reload_time: int
+
+## Buffered input
+var _last_input: GUIDEAction
+var _last_input_timer: float = 0.0
+const LAST_INPUT_TIME = 0.2
+
+var _next_input: GUIDEAction
+var _next_input_timer: float = 0.0
+const NEXT_INPUT_TIME = 0.8
+
 
 func _ready() -> void:
     super._ready()
@@ -61,6 +74,7 @@ func _ready() -> void:
 
     weapon_node.ammo_bank = ammo_bank
     weapon_node.ammo_updated.connect(update_ammo)
+    weapon_node.reload_complete.connect(on_reload_complete)
 
     connect_hurtboxes()
     life.died.connect(on_death)
@@ -89,8 +103,23 @@ func _process(delta: float) -> void:
     if jump.is_triggered() or jump.is_ongoing():
         do_jump()
 
-    update_weapon_node(delta)
+    if _next_input_timer > 0.0:
+        _next_input_timer -= delta
+        if _next_input_timer < 0.0001:
+            _next_input = null
+            _next_input_timer = 0.0
 
+    if _last_input_timer > 0.0:
+        if _last_input.is_completed():
+            _last_input_timer = 0.0
+            _last_input = null
+        else:
+            _last_input_timer -= delta
+            if _last_input_timer < 0.0001:
+                _last_input = null
+                _last_input_timer = 0.0
+
+    update_weapon_node(delta)
 
 func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
@@ -112,56 +141,153 @@ func update_weapon_node(delta: float) -> void:
     if switch_ammo.is_triggered():
         weapon_node.switch_ammo()
 
-    var cancel_reloads: bool = false
     var triggered: bool = fire_primary.is_triggered()
-    weapon_node.update_trigger(triggered, delta)
-
     if triggered:
-        cancel_reloads = true
+        weapon_node.continue_reload = false
+        update_last_input(fire_primary)
+    else:
+        _fire_can_buffer = true
+
+    var action: WeaponNode.Action = weapon_node.update_trigger(triggered, delta)
+
+    if action == WeaponNode.Action.OKAY:
+        _fire_can_buffer = false
+    else:
+        if triggered:
+            if _fire_can_buffer:
+                update_input_buffer(fire_primary)
+        elif is_input_buffered(fire_primary):
+            # NOTE: If the action was blocked, keep trying anyway
+            #       because we may be waiting to charge/ reload
+            action = weapon_node.update_trigger(true, 0.0)
+            if action == WeaponNode.Action.OKAY:
+                clear_input_buffer()
 
     if melee.is_triggered():
-        cancel_reloads = true
-        if _melee_ready and weapon_node.melee():
+        weapon_node.continue_reload = false
+        update_last_input(melee)
+        if _melee_ready or weapon_node.melee():
+            # If a melee ever activates, clear the buffer
+            if _next_input:
+                clear_input_buffer()
             _melee_ready = false
     else:
         _melee_ready = true
 
     if charge.is_triggered():
-        cancel_reloads = true
-        weapon_node.charge()
+        weapon_node.continue_reload = false
+        update_last_input(charge)
+
+        # NOTE: Even if the action is blocked, buffer anyway because we
+        #       may be waiting to load a round
+        action = weapon_node.charge()
+        if action != WeaponNode.Action.OKAY:
+            update_input_buffer(charge)
+    elif is_input_buffered(charge):
+        # NOTE: If the action was blocked, keep trying anyway
+        #       because we way be waiting to reload
+        action = weapon_node.charge()
+        if action == WeaponNode.Action.OKAY:
+            clear_input_buffer()
+    # NOTE: We may have a fire buffered, but we have failed to shoot, so try
+    #       charging the weapon in case we were waiting for that
+    elif is_input_buffered(fire_primary):
+        action = weapon_node.charge()
+        if action == WeaponNode.Action.OKAY:
+            # Requeue the primary fire action as buffer is too short normally
+            update_input_buffer(fire_primary)
 
     if reload.is_triggered():
+        var do_reload: bool = false
         if _weapon_reload_time == 0:
-            _weapon_reload_time = Time.get_ticks_msec()
+            # Cancel a full reload if we trigger while continue is on
+            if weapon_node.continue_reload:
+                weapon_node.continue_reload = false
+                _weapon_reload_time = -1
+            else:
+                weapon_node.continue_reload = true
+                _weapon_reload_time = Time.get_ticks_msec()
+                do_reload = true
 
-        weapon_node.continue_reload = true
-        weapon_node.reload()
+        update_last_input(reload)
+
+        if do_reload:
+            # NOTE: Even if the action is blocked, buffer anyway because we
+            #       may be waiting to cycle a round from reserve
+            action = weapon_node.reload()
+            if action != WeaponNode.Action.OKAY:
+                update_input_buffer(reload)
     else:
-        weapon_node.continue_reload = false
-        var elapsed: int = Time.get_ticks_msec() - _weapon_reload_time
-        if elapsed < 500:
-            weapon_node.full_reload = true
-        _weapon_reload_time = 0
+        if _weapon_reload_time > 0:
+            var elapsed: int = Time.get_ticks_msec() - _weapon_reload_time
+            if elapsed > 500:
+                weapon_node.continue_reload = false
+            _weapon_reload_time = 0
+        elif _weapon_reload_time == -1:
+            _weapon_reload_time = 0
+
+        if is_input_buffered(reload):
+            action = weapon_node.reload()
+            if action == WeaponNode.Action.OKAY:
+                clear_input_buffer()
 
     if unload.is_triggered():
+        weapon_node.continue_reload = false
         weapon_node.continue_unload = true
         weapon_node.unload()
     else:
         weapon_node.continue_unload = false
 
-    if cancel_reloads:
-        weapon_node.continue_reload = false
-        weapon_node.full_reload = false
-
+func on_reload_complete() -> void:
+    # If a reload ended and we wanted to continue, queue a charge
+    if weapon_node.continue_reload:
+        update_input_buffer(charge)
+    # Don't buffer a reload off a reload
+    elif _next_input == reload:
+        clear_input_buffer()
 
 func on_hurt(_from: Node3D, _part: HurtBox, _damage: float, _hit: Dictionary) -> void:
     get_tree().call_group('hud', 'update_health', life.health / life.max_health)
-
 
 func on_death() -> void:
     print('Gah! I died!')
 
     get_tree().call_group('world', 'on_player_death')
+
+func is_input_buffered(action: GUIDEAction) -> bool:
+    if _next_input_timer < 0.0001:
+        return false
+
+    return action == _next_input
+
+func clear_input_buffer() -> void:
+    _next_input = null
+    _next_input_timer = 0.0
+
+func update_input_buffer(action: GUIDEAction) -> void:
+    if action == _last_input:
+        # If we set the last input this frame, allow to buffer
+        if is_equal_approx(_last_input_timer, LAST_INPUT_TIME):
+            pass
+        elif _last_input_timer > 0.0:
+            return
+
+    if _next_input == action:
+        if _next_input_timer < 0.5:
+            _next_input_timer = NEXT_INPUT_TIME
+        return
+
+    _next_input = action
+    _next_input_timer = NEXT_INPUT_TIME
+
+func update_last_input(action: GUIDEAction) -> void:
+    if action == _last_input:
+        if _last_input_timer < 0.0001:
+            _last_input_timer = LAST_INPUT_TIME
+        return
+
+    _last_input = action
+    _last_input_timer = LAST_INPUT_TIME
 
 func update_weapon_switch() -> void:
     var next_weapon_dir: int = 0
@@ -212,7 +338,6 @@ func set_score(value: int) -> void:
 
 func update_ammo() -> void:
     get_tree().call_group('hud', 'update_weapon_ammo', weapon_node.weapon_type)
-
 
 func pickup_item(item: Pickup) -> void:
     if item.item_type is WeaponResource:

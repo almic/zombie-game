@@ -13,28 +13,25 @@ class_name SingleFireMechanism extends TriggerMechanism
 @export var automatic_fire: bool
 
 
-var _released: bool = false
+var _released: bool = true
 
+
+func start_cycle() -> void:
+    super.start_cycle()
+    _released = false
 
 func update_trigger(triggered: bool) -> void:
-    if not triggered:
+    if triggered:
+        _weapon_triggered = true
+    else:
         _released = true
         _weapon_triggered = false
 
-    # wait for trigger to release for non-automatic
-    if _weapon_triggered and not automatic_fire:
-        return
-
-    if triggered:
-        _weapon_triggered = true
-
-
 func should_trigger() -> bool:
-    if not _weapon_triggered or not is_cycled():
-        return false
+    if _weapon_triggered and is_cycled():
+        if automatic_fire:
+            return true
 
-    if not automatic_fire and not _released:
-        return false
+        return _released
 
-    _released = false
-    return true
+    return false

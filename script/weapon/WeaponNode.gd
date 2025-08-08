@@ -6,7 +6,17 @@
 class_name WeaponNode extends Node3D
 
 
+## Result of trying to perform an action on a weapon
+enum Action {
+    BLOCKED,
+    OKAY,
+    NOT_READY
+}
+
+
 signal ammo_updated()
+
+signal reload_complete()
 
 
 @export var controller: CharacterBase
@@ -36,9 +46,6 @@ var _weapon_target_to: Quaternion
 var _weapon_target_tick: int = 0
 var _weapon_target_amount: float = 0
 
-var full_reload: bool = false:
-    set = set_full_reload
-
 var continue_reload: bool = false:
     set = set_continue_reload
 
@@ -57,7 +64,6 @@ var melee_excluded_hurtboxes: Array[RID]
 func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
     add_child(_weapon_audio_player)
-
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
@@ -130,9 +136,6 @@ func weapon_projectile_transform() -> Transform3D:
 func aim_target_transform() -> Transform3D:
     return target.global_transform
 
-func set_full_reload(value: bool) -> void:
-    full_reload = value
-
 func set_continue_reload(value: bool) -> void:
     continue_reload = value
 
@@ -167,44 +170,59 @@ func switch_ammo() -> bool:
     return true
 
 ## Updates weapon trigger, returns true if the weapon is going to fire
-func update_trigger(triggered: bool, delta: float) -> bool:
+func update_trigger(triggered: bool, delta: float) -> Action:
     var mechanism: TriggerMechanism = weapon_type.trigger_mechanism
 
     mechanism.tick(delta)
     mechanism.update_trigger(triggered)
 
     if not mechanism.should_trigger() or not weapon_type.can_fire():
-        return false
+        return Action.BLOCKED
 
-    return _weapon_scene.goto_fire()
+    if _weapon_scene.goto_fire():
+        return Action.OKAY
+
+    return Action.NOT_READY
 
 ## The weapon should charge, returns true if the weapon is going to charge
-func charge() -> bool:
+func charge() -> Action:
     if not weapon_type.can_charge():
-        return false
+        return Action.BLOCKED
 
-    return _weapon_scene.goto_charge()
+    if _weapon_scene.goto_charge():
+        return Action.OKAY
+
+    return Action.NOT_READY
 
 ## The weapon should do a melee, returns true if the weapon is going to melee
-func melee() -> bool:
+func melee() -> Action:
     if not weapon_type.can_melee():
-        return false
+        return Action.BLOCKED
 
-    return _weapon_scene.goto_melee()
+    if _weapon_scene.goto_melee():
+        return Action.OKAY
+
+    return Action.NOT_READY
 
 ## The weapon should reload, returns true if the weapon is going to reload
-func reload() -> bool:
+func reload() -> Action:
     if not weapon_type.can_reload():
-        return false
+        return Action.BLOCKED
 
-    return _weapon_scene.goto_reload()
+    if _weapon_scene.goto_reload():
+        return Action.OKAY
+
+    return Action.NOT_READY
 
 ## The weapon should unload, returns true if the weapon is going to unload
-func unload() -> bool:
+func unload() -> Action:
     if not weapon_type.can_unload():
-        return false
+        return Action.BLOCKED
 
-    return _weapon_scene.goto_unload()
+    if _weapon_scene.goto_unload():
+        return Action.OKAY
+
+    return Action.NOT_READY
 
 func has_ammo_stock() -> bool:
     return not weapon_type.ammo_stock.is_empty()
@@ -223,8 +241,8 @@ func trigger_particle(activate: bool = true) -> void:
 func load_weapon_type(type: WeaponResource) -> void:
     weapon_type = type
 
-    full_reload = false
     continue_reload = false
+    continue_unload = false
 
     _load_weapon_scene()
     _load_particle_system()
@@ -337,12 +355,15 @@ func on_weapon_charged() -> void:
     weapon_type.charge_weapon()
 
 func on_weapon_reload_loop() -> void:
-    if full_reload or continue_reload:
-        if weapon_type.can_reload():
-            _weapon_scene.goto_reload_continue()
-            return
+    if not continue_reload:
+        reload_complete.emit()
+        return
 
-    full_reload = false
+    if weapon_type.can_reload():
+        _weapon_scene.goto_reload_continue()
+    else:
+        reload_complete.emit()
+        continue_reload = false
 
 func on_weapon_unload_loop() -> void:
     if continue_unload:
@@ -359,7 +380,7 @@ func on_weapon_round_ejected() -> void:
     if not weapon_type or not weapon_type.can_eject():
         return
 
-    var round_dict: Dictionary = weapon_type.get_round_to_eject()
+    var round_dict: Dictionary = weapon_type.get_chamber_round()
 
     if weapon_type.eject_round():
         ammo_updated.emit()

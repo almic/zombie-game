@@ -238,7 +238,7 @@ func get_reserve_type() -> int:
 func get_default_ammo() -> AmmoResource:
     return ammo_supported[0]
 
-func get_round_to_eject() -> Dictionary:
+func get_chamber_round() -> Dictionary:
     return {
         'is_live': _chambered_round_live,
         'ammo': ammo_bank.get(_chambered_round_type).ammo
@@ -259,7 +259,10 @@ func can_eject() -> bool:
 
 func can_fire() -> bool:
     if can_chamber:
-        return is_chambered()
+        if is_chambered():
+            return _chambered_round_live
+        else:
+            return false
 
     return get_reserve_total() > 0
 
@@ -268,8 +271,8 @@ func can_melee() -> bool:
     return true
 
 func can_charge() -> bool:
-    if not can_chamber or is_chambered():
-        return false
+    if can_chamber and is_chambered():
+        return not _chambered_round_live
 
     if not ammo_can_mix:
         return _simple_reserve_total > 0

@@ -22,7 +22,6 @@ melee_range = 2.0
 melee_collision = 8
 trigger_mechanism = SubResource("Resource_olet3")
 can_chamber = false
-chamber_on_fire = false
 projectile_inaccuracy = 0.0
 projectile_range = 0.0
 projectile_hit_mask = 8

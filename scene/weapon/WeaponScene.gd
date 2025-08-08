@@ -234,11 +234,10 @@ func goto_melee() -> bool:
 
 ## Weapon starts to reload
 func goto_reload() -> bool:
-    if not is_idle() and not is_state(UNLOAD):
-        return false
-
-    travel(RELOAD)
-    return true
+    if is_idle() or is_state(UNLOAD):
+        travel(RELOAD)
+        return true
+    return false
 
 ## Weapon continues (loops) the reload
 func goto_reload_continue() -> bool:
@@ -253,11 +252,10 @@ func goto_reload_continue() -> bool:
 
 ## Weapon starts to unload
 func goto_unload() -> bool:
-    if not is_idle() and not is_state(RELOAD):
-        return false
-
-    travel(UNLOAD)
-    return true
+    if is_idle() or is_state(RELOAD):
+        travel(UNLOAD)
+        return true
+    return false
 
 ## Weapon continues (loops) the reload
 func goto_unload_continue() -> bool:

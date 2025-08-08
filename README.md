@@ -4,11 +4,11 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
-- [ ] Weapon aiming (reduce look speed and FOV)
 - [ ] Camera Smooth (generic)
 - [ ] Add all weapons
 - [ ] Add more zombie types
 - [ ] Level blocking
+- [X] Weapon aiming (reduce look speed and FOV)
 - [X] Add individual weapon melee
 - [X] Add ammo type selection
 - [X] Connect weapon charging animation to system

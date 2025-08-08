@@ -795,67 +795,12 @@ static func apply_ground_details(ground_details: GroundDetails, normal: Vector3,
 
 
 func start_camera_smooth() -> void:
-    if not camera_do_smoothing:
-        return
-    camera_smooth_offset = camera_node.global_position - camera_target_node.global_position
-    camera_smooth_offset = up_direction * camera_smooth_offset.dot(up_direction)
-
-    is_camera_smoothing = true
+    # TODO
+    pass
 
 func smooth_camera(delta: float) -> void:
-    camera_node.global_position = camera_target_node.global_position
-    if not camera_do_smoothing or not is_camera_smoothing:
-        return
-
-    var function_switch: bool = false
-
-    if function_switch:
-        var offset_length: float = camera_smooth_offset.dot(up_direction)
-        var offset_sign: float = signf(offset_length)
-        offset_length = abs(offset_length)
-
-        if offset_length < 0.0001:
-            camera_smooth_offset = Vector3.ZERO
-            camera_smooth_rate = 0
-            is_camera_smoothing = false
-            print('done smoothing!')
-            print('--------')
-            return
-
-        var rate: float = camera_smooth_acceleration * delta
-        var time_to_speed_zero: float = camera_smooth_rate / rate
-        var offset_minimum: float = (
-                offset_length - (
-                    camera_smooth_rate * time_to_speed_zero -
-                    0.5 * rate * time_to_speed_zero * time_to_speed_zero
-                )
-        )
-
-        if offset_minimum <= 0.0:
-            camera_smooth_rate -= rate
-            camera_smooth_rate = maxf(camera_smooth_rate, 0)
-            print('slower! ' + str(camera_smooth_rate))
-        elif camera_smooth_rate < camera_smooth_max_speed:
-            camera_smooth_rate += rate
-            camera_smooth_rate = minf(camera_smooth_rate, camera_smooth_max_speed)
-            print('faster! ' + str(camera_smooth_rate))
-        else:
-            print('steady! ' + str(camera_smooth_rate))
-
-        camera_smooth_offset *= maxf(0, offset_length - camera_smooth_rate) / offset_length
-        camera_smooth_offset = camera_smooth_offset.clampf(-camera_lag_distance, camera_lag_distance)
-
-        print('offset = ' + str(camera_smooth_offset.dot(up_direction)))
-
-        #print('offset = ' + str(camera_smooth_offset))
-        camera_node.global_position += up_direction * offset_length * offset_sign
-    else:
-        camera_smooth_offset = camera_smooth_offset.lerp(Vector3.ZERO, camera_smooth_max_speed * delta)
-
-        if camera_smooth_offset.length_squared() < 0.000001:
-            is_camera_smoothing = false
-
-        camera_node.global_position += camera_smooth_offset
+    # TODO
+    pass
 
 ## Override to return a fluid density from the current fluid state/ details
 func _get_density() -> float:

@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://27ly31oguhqu"]
+[gd_scene load_steps=9 format=3 uid="uid://27ly31oguhqu"]
 
 [ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_gv2v7"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_b2l83"]
+[ext_resource type="Script" uid="uid://bhnw37m36mltx" path="res://scene/weapon/shotgun/shotgun.gd" id="2_l0phi"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_5xwbe"]
 [ext_resource type="AnimationLibrary" uid="uid://djg6grfbejyql" path="res://animation/shotgun/shotgun_animation.res" id="4_5xwbe"]
 [ext_resource type="Animation" uid="uid://cy51f58abidvc" path="res://animation/shotgun/shotgun_RESET.res" id="5_l0phi"]
@@ -13,6 +14,7 @@ _data = {
 }
 
 [node name="Shotgun" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker") instance=ExtResource("1_gv2v7")]
+script = ExtResource("2_l0phi")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/protomesh/BarrelMarker")
 particle_marker = NodePath("Mesh/protomesh/BarrelMarker")

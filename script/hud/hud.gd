@@ -23,7 +23,7 @@ class_name HUD extends Control
 
         _preview_weapon = value
         _preview_weapon._mixed_reserve = _preview_weapon_ammo_mix
-        update_weapon_ammo.call_deferred(_preview_weapon, _preview_stock_ammo)
+        update_weapon_ammo.call_deferred(_preview_weapon)
 
 @export var _preview_weapon_ammo_mix: PackedInt32Array:
     set(value):
@@ -35,7 +35,7 @@ class_name HUD extends Control
         _preview_weapon._mixed_reserve = _preview_weapon_ammo_mix
         _preview_weapon._simple_reserve_type = _preview_weapon_ammo_reserve_type
         _preview_weapon._simple_reserve_total = _preview_weapon_ammo_reserve_total
-        update_weapon_ammo.call_deferred(_preview_weapon, _preview_stock_ammo)
+        update_weapon_ammo.call_deferred(_preview_weapon)
 
 @export var _preview_weapon_ammo_reserve_type: int:
     set(value):
@@ -45,7 +45,7 @@ class_name HUD extends Control
 
         _preview_weapon_ammo_reserve_type = value
         _preview_weapon._simple_reserve_type = _preview_weapon_ammo_reserve_type
-        update_weapon_ammo.call_deferred(_preview_weapon, _preview_stock_ammo)
+        update_weapon_ammo.call_deferred(_preview_weapon)
 
 @export var _preview_weapon_ammo_reserve_total: int:
     set(value):
@@ -55,7 +55,7 @@ class_name HUD extends Control
 
         _preview_weapon_ammo_reserve_total = value
         _preview_weapon._simple_reserve_total = _preview_weapon_ammo_reserve_total
-        update_weapon_ammo.call_deferred(_preview_weapon, _preview_stock_ammo)
+        update_weapon_ammo.call_deferred(_preview_weapon)
 
 @export var _preview_stock_ammo: Dictionary:
     set(value):
@@ -64,7 +64,7 @@ class_name HUD extends Control
             return
 
         _preview_stock_ammo = value
-        update_weapon_ammo.call_deferred(_preview_weapon, _preview_stock_ammo)
+        update_weapon_ammo.call_deferred(_preview_weapon)
 
 
 func _ready() -> void:

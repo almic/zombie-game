@@ -16,6 +16,9 @@ class_name World extends Node3D
 ## If zombies should spawn
 @export var enable_spawning: bool = true
 
+## If zombies should do targetting
+@export var enable_targetting: bool = true
+
 ## The target number of zombies to have in the world
 @export var target_spawn_count: int = 50:
     set(value):
@@ -158,6 +161,7 @@ func spawn_zombie(delta: float) -> void:
 
     if zombie is Zombie:
         zombie.attack_damage = 20
+        zombie.target_enabled = enable_targetting
         zombie.target_search_groups.append('zombie_target')
 
 func update_spawn_points() -> void:

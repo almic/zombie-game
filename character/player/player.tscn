@@ -39,7 +39,14 @@ collision_mask = 19
 script = ExtResource("1_y482n")
 life = ExtResource("3_lqp71")
 right_hand = true
+weapon_position = Vector3(0.225, -0.195, -0.605)
 look_speed = 0.55
+fov = 75.0
+aim_fov = 50.0
+look_aim_speed = 0.25
+look_aim_time = 0.6
+look_aim_return_time = 0.4
+weapon_aim_position = Vector3(1.45519e-11, -0.1, -0.5)
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
@@ -54,8 +61,8 @@ reload = ExtResource("10_muf2e")
 unload = ExtResource("12_pedpu")
 switch_ammo = ExtResource("11_jo6ux")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
-camera_node = NodePath("CameraTarget/Camera3D")
-camera_target_node = NodePath("CameraTarget")
+camera_node = NodePath("Neck/CameraTarget/Camera3D")
+camera_target_node = NodePath("Neck/CameraTarget")
 
 [node name="collider" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
@@ -67,30 +74,32 @@ gi_mode = 0
 mesh = SubResource("CapsuleMesh_glpr6")
 skeleton = NodePath("../..")
 
-[node name="CameraTarget" type="Node3D" parent="." index="1"]
+[node name="Neck" type="Node3D" parent="." index="1"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.395, 1.45519e-11)
+
+[node name="CameraTarget" type="Node3D" parent="Neck" index="0"]
 unique_name_in_owner = true
 editor_description = "Target position for the Camera3D, used to smooth vertical jitter."
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.545, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.15, 1.45519e-11)
 
-[node name="Camera3D" type="Camera3D" parent="CameraTarget" index="0"]
+[node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget" index="0"]
 unique_name_in_owner = true
-transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.545, 0)
-top_level = true
 cull_mask = 524287
 current = true
 
-[node name="WeaponNode" type="Node3D" parent="CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "hitbox", "target")]
+[node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "hitbox", "target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
-controller = NodePath("../../..")
-hitbox = NodePath("../../../Hitbox")
+controller = NodePath("../../../..")
+hitbox = NodePath("../../../../Hitbox")
 target = NodePath("../AimTarget")
 metadata/_custom_type_script = "uid://n578e74oit7v"
 
-[node name="hud" parent="CameraTarget/Camera3D" index="1" instance=ExtResource("11_vuhga")]
+[node name="hud" parent="Neck/CameraTarget/Camera3D" index="1" instance=ExtResource("11_vuhga")]
 
-[node name="AimTarget" type="RayCast3D" parent="CameraTarget/Camera3D" index="2"]
+[node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D" index="2"]
 unique_name_in_owner = true
 editor_description = "Weapon targetting raycast so weapons aim correctly"
 exclude_parent = false

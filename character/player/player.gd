@@ -2,6 +2,7 @@
 
 class_name Player extends CharacterBase
 
+@onready var neck: Node3D = %Neck
 @onready var camera_target: Node3D = %CameraTarget
 @onready var camera_3d: Camera3D = %Camera3D
 @onready var hurtbox: HurtBox = %Hurtbox
@@ -9,14 +10,48 @@ class_name Player extends CharacterBase
 @onready var aim_target: RayCast3D = %AimTarget
 
 
+
 @export_group("Combat")
 @export var life: LifeResource
 @export var right_hand: bool = true
 
-@export_group("Movement")
+## Position of the weapon node relative to the camera
+@export var weapon_position: Vector3 = Vector3.ZERO
+
+
+@export_group("Camera")
+
+## Look speed input multiplier
 @export var look_speed: float = 0.55
 
+## FOV of the camera
+@export_range(1.0, 179.0, 0.001, 'suffix:°')
+var fov: float = 75.0
+
+
+@export_group("Aiming")
+
+## FOV when aiming, should be smaller than the normal FOV
+@export_range(1.0, 179.0, 0.001, 'suffix:°')
+var aim_fov: float = 75.0
+
+## Target aiming speed
+@export var look_aim_speed: float = 0.2
+
+## Interpolation time when aiming
+@export_range(0.001, 1.0, 0.001)
+var look_aim_time: float = 0.6
+
+## Interpolation time when leaving aim, should be a bit faster
+@export_range(0.001, 1.0, 0.001)
+var look_aim_return_time: float = 0.4
+
+## Position of the weapon node when aiming, relative to the camera
+@export var weapon_aim_position: Vector3 = Vector3.ZERO
+
+
 @export_group("Controls")
+
 @export var jump: GUIDEAction
 @export var look: GUIDEAction
 @export var move: GUIDEAction
@@ -38,8 +73,23 @@ var score: int = 0:
 
 var weapons: Dictionary = {}
 var weapon_index: int = 0
+var weapon_aim_offset: Vector3 = Vector3.ZERO
+var weapon_aim_roll: float = 0.0
 
 var ammo_bank: Dictionary = {}
+
+## The current aim time, used for animation
+var _aim_time: float = 0.0
+## If we are aiming
+var _aim_is_aiming: bool = false
+## If we were trying to aim on the last tick
+var _aim_was_triggered: bool = false
+## Current FOV, modified when aiming
+var _current_fov: float = fov
+## Current look speed, modified when aiming
+var _current_look_speed: float = look_speed
+## Camera roll, modified when aiming
+var _current_look_roll: float = 0.0
 
 ## Melee can be activated
 var _melee_ready: bool = true
@@ -67,6 +117,8 @@ func _ready() -> void:
 
     weapons = weapons.duplicate()
 
+    weapon_node.position = weapon_position
+
     if Engine.is_editor_hint():
         return
 
@@ -84,15 +136,29 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
-        camera_3d.global_transform = camera_target.global_transform
+        #camera_3d.global_transform = camera_target.global_transform
+        weapon_node.position = weapon_position
         return
 
-    rotation_degrees.y -= look.value_axis_2d.x * look_speed
-    camera_3d.rotation.y = rotation.y
-    camera_3d.rotation_degrees.x = clampf(
-        camera_3d.rotation_degrees.x - look.value_axis_2d.y * look_speed,
+    update_aiming(delta)
+
+    camera_3d.fov = _current_fov
+
+    rotation_degrees.y -= look.value_axis_2d.x * _current_look_speed
+    camera_target.rotation_degrees.x = clampf(
+        camera_target.rotation_degrees.x - look.value_axis_2d.y * _current_look_speed,
         -89, 89
     )
+    neck.rotation.z = _current_look_roll
+    camera_3d.rotation.z = -_current_look_roll * 0.5
+    weapon_node.rotation.z = -_current_look_roll * 0.5
+
+    # NOTE: Must be after rotations, otherwise we delay the weapon aiming
+    update_weapon_node(delta)
+
+    # NOTE: Reload cancel uses this to track if it should ignore aim attempts
+    #       if we were not already trying to aim
+    _aim_was_triggered = aim.is_triggered()
 
     var move_length: float = move.value_axis_3d.length()
 
@@ -120,8 +186,6 @@ func _process(delta: float) -> void:
                 _last_input = null
                 _last_input_timer = 0.0
 
-    update_weapon_node(delta)
-
 func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
@@ -130,6 +194,91 @@ func _physics_process(delta: float) -> void:
     # miss inputs shorter than a physics frame.
 
     update_movement(delta)
+
+func update_aiming(delta: float) -> void:
+    var duration: float
+    var target_position: Vector3
+    var target_fov: float
+    var target_roll: float
+    var target_look: float
+
+    if aim.is_triggered() and weapon_node.can_aim():
+        if not _aim_is_aiming:
+            _aim_is_aiming = true
+            _aim_time = 0
+    elif _aim_is_aiming:
+        _aim_is_aiming = false
+        _aim_time = 0
+
+    if _aim_time < 10.0:
+        _aim_time += delta
+
+    if _aim_is_aiming:
+        duration = look_aim_time
+        target_look = look_aim_speed
+        target_fov = aim_fov
+        if weapon_index:
+            target_position = weapon_aim_offset
+            target_roll = weapon_aim_roll
+        else:
+            target_position = weapon_position
+            target_roll = 0.0
+    else:
+        duration = look_aim_return_time
+        target_look = look_speed
+        target_fov = fov
+        target_position = weapon_position
+        target_roll = 0.0
+
+    if not weapon_node.position.is_equal_approx(target_position):
+        weapon_node.position = Tween.interpolate_value(
+                weapon_node.position,
+                target_position - weapon_node.position,
+                _aim_time,
+                duration,
+                Tween.TRANS_SINE,
+                Tween.EASE_IN_OUT
+        )
+        var diff: float = (weapon_node.position - target_position).length_squared()
+        if diff < 0.000001:
+            weapon_node.position = target_position
+    if not is_equal_approx(_current_look_roll, target_roll):
+        _current_look_roll = Tween.interpolate_value(
+                _current_look_roll,
+                target_roll - _current_look_roll,
+                _aim_time,
+                duration,
+                Tween.TRANS_SINE,
+                Tween.EASE_IN_OUT
+        )
+        var diff: float = abs(_current_look_roll - target_roll)
+        # This is about 0.1 degrees, which I can't notice
+        if diff < 0.002:
+            _current_look_roll = target_roll
+    if not is_equal_approx(_current_look_speed, target_look):
+        _current_look_speed = Tween.interpolate_value(
+                _current_look_speed,
+                target_look - _current_look_speed,
+                _aim_time,
+                duration,
+                Tween.TRANS_LINEAR,
+                Tween.EASE_IN_OUT
+        )
+        var diff: float = abs(_current_look_speed - target_look)
+        if diff < 0.01:
+            _current_look_speed = target_look
+    if not is_equal_approx(_current_fov, target_fov):
+        _current_fov = Tween.interpolate_value(
+                _current_fov,
+                target_fov - _current_fov,
+                _aim_time,
+                duration,
+                Tween.TRANS_SINE,
+                Tween.EASE_IN_OUT
+        )
+        var diff: float = abs(_current_fov - target_fov)
+        if diff < 0.01:
+            _current_fov = target_fov
 
 func update_weapon_node(delta: float) -> void:
     if not weapon_index:
@@ -246,6 +395,10 @@ func update_weapon_node(delta: float) -> void:
     else:
         weapon_node.continue_unload = false
 
+    # Stop reloads if we press the aim button for the first time
+    if weapon_node.continue_reload and aim.is_triggered() and not _aim_was_triggered:
+        weapon_node.continue_reload = false
+
 func on_reload_complete() -> void:
     # If a reload ended and we wanted to continue, queue a charge
     if weapon_node.continue_reload:
@@ -333,7 +486,12 @@ func select_weapon(slot: int) -> void:
         return
 
     weapon_index = slot
-    weapon_node.weapon_type = weapons[slot]
+    var weapon: WeaponResource = weapons.get(slot)
+    weapon_node.weapon_type = weapon
+
+    weapon_aim_offset = weapon_aim_position + weapon.aim_offset
+    weapon_aim_roll = -weapon.aim_camera_roll
+
     update_ammo()
 
 func set_score(value: int) -> void:

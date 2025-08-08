@@ -159,7 +159,7 @@ states/into_unload_reload/position = Vector2(188, 280)
 states/melee/node = SubResource("AnimationNodeAnimation_8vud5")
 states/melee/position = Vector2(313, -62)
 states/out_unload_reload/node = SubResource("AnimationNodeAnimation_o2g4u")
-states/out_unload_reload/position = Vector2(675, 280)
+states/out_unload_reload/position = Vector2(683, 280)
 states/reload/node = SubResource("AnimationNodeAnimation_buw5u")
 states/reload/position = Vector2(342, 392)
 states/unload/node = SubResource("AnimationNodeAnimation_ypwf3")
@@ -167,12 +167,11 @@ states/unload/position = Vector2(540, 392)
 states/walk/node = SubResource("AnimationNodeAnimation_4n4b1")
 states/walk/position = Vector2(683, 100)
 transitions = ["idle", "fire", SubResource("AnimationNodeStateMachineTransition_6odb4"), "fire", "charge", SubResource("AnimationNodeStateMachineTransition_2eyu6"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_0gknc"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_frpds"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_0rrth"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_w2fqa"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_4x3cd"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_k0jwh"), "Start", "idle", SubResource("AnimationNodeStateMachineTransition_qk4g3"), "idle", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_8vud5"), "into_unload_reload", "reload", SubResource("AnimationNodeStateMachineTransition_ypwf3"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_hqv70"), "charge", "fire", SubResource("AnimationNodeStateMachineTransition_o2kmi"), "idle", "melee", SubResource("AnimationNodeStateMachineTransition_21dbw"), "melee", "idle", SubResource("AnimationNodeStateMachineTransition_kpyai"), "walk", "melee", SubResource("AnimationNodeStateMachineTransition_mf84u"), "melee", "walk", SubResource("AnimationNodeStateMachineTransition_ktc12"), "charge", "melee", SubResource("AnimationNodeStateMachineTransition_i4rqv"), "into_unload_reload", "melee", SubResource("AnimationNodeStateMachineTransition_kxow8"), "unload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_58dgl"), "walk", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_vpqvs"), "out_unload_reload", "walk", SubResource("AnimationNodeStateMachineTransition_tqre5"), "out_unload_reload", "idle", SubResource("AnimationNodeStateMachineTransition_k41qh"), "out_unload_reload", "melee", SubResource("AnimationNodeStateMachineTransition_1raub"), "into_unload_reload", "unload", SubResource("AnimationNodeStateMachineTransition_o3kjb"), "reload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_5st4q"), "into_unload_reload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_o2g4u"), "out_unload_reload", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_xqcym"), "reload", "unload", SubResource("AnimationNodeStateMachineTransition_6m52u"), "unload", "reload", SubResource("AnimationNodeStateMachineTransition_2tfck")]
-graph_offset = Vector2(-80, 195)
+graph_offset = Vector2(15, 116)
 
 [sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_o2kmi"]
 
 [resource]
-graph_offset = Vector2(-189, 39.8182)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_cbg81")
 nodes/StateMachine/position = Vector2(60, 80)
 nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_o2kmi")

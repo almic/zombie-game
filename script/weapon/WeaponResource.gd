@@ -4,6 +4,7 @@
 ## Defines a weapon type that can be used in the world
 class_name WeaponResource extends PickupResource
 
+const DEBUG_SPHERE = preload('res://scene/debug/sphere/sphere.tscn')
 
 ## Weapon name in UI elements
 @export var name: String
@@ -55,6 +56,20 @@ var projectile_inaccuracy: float = 0.0
 
 ## Hit collision mask
 @export_flags_3d_physics var projectile_hit_mask: int = 8
+
+
+@export_group("Aiming", "aim")
+
+## If aiming is possible with the weapon
+@export var aim_enabled: bool = false
+
+## Offset from the central aiming position, which is just to match the camera's
+## vertical and horizontal position.
+@export var aim_offset: Vector3 = Vector3.ZERO
+
+## Roll of the camera during aiming. Be VERY subtle with this value. IMMERSION.
+@export_range(0.0, 10.0, 0.001, 'or_greater', 'radians_as_degrees')
+var aim_camera_roll: float = 0.0
 
 
 @export_group("Ammunition", "ammo")
@@ -457,10 +472,18 @@ func fire_projectiles(base: WeaponNode) -> bool:
         if hit:
             to = hit.position
 
-        #DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15, 0.2), 5)
+        DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15, 0.2), 5)
 
         if not hit:
             continue
+
+        if DEBUG_SPHERE:
+            var sphere: DebugSphere = DEBUG_SPHERE.instantiate()
+            sphere.set_radius(0.04)
+            sphere.set_color(Color(0.0, 0.646, 0.752, 0.45))
+            base.get_tree().current_scene.add_child(sphere)
+            sphere.global_position = hit.position
+            base.get_tree().create_timer(60.0, false, true).timeout.connect(sphere.queue_free)
 
         if hit.collider is HurtBox:
             var from_node: Node3D = base

@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://duylaogq2cjd6"]
+[gd_scene load_steps=9 format=3 uid="uid://duylaogq2cjd6"]
 
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
 [ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="2_en2x2"]
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="3_1v5rv"]
 [ext_resource type="Texture2D" uid="uid://catrmqsiu168b" path="res://icon/shotgun_side.png" id="5_q43x7"]
-[ext_resource type="Texture2D" uid="uid://bpmt8s8xbbk32" path="res://icon/buckshot_side.png" id="6_1v5rv"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr31g"]
 bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
@@ -50,6 +49,7 @@ mouse_filter = 2
 script = ExtResource("2_546lt")
 center_enabled = true
 center_size = 1.4
+center_color = Color(0.916, 0.267, 0, 0.46)
 metadata/_custom_type_script = "uid://b8ty0aywli1vd"
 
 [node name="score_container" type="HBoxContainer" parent="."]
@@ -106,13 +106,11 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
-texture = ExtResource("6_1v5rv")
 
 [node name="stock_amount" type="Label" parent="weapon_box/weapon_box"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-text = "8"
 label_settings = SubResource("LabelSettings_276te")
 
 [node name="ammo_flow" type="HBoxContainer" parent="weapon_box"]

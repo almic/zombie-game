@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=56 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -48,13 +48,6 @@
 [ext_resource type="Curve3D" uid="uid://3vyfumbpe2af" path="res://scene/world/road_curves/iris_curve.res" id="47_my0pb"]
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
 
-[sub_resource type="Resource" id="Resource_18ff0"]
-resource_local_to_scene = true
-script = ExtResource("12_a331h")
-max_health = 100.0
-health = 100.0
-metadata/_custom_type_script = "uid://cugishrosnaex"
-
 [sub_resource type="Resource" id="Resource_a331h"]
 resource_local_to_scene = true
 script = ExtResource("12_a331h")
@@ -86,8 +79,7 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-enable_spawning = false
-target_spawn_count = 10
+target_spawn_count = 15
 spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
 metadata/_custom_type_script = "uid://mvbofvslxl7"
@@ -148,13 +140,11 @@ visible = false
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
-transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, -329.164, 2.02, -455.395)
-life = SubResource("Resource_18ff0")
+transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, -327.964, 2, -456.795)
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(0.866026, -1.99303e-07, -0.5, 2.14103e-07, 1, 2.70686e-08, 0.5, 8.9407e-08, 0.866026, -322.256, 2.01153, -470.173)
 velocity = Vector3(0, -938.906, 0)
-target_enabled = false
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
 

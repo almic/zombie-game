@@ -285,6 +285,11 @@ func is_idle() -> bool:
 func is_state(anim: StringName) -> bool:
     return anim == anim_state.get_current_node()
 
+## If the animation state allows aiming
+func can_aim() -> bool:
+    var state: StringName = anim_state.get_current_node()
+    return state == IDLE or state == WALK or state == FIRE
+
 ## Controller is walking with the weapon
 func set_walking(walking: bool = true) -> void:
     is_walking = walking

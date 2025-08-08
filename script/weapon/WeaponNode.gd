@@ -169,7 +169,7 @@ func switch_ammo() -> bool:
     _weapon_scene.set_reload_ammo(weapon_type.ammo_stock.ammo)
     return true
 
-## Updates weapon trigger, returns true if the weapon is going to fire
+## Updates weapon trigger, can fire
 func update_trigger(triggered: bool, delta: float) -> Action:
     var mechanism: TriggerMechanism = weapon_type.trigger_mechanism
 
@@ -184,7 +184,14 @@ func update_trigger(triggered: bool, delta: float) -> Action:
 
     return Action.NOT_READY
 
-## The weapon should charge, returns true if the weapon is going to charge
+## Test if the weapon could be aiming right now
+func can_aim() -> bool:
+    if not weapon_type.aim_enabled:
+        return false
+
+    return _weapon_scene.can_aim()
+
+## The weapon should charge
 func charge() -> Action:
     if not weapon_type.can_charge():
         return Action.BLOCKED
@@ -194,7 +201,7 @@ func charge() -> Action:
 
     return Action.NOT_READY
 
-## The weapon should do a melee, returns true if the weapon is going to melee
+## The weapon should do a melee
 func melee() -> Action:
     if not weapon_type.can_melee():
         return Action.BLOCKED
@@ -204,7 +211,7 @@ func melee() -> Action:
 
     return Action.NOT_READY
 
-## The weapon should reload, returns true if the weapon is going to reload
+## The weapon should reload
 func reload() -> Action:
     if not weapon_type.can_reload():
         return Action.BLOCKED
@@ -214,7 +221,7 @@ func reload() -> Action:
 
     return Action.NOT_READY
 
-## The weapon should unload, returns true if the weapon is going to unload
+## The weapon should unload
 func unload() -> Action:
     if not weapon_type.can_unload():
         return Action.BLOCKED

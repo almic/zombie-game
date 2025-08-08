@@ -29,6 +29,17 @@ class_name Player extends CharacterBase
 var fov: float = 75.0
 
 
+@export_subgroup("Smoothing", "camera_smooth")
+## Enables camera smoothing
+@export var camera_smooth_enabled: bool = true
+## The target location for the camera. This is used as the endpoint for
+## smoothing, and if smoothing must be performed. However, it is not used to
+## reset interpolation duration, the position of the Player is used for that.
+@export var camera_smooth_target_node: Node3D = null
+## Maximum distance from the target node
+@export var camera_smooth_max_distance: float = 0.45
+
+
 @export_group("Aiming")
 
 ## FOV when aiming, should be smaller than the normal FOV
@@ -91,6 +102,18 @@ var _current_look_speed: float = look_speed
 ## Camera roll, modified when aiming
 var _current_look_roll: float = 0.0
 
+## Camera smoothing duration
+var _camera_smooth_duration: float = 0.0
+## The elapsed smoothing time
+var _camera_smooth_time: float = 0.0
+
+## The last location of the character
+var _camera_smooth_last_position: Vector3 = Vector3.ZERO
+## The initial transform of the camera
+var _camera_smooth_initial_position: Vector3
+## Delta transform between the target and camera
+var _camera_smooth_delta_position: Vector3
+
 ## Melee can be activated
 var _melee_ready: bool = true
 
@@ -115,6 +138,11 @@ const FIRE_INPUT_BUFFER_TIME = 0.13
 func _ready() -> void:
     super._ready()
 
+    if camera_smooth_enabled and not Engine.is_editor_hint():
+        camera_3d.top_level = true
+        _camera_smooth_initial_position = camera_3d.global_position
+        _camera_smooth_last_position = global_position
+
     weapons = weapons.duplicate()
 
     weapon_node.position = weapon_position
@@ -136,7 +164,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
-        #camera_3d.global_transform = camera_target.global_transform
+        camera_3d.global_transform = camera_target.global_transform
         weapon_node.position = weapon_position
         return
 
@@ -152,6 +180,8 @@ func _process(delta: float) -> void:
     neck.rotation.z = _current_look_roll
     camera_3d.rotation.z = -_current_look_roll * 0.5
     weapon_node.rotation.z = -_current_look_roll * 0.5
+
+    update_camera(delta)
 
     # NOTE: Must be after rotations, otherwise we delay the weapon aiming
     update_weapon_node(delta)
@@ -194,6 +224,16 @@ func _physics_process(delta: float) -> void:
     # miss inputs shorter than a physics frame.
 
     update_movement(delta)
+
+    if camera_smooth_enabled and not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_last_position):
+        _camera_smooth_last_position = camera_smooth_target_node.global_position
+
+        _camera_smooth_time = 0.0
+        _camera_smooth_duration = delta
+        _camera_smooth_initial_position = camera_3d.global_position
+        _camera_smooth_delta_position = camera_smooth_target_node.global_position - _camera_smooth_initial_position
+    else:
+        _camera_smooth_duration = 0.0
 
 func update_aiming(delta: float) -> void:
     var duration: float
@@ -279,6 +319,33 @@ func update_aiming(delta: float) -> void:
         var diff: float = abs(_current_fov - target_fov)
         if diff < 0.01:
             _current_fov = target_fov
+
+func update_camera(delta: float) -> void:
+    if not camera_smooth_enabled:
+        return
+
+    camera_3d.global_basis = camera_smooth_target_node.global_basis
+
+    if is_zero_approx(_camera_smooth_duration):
+        return
+
+    camera_3d.global_position = Tween.interpolate_value(
+            _camera_smooth_initial_position,
+            _camera_smooth_delta_position,
+            _camera_smooth_time,
+            _camera_smooth_duration,
+            Tween.TRANS_SINE,
+            Tween.EASE_OUT
+    )
+
+    if is_equal_approx(_camera_smooth_time, _camera_smooth_duration):
+        _camera_smooth_duration = 0.0
+        return
+
+    _camera_smooth_time = minf(_camera_smooth_time + delta, _camera_smooth_duration)
+
+
+    print('lag ' + str(camera_3d.global_position.distance_to(camera_smooth_target_node.global_position)))
 
 func update_weapon_node(delta: float) -> void:
     if not weapon_index:

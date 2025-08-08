@@ -122,17 +122,6 @@ var step_snap_down_max_angle: float = deg_to_rad(5.0):
     set = set_snap_down_max_angle
 var step_snap_down_max_cos_theta: float = -1
 
-@export_group("Camera Smoothing", "camera")
-## Enables camera smoothing
-@export var camera_do_smoothing: bool = true
-## The camera node
-@export var camera_node: Camera3D = null
-## The target location for the camera
-@export var camera_target_node: Node3D = null
-@export var camera_smooth_acceleration: float = 0.1
-@export var camera_smooth_max_speed: float = 1.0
-@export var camera_lag_distance: float = 1.0
-
 
 @onready var collider: CollisionShape3D = %collider
 
@@ -148,14 +137,6 @@ var last_velocity: Vector3 = Vector3.ZERO
 ## If the character is jumping
 var is_jumping: bool = false
 var _wants_jump: bool = false
-
-## If the camera is currently smoothing
-var is_camera_smoothing: bool = false
-var camera_smooth_offset: Vector3 = Vector3.ZERO
-var camera_smooth_rate: float = 0
-
-# Updated by stepping and snapping to account for in velocity updates
-var snap_accumulation: Vector3 = Vector3.ZERO
 
 # Ground stuff
 var ground_state: GroundState = GroundState.NOT_GROUNDED
@@ -283,7 +264,6 @@ func update_movement(delta: float) -> void:
     _wants_jump = false
 
     var last_position: Vector3 = global_position
-    snap_accumulation = Vector3.ZERO
     var rid: RID = get_rid()
 
     ground_details.reset()
@@ -422,7 +402,7 @@ func update_movement(delta: float) -> void:
     #var loop_end = Time.get_ticks_usec()
     #print('loop: ' + str(loop_end - loop_start))
 
-    var real_velocity: Vector3 = (global_position - last_position) - snap_accumulation
+    var real_velocity: Vector3 = global_position - last_position
 
     # Snap to floor if we just detached from the ground
     if grounded and not ground_details.has_ground():
@@ -434,8 +414,7 @@ func update_movement(delta: float) -> void:
                 forward_test_direction = forward_test_direction.normalized()
 
         if snap_down(do_forward_test, forward_test_direction):
-            start_camera_smooth()
-            real_velocity = (global_position - last_position) - snap_accumulation
+            real_velocity = global_position - last_position
 
     # Update ground state
     if ground_details.has_ground():
@@ -467,11 +446,6 @@ func update_movement(delta: float) -> void:
     last_velocity = real_velocity
     #print('velocity = ' + str(velocity))
     #print('speed = ' + str(velocity.length()))
-
-    if camera_node:
-        if snap_accumulation.length_squared() > 0:
-            start_camera_smooth()
-        smooth_camera(delta)
 
 @warning_ignore('shadowed_variable_base_class')
 static func compute_drag(_drag: float, _velocity: Vector3, _density: float, _area: float) -> Vector3:
@@ -507,30 +481,22 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
 ## Tries to step up using the remainder distance, updates the ground details when
 ## successful, returns the new remainder travel distance
 func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector3, ray_point: Vector3) -> Vector3:
-    var added_delta: Vector3 = Vector3.ZERO
-
     var step_forward: Vector3 = remainder.slide(up_direction)
-    var is_forward_extra: bool = false
     if step_forward.is_zero_approx():
         step_forward = step_direction * step_up_min_forward
-        is_forward_extra = true
     else:
         var remainder_length: float = remainder.length()
         step_forward = step_forward.normalized()
         if remainder_length < step_up_min_forward:
-            is_forward_extra = true
             step_forward *= step_up_min_forward
         else:
             step_forward *= remainder_length
 
     var step_test: Vector3 = (-contact_normal).slide(up_direction)
-    var step_test_direction: Vector3
     if step_test.is_zero_approx() or step_test.dot(step_direction) < step_up_max_contact_cos_theta:
         step_test = step_direction
-        step_test_direction = step_direction
     else:
         step_test = step_test.normalized()
-        step_test_direction = step_test
 
     step_test *= step_up_forward_test
 
@@ -570,8 +536,6 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
             return remainder
         up *= test_result.get_collision_safe_fraction()
 
-    added_delta += up
-
     # Move forward
     test_motion.from = test_motion.from.translated(up)
     test_motion.motion = step_forward
@@ -580,9 +544,6 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
         if test_result.get_travel().length_squared() < 0.000001:
             return remainder
         step_forward *= test_result.get_collision_safe_fraction()
-
-    if is_forward_extra:
-        added_delta += step_forward - (remainder.slide(up_direction) * test_result.get_collision_safe_fraction())
 
     # Move down, need a floor
     test_motion.from = test_motion.from.translated(step_forward)
@@ -641,8 +602,6 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
         if step_test.is_zero_approx():
             return remainder
 
-        added_delta = up
-
         # Move forward with the test
         test_motion.from = global_transform.translated(up)
         test_motion.motion = step_test
@@ -651,8 +610,6 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
             if test_result.get_travel().length_squared() < 0.000001:
                 return remainder
             step_test *= test_result.get_collision_safe_fraction()
-
-        added_delta += step_test - step_test_direction * remainder.dot(step_test_direction)
 
         # Move down, need a floor
         test_motion.from = test_motion.from.translated(step_test)
@@ -706,8 +663,6 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
 
     # Step passed, update position, remainder, and ground
     up *= test_result.get_collision_safe_fraction()
-    added_delta -= up
-    snap_accumulation += added_delta
     ground_details = new_ground
     global_transform = test_motion.from.translated(-up)
 
@@ -792,15 +747,6 @@ static func apply_ground_details(ground_details: GroundDetails, normal: Vector3,
             ground_details.velocity = (
                     body_state.get_velocity_at_local_position(ground_details.position - phys_body.global_position)
             )
-
-
-func start_camera_smooth() -> void:
-    # TODO
-    pass
-
-func smooth_camera(delta: float) -> void:
-    # TODO
-    pass
 
 ## Override to return a fluid density from the current fluid state/ details
 func _get_density() -> float:

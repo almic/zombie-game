@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=26 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -25,7 +25,12 @@
 radius = 0.34
 height = 1.7
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mvkq"]
+transparency = 1
+albedo_color = Color(0.501961, 0.501961, 0.501961, 0.501961)
+
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_glpr6"]
+material = SubResource("StandardMaterial3D_7mvkq")
 radius = 0.34
 height = 1.7
 
@@ -33,7 +38,7 @@ height = 1.7
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
 
-[node name="player" node_paths=PackedStringArray("camera_node", "camera_target_node") groups=["zombie_target"] instance=ExtResource("1_g20gq")]
+[node name="player" node_paths=PackedStringArray("camera_smooth_target_node") groups=["zombie_target"] instance=ExtResource("1_g20gq")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 0)
 collision_mask = 19
 script = ExtResource("1_y482n")
@@ -42,6 +47,9 @@ right_hand = true
 weapon_position = Vector3(0.225, -0.195, -0.605)
 look_speed = 0.55
 fov = 75.0
+camera_smooth_enabled = false
+camera_smooth_target_node = NodePath("Neck/CameraTarget")
+camera_smooth_max_distance = 0.45
 aim_fov = 50.0
 look_aim_speed = 0.25
 look_aim_time = 0.6
@@ -61,8 +69,6 @@ reload = ExtResource("10_muf2e")
 unload = ExtResource("12_pedpu")
 switch_ammo = ExtResource("11_jo6ux")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
-camera_node = NodePath("Neck/CameraTarget/Camera3D")
-camera_target_node = NodePath("Neck/CameraTarget")
 
 [node name="collider" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)

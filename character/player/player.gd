@@ -58,7 +58,8 @@ const LAST_INPUT_TIME = 0.2
 
 var _next_input: GUIDEAction
 var _next_input_timer: float = 0.0
-const NEXT_INPUT_TIME = 0.8
+const GENERIC_INPUT_BUFFER_TIME = 0.8
+const FIRE_INPUT_BUFFER_TIME = 0.13
 
 
 func _ready() -> void:
@@ -143,7 +144,6 @@ func update_weapon_node(delta: float) -> void:
 
     var triggered: bool = fire_primary.is_triggered()
     if triggered:
-        weapon_node.continue_reload = false
         update_last_input(fire_primary)
     else:
         _fire_can_buffer = true
@@ -155,13 +155,21 @@ func update_weapon_node(delta: float) -> void:
     else:
         if triggered:
             if _fire_can_buffer:
-                update_input_buffer(fire_primary)
+                # Use the longer buffer for reloading
+                if weapon_node.continue_reload:
+                    update_input_buffer(fire_primary)
+                else:
+                    update_input_buffer(fire_primary, FIRE_INPUT_BUFFER_TIME)
         elif is_input_buffered(fire_primary):
             # NOTE: If the action was blocked, keep trying anyway
             #       because we may be waiting to charge/ reload
             action = weapon_node.update_trigger(true, 0.0)
             if action == WeaponNode.Action.OKAY:
                 clear_input_buffer()
+
+    # NOTE: do this after so we can change buffer times if we are reloading
+    if triggered:
+        weapon_node.continue_reload = false
 
     if melee.is_triggered():
         weapon_node.continue_reload = false
@@ -264,7 +272,7 @@ func clear_input_buffer() -> void:
     _next_input = null
     _next_input_timer = 0.0
 
-func update_input_buffer(action: GUIDEAction) -> void:
+func update_input_buffer(action: GUIDEAction, time: float = GENERIC_INPUT_BUFFER_TIME) -> void:
     if action == _last_input:
         # If we set the last input this frame, allow to buffer
         if is_equal_approx(_last_input_timer, LAST_INPUT_TIME):
@@ -274,11 +282,11 @@ func update_input_buffer(action: GUIDEAction) -> void:
 
     if _next_input == action:
         if _next_input_timer < 0.5:
-            _next_input_timer = NEXT_INPUT_TIME
+            _next_input_timer = time
         return
 
     _next_input = action
-    _next_input_timer = NEXT_INPUT_TIME
+    _next_input_timer = time
 
 func update_last_input(action: GUIDEAction) -> void:
     if action == _last_input:

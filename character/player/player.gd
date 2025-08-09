@@ -238,12 +238,13 @@ func _physics_process(delta: float) -> void:
         if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_last_position):
             _camera_smooth_last_position = camera_smooth_target_node.global_position
 
-            _camera_smooth_time = 0.0
-            _camera_smooth_duration = delta * 3
             _camera_smooth_initial_position = camera_3d.global_position
             _camera_smooth_target_position = camera_smooth_target_node.global_position
             _camera_smooth_next_position_a = _camera_smooth_target_position + (last_velocity + acceleration + jerk) * delta
             _camera_smooth_next_position_b = _camera_smooth_next_position_a + (last_velocity + (acceleration + jerk + jerk)) * delta
+            _camera_smooth_time = 0.0
+
+            _camera_smooth_duration = delta * 3
         else:
             _camera_smooth_duration = 0.0
 

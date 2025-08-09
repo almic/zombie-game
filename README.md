@@ -4,6 +4,9 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
+- [ ] Fix shovel animations
+- [ ] Add pistol animations
+- [ ] Add idle/ walk animation to shotgun
 - [ ] Add all weapons
 - [ ] Add more zombie types
 - [ ] Level blocking

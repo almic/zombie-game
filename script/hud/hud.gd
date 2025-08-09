@@ -98,7 +98,7 @@ func update_weapon_ammo(weapon: WeaponResource) -> void:
         ammo_flow.remove_child(child)
         child.queue_free()
 
-    if weapon and weapon.ammo_stock:
+    if weapon:
         var stock: Dictionary = weapon.ammo_stock
 
         if stock:

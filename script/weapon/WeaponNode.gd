@@ -149,7 +149,7 @@ func set_walking(walking: bool) -> void:
     if not _weapon_scene:
         return
 
-    _weapon_scene.is_walking = walking
+    _weapon_scene.set_walking(walking)
 
 ## Switches ammo types, returns true if successful
 func switch_ammo() -> bool:
@@ -162,7 +162,7 @@ func switch_ammo() -> bool:
 
     ammo_updated.emit()
 
-    if not _weapon_scene:
+    if not _weapon_scene or not weapon_type.ammo_stock:
         return true
 
     # Put the reload mesh on the weapon
@@ -305,7 +305,7 @@ func _load_weapon_scene() -> void:
     _weapon_scene.goto_ready()
 
 func _load_particle_system() -> void:
-    if _particle_system:
+    if _particle_system and _particle_system.get_parent() == self:
         remove_child(_particle_system)
         _particle_system.queue_free()
         _particle_system = null

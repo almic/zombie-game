@@ -14,4 +14,5 @@ unique_name_in_owner = true
 [node name="AnimationTree" type="AnimationTree" parent="."]
 unique_name_in_owner = true
 root_node = NodePath("%AnimationTree/..")
+advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")

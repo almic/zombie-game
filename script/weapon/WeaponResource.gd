@@ -192,8 +192,7 @@ func get_next_ammo() -> Dictionary:
     var supported: Dictionary = get_supported_ammunition()
 
     var ids: Array[int]
-    ids.assign(ammo_bank.keys())
-    ids.filter(func (t): return supported.has(t))
+    ids.assign(ammo_bank.keys().filter(func (t): return supported.has(t)))
 
     var size: int = ids.size()
     if size == 0:
@@ -260,8 +259,19 @@ func get_chamber_round() -> Dictionary:
     }
 
 func set_ammo_bank(value: Dictionary) -> void:
+    if not value.has('owner'):
+        push_error('Cannot assign an ammo bank without an RID!')
+        return
+
+    if ammo_bank.get('owner') == value.get('owner'):
+        return
+
     ammo_bank = value
+
+    # NOTE: we must set ammo_stock to empty because get_next_ammo() will
+    #       read from it, so we avoid weird behavior with this.
     ammo_stock = {}
+    ammo_stock = get_next_ammo()
 
 func is_chambered() -> bool:
     return _chambered_round_type > 0
@@ -273,6 +283,9 @@ func can_eject() -> bool:
     return is_chambered()
 
 func can_fire() -> bool:
+    if melee_is_primary:
+        return true
+
     if can_chamber:
         if is_chambered():
             return _chambered_round_live
@@ -299,11 +312,9 @@ func can_reload() -> bool:
         return false
 
     if not ammo_stock:
-        print('No supported ammo in stock!')
         return false
 
     if ammo_stock.amount < 1:
-        print('Stock is empty!')
         return false
 
     return true

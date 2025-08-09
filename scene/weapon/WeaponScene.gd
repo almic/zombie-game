@@ -132,9 +132,10 @@ func set_reload_ammo(ammo: AmmoResource) -> void:
         reload_marker.remove_child(child)
         break
 
-    var reload_scene: PackedScene = ammo.scene_round
-    var round_node: Node3D = reload_scene.instantiate()
-    reload_marker.add_child(round_node)
+    if not ammo.scene_round:
+        return
+
+    reload_marker.add_child(ammo.scene_round.instantiate())
 
 func eject_round(
         round_dict: Dictionary,

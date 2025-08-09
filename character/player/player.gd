@@ -141,6 +141,8 @@ const FIRE_INPUT_BUFFER_TIME = 0.13
 func _ready() -> void:
     super._ready()
 
+    ammo_bank.set('owner', get_rid())
+
     #if not Engine.is_editor_hint():
         #camera_smooth_enabled = randf() > 0.5
 
@@ -618,9 +620,11 @@ func pickup_item(item: Pickup) -> void:
 
         # If holding a weapon with no ammo stock, get next ammo
         if weapon_index and not weapon_node.has_ammo_stock():
-            weapon_node.switch_ammo()
-
-        update_ammo()
+            # NOTE: this will update ammo on the hud if true
+            if not weapon_node.switch_ammo():
+                update_ammo()
+        else:
+            update_ammo()
 
         item.queue_free()
 

@@ -138,6 +138,10 @@ var last_velocity: Vector3 = Vector3.ZERO
 var is_jumping: bool = false
 var _wants_jump: bool = false
 
+# Updated by stepping and snapping to account for in velocity updates
+var snap_accumulation: Vector3 = Vector3.ZERO
+
+
 # Ground stuff
 var ground_state: GroundState = GroundState.NOT_GROUNDED
 var ground_details: GroundDetails = GroundDetails.new()
@@ -264,6 +268,7 @@ func update_movement(delta: float) -> void:
     _wants_jump = false
 
     var last_position: Vector3 = global_position
+    snap_accumulation = Vector3.ZERO
     var rid: RID = get_rid()
 
     ground_details.reset()
@@ -402,7 +407,7 @@ func update_movement(delta: float) -> void:
     #var loop_end = Time.get_ticks_usec()
     #print('loop: ' + str(loop_end - loop_start))
 
-    var real_velocity: Vector3 = global_position - last_position
+    var real_velocity: Vector3 = (global_position - last_position) - snap_accumulation
 
     # Snap to floor if we just detached from the ground
     if grounded and not ground_details.has_ground():
@@ -414,7 +419,7 @@ func update_movement(delta: float) -> void:
                 forward_test_direction = forward_test_direction.normalized()
 
         if snap_down(do_forward_test, forward_test_direction):
-            real_velocity = global_position - last_position
+            real_velocity = (global_position - last_position) - snap_accumulation
 
     # Update ground state
     if ground_details.has_ground():
@@ -481,22 +486,30 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
 ## Tries to step up using the remainder distance, updates the ground details when
 ## successful, returns the new remainder travel distance
 func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector3, ray_point: Vector3) -> Vector3:
+    var added_delta: Vector3 = Vector3.ZERO
+
     var step_forward: Vector3 = remainder.slide(up_direction)
+    var is_forward_extra: bool = false
     if step_forward.is_zero_approx():
         step_forward = step_direction * step_up_min_forward
+        is_forward_extra = true
     else:
         var remainder_length: float = remainder.length()
         step_forward = step_forward.normalized()
         if remainder_length < step_up_min_forward:
+            is_forward_extra = true
             step_forward *= step_up_min_forward
         else:
             step_forward *= remainder_length
 
     var step_test: Vector3 = (-contact_normal).slide(up_direction)
+    var step_test_direction: Vector3
     if step_test.is_zero_approx() or step_test.dot(step_direction) < step_up_max_contact_cos_theta:
         step_test = step_direction
+        step_test_direction = step_direction
     else:
         step_test = step_test.normalized()
+        step_test_direction = step_test
 
     step_test *= step_up_forward_test
 
@@ -536,6 +549,8 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
             return remainder
         up *= test_result.get_collision_safe_fraction()
 
+    added_delta += up
+
     # Move forward
     test_motion.from = test_motion.from.translated(up)
     test_motion.motion = step_forward
@@ -544,6 +559,9 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
         if test_result.get_travel().length_squared() < 0.000001:
             return remainder
         step_forward *= test_result.get_collision_safe_fraction()
+
+    if is_forward_extra:
+        added_delta += step_forward - (remainder.slide(up_direction) * test_result.get_collision_safe_fraction())
 
     # Move down, need a floor
     test_motion.from = test_motion.from.translated(step_forward)
@@ -602,6 +620,8 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
         if step_test.is_zero_approx():
             return remainder
 
+        added_delta = up
+
         # Move forward with the test
         test_motion.from = global_transform.translated(up)
         test_motion.motion = step_test
@@ -610,6 +630,8 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
             if test_result.get_travel().length_squared() < 0.000001:
                 return remainder
             step_test *= test_result.get_collision_safe_fraction()
+
+        added_delta += step_test - step_test_direction * remainder.dot(step_test_direction)
 
         # Move down, need a floor
         test_motion.from = test_motion.from.translated(step_test)
@@ -663,6 +685,8 @@ func step_up(remainder: Vector3, step_direction: Vector3, contact_normal: Vector
 
     # Step passed, update position, remainder, and ground
     up *= test_result.get_collision_safe_fraction()
+    added_delta -= up
+    snap_accumulation += added_delta
     ground_details = new_ground
     global_transform = test_motion.from.translated(-up)
 

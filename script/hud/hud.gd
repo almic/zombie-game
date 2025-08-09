@@ -98,14 +98,15 @@ func update_weapon_ammo(weapon: WeaponResource) -> void:
         ammo_flow.remove_child(child)
         child.queue_free()
 
-    var stock: Dictionary = weapon.ammo_stock
+    if weapon and weapon.ammo_stock:
+        var stock: Dictionary = weapon.ammo_stock
 
-    if stock:
-        stock_texture.texture = stock.ammo.ui_texture
-        stock_amount.text = str(stock.amount)
-    else:
-        stock_texture.texture = null
-        stock_amount.text = ''
+        if stock:
+            stock_texture.texture = stock.ammo.ui_texture
+            stock_amount.text = str(stock.amount)
+        else:
+            stock_texture.texture = null
+            stock_amount.text = ''
 
     if not weapon:
         weapon_texture.texture = null

@@ -86,8 +86,6 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-enable_spawning = false
-enable_targetting = false
 target_spawn_count = 15
 spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
@@ -152,6 +150,7 @@ process_mode = 1
 physics_interpolation_mode = 1
 transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, -327.964, 2, -456.795)
 life = SubResource("Resource_3wrw6")
+camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(0.866026, -1.99303e-07, -0.5, 2.14103e-07, 1, 2.70686e-08, 0.5, 8.9407e-08, 0.866026, -322.256, 2.01153, -470.173)

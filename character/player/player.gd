@@ -111,8 +111,11 @@ var _camera_smooth_time: float = 0.0
 var _camera_smooth_last_position: Vector3 = Vector3.ZERO
 ## The initial transform of the camera
 var _camera_smooth_initial_position: Vector3
-## Delta transform between the target and camera
-var _camera_smooth_delta_position: Vector3
+## Target position of the camera
+var _camera_smooth_target_position: Vector3
+## Predicted next positions of the camera target
+var _camera_smooth_next_position_a: Vector3
+var _camera_smooth_next_position_b: Vector3
 
 ## Melee can be activated
 var _melee_ready: bool = true
@@ -137,6 +140,9 @@ const FIRE_INPUT_BUFFER_TIME = 0.13
 
 func _ready() -> void:
     super._ready()
+
+    #if not Engine.is_editor_hint():
+        #camera_smooth_enabled = randf() > 0.5
 
     if camera_smooth_enabled and not Engine.is_editor_hint():
         camera_3d.top_level = true
@@ -223,17 +229,23 @@ func _physics_process(delta: float) -> void:
     # NOTE: Only process input in _process(), so we do not
     # miss inputs shorter than a physics frame.
 
+    var last_accel: Vector3 = acceleration
     update_movement(delta)
 
-    if camera_smooth_enabled and not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_last_position):
-        _camera_smooth_last_position = camera_smooth_target_node.global_position
+    if camera_smooth_enabled:
+        var jerk: Vector3 = acceleration - last_accel
 
-        _camera_smooth_time = 0.0
-        _camera_smooth_duration = delta
-        _camera_smooth_initial_position = camera_3d.global_position
-        _camera_smooth_delta_position = camera_smooth_target_node.global_position - _camera_smooth_initial_position
-    else:
-        _camera_smooth_duration = 0.0
+        if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_last_position):
+            _camera_smooth_last_position = camera_smooth_target_node.global_position
+
+            _camera_smooth_time = 0.0
+            _camera_smooth_duration = delta * 3
+            _camera_smooth_initial_position = camera_3d.global_position
+            _camera_smooth_target_position = camera_smooth_target_node.global_position
+            _camera_smooth_next_position_a = _camera_smooth_target_position + (last_velocity + acceleration + jerk) * delta
+            _camera_smooth_next_position_b = _camera_smooth_next_position_a + (last_velocity + (acceleration + jerk + jerk)) * delta
+        else:
+            _camera_smooth_duration = 0.0
 
 func update_aiming(delta: float) -> void:
     var duration: float
@@ -329,23 +341,24 @@ func update_camera(delta: float) -> void:
     if is_zero_approx(_camera_smooth_duration):
         return
 
-    camera_3d.global_position = Tween.interpolate_value(
-            _camera_smooth_initial_position,
-            _camera_smooth_delta_position,
-            _camera_smooth_time,
-            _camera_smooth_duration,
-            Tween.TRANS_SINE,
-            Tween.EASE_OUT
+    _camera_smooth_time = minf(_camera_smooth_time + delta, _camera_smooth_duration)
+
+    var t: float = _camera_smooth_time / _camera_smooth_duration
+    var t2: float = t * t
+    var t3: float = t2 * t
+
+    camera_3d.global_position = (
+            _camera_smooth_initial_position * (-t3 + 3.0 * t2 - 3.0 * t + 1.0)
+            + _camera_smooth_target_position * (3.0 * t3 - 6.0 * t2 + 3.0 * t)
+            + _camera_smooth_next_position_a * (-3.0 * t3 + 3.0 * t2)
+            + _camera_smooth_next_position_b * (t3)
     )
 
     if is_equal_approx(_camera_smooth_time, _camera_smooth_duration):
         _camera_smooth_duration = 0.0
         return
 
-    _camera_smooth_time = minf(_camera_smooth_time + delta, _camera_smooth_duration)
-
-
-    print('lag ' + str(camera_3d.global_position.distance_to(camera_smooth_target_node.global_position)))
+    #print('lag ' + str(camera_3d.global_position.distance_to(camera_smooth_target_node.global_position)))
 
 func update_weapon_node(delta: float) -> void:
     if not weapon_index:

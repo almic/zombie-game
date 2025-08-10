@@ -42,6 +42,10 @@ var fov: float = 75.0
 
 @export_group("Aiming")
 
+## Relative movement speed when aiming, scales top speed over time
+@export_range(0.001, 1.0, 0.001)
+var aim_move_speed: float = 0.6
+
 ## FOV when aiming, should be smaller than the normal FOV
 @export_range(1.0, 179.0, 0.001, 'suffix:°')
 var aim_fov: float = 75.0
@@ -95,6 +99,8 @@ var _aim_time: float = 0.0
 var _aim_is_aiming: bool = false
 ## If we were trying to aim on the last tick
 var _aim_was_triggered: bool = false
+## Current top speed, modified when aiming
+var _current_top_speed: float = top_speed
 ## Current FOV, modified when aiming
 var _current_fov: float = fov
 ## Current look speed, modified when aiming
@@ -232,7 +238,10 @@ func _physics_process(delta: float) -> void:
     # miss inputs shorter than a physics frame.
 
     var last_accel: Vector3 = acceleration
+    var top_speed_temp: float = top_speed
+    top_speed = _current_top_speed
     update_movement(delta)
+    top_speed = top_speed_temp
 
     if camera_smooth_enabled:
         var jerk: Vector3 = acceleration - last_accel
@@ -253,6 +262,7 @@ func _physics_process(delta: float) -> void:
 func update_aiming(delta: float) -> void:
     var duration: float
     var target_position: Vector3
+    var target_speed: float
     var target_fov: float
     var target_roll: float
     var target_look: float
@@ -270,6 +280,7 @@ func update_aiming(delta: float) -> void:
 
     if _aim_is_aiming:
         duration = look_aim_time
+        target_speed = top_speed * aim_move_speed
         target_look = look_aim_speed
         target_fov = aim_fov
         if weapon_index:
@@ -280,6 +291,7 @@ func update_aiming(delta: float) -> void:
             target_roll = 0.0
     else:
         duration = look_aim_return_time
+        target_speed = top_speed
         target_look = look_speed
         target_fov = fov
         target_position = weapon_position
@@ -334,6 +346,18 @@ func update_aiming(delta: float) -> void:
         var diff: float = abs(_current_fov - target_fov)
         if diff < 0.01:
             _current_fov = target_fov
+    if not is_equal_approx(_current_top_speed, target_speed):
+        _current_top_speed = Tween.interpolate_value(
+                _current_top_speed,
+                target_speed - _current_top_speed,
+                _aim_time,
+                duration,
+                Tween.TRANS_SINE,
+                Tween.EASE_OUT
+        )
+        var diff: float = abs(_current_top_speed - target_speed)
+        if diff < 0.001:
+            _current_top_speed = target_speed
 
 func update_camera(delta: float) -> void:
     if not camera_smooth_enabled:

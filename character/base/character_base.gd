@@ -145,6 +145,8 @@ var snap_accumulation: Vector3 = Vector3.ZERO
 # Ground stuff
 var ground_state: GroundState = GroundState.NOT_GROUNDED
 var ground_details: GroundDetails = GroundDetails.new()
+# If the last tick had ground. Mainly used to enable b-hopping for high speed
+var ground_was_grounded: bool
 
 # Fluid stuff
 var fluid_state: FluidState = FluidState.AIR
@@ -220,6 +222,24 @@ func update_movement(delta: float) -> void:
     var drag: Vector3 = compute_drag(move_drag, velocity, _get_density(), _get_area())
     drag *= delta
 
+    # Jumping
+    # NOTE: do this before friction to enable b-hop!
+    if grounded:
+        if _wants_jump:
+            var jump_direction: Vector3
+            if not stationary:
+                jump_direction = 0.8 * up_direction + 0.2 * stable_move
+            elif ground_details.has_ground():
+                jump_direction = 0.6 * up_direction + 0.4 * ground_details.normal
+            else:
+                jump_direction = up_direction
+            velocity += jump_direction * jump_power
+            is_jumping = true
+            grounded = false
+        else:
+            is_jumping = false
+    _wants_jump = false
+
     # Friction
     var friction: Vector3
     if grounded and ground_details.has_ground():
@@ -234,10 +254,13 @@ func update_movement(delta: float) -> void:
                         friction = -ground_direction * move_friction * speed
                     else:
                         friction = -ground_velocity / delta
-                elif velocity.dot(stable_move) > top_speed:
-                    friction = speed * compute_friction(move_friction, ground_direction, movement_direction, move_turn_speed_keep)
                 else:
-                    friction = speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
+                    var stable_speed: float = velocity.dot(stable_move)
+                    if stable_speed > top_speed:
+                        friction = speed * compute_friction(move_friction, ground_direction, Vector3.ZERO, move_turn_speed_keep)
+                        friction *= (stable_speed - top_speed) / stable_speed
+                    else:
+                        friction = speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
                 friction *= delta
 
     # Gravity
@@ -246,26 +269,10 @@ func update_movement(delta: float) -> void:
 
     # Update velocity from forces
     velocity += friction + drag + gravity_force
+    #print(velocity)
     #velocity += friction
     #velocity += drag
     #velocity += gravity_force
-
-    # Jumping
-    if grounded:
-        if _wants_jump and not is_jumping:
-            var jump_direction: Vector3
-            if not stationary:
-                jump_direction = 0.8 * up_direction + 0.2 * stable_move
-            elif ground_details.has_ground():
-                jump_direction = 0.5 * up_direction + 0.5 * ground_details.normal
-            else:
-                jump_direction = up_direction
-            velocity += jump_direction * jump_power
-            is_jumping = true
-            grounded = false
-        else:
-            is_jumping = false
-    _wants_jump = false
 
     var last_position: Vector3 = global_position
     snap_accumulation = Vector3.ZERO
@@ -421,6 +428,11 @@ func update_movement(delta: float) -> void:
         if snap_down(do_forward_test, forward_test_direction):
             real_velocity = (global_position - last_position) - snap_accumulation
 
+    # Compute true acceleration and velocity
+    real_velocity /= delta
+
+    velocity = real_velocity
+
     # Update ground state
     if ground_details.has_ground():
         if best_ground_dot < floor_max_cos_theta:
@@ -428,17 +440,11 @@ func update_movement(delta: float) -> void:
         else:
             ground_state = GroundState.GROUNDED
 
-        # TODO: Take up velocity from ground
-        #velocity = velocity.slide(up_direction) + up_direction * up_direction.dot(ground_details.velocity)
-        #print('velocity * ground = ' + str(velocity.dot(ground_details.normal)))
+        velocity = velocity.slide(up_direction) + up_direction * up_direction.dot(ground_details.velocity)
     else:
         ground_state = GroundState.NOT_GROUNDED
 
-    # Compute true acceleration and velocity
-    real_velocity /= delta
-
     # Zero velocity when near zero
-    velocity = real_velocity
     if abs(velocity.x) < 0.0002:
         velocity.x = 0
     if abs(velocity.y) < 0.0002:
@@ -447,10 +453,12 @@ func update_movement(delta: float) -> void:
         velocity.z = 0
     real_velocity = velocity
 
-    acceleration = real_velocity - last_velocity
-    last_velocity = real_velocity
     #print('velocity = ' + str(velocity))
-    #print('speed = ' + str(velocity.length()))
+
+    acceleration = real_velocity - last_velocity
+    #var speed: float = velocity.length()
+    #print('speed = ' + str(speed))
+    last_velocity = real_velocity
 
 @warning_ignore('shadowed_variable_base_class')
 static func compute_drag(_drag: float, _velocity: Vector3, _density: float, _area: float) -> Vector3:

@@ -1,17 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://dy1e766y47u0q"]
+[gd_scene load_steps=3 format=3 uid="uid://chmj6i51fani"]
 
-[ext_resource type="PackedScene" uid="uid://b1p051vpkyejp" path="res://scene/item/ammo/9mm/9mm_mesh.tscn" id="1_378o8"]
+[ext_resource type="PackedScene" uid="uid://bfxlt0jok1ocg" path="res://scene/item/ammo/fmj/fmj_mesh_expend.tscn" id="1_ljiww"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_0ahty"]
-height = 0.046
+height = 0.057
 radius = 0.009
 
-[node name="9MilRigid" type="RigidBody3D"]
+[node name="FMJRigidExpend" type="RigidBody3D"]
 collision_layer = 128
 collision_mask = 244
 mass = 0.008
 
-[node name="9MilMesh" parent="." instance=ExtResource("1_378o8")]
+[node name="fmj_mesh_expend" parent="." instance=ExtResource("1_ljiww")]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)

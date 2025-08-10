@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://bfxlt0jok1ocg"]
+
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="1_67xbc"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ar22x"]
+material = ExtResource("1_67xbc")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.04
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_67xbc"]
+material = ExtResource("1_67xbc")
+top_radius = 0.007
+bottom_radius = 0.009
+height = 0.007
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_4upti"]
+material = ExtResource("1_67xbc")
+top_radius = 0.007
+bottom_radius = 0.007
+height = 0.01
+
+[node name="fmj_mesh_expend" type="Node3D"]
+
+[node name="case" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0084)
+mesh = SubResource("CylinderMesh_ar22x")
+
+[node name="taper" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.015)
+mesh = SubResource("CylinderMesh_67xbc")
+
+[node name="neck" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0235)
+mesh = SubResource("CylinderMesh_4upti")

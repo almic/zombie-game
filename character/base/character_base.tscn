@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://bv6yj3uxmsow0" path="res://character/base/character_base.gd" id="1_7pt7a"]
 
 [node name="CharacterBase" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 115
 script = ExtResource("1_7pt7a")
 metadata/_custom_type_script = "uid://bv6yj3uxmsow0"
 

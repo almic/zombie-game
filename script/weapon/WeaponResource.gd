@@ -361,22 +361,32 @@ func charge_weapon() -> void:
     _chambered_round_live = true
 
 ## Replenish reserve ammo from ammo stock, handles mixed and magazine loads
-func load_rounds() -> void:
+func load_rounds(count: int = -1, type: int = 0) -> void:
     var reserve_total: int = get_reserve_total()
-    var count: int = 0
 
-    if ammo_can_mix:
-        count = 1
+    var stock: Dictionary
+    if type == 0:
+        stock = ammo_stock
+        type = stock.ammo.type
     else:
-        count = mini(ammo_stock.amount, ammo_reserve_size - reserve_total)
+        stock = ammo_bank.get(type)
+
+    if count == -1:
+        if ammo_can_mix:
+            count = 1
+        else:
+            count = mini(ammo_stock.amount, ammo_reserve_size - reserve_total)
 
     # NOTE: This is for debugging, should be removed later
     if count < 1:
         push_error('Weapon cannot load! This is a mistake! Investigate!')
         return
 
-    var type: int = ammo_stock.ammo.type
     ammo_stock.amount -= count
+
+    # NOTE: This is for debugging, should be removed later
+    if ammo_stock.amount < 0:
+        push_error('Weapon used more ammo than in stock! This is a mistake! Investigate!')
 
     if ammo_can_mix:
         var size: int = _mixed_reserve.size()

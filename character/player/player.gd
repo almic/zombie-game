@@ -633,13 +633,15 @@ func pickup_item(item: Pickup) -> void:
         print('Picked up ' + str(weapon.name) + '!')
         item.queue_free()
 
-        if weapon_index == 0:
-            select_weapon(weapon.slot)
-
         # Weapon comes with ammo, preload it with first ammo type
         if item.item_count > 0:
             add_ammo(weapon.get_default_ammo(), item.item_count)
-            weapon.load_rounds()
+
+        if weapon_index == 0:
+            select_weapon(weapon.slot)
+
+        if item.item_count > 0:
+            weapon.load_rounds(item.item_count, weapon.get_default_ammo().type)
             update_ammo()
 
     elif item.item_type is AmmoResource:

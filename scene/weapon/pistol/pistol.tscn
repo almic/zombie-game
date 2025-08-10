@@ -200,6 +200,3 @@ tree_root = SubResource("AnimationNodeBlendTree_it0b4")
 [node name="ReloadMarker" type="Marker3D" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.064, 0.099)
 visible = false
-
-[node name="Camera3D" type="Camera3D" parent="." index="4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, 0.195, 0.605)

@@ -83,6 +83,7 @@ theme/default_font_hinting=2
 3d_physics/layer_5="Static"
 3d_physics/layer_6="CharacterRigid"
 3d_physics/layer_7="ObjectRigid"
+3d_physics/layer_8="SmallRigid"
 
 [navigation]
 

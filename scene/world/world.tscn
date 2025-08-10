@@ -1,4 +1,4 @@
-[gd_scene load_steps=58 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=63 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -22,7 +22,9 @@
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
 [ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="19_udj0i"]
 [ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="20_b8n2p"]
+[ext_resource type="Resource" uid="uid://sqiv2fcjag2k" path="res://data/weapon/type/rifle/rifle.tres" id="21_dt3as"]
 [ext_resource type="Material" uid="uid://c3gjgfni46e62" path="res://material/level/grid_orange.tres" id="21_t6jhs"]
+[ext_resource type="PackedScene" uid="uid://dpw3tt0t5w2c4" path="res://scene/weapon/rifle/rifle.tscn" id="22_8ighw"]
 [ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="22_cm2xv"]
 [ext_resource type="Material" uid="uid://vmytjr2shhek" path="res://material/level/grid_white.tres" id="23_6lidv"]
 [ext_resource type="Material" uid="uid://bw4sj1kv018lx" path="res://material/level/grid_red.tres" id="24_6hm40"]
@@ -48,6 +50,8 @@
 [ext_resource type="Curve3D" uid="uid://3vyfumbpe2af" path="res://scene/world/road_curves/iris_curve.res" id="47_my0pb"]
 [ext_resource type="PackedScene" uid="uid://mvy2qv3hknqg" path="res://scene/item/ammo/9mm/9mm_pile.tscn" id="48_x3qer"]
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
+[ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="49_il2y7"]
+[ext_resource type="PackedScene" uid="uid://bvgviih6lyk0p" path="res://scene/item/ammo/fmj/fmj_pile.tscn" id="50_il2y7"]
 
 [sub_resource type="Resource" id="Resource_3wrw6"]
 resource_local_to_scene = true
@@ -64,6 +68,9 @@ health = 100.0
 metadata/_custom_type_script = "uid://cugishrosnaex"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d2i0j"]
+radius = 0.6
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_il2y7"]
 radius = 0.6
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8b61"]
@@ -87,8 +94,6 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-enable_spawning = false
-enable_targetting = false
 target_spawn_count = 15
 spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
@@ -208,6 +213,25 @@ metadata/_edit_lock_ = true
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickupShotgun/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_d2i0j")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+metadata/_edit_lock_ = true
+
+[node name="PickupRifle" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.729, 2.1, -450.372)
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("21_dt3as")
+item_count = 30
+item_scene = ExtResource("22_8ighw")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="PickupRifle"]
+collision_layer = 0
+monitorable = false
+metadata/_edit_lock_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupRifle/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_il2y7")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
@@ -2697,6 +2721,23 @@ collision_layer = 0
 monitorable = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickupSlug/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_dt3as")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="PickupFMJ" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.6, 2.2, -449.4)
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("49_il2y7")
+item_count = 400
+item_scene = ExtResource("50_il2y7")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="PickupFMJ"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupFMJ/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)

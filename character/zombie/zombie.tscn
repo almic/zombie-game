@@ -165,8 +165,6 @@ radius = 0.147
 [node name="zombie" instance=ExtResource("1_g20gq")]
 process_mode = 1
 disable_mode = 2
-collision_layer = 2
-collision_mask = 19
 script = ExtResource("2_t0jn8")
 rotate_top_speed = 6.28319
 rotate_acceleration = 0.392699
@@ -195,7 +193,6 @@ collider_shape = SubResource("CapsuleShape3D_d0fm7")
 top_speed = 4.7
 move_acceleration = 18.0
 move_turn_speed_keep = 0.6
-camera_do_smoothing = false
 
 [node name="collider" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.835, 0)

@@ -1,6 +1,10 @@
-[gd_resource type="Resource" script_class="AmmoResource" load_steps=2 format=3 uid="uid://dbg6mglqc5jqu"]
+[gd_resource type="Resource" script_class="AmmoResource" load_steps=6 format=3 uid="uid://dbg6mglqc5jqu"]
 
+[ext_resource type="PackedScene" uid="uid://b1p051vpkyejp" path="res://scene/item/ammo/9mm/9mm_mesh.tscn" id="1_rtgr0"]
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_sq8w0"]
+[ext_resource type="PackedScene" uid="uid://b8ccrcqcib7bp" path="res://scene/item/ammo/9mm/9mm_rigid_expend.tscn" id="2_gf0yu"]
+[ext_resource type="PackedScene" uid="uid://dy1e766y47u0q" path="res://scene/item/ammo/9mm/9mm_rigid.tscn" id="3_r6dfy"]
+[ext_resource type="Texture2D" uid="uid://cm2tf0y18pwsl" path="res://icon/9mm_side.png" id="5_gf0yu"]
 
 [resource]
 script = ExtResource("1_sq8w0")
@@ -10,4 +14,8 @@ impulse_power = 10.0
 projectiles = 1
 projectile_spread = 0.0872665
 projectile_clustering = 0.5
+ui_texture = ExtResource("5_gf0yu")
+scene_round = ExtResource("1_rtgr0")
+scene_round_expended = ExtResource("2_gf0yu")
+scene_round_unloaded = ExtResource("3_r6dfy")
 metadata/_custom_type_script = "uid://br0bn4v8ti7u5"

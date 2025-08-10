@@ -34,6 +34,12 @@ signal round_loaded()
 ## For animations that unload individual rounds
 signal round_unloaded()
 
+## For animations that unload an entire magazine
+signal magazine_loaded()
+
+## For animations that load an entire magazine
+signal magazine_unloaded()
+
 ## For weapons that use a looping reload
 signal reload_loop()
 
@@ -56,6 +62,9 @@ signal charged()
 ## Location of reload mesh (round / magazine)
 @export var reload_marker: Marker3D
 
+## Location of magazine mesh while in the gun
+@export var magazine_marker: Marker3D
+
 
 var _reload_loop_start_time: float = -1
 var _unload_loop_start_time: float = -1
@@ -72,6 +81,9 @@ func _ready() -> void:
     animation_tree.active = false
     anim_state = animation_tree['parameters/StateMachine/playback']
     animation_tree.animation_started.connect(_on_anim_start)
+
+    if reload_marker:
+        reload_marker.visible = false
 
 
 func _reload_loop_start() -> void:
@@ -112,6 +124,12 @@ func _emit_round_loaded() -> void:
 func _emit_round_unloaded() -> void:
     round_unloaded.emit()
 
+func _emit_magazine_loaded() -> void:
+    magazine_loaded.emit()
+
+func _emit_magazine_unloaded() -> void:
+    magazine_unloaded.emit()
+
 func _emit_charged() -> void:
     charged.emit()
 
@@ -123,7 +141,7 @@ func _on_anim_start(anim: StringName) -> void:
         is_anim_traveling = false
         anim_target = &''
 
-func set_reload_ammo(ammo: AmmoResource) -> void:
+func set_reload_scene(scene: PackedScene) -> void:
     if not reload_marker:
         return
 
@@ -132,10 +150,24 @@ func set_reload_ammo(ammo: AmmoResource) -> void:
         reload_marker.remove_child(child)
         break
 
-    if not ammo.scene_round:
+    if not scene:
         return
 
-    reload_marker.add_child(ammo.scene_round.instantiate())
+    reload_marker.add_child(scene.instantiate())
+
+func set_magazine_scene(scene: PackedScene) -> void:
+    if not magazine_marker:
+        return
+
+    # Expect only one child max, so just remove and break
+    for child in magazine_marker.get_children():
+        magazine_marker.remove_child(child)
+        break
+
+    if not scene:
+        return
+
+    magazine_marker.add_child(scene.instantiate())
 
 func eject_round(
         round_dict: Dictionary,
@@ -294,3 +326,15 @@ func can_aim() -> bool:
 ## Controller is walking with the weapon
 func set_walking(walking: bool = true) -> void:
     is_walking = walking
+
+## Show the reload mesh and hide the magazine mesh
+func detach_magazine() -> void:
+    # NOTE: it is an error to call this from animation without these markers
+    magazine_marker.visible = false
+    reload_marker.visible = true
+
+## Hide the reload mesh and show the magazine mesh
+func attach_magazine() -> void:
+    # NOTE: it is an error to call this from animation without these markers
+    reload_marker.visible = false
+    magazine_marker.visible = true

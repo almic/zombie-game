@@ -20,10 +20,12 @@ advance_expression = "is_walking"
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_eksiw"]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_levy8"]
+xfade_time = 0.15
 advance_mode = 2
 advance_expression = "not is_walking"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jve8e"]
+xfade_time = 0.25
 advance_mode = 2
 advance_expression = "is_walking"
 

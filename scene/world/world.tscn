@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=58 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -46,6 +46,7 @@
 [ext_resource type="Curve3D" uid="uid://cflspy060bwc5" path="res://scene/world/road_curves/cherry_curve2.res" id="46_x3qer"]
 [ext_resource type="Curve3D" uid="uid://ss311kjgcm1s" path="res://scene/world/road_curves/elder_curve.res" id="47_dt3as"]
 [ext_resource type="Curve3D" uid="uid://3vyfumbpe2af" path="res://scene/world/road_curves/iris_curve.res" id="47_my0pb"]
+[ext_resource type="PackedScene" uid="uid://mvy2qv3hknqg" path="res://scene/item/ammo/9mm/9mm_pile.tscn" id="48_x3qer"]
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
 
 [sub_resource type="Resource" id="Resource_3wrw6"]
@@ -86,6 +87,8 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
+enable_spawning = false
+enable_targetting = false
 target_spawn_count = 15
 spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
@@ -2703,8 +2706,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.8, 2.2, -458.2)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("45_51258")
 item_count = 200
-item_scene = ExtResource("44_mhi7v")
-item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, -1.5708)
+item_scene = ExtResource("48_x3qer")
+item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, 2.53979e-13)
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
 [node name="Area3D" type="Area3D" parent="Pickup9mm"]

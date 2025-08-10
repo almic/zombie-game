@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://duq343l2kavnw"]
+
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="1_x2n5u"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_fms24"]
+material = ExtResource("1_x2n5u")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.03
+
+[node name="9MilMesh_Expended" type="Node3D"]
+
+[node name="case" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+mesh = SubResource("CylinderMesh_fms24")

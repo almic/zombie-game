@@ -292,6 +292,7 @@ func can_fire() -> bool:
         else:
             return false
 
+    # NOTE: this should only happen for the revolver
     return get_reserve_total() > 0
 
 func can_melee() -> bool:
@@ -320,8 +321,8 @@ func can_reload() -> bool:
     return true
 
 func can_unload() -> bool:
-    # NOTE: weapon unloading should always eject a chambered
-    #       round as part of the animation.
+    # NOTE: weapon unloading should always emit a signal to eject any
+    #       chambered round as part of the animation.
     return is_chambered() or get_reserve_total() > 0
 
 ## Charges the weapon; puts one in the chamber
@@ -359,6 +360,7 @@ func charge_weapon() -> void:
 
     _chambered_round_live = true
 
+## Replenish reserve ammo from ammo stock, handles mixed and magazine loads
 func load_rounds() -> void:
     var reserve_total: int = get_reserve_total()
     var count: int = 0
@@ -406,7 +408,33 @@ func load_rounds() -> void:
     if _simple_reserve_total > ammo_reserve_size:
         push_error('Weapon is over loaded! This is a mistake! Investigate!')
 
-## Fires the weapon, returns true if ammo reserve changed
+## Removes all reserve ammo back to ammo stock, handles mixed and magazine loads
+func unload_rounds() -> void:
+    if ammo_can_mix:
+        for type in _mixed_reserve:
+            ammo_bank.get(type).amount += 1
+        return
+
+    if _simple_reserve_type == 0:
+        return
+
+    if not ammo_bank.has(_simple_reserve_type):
+        var supported: Dictionary = get_supported_ammunition()
+
+        # NOTE: For debugging, should be removed
+        if not supported.has(_simple_reserve_type):
+            push_error('Trying to unload a weapon that holds unsupported ammo! This mistake! Investigate!')
+
+        ammo_bank.set(_simple_reserve_type, {
+                'amount': 0,
+                'ammo': supported.get(_simple_reserve_type)
+        })
+
+    ammo_bank.get(_simple_reserve_type).amount += _simple_reserve_total
+    _simple_reserve_total = 0
+    _simple_reserve_type = 0
+
+## Fires the weapon, returns true if ammo state changed
 func fire(base: WeaponNode) -> bool:
     trigger_mechanism.start_cycle()
 
@@ -416,7 +444,7 @@ func fire(base: WeaponNode) -> bool:
 
     return fire_projectiles(base)
 
-## Fires the next loaded projectile, returns true if ammo reserves changed
+## Fires the next loaded projectile, returns true if ammo state changed
 func fire_projectiles(base: WeaponNode) -> bool:
     var updated_ammo: bool = false
     var ammo_cache: Dictionary = get_supported_ammunition()
@@ -428,13 +456,9 @@ func fire_projectiles(base: WeaponNode) -> bool:
         updated_ammo = true
     else:
         if not ammo_can_mix:
-            if _simple_reserve_total < 1:
-                push_error("Firing weapon with no reserve! WeaponNode should not allow this!")
-                return false
-            ammo = ammo_cache.get(_simple_reserve_type)
-            _simple_reserve_total -= 1
-            updated_ammo = true
+            push_error("Firing a simple reserve, non-chambered weapon! This is a mistake! Investigate!")
         else:
+            # NOTE: This should only happen for the revolver
             var size: int = _mixed_reserve.size()
             if size < 1:
                 push_error("Firing weapon with no mixed reserve! WeaponNode should not allow this!")

@@ -85,7 +85,6 @@ func reset() -> void:
 
     weapon_texture.texture = null
 
-
 func update_score(score: int) -> void:
     score_value.text = str(score)
 

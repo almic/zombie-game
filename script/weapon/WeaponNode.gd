@@ -162,11 +162,17 @@ func switch_ammo() -> bool:
 
     ammo_updated.emit()
 
-    if not _weapon_scene or not weapon_type.ammo_stock:
+    if not _weapon_scene:
         return true
 
-    # Put the reload mesh on the weapon
-    _weapon_scene.set_reload_ammo(weapon_type.ammo_stock.ammo)
+    # NOTE: Mixed loading is always individual rounds, with no magazine
+    #       so we must update the reload ammo when changing types
+    if weapon_type.ammo_can_mix:
+        if weapon_type.ammo_stock:
+            _weapon_scene.set_reload_scene(weapon_type.ammo_stock.ammo.scene_round)
+        else:
+            _weapon_scene.set_reload_scene(null)
+
     return true
 
 ## Updates weapon trigger, can fire
@@ -214,11 +220,14 @@ func melee() -> Action:
 ## The weapon should reload
 func reload() -> Action:
     if not weapon_type.can_reload():
+        #print('blocked!')
         return Action.BLOCKED
 
     if _weapon_scene.goto_reload():
+        #print('reloading!')
         return Action.OKAY
 
+    #print('not ready!')
     return Action.NOT_READY
 
 ## The weapon should unload
@@ -259,6 +268,17 @@ func load_weapon_type(type: WeaponResource) -> void:
 
     weapon_type.ammo_bank = ammo_bank
 
+    if _weapon_scene:
+        if weapon_type.ammo_can_mix:
+            if weapon_type.ammo_stock:
+                _weapon_scene.set_reload_scene(weapon_type.ammo_stock.ammo.scene_round)
+            else:
+                _weapon_scene.set_reload_scene(null)
+            _weapon_scene.set_magazine_scene(null)
+        else:
+            _weapon_scene.set_magazine_scene(weapon_type.scene_magazine)
+            _weapon_scene.set_reload_scene(weapon_type.scene_magazine)
+
     _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
 
 func _load_weapon_scene() -> void:
@@ -271,6 +291,8 @@ func _load_weapon_scene() -> void:
         _weapon_scene.round_ejected.disconnect(on_weapon_round_ejected)
         _weapon_scene.round_loaded.disconnect(on_weapon_round_loaded)
         _weapon_scene.round_unloaded.disconnect(on_weapon_round_unloaded)
+        _weapon_scene.magazine_loaded.disconnect(on_weapon_magazine_loaded)
+        _weapon_scene.magazine_unloaded.disconnect(on_weapon_magazine_unloaded)
 
         remove_child(_weapon_scene)
         _weapon_scene.queue_free()
@@ -302,6 +324,8 @@ func _load_weapon_scene() -> void:
     _weapon_scene.round_ejected.connect(on_weapon_round_ejected)
     _weapon_scene.round_loaded.connect(on_weapon_round_loaded)
     _weapon_scene.round_unloaded.connect(on_weapon_round_unloaded)
+    _weapon_scene.magazine_loaded.connect(on_weapon_magazine_loaded)
+    _weapon_scene.magazine_unloaded.connect(on_weapon_magazine_unloaded)
     _weapon_scene.goto_ready()
 
 func _load_particle_system() -> void:
@@ -387,10 +411,15 @@ func on_weapon_round_ejected() -> void:
     if not weapon_type or not weapon_type.can_eject():
         return
 
-    var round_dict: Dictionary = weapon_type.get_chamber_round()
+    var round_dict: Dictionary
+    if weapon_type.ammo_expend_enabled:
+        round_dict = weapon_type.get_chamber_round()
 
     if weapon_type.eject_round():
         ammo_updated.emit()
+
+    if not round_dict:
+        return
 
     _weapon_scene.eject_round(
         round_dict,
@@ -406,3 +435,18 @@ func on_weapon_round_unloaded() -> void:
     #       does something else, but these are fundamentally the same
     #       operation in all currently planned weapons.
     on_weapon_round_ejected()
+
+func on_weapon_magazine_loaded() -> void:
+    # NOTE: for all currently planned weapons, these are fundamentally
+    #       the same operation, so we just call into this method.
+    on_weapon_round_loaded()
+
+    # Magazines do not loop, this means it has finished
+    continue_reload = false
+
+func on_weapon_magazine_unloaded() -> void:
+    if not weapon_type:
+        return
+
+    weapon_type.unload_rounds()
+    ammo_updated.emit()

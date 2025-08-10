@@ -444,19 +444,24 @@ func update_weapon_node(delta: float) -> void:
             if weapon_node.continue_reload:
                 weapon_node.continue_reload = false
                 _weapon_reload_time = -1
+                #print('cancel reload!')
             else:
                 weapon_node.continue_reload = true
                 _weapon_reload_time = Time.get_ticks_msec()
                 do_reload = true
+                #print('begin reload!')
 
         update_last_input(reload)
 
         if do_reload:
             # NOTE: Even if the action is blocked, buffer anyway because we
             #       may be waiting to cycle a round from reserve
+            #print('please reload!')
             action = weapon_node.reload()
             if action != WeaponNode.Action.OKAY:
                 update_input_buffer(reload)
+        #else:
+            #print('not gonna reload!')
     else:
         if _weapon_reload_time > 0:
             var elapsed: int = Time.get_ticks_msec() - _weapon_reload_time

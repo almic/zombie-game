@@ -393,7 +393,7 @@ func update_weapon_node(delta: float) -> void:
 
     update_weapon_switch()
 
-    weapon_node.set_walking(!movement_direction.is_zero_approx())
+    weapon_node.set_walking(!_aim_is_aiming and !movement_direction.is_zero_approx())
 
     if switch_ammo.is_triggered():
         weapon_node.switch_ammo()

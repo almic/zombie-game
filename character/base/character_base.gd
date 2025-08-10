@@ -208,7 +208,7 @@ func update_movement(delta: float) -> void:
 
         var limit_in_dir: float = top_speed * slope_slow
         var speed_in_dir: float = velocity.dot(stable_move)
-        if speed_in_dir < limit_in_dir:
+        if speed_in_dir < limit_in_dir + 0.01:
             var movement: float = move_acceleration * slope_slow * delta
 
             # air control
@@ -255,10 +255,9 @@ func update_movement(delta: float) -> void:
                     else:
                         friction = -ground_velocity / delta
                 else:
-                    var stable_speed: float = velocity.dot(stable_move)
-                    if stable_speed > top_speed:
+                    if speed > top_speed:
                         friction = speed * compute_friction(move_friction, ground_direction, Vector3.ZERO, move_turn_speed_keep)
-                        friction *= (stable_speed - top_speed) / stable_speed
+                        friction = friction.slide(stable_move) + stable_move * stable_move.dot(friction) * ((speed - top_speed) / speed) * 0.5
                     else:
                         friction = speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
                 friction *= delta

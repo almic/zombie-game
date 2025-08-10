@@ -54,9 +54,11 @@ material = ExtResource("2_b2l83")
 
 [node name="BarrelMarker" type="Marker3D" parent="Mesh/protomesh" index="5"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.84)
+visible = false
 
 [node name="EjectMarker" type="Marker3D" parent="Mesh" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.04, 0, 0.08)
+visible = false
 
 [node name="RoundReloadMarker" type="Marker3D" parent="." index="1"]
 transform = Transform3D(1, 0, 0, 0, 0.999998, 0, 0, 0, 0.999999, 0, 0, 0)
@@ -71,3 +73,12 @@ libraries = {
 [node name="AnimationTree" parent="." index="3"]
 tree_root = ExtResource("7_l0phi")
 parameters/TimeSeek/seek_request = -1.0
+
+[node name="Marker3D" type="Marker3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0354666, 0.0310333, 0)
+
+[node name="Marker3D2" type="Marker3D" parent="." index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0354667, -0.236444, 0)
+
+[node name="Marker3D3" type="Marker3D" parent="." index="6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00311, -0.11926, 0.68319)

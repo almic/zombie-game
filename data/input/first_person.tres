@@ -170,7 +170,7 @@ allow_additional_modifiers = true
 
 [sub_resource type="Resource" id="Resource_y05bw"]
 script = ExtResource("14_iijhd")
-window = 0.25
+window = 0.1
 actuation_threshold = 0.5
 
 [sub_resource type="Resource" id="Resource_anlj7"]

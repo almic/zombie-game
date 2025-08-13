@@ -123,6 +123,9 @@ var _camera_smooth_target_position: Vector3
 var _camera_smooth_next_position_a: Vector3
 var _camera_smooth_next_position_b: Vector3
 
+## Jump can be activated
+var _jump_ready: bool = true
+
 ## Melee can be activated
 var _melee_ready: bool = true
 
@@ -212,7 +215,10 @@ func _process(delta: float) -> void:
         movement_direction = basis * move.value_axis_3d.normalized()
 
     if jump.is_triggered() or jump.is_ongoing():
-        do_jump()
+        if _jump_ready:
+            do_jump()
+    else:
+        _jump_ready = true
 
     if _next_input_timer > 0.0:
         _next_input_timer -= delta
@@ -242,6 +248,9 @@ func _physics_process(delta: float) -> void:
     top_speed = _current_top_speed
     update_movement(delta)
     top_speed = top_speed_temp
+
+    if just_jumped:
+        _jump_ready = false
 
     if camera_smooth_enabled:
         var jerk: Vector3 = acceleration - last_accel

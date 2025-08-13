@@ -134,8 +134,8 @@ var movement_direction: Vector3 = Vector3.ZERO
 var acceleration: Vector3 = Vector3.ZERO
 var last_velocity: Vector3 = Vector3.ZERO
 
-## If the character is jumping
-var is_jumping: bool = false
+## If the character jumped on this update
+var just_jumped: bool = false
 var _wants_jump: bool = false
 
 # Updated by stepping and snapping to account for in velocity updates
@@ -224,20 +224,18 @@ func update_movement(delta: float) -> void:
 
     # Jumping
     # NOTE: do this before friction to enable b-hop!
-    if grounded:
-        if _wants_jump:
-            var jump_direction: Vector3
-            if not stationary:
-                jump_direction = 0.8 * up_direction + 0.2 * stable_move
-            elif ground_details.has_ground():
-                jump_direction = 0.6 * up_direction + 0.4 * ground_details.normal
-            else:
-                jump_direction = up_direction
-            velocity += jump_direction * jump_power
-            is_jumping = true
-            grounded = false
+    just_jumped = false
+    if grounded and _wants_jump:
+        var jump_direction: Vector3
+        if not stationary:
+            jump_direction = 0.8 * up_direction + 0.2 * stable_move
+        elif ground_details.has_ground():
+            jump_direction = 0.6 * up_direction + 0.4 * ground_details.normal
         else:
-            is_jumping = false
+            jump_direction = up_direction
+        velocity += jump_direction * jump_power
+        just_jumped = true
+        grounded = false
     _wants_jump = false
 
     # Friction
@@ -261,7 +259,6 @@ func update_movement(delta: float) -> void:
                     else:
                         friction = speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
                 friction *= delta
-
 
     # Gravity
     var gravity_force: Vector3 = gravity * -up_direction

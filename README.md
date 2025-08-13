@@ -6,6 +6,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 - [ ] Make WeaponNode do random weapon kick and sway instead of animations
 - [ ] Add all weapons
+- [ ] Investigate if stairs can be fixed with sliding/ stepping up
 - [ ] Add more zombie types
 - [ ] Level blocking
 - [ ] Camera Smooth (generic)

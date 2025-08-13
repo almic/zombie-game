@@ -12,8 +12,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] Camera Smooth (generic)
 - [X] Fix CharacterBase friction on slopes (cannot climb slopes anymore)
 - [X] Add idle/ walk animation to shotgun + pistol
-- [x] Add pistol animations
-- [x] Fix shovel animations
+- [X] Add pistol animations
+- [X] Fix shovel animations
 - [X] Weapon aiming (reduce look speed and FOV)
 - [X] Add individual weapon melee
 - [X] Add ammo type selection
@@ -23,6 +23,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # ANGRY TODOS
 
+- [ ] Make recoil rotation origin marker work
 - [ ] Make second rifle reload out animation that doesn't charge, to keep a live
       round chambered.
 - [ ] Add procedural weapon sway, standing, walking, jumping, added on top of

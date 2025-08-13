@@ -65,6 +65,9 @@ signal charged()
 ## Location of magazine mesh while in the gun
 @export var magazine_marker: Marker3D
 
+## Origin point of recoil rotation
+@export var recoil_marker: Marker3D
+
 
 var _reload_loop_start_time: float = -1
 var _unload_loop_start_time: float = -1

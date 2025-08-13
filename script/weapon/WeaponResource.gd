@@ -6,6 +6,11 @@ class_name WeaponResource extends PickupResource
 
 const DEBUG_SPHERE = preload('res://scene/debug/sphere/sphere.tscn')
 
+
+## When the gun fires the last bullet in reserve
+signal out_of_ammo()
+
+
 ## Weapon name in UI elements
 @export var name: String
 
@@ -71,6 +76,14 @@ var projectile_inaccuracy: float = 0.0
 @export_range(0.0, 10.0, 0.001, 'or_greater', 'radians_as_degrees')
 var aim_camera_roll: float = 0.0
 
+## How much to reduce recoil by when aiming, if recoil is enabled
+@export_range(0.0, 1.0, 0.0001)
+var aim_recoil_control: float:
+    set(value):
+        _recoil_aim_control = value
+    get():
+        return _recoil_aim_control
+
 
 @export_group("Ammunition", "ammo")
 
@@ -113,6 +126,54 @@ var ammo_expend_force: float = 0.0
 @export_range(0.0, 0.5, 0.001, 'or_greater', 'suffix:N')
 var ammo_expend_force_range: float = 0.0
 
+
+@export_group("Recoil", "recoil")
+
+## If recoil is enabled
+@export var recoil_enabled: bool = false
+
+## Time to recover from recoil, in seconds
+@export_range(0.001, 1.0, 0.0001, 'or_greater', 'suffix:s')
+var recoil_recover_time: float = 0.25
+
+## Vertical recoil acceleration per shot in degrees per second^2
+@export_range(0.0, 20.0, 0.001, 'or_greater', 'radians_as_degrees', 'suffix:°/s²')
+var recoil_vertical_acceleration: float = 0.0
+
+## Maximum recoil distance in degrees. This is applied as a hard-stop on vertical
+## rise, but as an eased function on kick. True max angle is 50% over this value.
+@export_range(0.0, 20.0, 0.001, 'or_greater', 'radians_as_degrees')
+var recoil_spread_max: float = 0.0
+
+## Angular distance of random recoil, in arc minutes
+@export_range(0.0, 120.0, 0.1, 'or_greater', 'suffix:′')
+var recoil_random_spread: float = 0.0
+
+## Minimum recoil power, in arc minutes.
+@export_range(0.0, 100.0, 0.1, 'or_greater', 'suffix:′')
+var recoil_minimum_spread: float = 0.0
+
+## Axis of random recoil, the following parameters operate from this line.
+@export_range(-90.0, 90.0, 0.0001, 'radians_as_degrees')
+var recoil_spread_axis_angle: float = 0.0
+
+## Left-Right bias of random recoil, -1.0 is left-only recoil, 1.0 is right-only
+## recoil, 0.0 is equally left and right recoil
+@export_range(-1.0, 1.0, 0.0001)
+var recoil_spread_bias: float = 0.0
+
+## Angular spread from the baseline recoil direction in the positive and negative direction
+@export_range(0.0, 90.0, 0.001, 'or_greater', 'radians_as_degrees')
+var recoil_spread_angle: float = 0.0
+
+## How much to reduce recoil by when aiming, if aiming is enabled
+@export_range(0.0, 1.0, 0.0001)
+var recoil_aim_control: float:
+    set(value):
+        _recoil_aim_control = value
+    get():
+        return _recoil_aim_control
+var _recoil_aim_control: float = 0.0
 
 @export_group("Display", "")
 @export var ui_texture: Texture2D
@@ -539,6 +600,10 @@ func fire_projectiles(base: WeaponNode) -> bool:
             # NOTE: i do not understand why this is different than the impulse direction...
             hit.direction = -projectile_forward
             hit.collider.do_hit(from_node, hit, ammo.damage)
+
+    # If we are empty, signal
+    if get_reserve_total() < 1:
+        out_of_ammo.emit()
 
     return updated_ammo
 

@@ -268,6 +268,15 @@ func _physics_process(delta: float) -> void:
         else:
             _camera_smooth_duration = 0.0
 
+func get_camera() -> Camera3D:
+    return camera_3d
+
+func get_camera_rotation() -> Vector3:
+    return camera_target.rotation
+
+func set_camera_rotation(rot: Vector3) -> void:
+    camera_target.rotation = rot
+
 func update_aiming(delta: float) -> void:
     var duration: float
     var target_position: Vector3
@@ -286,6 +295,8 @@ func update_aiming(delta: float) -> void:
 
     if _aim_time < 10.0:
         _aim_time += delta
+
+    weapon_node.set_aiming(_aim_is_aiming)
 
     if _aim_is_aiming:
         duration = look_aim_time
@@ -646,8 +657,13 @@ func pickup_item(item: Pickup) -> void:
         if item.item_count > 0:
             add_ammo(weapon.get_default_ammo(), item.item_count)
 
+
         if weapon_index == 0:
+            # New and first weapon, pull it out
             select_weapon(weapon.slot)
+        else:
+            # New weapon with ammo, but not swapping, give our ammo bank
+            weapon.ammo_bank = ammo_bank
 
         if item.item_count > 0:
             weapon.load_rounds(item.item_count, weapon.get_default_ammo().type)

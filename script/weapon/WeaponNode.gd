@@ -27,24 +27,47 @@ signal reload_complete()
 @export var weapon_type: WeaponResource:
     set = load_weapon_type
 
+
+@export_group("Aiming", "aim")
+
 ## If the weapon should align itself with the target RayCast3D. You should
 ## disable this for melee weapons.
-@export var do_targeting: bool = true
+@export var aim_enabled: bool = true
 ## Aim target for weapon
-@export var target: RayCast3D
-## Speed for weapon re-targeting
-@export var target_update_speed: float = 15
-## Frequency of target position checks in physics frames.
-@export var target_update_rate: int = 3
+@export var aim_target: RayCast3D
+## Time to aim weapons in seconds
+@export_range(0.001, 2.0, 0.0001, 'or_greater', 'suffix:seconds')
+var aim_duration: float = 0.2
+
 
 ## Ammo bank to use for weapons
 var ammo_bank: Dictionary
 
-# For moving weapon to face target
-var _weapon_target_from: Quaternion
-var _weapon_target_to: Quaternion
-var _weapon_target_tick: int = 0
-var _weapon_target_amount: float = 0
+
+const AIM_TICK_RATE: int = 12
+const RECOIL_DURATION: float = 0.117
+const RECOIL_ANGLE: float = deg_to_rad(180.0)
+
+
+# Recoil & aiming flags
+var _is_aiming: bool = false
+var _is_recoil_rising: bool = false
+
+# Random component of recoil
+var _recoil_kick_amount: Vector2
+var _recoil_kick: Interpolation = Interpolation.new()
+
+# Vertical component of recoil
+var _recoil_rise_amount: float
+var _recoil_rise_speed: float = 0.0
+
+# Recoil recovery
+var _recoil_recovery: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+
+# Aim offset for the weapon scene, applied after recoil
+var _weapon_aim: Interpolation = Interpolation.new(aim_duration, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+var _weapon_aim_ticks: int = AIM_TICK_RATE
+
 
 var continue_reload: bool = false:
     set = set_continue_reload
@@ -63,6 +86,17 @@ var melee_excluded_hurtboxes: Array[RID]
 
 func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
+
+    if aim_target:
+        aim_target.enabled = false
+
+    _weapon_aim.current = Vector2.ZERO
+    _weapon_aim.target = Vector2.ZERO
+    _recoil_kick.current = Vector2.ZERO
+    _recoil_kick.target = Vector2.ZERO
+    _recoil_recovery.current = 0.0
+    _recoil_recovery.target = 0.0
+
     add_child(_weapon_audio_player)
 
 func _process(delta: float) -> void:
@@ -81,47 +115,149 @@ func _process(delta: float) -> void:
                 weapon_type.sound_test = false
         return
 
-    update_targetting(delta)
+    if _weapon_scene:
+        if aim_enabled and aim_target:
+            interpolate_aim(delta)
+        interpolate_recoil(delta)
 
-func _physics_process(_delta: float) -> void:
+func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    if not do_targeting or not _weapon_scene:
+    if _weapon_scene:
+        if aim_enabled and aim_target:
+            update_aim_target()
+        update_recoil_target(delta)
+
+
+func interpolate_aim(delta: float) -> void:
+    if _weapon_aim.is_done:
         return
 
-    _weapon_target_tick += 1
-    if _weapon_target_tick < target_update_rate:
-        return
-    _weapon_target_tick = 0
+    if _weapon_scene:
+        var aim_diff: Vector2 = _weapon_aim.current
+        aim_diff = _weapon_aim.update(delta) - aim_diff
+        _weapon_scene.rotate_y(aim_diff.x)
+        _weapon_scene.rotate_x(aim_diff.y)
 
-    if target.is_colliding():
-        # DrawLine3d.DrawLine(mesh.global_position, target.get_collision_point(), Color(0.2, 0.25, 0.8), 1)
-        _weapon_target_to = Quaternion(
-            Basis.looking_at(
-                _weapon_scene.global_position.direction_to(
-                    target.get_collision_point()
-                ), target.basis.y
-            )
+func interpolate_recoil(delta: float) -> void:
+    const RECOIL_SPLIT = 0.5
+
+    var recoil_kick_diff: Vector2
+    var recoil_rise_diff: float
+
+    if _is_recoil_rising:
+        # Save rise for later recovery
+        if not _recoil_recovery.is_done:
+            _recoil_recovery.is_done = true
+            _recoil_rise_amount = _recoil_recovery.current
+
+        # Rise recoil additive
+        var new_rise: float = minf(
+                weapon_type.recoil_spread_max,
+                _recoil_rise_amount + (_recoil_rise_speed * delta)
         )
+
+        recoil_rise_diff = new_rise - _recoil_rise_amount
+
+        # Have camera enforce real limit on the rise
+        var camera_x: float = controller.get_camera_rotation().x
+        var limited_rise: float = minf(
+                deg_to_rad(89.0),
+                camera_x + recoil_rise_diff * (1.0 - RECOIL_SPLIT)
+        )
+
+        recoil_rise_diff = (limited_rise - camera_x) * (1.0 / (1.0 - RECOIL_SPLIT))
+        _recoil_rise_amount += recoil_rise_diff
+
     else:
-        # Aim forward
-        _weapon_target_to = target.global_basis.get_rotation_quaternion()
+        # Start rise reset
+        if not is_zero_approx(_recoil_rise_speed):
+            _recoil_rise_speed = 0.0
+            _recoil_recovery.current = _recoil_rise_amount
+            _recoil_recovery.set_target_delta(0.0, -_recoil_rise_amount)
 
-    _weapon_target_from = _weapon_scene.global_basis.get_rotation_quaternion()
-    _weapon_target_amount = 0
+        # Recovery updates when not recoiling
+        if not _recoil_recovery.is_done:
+            recoil_rise_diff = _recoil_recovery.current
+            recoil_rise_diff = _recoil_recovery.update(delta) - recoil_rise_diff
 
-func update_targetting(delta: float) -> void:
-    if not do_targeting or not _weapon_scene:
+        if _recoil_recovery.is_done:
+            _recoil_rise_amount = 0.0
+
+    # Kick recoil updates the same either way
+    if not _recoil_kick.is_done:
+        recoil_kick_diff = _recoil_kick.current
+        recoil_kick_diff = _recoil_kick.update(delta) - recoil_kick_diff
+        _recoil_kick_amount += recoil_kick_diff
+
+    if _recoil_kick.is_done:
+        _recoil_kick_amount = Vector2.ZERO
+
+    # Start kick reset
+    if _recoil_kick.is_done and not _recoil_kick.target == Vector2.ZERO:
+        _recoil_kick.duration = weapon_type.recoil_recover_time
+        _recoil_kick.easing = Tween.EASE_IN_OUT
+        _recoil_kick.transition = Tween.TRANS_CUBIC
+        _recoil_kick.set_target_delta(Vector2.ZERO, Vector2.ZERO - _recoil_kick.current)
+
+################
+## Apply rotations
+################
+
+    # TODO: apply some small motion impulse effects to the camera when firing
+    #       instead of just rotations. Maybe even some roll.
+
+    var camera_rot: Vector3 = controller.get_camera_rotation()
+
+    if not recoil_kick_diff.is_zero_approx():
+        if _weapon_scene:
+            _weapon_scene.rotate_y(RECOIL_SPLIT * recoil_kick_diff.x)
+            _weapon_scene.rotate_x(RECOIL_SPLIT * recoil_kick_diff.y)
+
+        camera_rot.x += (1.0 - RECOIL_SPLIT) * recoil_kick_diff.y
+        camera_rot.y += (1.0 - RECOIL_SPLIT) * recoil_kick_diff.x
+
+    if not is_zero_approx(recoil_rise_diff):
+        if _weapon_scene:
+            _weapon_scene.rotate_x(RECOIL_SPLIT * recoil_rise_diff)
+
+        camera_rot.x += (1.0 - RECOIL_SPLIT) * recoil_rise_diff
+
+    controller.set_camera_rotation(camera_rot)
+
+func update_aim_target() -> void:
+    _weapon_aim_ticks += 1
+    if _weapon_aim_ticks < AIM_TICK_RATE:
+        return
+    _weapon_aim_ticks = 0
+
+    aim_target.force_raycast_update()
+
+    if not aim_target.is_colliding():
+        if not _weapon_aim.target.is_equal_approx(Vector2.ZERO):
+            _weapon_aim.set_target_delta(
+                Vector2.ZERO,
+                Vector2.ZERO - _weapon_aim.current
+            )
         return
 
-    if _weapon_target_to.is_equal_approx(_weapon_scene.global_basis.get_rotation_quaternion()):
+    var from_transform: Transform3D = aim_target.global_transform
+    from_transform.origin = _weapon_scene.global_position
+    var point: Vector3 = (from_transform.inverse() * aim_target.get_collision_point()).normalized()
+    var target: Vector2 = Vector2(acos(point.x) - PI / 2, asin(point.y))
+
+    _weapon_aim.set_target_delta(target, target - _weapon_aim.current)
+
+func update_recoil_target(delta: float) -> void:
+    if not weapon_type or not _is_recoil_rising:
         return
 
-    _weapon_target_amount += target_update_speed * delta
-    _weapon_scene.global_basis = Basis(
-        _weapon_target_from.slerp(_weapon_target_to, _weapon_target_amount)
-    )
+    var accel: float
+    accel = weapon_type.recoil_vertical_acceleration * delta
+    if _is_aiming and not is_zero_approx(weapon_type.recoil_aim_control):
+        accel *= (1.0 - weapon_type.recoil_aim_control)
+    _recoil_rise_speed += accel
 
 ## Get the global weapon transform
 func weapon_tranform() -> Transform3D:
@@ -134,7 +270,10 @@ func weapon_projectile_transform() -> Transform3D:
     return weapon_tranform()
 
 func aim_target_transform() -> Transform3D:
-    return target.global_transform
+    return aim_target.global_transform
+
+func set_aiming(value: bool) -> void:
+    _is_aiming = value
 
 func set_continue_reload(value: bool) -> void:
     continue_reload = value
@@ -183,6 +322,9 @@ func update_trigger(triggered: bool, delta: float) -> Action:
     mechanism.update_trigger(triggered)
 
     if not mechanism.should_trigger() or not weapon_type.can_fire():
+        # NOTE: Turn off recoil rise when we stop shooting
+        if not triggered:
+            _is_recoil_rising = false
         return Action.BLOCKED
 
     if _weapon_scene.goto_fire():
@@ -255,10 +397,24 @@ func trigger_particle(activate: bool = true) -> void:
     _particle_system.emitting = activate
 
 func load_weapon_type(type: WeaponResource) -> void:
+    if weapon_type:
+        weapon_type.out_of_ammo.disconnect(on_weapon_empty)
+
     weapon_type = type
 
+    # Reset weapon related values
     continue_reload = false
     continue_unload = false
+    _is_recoil_rising = false
+
+    _weapon_aim.reset(Vector2.ZERO)
+    _recoil_kick.reset(Vector2.ZERO)
+    _recoil_recovery.reset(0.0)
+
+    _weapon_aim_ticks = AIM_TICK_RATE
+    _recoil_rise_speed = 0.0
+    _recoil_rise_amount = 0.0
+    _recoil_kick_amount = Vector2.ZERO
 
     _load_weapon_scene()
     _load_particle_system()
@@ -267,6 +423,10 @@ func load_weapon_type(type: WeaponResource) -> void:
         return
 
     weapon_type.ammo_bank = ammo_bank
+
+    _recoil_recovery.duration = weapon_type.recoil_recover_time
+
+    weapon_type.out_of_ammo.connect(on_weapon_empty)
 
     if _weapon_scene:
         if weapon_type.ammo_can_mix:
@@ -315,6 +475,7 @@ func _load_weapon_scene() -> void:
     _weapon_scene = weapon_scene
 
     add_child(_weapon_scene)
+    _weapon_scene.rotation = Vector3.ZERO
     _weapon_scene.position = weapon_type.scene_offset
     _weapon_scene.fired.connect(on_weapon_fire)
     _weapon_scene.melee.connect(on_weapon_melee)
@@ -366,8 +527,64 @@ func on_weapon_fire() -> void:
     trigger_sound()
     trigger_particle()
 
+    # Turn on recoil rise when firing
+    if weapon_type.recoil_enabled:
+        _is_recoil_rising = true
+
+    # NOTE: This can signal an empty weapon, which turns off recoil rise
     if weapon_type.fire(self):
         ammo_updated.emit()
+
+    # NOTE: Always apply recoil kick
+    if weapon_type.recoil_enabled:
+        # NOTE: range of distance is -0.5 - 1.0, so it tends to pull right
+        # TODO: Probably make it sway back and forth instead
+        var bias: float = weapon_type.recoil_spread_bias
+        var distance: float = randf() * (2.0 - abs(bias)) - (1.0 - abs(bias))
+        if bias < 0.0:
+            distance = -distance
+
+        var spread_range: float = weapon_type.recoil_random_spread - weapon_type.recoil_minimum_spread
+        if distance < 0.0:
+            distance = -sqrt(-distance)
+            distance *= deg_to_rad(spread_range / 60.0)
+            distance -= deg_to_rad(weapon_type.recoil_minimum_spread / 60.0)
+        else:
+            distance = sqrt(distance)
+            distance *= deg_to_rad(spread_range / 60.0)
+            distance += deg_to_rad(weapon_type.recoil_minimum_spread / 60.0)
+
+        var angle: float = (randf() - 0.5) * weapon_type.recoil_spread_angle
+        if _is_aiming and not is_zero_approx(weapon_type.recoil_aim_control):
+            distance *= (1.0 - weapon_type.recoil_aim_control)
+            angle *= (1.0 - weapon_type.recoil_aim_control)
+        angle += weapon_type.recoil_spread_axis_angle
+
+        var change: Vector2 = Vector2(-cos(angle) * distance, sin(angle) * distance)
+        var target: Vector2 = _recoil_kick.current
+        var max_spread: float = weapon_type.recoil_spread_max
+
+        # If we pass our max spread, ensure the kick pulls us back
+        if not is_zero_approx(max_spread):
+            var total: Vector2 = Vector2(target.x, target.y + _recoil_rise_amount)
+            if abs(total.x) > max_spread:
+                if signf(total.x) == signf(change.x):
+                    change.x *= -1.0
+
+            if abs(total.y) > max_spread:
+                if signf(total.y) == signf(change.y):
+                    change.y *= -1.0
+
+        target += change
+
+        _recoil_kick.duration = RECOIL_DURATION
+        _recoil_kick.easing = Tween.EASE_OUT
+        _recoil_kick.transition = Tween.TRANS_SPRING
+        _recoil_kick.set_target_delta(target, target - _recoil_kick.current)
+
+func on_weapon_empty() -> void:
+    # NOTE: better recoil stop on the tick we empty the gun
+    _is_recoil_rising = false
 
 func on_weapon_melee() -> void:
     if not weapon_type:

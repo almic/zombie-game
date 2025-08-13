@@ -157,21 +157,18 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 graph_offset = Vector2(-34, -103)
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_xkfre"]
-graph_offset = Vector2(-436, 106)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_y8syv")
 nodes/StateMachine/position = Vector2(-100, 140)
 node_connections = [&"output", 0, &"StateMachine"]
 
-[node name="Rifle" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker") instance=ExtResource("1_y638f")]
+[node name="Rifle" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker", "recoil_marker") instance=ExtResource("1_y638f")]
 script = ExtResource("2_fyojs")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")
 particle_marker = NodePath("Mesh/BarrelMarker")
 reload_marker = NodePath("ReloadMarker")
 magazine_marker = NodePath("Mesh/MagazineMarker")
-
-[node name="Mesh" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+recoil_marker = NodePath("RecoilMarker")
 
 [node name="protomesh" type="Node3D" parent="Mesh" index="0"]
 
@@ -213,6 +210,7 @@ visible = false
 
 [node name="MagazineMarker" type="Marker3D" parent="Mesh" index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.075, -0.04)
+gizmo_extents = 0.0
 
 [node name="RifleMagMesh" parent="Mesh/MagazineMarker" index="0" instance=ExtResource("4_y8syv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.73472e-17, -2.98023e-08, 1.11759e-08)
@@ -232,4 +230,8 @@ tree_root = SubResource("AnimationNodeBlendTree_xkfre")
 
 [node name="ReloadMarker" type="Marker3D" parent="." index="3"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.075, -0.04)
+visible = false
+
+[node name="RecoilMarker" type="Marker3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.42)
 visible = false

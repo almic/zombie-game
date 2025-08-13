@@ -262,6 +262,7 @@ func update_movement(delta: float) -> void:
                         friction = speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
                 friction *= delta
 
+
     # Gravity
     var gravity_force: Vector3 = gravity * -up_direction
     gravity_force *= delta
@@ -439,7 +440,12 @@ func update_movement(delta: float) -> void:
         else:
             ground_state = GroundState.GROUNDED
 
-        velocity = velocity.slide(up_direction) + up_direction * up_direction.dot(ground_details.velocity)
+        # TODO: Add lateral velocity from ground / platforms
+        # Take vertical velocity from ground if we just hit it
+        # This allows jumps on the frame after hitting the ground to apply properly
+        if not grounded:
+            velocity = velocity.slide(up_direction) + up_direction * up_direction.dot(ground_details.velocity)
+
     else:
         ground_state = GroundState.NOT_GROUNDED
 

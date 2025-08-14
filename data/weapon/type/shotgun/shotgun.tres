@@ -34,6 +34,7 @@ aim_enabled = true
 aim_offset = Vector3(0.025, 0.02, -0.03)
 aim_camera_roll = 0.0261799
 aim_camera_fov = 60.0
+aim_camera_look_speed_scale = 0.8
 aim_recoil_control = 0.3
 ammo_reserve_size = 6
 ammo_can_mix = true

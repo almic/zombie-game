@@ -1,20 +1,14 @@
-[gd_scene load_steps=40 format=3 uid="uid://2ub41p5mtrf1"]
+[gd_scene load_steps=39 format=3 uid="uid://2ub41p5mtrf1"]
 
 [ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_vskxq"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_h6unu"]
 [ext_resource type="Script" uid="uid://dg2m1isyocicv" path="res://scene/weapon/bolt/bolt_rifle.gd" id="2_jj4xa"]
 [ext_resource type="Shader" uid="uid://bp3in2vqstg1e" path="res://material/scope/scope_shader.gdshader" id="2_ry02v"]
-[ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="3_1i8ia"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_qo7cl"]
+[ext_resource type="CameraAttributesPhysical" uid="uid://bnqestbdi6xgh" path="res://scene/weapon/bolt/scope_view_attributes.tres" id="4_cxsjy"]
 [ext_resource type="PackedScene" uid="uid://cviablxulltv2" path="res://scene/weapon/bolt/bolt_mag_mesh.tscn" id="4_qo7cl"]
 [ext_resource type="Animation" uid="uid://xsv4a00cgagk" path="res://animation/bolt/bolt_RESET.res" id="5_tda2x"]
 [ext_resource type="AnimationLibrary" uid="uid://4t3lfpv45eo5" path="res://animation/bolt/bolt_animation.res" id="6_ry02v"]
-
-[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_1i8ia"]
-auto_exposure_speed = 1.0
-frustum_focus_distance = 50.0
-frustum_focal_length = 650.0
-auto_exposure_min_exposure_value = 0.0
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_jj4xa"]
 viewport_path = NodePath("Mesh/SubViewport")
@@ -168,8 +162,9 @@ nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_51wkv")
 nodes/StateMachine/position = Vector2(-100, 120)
 node_connections = [&"output", 0, &"StateMachine"]
 
-[node name="bolt_rifle" instance=ExtResource("1_vskxq")]
+[node name="bolt_rifle" node_paths=PackedStringArray("magazine_marker") instance=ExtResource("1_vskxq")]
 script = ExtResource("2_jj4xa")
+magazine_marker = NodePath("Mesh/MagazineMarker")
 
 [node name="Mesh" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, -2.08616e-07, 0, 2.08616e-07, 1, 0, 0, 0)
@@ -179,16 +174,21 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
 
 [node name="SubViewport" type="SubViewport" parent="Mesh" index="1"]
+handle_input_locally = false
+msaa_3d = 1
+screen_space_aa = 1
+use_debanding = true
+size = Vector2i(768, 768)
+render_target_clear_mode = 1
 
 [node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport" index="0"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, -2.08616e-07, 0, 2.08616e-07, 1, 1.45519e-11, 0.048, -0.02)
-environment = ExtResource("3_1i8ia")
-attributes = SubResource("CameraAttributesPhysical_1i8ia")
+attributes = ExtResource("4_cxsjy")
 
 [node name="ScopePicture" type="MeshInstance3D" parent="Mesh" index="2"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, 0.26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.048, 0.26)
 mesh = SubResource("QuadMesh_jj4xa")
 skeleton = NodePath("../protomesh/scope")
 

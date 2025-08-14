@@ -80,6 +80,13 @@ var aim_camera_roll: float = 0.0
 @export_range(25.0, 75.0, 0.0001, 'or_less', 'or_greater', 'suffix:°')
 var aim_camera_fov: float = 50.0
 
+## Additional look speed scaling. Normally, the speed is scaled by the ratio of
+## the Aim FOV / Camera FOV, decreasing this can further decrease look speed.
+## This is used mainly by the bolt action rifle, as the scoepe provides a higher
+## magnification than the aiming FOV.
+@export_range(0.001, 1.0, 0.0001)
+var aim_camera_look_speed_scale: float = 1.0
+
 ## How much to reduce recoil by when aiming, if recoil is enabled
 @export_range(0.0, 1.0, 0.0001)
 var aim_recoil_control: float:

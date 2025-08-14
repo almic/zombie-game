@@ -22,7 +22,7 @@ class_name Player extends CharacterBase
 @export_group("Camera")
 
 ## Look speed input multiplier
-@export var look_speed: float = 0.55
+@export var look_speed: float = 0.5
 
 ## FOV of the camera
 @export_range(1.0, 179.0, 0.001, 'suffix:°')
@@ -99,6 +99,8 @@ var _aim_was_triggered: bool = false
 var _current_top_speed: float = top_speed
 ## FOV when aiming, set to the weapon's FOV value
 var _aim_fov: float = fov
+## Look speed multiplier when aiming, set by the weapon
+var _aim_look_speed: float = 1.0
 ## Current FOV, modified when aiming
 var _current_fov: float = fov
 ## Current look speed, modified when aiming
@@ -299,7 +301,7 @@ func update_aiming(delta: float) -> void:
     if _aim_is_aiming:
         duration = look_aim_time
         target_speed = top_speed * aim_move_speed
-        target_look = (_aim_fov / fov) * look_aim_speed
+        target_look = (_aim_fov / fov) * look_aim_speed * _aim_look_speed
         target_fov = _aim_fov
         if weapon_index:
             target_position = weapon_aim_offset
@@ -619,6 +621,7 @@ func select_weapon(slot: int) -> void:
     var weapon: WeaponResource = weapons.get(slot)
     weapon_node.weapon_type = weapon
     _aim_fov = weapon.aim_camera_fov
+    _aim_look_speed = weapon.aim_camera_look_speed_scale
 
     weapon_aim_offset = weapon_aim_position + weapon.aim_offset
     weapon_aim_roll = -weapon.aim_camera_roll

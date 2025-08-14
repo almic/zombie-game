@@ -7,7 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="4_036b0"]
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
 [ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
-[ext_resource type="CameraAttributesPhysical" uid="uid://jvbde4fga4dl" path="res://environment/camera_attributes.tres" id="8_wse8f"]
+[ext_resource type="CameraAttributesPractical" uid="uid://c8syb78be0yjj" path="res://environment/camera_attributes.tres" id="8_wse8f"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="PackedScene" uid="uid://bb3wt0w01eidc" path="res://ui/gameover.tscn" id="11_18ff0"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
@@ -244,7 +244,7 @@ metadata/_edit_lock_ = true
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -238.609, 2.1, -476.372)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("23_x6gsb")
-item_count = 30
+item_count = 10
 item_scene = ExtResource("24_wuj0p")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 

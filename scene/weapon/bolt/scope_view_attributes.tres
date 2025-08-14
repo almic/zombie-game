@@ -1,0 +1,8 @@
+[gd_resource type="CameraAttributesPhysical" format=3 uid="uid://bnqestbdi6xgh"]
+
+[resource]
+auto_exposure_speed = 1.0
+frustum_focus_distance = 100.0
+frustum_focal_length = 450.0
+frustum_near = 0.5
+auto_exposure_min_exposure_value = 0.0

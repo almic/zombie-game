@@ -1,0 +1,68 @@
+[gd_scene load_steps=2 format=3 uid="uid://cud8vqgxop8ju"]
+
+[ext_resource type="PackedScene" uid="uid://br7uyyg4w2kbw" path="res://scene/item/ammo/magnum/magnum_mesh.tscn" id="1_afv1d"]
+
+[node name="MagnumPile" type="Node3D"]
+
+[node name="MagnumMesh" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0353)
+
+[node name="MagnumMesh2" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0212)
+
+[node name="MagnumMesh3" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0071)
+
+[node name="MagnumMesh4" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0071)
+
+[node name="MagnumMesh5" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0212)
+
+[node name="MagnumMesh6" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0353)
+
+[node name="MagnumMesh7" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0494)
+
+[node name="MagnumMesh15" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, 0.0424)
+
+[node name="MagnumMesh16" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, 0.0283)
+
+[node name="MagnumMesh17" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, 0.0142)
+
+[node name="MagnumMesh18" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, 1.45519e-11)
+
+[node name="MagnumMesh19" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, -0.0142)
+
+[node name="MagnumMesh20" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, -0.0283)
+
+[node name="MagnumMesh21" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0124, 1.45519e-11, -0.0424)
+
+[node name="MagnumMesh8" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 1.45519e-11, 0.0424)
+
+[node name="MagnumMesh9" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 1.45519e-11, 0.0283)
+
+[node name="MagnumMesh10" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 1.45519e-11, 0.0142)
+
+[node name="MagnumMesh11" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 0, 0)
+
+[node name="MagnumMesh12" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 1.45519e-11, -0.0142)
+
+[node name="MagnumMesh13" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 1.45519e-11, -0.0283)
+
+[node name="MagnumMesh14" parent="." instance=ExtResource("1_afv1d")]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0124, 1.45519e-11, -0.0424)

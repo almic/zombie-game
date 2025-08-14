@@ -51,7 +51,6 @@ camera_smooth_enabled = false
 camera_smooth_target_node = NodePath("Neck/CameraTarget")
 camera_smooth_max_distance = 0.45
 aim_move_speed = 0.6
-aim_fov = 50.0
 look_aim_speed = 0.25
 look_aim_time = 0.6
 look_aim_return_time = 0.4

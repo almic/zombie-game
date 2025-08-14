@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://cviablxulltv2"]
+
+[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="1_j551w"]
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_0amjh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_3t20o"]
+material = ExtResource("1_j551w")
+size = Vector3(0.032, 0.086, 0.094)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wqusq"]
+material = ExtResource("2_0amjh")
+size = Vector3(0.036, 0.008, 0.094)
+
+[node name="RifleMagMesh" type="Node3D"]
+
+[node name="case" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_3t20o")
+
+[node name="base" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.047, 1.45519e-11)
+mesh = SubResource("BoxMesh_wqusq")

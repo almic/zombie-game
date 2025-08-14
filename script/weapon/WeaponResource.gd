@@ -76,6 +76,10 @@ var projectile_inaccuracy: float = 0.0
 @export_range(0.0, 10.0, 0.001, 'or_greater', 'radians_as_degrees')
 var aim_camera_roll: float = 0.0
 
+## FOV of the camera while aiming
+@export_range(25.0, 75.0, 0.0001, 'or_less', 'or_greater', 'suffix:°')
+var aim_camera_fov: float = 50.0
+
 ## How much to reduce recoil by when aiming, if recoil is enabled
 @export_range(0.0, 1.0, 0.0001)
 var aim_recoil_control: float:

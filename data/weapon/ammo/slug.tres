@@ -10,7 +10,7 @@
 script = ExtResource("1_xqace")
 type = 3
 damage = 40.0
-impulse_power = 18.0
+impulse_power = 50.0
 projectiles = 1
 projectile_spread = 0.00401426
 projectile_clustering = 1.0

@@ -1,0 +1,344 @@
+[gd_scene load_steps=40 format=3 uid="uid://2ub41p5mtrf1"]
+
+[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_vskxq"]
+[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_h6unu"]
+[ext_resource type="Script" uid="uid://dg2m1isyocicv" path="res://scene/weapon/bolt/bolt_rifle.gd" id="2_jj4xa"]
+[ext_resource type="Shader" uid="uid://bp3in2vqstg1e" path="res://material/scope/scope_shader.gdshader" id="2_ry02v"]
+[ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="3_1i8ia"]
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_qo7cl"]
+[ext_resource type="PackedScene" uid="uid://cviablxulltv2" path="res://scene/weapon/bolt/bolt_mag_mesh.tscn" id="4_qo7cl"]
+[ext_resource type="Animation" uid="uid://xsv4a00cgagk" path="res://animation/bolt/bolt_RESET.res" id="5_tda2x"]
+[ext_resource type="AnimationLibrary" uid="uid://4t3lfpv45eo5" path="res://animation/bolt/bolt_animation.res" id="6_ry02v"]
+
+[sub_resource type="CameraAttributesPhysical" id="CameraAttributesPhysical_1i8ia"]
+auto_exposure_speed = 1.0
+frustum_focus_distance = 50.0
+frustum_focal_length = 650.0
+auto_exposure_min_exposure_value = 0.0
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_jj4xa"]
+viewport_path = NodePath("Mesh/SubViewport")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1i8ia"]
+resource_local_to_scene = true
+render_priority = 0
+shader = ExtResource("2_ry02v")
+shader_parameter/viewport = SubResource("ViewportTexture_jj4xa")
+
+[sub_resource type="QuadMesh" id="QuadMesh_jj4xa"]
+resource_local_to_scene = true
+material = SubResource("ShaderMaterial_1i8ia")
+size = Vector2(0.02, 0.02)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_6wx1y"]
+material = ExtResource("2_h6unu")
+top_radius = 0.014
+bottom_radius = 0.014
+height = 0.6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tda2x"]
+material = ExtResource("2_h6unu")
+top_radius = 0.02
+bottom_radius = 0.02
+height = 0.2
+
+[sub_resource type="SphereMesh" id="SphereMesh_ry02v"]
+material = ExtResource("2_h6unu")
+radius = 0.02
+height = 0.02
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_jj4xa"]
+material = ExtResource("3_qo7cl")
+radius = 0.007
+height = 0.044
+
+[sub_resource type="PrismMesh" id="PrismMesh_1i8ia"]
+material = ExtResource("3_qo7cl")
+left_to_right = 0.0
+size = Vector3(0.03, 0.33, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cxsjy"]
+material = ExtResource("3_qo7cl")
+size = Vector3(0.04, 0.03, 0.25)
+
+[sub_resource type="BoxMesh" id="BoxMesh_h6unu"]
+material = ExtResource("3_qo7cl")
+size = Vector3(0.017, 0.03, 0.2)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qo7cl"]
+material = ExtResource("2_h6unu")
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.12
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_ry02v"]
+material = ExtResource("2_h6unu")
+top_radius = 0.018
+bottom_radius = 0.012
+height = 0.048
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jj4xa"]
+material = ExtResource("2_h6unu")
+top_radius = 0.018
+bottom_radius = 0.018
+height = 0.044
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_1i8ia"]
+material = ExtResource("2_h6unu")
+top_radius = 0.012
+bottom_radius = 0.014
+height = 0.018
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_cxsjy"]
+material = ExtResource("2_h6unu")
+top_radius = 0.014
+bottom_radius = 0.014
+height = 0.056
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="BoxMesh" id="BoxMesh_l3tjp"]
+material = ExtResource("3_qo7cl")
+size = Vector3(0.006, 0.01, 0.012)
+
+[sub_resource type="BoxMesh" id="BoxMesh_qo7cl"]
+material = ExtResource("3_qo7cl")
+size = Vector3(0.012, 0.0105, 0.004)
+
+[sub_resource type="PrismMesh" id="PrismMesh_l3tjp"]
+material = ExtResource("3_qo7cl")
+left_to_right = 0.0
+size = Vector3(0.1, 0.35, 0.04)
+
+[sub_resource type="PrismMesh" id="PrismMesh_ord0y"]
+material = ExtResource("3_qo7cl")
+left_to_right = 0.0
+size = Vector3(0.02, 0.35, 0.04)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ec11v"]
+material = ExtResource("3_qo7cl")
+size = Vector3(0.04, 0.05, 0.35)
+
+[sub_resource type="BoxMesh" id="BoxMesh_n7l1y"]
+material = ExtResource("2_h6unu")
+size = Vector3(0.045, 0.084, 0.045)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_jj4xa"]
+_data = {
+&"RESET": ExtResource("5_tda2x")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_1i8ia"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cxsjy"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_l3tjp"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ord0y"]
+xfade_time = 0.25
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ec11v"]
+xfade_time = 0.15
+advance_mode = 2
+advance_expression = "!is_walking"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_51wkv"]
+states/idle/node = SubResource("AnimationNodeAnimation_1i8ia")
+states/idle/position = Vector2(341, 100)
+states/walk/node = SubResource("AnimationNodeAnimation_cxsjy")
+states/walk/position = Vector2(616, 100)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_l3tjp"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_ord0y"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_ec11v")]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_eg8qc"]
+graph_offset = Vector2(-386, 106)
+nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_51wkv")
+nodes/StateMachine/position = Vector2(-100, 120)
+node_connections = [&"output", 0, &"StateMachine"]
+
+[node name="bolt_rifle" instance=ExtResource("1_vskxq")]
+script = ExtResource("2_jj4xa")
+
+[node name="Mesh" parent="." index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, -2.08616e-07, 0, 2.08616e-07, 1, 0, 0, 0)
+
+[node name="ScopeCameraTarget" type="Marker3D" parent="Mesh" index="0"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
+
+[node name="SubViewport" type="SubViewport" parent="Mesh" index="1"]
+
+[node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport" index="0"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, -2.08616e-07, 0, 2.08616e-07, 1, 1.45519e-11, 0.048, -0.02)
+environment = ExtResource("3_1i8ia")
+attributes = SubResource("CameraAttributesPhysical_1i8ia")
+
+[node name="ScopePicture" type="MeshInstance3D" parent="Mesh" index="2"]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, 0.26)
+mesh = SubResource("QuadMesh_jj4xa")
+skeleton = NodePath("../protomesh/scope")
+
+[node name="protomesh" type="Node3D" parent="Mesh" index="3"]
+
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.3)
+mesh = SubResource("CylinderMesh_6wx1y")
+
+[node name="bolt" type="MeshInstance3D" parent="Mesh/protomesh" index="1"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.1)
+mesh = SubResource("CylinderMesh_tda2x")
+
+[node name="cap" type="MeshInstance3D" parent="Mesh/protomesh/bolt" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.1, 1.45519e-11)
+mesh = SubResource("SphereMesh_ry02v")
+
+[node name="handle" type="MeshInstance3D" parent="Mesh/protomesh/bolt" index="1"]
+transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, -1, -4.37114e-08, -4.37114e-08, -4.37114e-08, -4.37114e-08, 1, 0.0265, -0.08, 1.45519e-11)
+mesh = SubResource("CapsuleMesh_jj4xa")
+
+[node name="under_barrel" type="MeshInstance3D" parent="Mesh/protomesh" index="2"]
+transform = Transform3D(0, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, 1.45519e-11, -0.025, -0.165)
+mesh = SubResource("PrismMesh_1i8ia")
+
+[node name="body" type="MeshInstance3D" parent="Mesh/protomesh" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.025, 0.125)
+mesh = SubResource("BoxMesh_cxsjy")
+
+[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.01, 0.094)
+mesh = SubResource("BoxMesh_h6unu")
+
+[node name="scope" type="MeshInstance3D" parent="Mesh/protomesh" index="5"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 2.91038e-11, 0.048, 0.128)
+mesh = SubResource("CylinderMesh_qo7cl")
+skeleton = NodePath("../rail")
+
+[node name="scope2" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.084, 1.45519e-11)
+mesh = SubResource("CylinderMesh_ry02v")
+skeleton = NodePath("../../rail")
+metadata/_edit_lock_ = true
+
+[node name="scope3" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.13, 1.45519e-11)
+mesh = SubResource("CylinderMesh_jj4xa")
+skeleton = NodePath("../../rail")
+metadata/_edit_lock_ = true
+
+[node name="scope4" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.069, 1.45519e-11)
+mesh = SubResource("CylinderMesh_1i8ia")
+skeleton = NodePath("../../rail")
+metadata/_edit_lock_ = true
+
+[node name="scope5" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.106, 1.45519e-11)
+mesh = SubResource("CylinderMesh_cxsjy")
+skeleton = NodePath("../../rail")
+metadata/_edit_lock_ = true
+
+[node name="leg1" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.047, -0.0175957)
+mesh = SubResource("BoxMesh_l3tjp")
+metadata/_edit_lock_ = true
+
+[node name="legbase" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg1" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.0035)
+mesh = SubResource("BoxMesh_qo7cl")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="leg2" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.047, -0.0176)
+mesh = SubResource("BoxMesh_l3tjp")
+metadata/_edit_lock_ = true
+
+[node name="legbase2" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg2" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.0035)
+mesh = SubResource("BoxMesh_qo7cl")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="inner_scope" type="CSGCombiner3D" parent="Mesh/protomesh/scope" index="6"]
+metadata/_edit_lock_ = true
+
+[node name="scope_eye" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.106, 1.45519e-11)
+radius = 0.014
+height = 0.056
+sides = 34
+material = ExtResource("2_h6unu")
+metadata/_edit_lock_ = true
+
+[node name="scope_middle" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.015, 1.45519e-11)
+radius = 0.012
+height = 0.186
+sides = 6
+material = ExtResource("2_h6unu")
+metadata/_edit_lock_ = true
+
+[node name="scope_end" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.13, 1.45519e-11)
+radius = 0.018
+height = 0.044
+sides = 18
+material = ExtResource("2_h6unu")
+metadata/_edit_lock_ = true
+
+[node name="cut" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.009, 1.45519e-11)
+operation = 2
+radius = 0.01
+height = 0.29
+sides = 34
+material = ExtResource("2_h6unu")
+metadata/_edit_lock_ = true
+
+[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh" index="6"]
+transform = Transform3D(-1.49246e-08, -6.7318e-08, 1, -1, 5.96046e-08, 0, -5.96046e-08, -1, -2.98023e-08, 1.45519e-11, -0.11, 0.425)
+mesh = SubResource("PrismMesh_l3tjp")
+
+[node name="stock_2" type="MeshInstance3D" parent="Mesh/protomesh/stock" index="0"]
+transform = Transform3D(-1, -7.10543e-15, 7.50315e-08, 7.10543e-15, 1, 8.74228e-08, -7.50315e-08, 1.62454e-07, -1, -0.1095, 0, -1.63424e-09)
+mesh = SubResource("PrismMesh_ord0y")
+skeleton = NodePath("../..")
+
+[node name="stock_3" type="MeshInstance3D" parent="Mesh/protomesh/stock" index="1"]
+transform = Transform3D(-1.77636e-15, -1, -5.96046e-08, -2.98023e-08, 5.96046e-08, -1, 1, -1.49246e-08, -6.7318e-08, -0.075, 0, -1.11934e-09)
+mesh = SubResource("BoxMesh_ec11v")
+skeleton = NodePath("../..")
+
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh/stock" index="2"]
+transform = Transform3D(-1.77636e-15, -0.906308, -0.422618, -2.98023e-08, 0.422618, -0.906308, 1, 1.49236e-08, -6.73183e-08, -0.042, 0.1507, 1.45519e-11)
+mesh = SubResource("BoxMesh_n7l1y")
+skeleton = NodePath("../..")
+
+[node name="MagazineMarker" type="Marker3D" parent="Mesh" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.055, 0.09)
+
+[node name="RifleMagMesh" parent="Mesh/MagazineMarker" index="0" instance=ExtResource("4_qo7cl")]
+
+[node name="AnimationPlayer" parent="." index="1"]
+libraries = {
+&"": SubResource("AnimationLibrary_jj4xa"),
+&"bolt": ExtResource("6_ry02v")
+}
+
+[node name="AnimationTree" parent="." index="2"]
+active = false
+tree_root = SubResource("AnimationNodeBlendTree_eg8qc")

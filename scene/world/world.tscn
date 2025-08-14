@@ -1,4 +1,4 @@
-[gd_scene load_steps=63 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=65 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -27,8 +27,10 @@
 [ext_resource type="PackedScene" uid="uid://dpw3tt0t5w2c4" path="res://scene/weapon/rifle/rifle.tscn" id="22_8ighw"]
 [ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="22_cm2xv"]
 [ext_resource type="Material" uid="uid://vmytjr2shhek" path="res://material/level/grid_white.tres" id="23_6lidv"]
+[ext_resource type="Resource" uid="uid://dvpvjiyiktmp6" path="res://data/weapon/type/bolt/bolt.tres" id="23_x6gsb"]
 [ext_resource type="Material" uid="uid://bw4sj1kv018lx" path="res://material/level/grid_red.tres" id="24_6hm40"]
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="24_b43sk"]
+[ext_resource type="PackedScene" uid="uid://2ub41p5mtrf1" path="res://scene/weapon/bolt/bolt_rifle.tscn" id="24_wuj0p"]
 [ext_resource type="Material" uid="uid://6tvs7wudhhdq" path="res://material/level/grid_black.tres" id="25_1obi0"]
 [ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg/csg_steps/csg_steps.gd" id="26_1obi0"]
 [ext_resource type="Material" uid="uid://dw056en0eb3vg" path="res://material/level/grid_green.tres" id="27_4tdq6"]
@@ -94,7 +96,9 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-target_spawn_count = 15
+enable_spawning = false
+enable_targetting = false
+target_spawn_count = 20
 spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
 metadata/_custom_type_script = "uid://mvbofvslxl7"
@@ -156,7 +160,7 @@ visible = false
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, 0.258819, -327.964, 2, -456.795)
+transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -238.604, 2.04, -476.395)
 life = SubResource("Resource_3wrw6")
 camera_smooth_enabled = true
 
@@ -183,9 +187,10 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupPistol" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.1, -458.2)
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -324.4, 2.2, -514.6)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("17_lpj8c")
+item_count = 13
 item_scene = ExtResource("18_udj0i")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
@@ -199,7 +204,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupShotgun" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -323.8, 2.1, -452.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -514.4)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("19_udj0i")
 item_scene = ExtResource("20_b8n2p")
@@ -217,7 +222,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
 [node name="PickupRifle" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.729, 2.1, -450.372)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.729, 2.1, -514.572)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("21_dt3as")
 item_count = 30
@@ -230,6 +235,25 @@ monitorable = false
 metadata/_edit_lock_ = true
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickupRifle/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_il2y7")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+metadata/_edit_lock_ = true
+
+[node name="PickupBolt" type="Marker3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -238.609, 2.1, -476.372)
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("23_x6gsb")
+item_count = 30
+item_scene = ExtResource("24_wuj0p")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="PickupBolt"]
+collision_layer = 0
+monitorable = false
+metadata/_edit_lock_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupBolt/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_il2y7")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
@@ -2142,6 +2166,14 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -34.9,
 size = Vector3(1.872, 1.849, 4.912)
 material = ExtResource("22_cm2xv")
 
+[node name="ZeroPlatform" type="CSGCombiner3D" parent="LevelBlocking"]
+visible = false
+
+[node name="floor" type="CSGBox3D" parent="LevelBlocking/ZeroPlatform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.19209e-07, 0, 2.38419e-07)
+size = Vector3(7.8, 1, 14.2)
+material = ExtResource("25_1obi0")
+
 [node name="ZombiePlayground" type="CSGCombiner3D" parent="." groups=["terrain_nav_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -354, 2, -475)
 use_collision = true
@@ -2690,7 +2722,7 @@ script = ExtResource("38_4duv0")
 metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="PickupBuckshot" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.6, 2.2, -452.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("43_0wajj")
 item_count = 200
@@ -2726,10 +2758,10 @@ shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupFMJ" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.6, 2.2, -449.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("49_il2y7")
-item_count = 400
+item_count = 5000
 item_scene = ExtResource("50_il2y7")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
@@ -2743,7 +2775,7 @@ shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="Pickup9mm" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.8, 2.2, -458.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.4, 2.2, -514.4)
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("45_51258")
 item_count = 200

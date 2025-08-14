@@ -29,6 +29,7 @@ projectile_hit_mask = 0
 aim_enabled = false
 aim_offset = Vector3(0, 0, 0)
 aim_camera_roll = 0.0
+aim_camera_fov = 50.0
 aim_recoil_control = 0.0
 ammo_reserve_size = 10
 ammo_can_mix = false

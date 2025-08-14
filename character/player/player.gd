@@ -46,12 +46,8 @@ var fov: float = 75.0
 @export_range(0.001, 1.0, 0.001)
 var aim_move_speed: float = 0.6
 
-## FOV when aiming, should be smaller than the normal FOV
-@export_range(1.0, 179.0, 0.001, 'suffix:°')
-var aim_fov: float = 75.0
-
 ## Target aiming speed
-@export var look_aim_speed: float = 0.2
+@export var look_aim_speed: float = 0.7
 
 ## Interpolation time when aiming
 @export_range(0.001, 1.0, 0.001)
@@ -101,6 +97,8 @@ var _aim_is_aiming: bool = false
 var _aim_was_triggered: bool = false
 ## Current top speed, modified when aiming
 var _current_top_speed: float = top_speed
+## FOV when aiming, set to the weapon's FOV value
+var _aim_fov: float = fov
 ## Current FOV, modified when aiming
 var _current_fov: float = fov
 ## Current look speed, modified when aiming
@@ -301,8 +299,8 @@ func update_aiming(delta: float) -> void:
     if _aim_is_aiming:
         duration = look_aim_time
         target_speed = top_speed * aim_move_speed
-        target_look = look_aim_speed
-        target_fov = aim_fov
+        target_look = (_aim_fov / fov) * look_aim_speed
+        target_fov = _aim_fov
         if weapon_index:
             target_position = weapon_aim_offset
             target_roll = weapon_aim_roll
@@ -620,6 +618,7 @@ func select_weapon(slot: int) -> void:
     weapon_index = slot
     var weapon: WeaponResource = weapons.get(slot)
     weapon_node.weapon_type = weapon
+    _aim_fov = weapon.aim_camera_fov
 
     weapon_aim_offset = weapon_aim_position + weapon.aim_offset
     weapon_aim_roll = -weapon.aim_camera_roll

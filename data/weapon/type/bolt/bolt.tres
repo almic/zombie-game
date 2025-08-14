@@ -1,0 +1,60 @@
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=8 format=3 uid="uid://dvpvjiyiktmp6"]
+
+[ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_bl5ip"]
+[ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="2_gngf8"]
+[ext_resource type="Resource" uid="uid://cq4n43oieipem" path="res://data/weapon/ammo/magnum.tres" id="2_scge3"]
+[ext_resource type="PackedScene" uid="uid://2ub41p5mtrf1" path="res://scene/weapon/bolt/bolt_rifle.tscn" id="3_74sam"]
+[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="4_gac0b"]
+[ext_resource type="PackedScene" uid="uid://cviablxulltv2" path="res://scene/weapon/bolt/bolt_mag_mesh.tscn" id="4_kmds6"]
+
+[sub_resource type="Resource" id="Resource_74sam"]
+script = ExtResource("4_gac0b")
+automatic_fire = false
+cycle_time = 1.45519e-11
+metadata/_custom_type_script = "uid://crckednuhsmu2"
+
+[resource]
+script = ExtResource("2_gngf8")
+name = "Bolt Rifle"
+slot = 5
+melee_is_primary = false
+melee_damage = 20.0
+melee_impact = 0.0
+melee_range = 2.0
+melee_collision = 8
+trigger_mechanism = SubResource("Resource_74sam")
+can_chamber = true
+projectile_inaccuracy = 0.3
+projectile_range = 500.0
+projectile_hit_mask = 8
+aim_enabled = true
+aim_offset = Vector3(1.45519e-11, -0.048, -0.1)
+aim_camera_roll = 0.00872665
+aim_camera_fov = 10.0
+aim_recoil_control = 0.8
+ammo_reserve_size = 10
+ammo_can_mix = false
+ammo_reversed_use = false
+ammo_supported = Array[ExtResource("1_bl5ip")]([ExtResource("2_scge3")])
+ammo_expend_enabled = false
+ammo_expend_direction = Vector3(1, 0, 0)
+ammo_expend_direction_range = 0.0
+ammo_expend_force = 0.0
+ammo_expend_force_range = 0.0
+recoil_enabled = true
+recoil_recover_time = 0.7
+recoil_vertical_acceleration = 0.0
+recoil_spread_max = 0.0
+recoil_random_spread = 600.0
+recoil_minimum_spread = 500.0
+recoil_spread_axis_angle = 1.39626
+recoil_spread_bias = 0.0
+recoil_spread_angle = 0.0872665
+recoil_aim_control = 0.8
+scene = ExtResource("3_74sam")
+scene_offset = Vector3(1.45519e-11, 0.1, 0.1)
+scene_magazine = ExtResource("4_kmds6")
+particle_offset = Vector3(0, 0, 0)
+particle_test = false
+sound_test = false
+metadata/_custom_type_script = "uid://bwkctbyfo4j26"

@@ -9,7 +9,7 @@
 [resource]
 script = ExtResource("1_6aw5r")
 type = 4
-damage = 40.0
+damage = 35.0
 impulse_power = 35.0
 projectiles = 1
 projectile_spread = 0.00174533

@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://1idohcdd01kb"]
+
+[ext_resource type="PackedScene" uid="uid://cr5fjmg73txto" path="res://scene/item/ammo/magnum/magnum_mesh_expend.tscn" id="1_3v8an"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_kkb18"]
+height = 0.067
+radius = 0.007
+
+[node name="magnum_rigid_expend" type="RigidBody3D"]
+mass = 0.009
+
+[node name="magnum_mesh_expend" parent="." instance=ExtResource("1_3v8an")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("CylinderShape3D_kkb18")

@@ -7,6 +7,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 - [ ] Add all weapons
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [ ] Set up day / night settings for transitions
 - [ ] Add more zombie types
 - [ ] Level blocking
 - [ ] Camera Smooth (generic)

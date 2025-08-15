@@ -5,7 +5,6 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
-- [ ] Apply focus distances to scope aim, reduce player focus and set scope focus to target
 - [ ] Add all weapons
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
 - [ ] Add more zombie types
@@ -26,6 +25,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 # ANGRY TODOS
 
 - [ ] Make recoil rotation origin marker work
+- [ ] Make bolt rifle scope have input for magnification and focus, also compute
+      magnifications so they are accurate. And reticle setting if bullet wind/ drop is added.
 - [ ] Make second rifle reload out animation that doesn't charge, to keep a live
       round chambered.
 - [ ] Add procedural weapon sway, standing, walking, jumping, added on top of

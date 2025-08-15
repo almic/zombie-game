@@ -618,6 +618,10 @@ func select_weapon(slot: int) -> void:
         return
 
     weapon_index = slot
+
+    # If the current weapon had a queued input, clear when changing
+    clear_input_buffer()
+
     var weapon: WeaponResource = weapons.get(slot) as WeaponResource
     weapon_node.weapon_type = weapon
     _aim_fov = weapon.aim_camera_fov

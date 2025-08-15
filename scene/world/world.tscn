@@ -1,4 +1,4 @@
-[gd_scene load_steps=65 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=68 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -38,6 +38,8 @@
 [ext_resource type="Script" uid="uid://c70ichse0a8nc" path="res://script/csg/csg_ramp/csg_ramp.gd" id="30_5enf7"]
 [ext_resource type="Texture2D" uid="uid://deq7ocj5qxeq3" path="res://textures/level/map.png" id="30_avgpp"]
 [ext_resource type="Material" uid="uid://nfcagk1yn11u" path="res://material/water.tres" id="31_i8b61"]
+[ext_resource type="Resource" uid="uid://cq4n43oieipem" path="res://data/weapon/ammo/magnum.tres" id="31_rf70f"]
+[ext_resource type="PackedScene" uid="uid://cud8vqgxop8ju" path="res://scene/item/ammo/magnum/magnum_pile.tscn" id="32_fur4y"]
 [ext_resource type="Script" uid="uid://bd4h6hrne4un5" path="res://script/pickup/pickup.gd" id="36_ddy8d"]
 [ext_resource type="Script" uid="uid://0egn31rtalxq" path="res://script/spawning/spawn_point.gd" id="38_4duv0"]
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="43_0wajj"]
@@ -75,6 +77,14 @@ radius = 0.6
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_il2y7"]
 radius = 0.6
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_mhi7v"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dt3as"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pb8w5"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dprur"]
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_i8b61"]
 albedo_texture = ExtResource("30_avgpp")
 
@@ -84,12 +94,6 @@ size = Vector2(3048, 3048)
 [sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
 material = ExtResource("31_i8b61")
 size = Vector2(4096, 4096)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_mhi7v"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_dt3as"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_dprur"]
 
 [node name="world" type="Node3D" groups=["world"]]
 process_mode = 3
@@ -160,7 +164,7 @@ visible = false
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -238.604, 2.04, -555.795)
+transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -324.644, 2.04, -514.535)
 life = SubResource("Resource_3wrw6")
 camera_smooth_enabled = true
 
@@ -170,94 +174,306 @@ velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
 
-[node name="PickupShovel" type="Marker3D" parent="."]
+[node name="WeaponPickups" type="Node" parent="."]
+
+[node name="PickupShovel" type="Marker3D" parent="WeaponPickups"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.1, -455.6)
+top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("15_4duv0")
 item_scene = ExtResource("15_d2i0j")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
-[node name="Area3D" type="Area3D" parent="PickupShovel"]
+[node name="Area3D" type="Area3D" parent="WeaponPickups/PickupShovel"]
 collision_layer = 0
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupShovel/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupShovel/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
-[node name="PickupPistol" type="Marker3D" parent="."]
-transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -324.4, 2.2, -514.6)
+[node name="PickupPistol" type="Marker3D" parent="WeaponPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.5, 2.2, -514.42)
+top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("17_lpj8c")
 item_count = 13
 item_scene = ExtResource("18_udj0i")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
-[node name="Area3D" type="Area3D" parent="PickupPistol"]
+[node name="Area3D" type="Area3D" parent="WeaponPickups/PickupPistol"]
 collision_layer = 0
 monitorable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupPistol/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupPistol/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
-[node name="PickupShotgun" type="Marker3D" parent="."]
+[node name="PickupShotgun" type="Marker3D" parent="WeaponPickups"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -514.4)
+top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("19_udj0i")
 item_scene = ExtResource("20_b8n2p")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
-[node name="Area3D" type="Area3D" parent="PickupShotgun"]
+[node name="Area3D" type="Area3D" parent="WeaponPickups/PickupShotgun"]
 collision_layer = 0
 monitorable = false
 metadata/_edit_lock_ = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupShotgun/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupShotgun/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
-[node name="PickupRifle" type="Marker3D" parent="."]
+[node name="PickupRifle" type="Marker3D" parent="WeaponPickups"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.729, 2.1, -514.572)
+top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("21_dt3as")
 item_count = 30
 item_scene = ExtResource("22_8ighw")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
-[node name="Area3D" type="Area3D" parent="PickupRifle"]
+[node name="Area3D" type="Area3D" parent="WeaponPickups/PickupRifle"]
 collision_layer = 0
 monitorable = false
 metadata/_edit_lock_ = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupRifle/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupRifle/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_il2y7")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
-[node name="PickupBolt" type="Marker3D" parent="."]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -238.609, 2.1, -555.772)
+[node name="PickupBolt" type="Marker3D" parent="WeaponPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.689, 2.1, -514.532)
+top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("23_x6gsb")
 item_count = 10
 item_scene = ExtResource("24_wuj0p")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
-[node name="Area3D" type="Area3D" parent="PickupBolt"]
+[node name="Area3D" type="Area3D" parent="WeaponPickups/PickupBolt"]
 collision_layer = 0
 monitorable = false
 metadata/_edit_lock_ = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupBolt/Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupBolt/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_il2y7")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
+
+[node name="AmmoPickups" type="Node" parent="."]
+
+[node name="PickupBuckshot" type="Marker3D" parent="AmmoPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
+top_level = true
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("43_0wajj")
+item_count = 200
+item_scene = ExtResource("44_mhi7v")
+item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, -1.5708)
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="AmmoPickups/PickupBuckshot"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AmmoPickups/PickupBuckshot/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_mhi7v")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="PickupSlug" type="Marker3D" parent="AmmoPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.6, 2.2, -451.2)
+top_level = true
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("45_3wrw6")
+item_count = 200
+item_scene = ExtResource("46_my0pb")
+item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, -1.5708)
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="AmmoPickups/PickupSlug"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AmmoPickups/PickupSlug/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_dt3as")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="PickupFMJ" type="Marker3D" parent="AmmoPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
+top_level = true
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("49_il2y7")
+item_count = 5000
+item_scene = ExtResource("50_il2y7")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="AmmoPickups/PickupFMJ"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AmmoPickups/PickupFMJ/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_dt3as")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="PickupMagnum" type="Marker3D" parent="AmmoPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.64, 2.2, -514.44)
+top_level = true
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("31_rf70f")
+item_count = 100
+item_scene = ExtResource("32_fur4y")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="AmmoPickups/PickupMagnum"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AmmoPickups/PickupMagnum/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_pb8w5")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="Pickup9mm" type="Marker3D" parent="AmmoPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.4, 2.2, -514.4)
+top_level = true
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("45_51258")
+item_count = 200
+item_scene = ExtResource("48_x3qer")
+item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, 2.53979e-13)
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="AmmoPickups/Pickup9mm"]
+collision_layer = 0
+monitorable = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AmmoPickups/Pickup9mm/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("BoxShape3D_dprur")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+
+[node name="ZombieSpawns" type="Node" parent="."]
+
+[node name="Spawn1" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -365.2, 2.05, -464.4)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn2" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -356.4, 2.05, -463.6)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn3" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -355.8, 2.25, -476.2)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn4" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -361, 2.13, -471.2)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn5" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -368.8, 2.05, -484.2)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn6" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -373.4, 2.05, -491.2)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn7" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -361.6, 2.05, -492.6)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn8" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -344.2, 2.05, -493)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn9" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -334.4, 2.05, -480.2)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn10" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -328.6, 2.05, -462.4)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn11" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -331.8, 2.05, -453.6)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn12" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -335.6, 2.05, -443.6)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn13" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -363.8, 2.05, -442.6)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn14" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -381.8, 2.05, -445.6)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn15" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -393.2, 2.05, -453)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn16" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -394.2, 2.05, -467)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn17" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -391.8, 2.05, -477)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
+
+[node name="Spawn18" type="Marker3D" parent="ZombieSpawns"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -385.8, 2.05, -486)
+top_level = true
+script = ExtResource("38_4duv0")
+metadata/_custom_type_script = "uid://0egn31rtalxq"
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["terrain_nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -2610,184 +2826,3 @@ metadata/_edit_lock_ = true
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.796252, -0.030462, -0.604198, -0.000888604, 0.998672, -0.0515213, 0.604964, 0.0415608, 0.795167, -163.365, 2.2, 496.226)
 fov = 25.3494
-
-[node name="ZombieSpawns" type="Node3D" parent="."]
-
-[node name="Spawn1" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -365.2, 2.05, -464.4)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn2" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -356.4, 2.05, -463.6)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn3" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -355.8, 2.25, -476.2)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn4" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -361, 2.13, -471.2)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn5" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -368.8, 2.05, -484.2)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn6" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -373.4, 2.05, -491.2)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn7" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -361.6, 2.05, -492.6)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn8" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -344.2, 2.05, -493)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn9" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -334.4, 2.05, -480.2)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn10" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -328.6, 2.05, -462.4)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn11" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -331.8, 2.05, -453.6)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn12" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -335.6, 2.05, -443.6)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn13" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -363.8, 2.05, -442.6)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn14" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -381.8, 2.05, -445.6)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn15" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -393.2, 2.05, -453)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn16" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -394.2, 2.05, -467)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn17" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -391.8, 2.05, -477)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="Spawn18" type="Marker3D" parent="ZombieSpawns"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -385.8, 2.05, -486)
-top_level = true
-script = ExtResource("38_4duv0")
-metadata/_custom_type_script = "uid://0egn31rtalxq"
-
-[node name="PickupBuckshot" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
-script = ExtResource("36_ddy8d")
-item_type = ExtResource("43_0wajj")
-item_count = 200
-item_scene = ExtResource("44_mhi7v")
-item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, -1.5708)
-metadata/_custom_type_script = "uid://bd4h6hrne4un5"
-
-[node name="Area3D" type="Area3D" parent="PickupBuckshot"]
-collision_layer = 0
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupBuckshot/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("BoxShape3D_mhi7v")
-debug_color = Color(0.35, 0.866, 0.152, 0.757)
-
-[node name="PickupSlug" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.6, 2.2, -451.2)
-script = ExtResource("36_ddy8d")
-item_type = ExtResource("45_3wrw6")
-item_count = 200
-item_scene = ExtResource("46_my0pb")
-item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, -1.5708)
-metadata/_custom_type_script = "uid://bd4h6hrne4un5"
-
-[node name="Area3D" type="Area3D" parent="PickupSlug"]
-collision_layer = 0
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupSlug/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("BoxShape3D_dt3as")
-debug_color = Color(0.35, 0.866, 0.152, 0.757)
-
-[node name="PickupFMJ" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
-script = ExtResource("36_ddy8d")
-item_type = ExtResource("49_il2y7")
-item_count = 5000
-item_scene = ExtResource("50_il2y7")
-metadata/_custom_type_script = "uid://bd4h6hrne4un5"
-
-[node name="Area3D" type="Area3D" parent="PickupFMJ"]
-collision_layer = 0
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupFMJ/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("BoxShape3D_dt3as")
-debug_color = Color(0.35, 0.866, 0.152, 0.757)
-
-[node name="Pickup9mm" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.4, 2.2, -514.4)
-script = ExtResource("36_ddy8d")
-item_type = ExtResource("45_51258")
-item_count = 200
-item_scene = ExtResource("48_x3qer")
-item_scene_rotation = Vector3(2.53979e-13, 2.53979e-13, 2.53979e-13)
-metadata/_custom_type_script = "uid://bd4h6hrne4un5"
-
-[node name="Area3D" type="Area3D" parent="Pickup9mm"]
-collision_layer = 0
-monitorable = false
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pickup9mm/Area3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-shape = SubResource("BoxShape3D_dprur")
-debug_color = Color(0.35, 0.866, 0.152, 0.757)

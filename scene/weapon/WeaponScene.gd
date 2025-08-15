@@ -172,6 +172,7 @@ func set_magazine_scene(scene: PackedScene) -> void:
 
     magazine_marker.add_child(scene.instantiate())
 
+# TODO: This function should only take a RigidBody3D, velocity, and impulse
 func eject_round(
         round_dict: Dictionary,
         velocity: Vector3,

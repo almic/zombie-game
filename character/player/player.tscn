@@ -93,6 +93,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.15, 1.45519e-1
 unique_name_in_owner = true
 cull_mask = 524287
 current = true
+near = 0.02
+far = 2000.0
 
 [node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
 unique_name_in_owner = true

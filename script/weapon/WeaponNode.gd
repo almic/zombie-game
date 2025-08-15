@@ -658,6 +658,8 @@ func on_weapon_magazine_loaded() -> void:
     #       the same operation, so we just call into this method.
     on_weapon_round_loaded()
 
+    reload_complete.emit()
+
     # Magazines do not loop, this means it has finished
     continue_reload = false
 

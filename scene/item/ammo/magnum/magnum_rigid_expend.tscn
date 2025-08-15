@@ -7,6 +7,8 @@ height = 0.067
 radius = 0.007
 
 [node name="magnum_rigid_expend" type="RigidBody3D"]
+collision_layer = 128
+collision_mask = 244
 mass = 0.009
 
 [node name="magnum_mesh_expend" parent="." instance=ExtResource("1_3v8an")]

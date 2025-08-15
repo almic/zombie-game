@@ -56,6 +56,7 @@ recoil_spread_axis_angle = 1.39626
 recoil_spread_bias = 1.0
 recoil_spread_angle = 0.349066
 recoil_aim_control = 0.5
+crosshair_enabled = true
 ui_texture = ExtResource("8_3dsxi")
 scene = ExtResource("4_6v0uo")
 scene_offset = Vector3(0, 0, 0)

@@ -458,6 +458,9 @@ func on_hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary) -> voi
                 pass
             else:
                 do_part_impulse(part, hit.direction * hit.power, hit.position)
+        else:
+            # This shot killed us, must save to hit list
+            _insert_hit_list(part, damage, hit)
         return
 
     var player: Player = from as Player
@@ -471,6 +474,9 @@ func on_hurt(from: Node3D, part: HurtBox, damage: float, hit: Dictionary) -> voi
     else:
         last_player_damage.score += 10
 
+    _insert_hit_list(part, damage, hit)
+
+func _insert_hit_list(part: HurtBox, damage: float, hit: Dictionary) -> void:
     # TODO: this could probably be better
     last_hits.insert(0, {
         'part': part,

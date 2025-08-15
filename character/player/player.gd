@@ -618,10 +618,12 @@ func select_weapon(slot: int) -> void:
         return
 
     weapon_index = slot
-    var weapon: WeaponResource = weapons.get(slot)
+    var weapon: WeaponResource = weapons.get(slot) as WeaponResource
     weapon_node.weapon_type = weapon
     _aim_fov = weapon.aim_camera_fov
     _aim_look_speed = weapon.aim_camera_look_speed_scale
+
+    get_tree().call_group('hud', 'set_crosshair_visible', weapon.crosshair_enabled)
 
     weapon_aim_offset = weapon_aim_position + weapon.aim_offset
     weapon_aim_roll = -weapon.aim_camera_roll

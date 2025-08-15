@@ -1,11 +1,13 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=8 format=3 uid="uid://dvpvjiyiktmp6"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=10 format=3 uid="uid://dvpvjiyiktmp6"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_bl5ip"]
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="2_gngf8"]
 [ext_resource type="Resource" uid="uid://cq4n43oieipem" path="res://data/weapon/ammo/magnum.tres" id="2_scge3"]
 [ext_resource type="PackedScene" uid="uid://2ub41p5mtrf1" path="res://scene/weapon/bolt/bolt_rifle.tscn" id="3_74sam"]
+[ext_resource type="PackedScene" uid="uid://d272705u8gln4" path="res://particle/system/weapon/gunshot_big.tscn" id="3_war24"]
 [ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="4_gac0b"]
 [ext_resource type="PackedScene" uid="uid://cviablxulltv2" path="res://scene/weapon/bolt/bolt_mag_mesh.tscn" id="4_kmds6"]
+[ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="7_n1s3b"]
 
 [sub_resource type="Resource" id="Resource_74sam"]
 script = ExtResource("4_gac0b")
@@ -26,36 +28,39 @@ trigger_mechanism = SubResource("Resource_74sam")
 can_chamber = true
 projectile_inaccuracy = 0.3
 projectile_range = 500.0
-projectile_hit_mask = 8
+projectile_hit_mask = 24
 aim_enabled = true
-aim_offset = Vector3(1.45519e-11, -0.048, 0.085)
+aim_offset = Vector3(1.45519e-11, -0.048, 0.082)
 aim_camera_roll = 0.00349066
 aim_camera_fov = 40.0
 aim_camera_look_speed_scale = 0.15
-aim_recoil_control = 0.8
+aim_recoil_control = 1.0
 ammo_reserve_size = 10
 ammo_can_mix = false
 ammo_reversed_use = false
 ammo_supported = Array[ExtResource("1_bl5ip")]([ExtResource("2_scge3")])
-ammo_expend_enabled = false
+ammo_expend_enabled = true
 ammo_expend_direction = Vector3(1, 0, 0)
-ammo_expend_direction_range = 0.0
-ammo_expend_force = 0.0
-ammo_expend_force_range = 0.0
+ammo_expend_direction_range = 0.174533
+ammo_expend_force = 0.02
+ammo_expend_force_range = 0.008
 recoil_enabled = true
 recoil_recover_time = 0.7
 recoil_vertical_acceleration = 0.0
 recoil_spread_max = 0.0
-recoil_random_spread = 600.0
-recoil_minimum_spread = 500.0
-recoil_spread_axis_angle = 1.39626
-recoil_spread_bias = 0.0
-recoil_spread_angle = 0.0872665
-recoil_aim_control = 0.8
+recoil_random_spread = 180.0
+recoil_minimum_spread = 150.0
+recoil_spread_axis_angle = 1.48353
+recoil_spread_bias = 1.0
+recoil_spread_angle = 0.174533
+recoil_aim_control = 1.0
+crosshair_enabled = false
 scene = ExtResource("3_74sam")
 scene_offset = Vector3(1.45519e-11, 0.1, 0.1)
 scene_magazine = ExtResource("4_kmds6")
+particle_scene = ExtResource("3_war24")
 particle_offset = Vector3(0, 0, 0)
 particle_test = false
+sound_effect = ExtResource("7_n1s3b")
 sound_test = false
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

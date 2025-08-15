@@ -46,6 +46,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="CrossHair" type="Node2D" parent="crosshair_root/crosshair_ctl"]
+unique_name_in_owner = true
 script = ExtResource("2_546lt")
 center_enabled = true
 center_size = 1.4

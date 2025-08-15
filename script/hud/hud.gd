@@ -2,6 +2,9 @@
 
 class_name HUD extends Control
 
+
+@onready var cross_hair: CrossHair = %CrossHair
+
 @onready var score_value: Label = %score_value
 
 @onready var health_bar: ProgressBar = %health_bar
@@ -84,6 +87,11 @@ func reset() -> void:
     stock_amount.text = ''
 
     weapon_texture.texture = null
+
+## Set the crosshair's visibility
+@warning_ignore('shadowed_variable_base_class')
+func set_crosshair_visible(visible: bool) -> void:
+    cross_hair.visible = visible
 
 func update_score(score: int) -> void:
     score_value.text = str(score)

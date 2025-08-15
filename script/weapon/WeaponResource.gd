@@ -187,6 +187,8 @@ var recoil_aim_control: float:
 var _recoil_aim_control: float = 0.0
 
 @export_group("Display", "")
+## If the weapon displays a crosshair when held
+@export var crosshair_enabled: bool = true
 @export var ui_texture: Texture2D
 @export var scene: PackedScene
 @export var scene_offset: Vector3

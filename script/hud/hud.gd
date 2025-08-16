@@ -134,6 +134,9 @@ func update_weapon_ammo(weapon: WeaponResource) -> void:
             reserve.reverse()
 
         for type in reserve:
+            # NOTE: HACK for revolver, need rework of weapon UI elements!
+            if not type:
+                continue
             _add_ammo_reserve(type, ammo)
     else:
         var type: int = weapon.get_reserve_type()

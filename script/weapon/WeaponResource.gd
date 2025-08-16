@@ -100,7 +100,8 @@ var aim_recoil_control: float:
 
 ## Reserve capacity for ammo
 @export_range(1, 100, 1, 'or_greater')
-var ammo_reserve_size: int = 10
+var ammo_reserve_size: int = 10:
+    set = set_ammo_reserve_size
 
 ## If the weapon supports mixing ammo loads
 @export var ammo_can_mix: bool = false
@@ -347,6 +348,9 @@ func set_ammo_bank(value: Dictionary) -> void:
     ammo_stock = {}
     ammo_stock = get_next_ammo()
 
+func set_ammo_reserve_size(value: int) -> void:
+    ammo_reserve_size = value
+
 func is_chambered() -> bool:
     return _chambered_round_type > 0
 
@@ -561,8 +565,20 @@ func fire_projectiles(base: WeaponNode) -> bool:
         push_error("Firing weapon got no ammo to fire! Investigate!")
         return updated_ammo
 
-    var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
-    var transform: Transform3D = base.weapon_projectile_transform()
+    var node: Node3D = base
+    if base.controller:
+        node = base.controller
+
+    _do_projectile_raycast(node, ammo, base.weapon_projectile_transform())
+
+    # If we are empty, signal
+    if get_reserve_total() < 1:
+        out_of_ammo.emit()
+
+    return updated_ammo
+
+func _do_projectile_raycast(node: Node3D, ammo: AmmoResource, transform: Transform3D) -> void:
+    var space: PhysicsDirectSpaceState3D = node.get_world_3d().direct_space_state
     var from: Vector3 = transform.origin
     var forward: Vector3 = transform.basis.z
     var right: Vector3 = transform.basis.x
@@ -600,25 +616,17 @@ func fire_projectiles(base: WeaponNode) -> bool:
             var sphere: DebugSphere = DEBUG_SPHERE.instantiate()
             sphere.set_radius(0.04)
             sphere.set_color(Color(0.0, 0.646, 0.752, 0.45))
-            base.get_tree().current_scene.add_child(sphere)
+            var tree: SceneTree = node.get_tree()
+            tree.current_scene.add_child(sphere)
             sphere.global_position = hit.position
-            base.get_tree().create_timer(60.0, false, true).timeout.connect(sphere.queue_free)
+            tree.create_timer(60.0, false, true).timeout.connect(sphere.queue_free)
 
         if hit.collider is HurtBox:
-            var from_node: Node3D = base
-            if base.controller:
-                from_node = base.controller
             hit.power = ammo.impulse_power
             hit.from = from
             # NOTE: i do not understand why this is different than the impulse direction...
             hit.direction = -projectile_forward
-            hit.collider.do_hit(from_node, hit, ammo.damage)
-
-    # If we are empty, signal
-    if get_reserve_total() < 1:
-        out_of_ammo.emit()
-
-    return updated_ammo
+            hit.collider.do_hit(node, hit, ammo.damage)
 
 func fire_melee(base: WeaponNode) -> void:
     var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state

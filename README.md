@@ -25,6 +25,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # ANGRY TODOS
 
+- [ ] Add way to spin revolver cylinder randomly, and obscure the ammo order for UI
 - [ ] Add special ammo for the revolver only
 - [ ] Make recoil rotation origin marker work
 - [ ] Make bolt rifle scope have input for magnification and focus, also compute

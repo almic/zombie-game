@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="AmmoResource" load_steps=5 format=3 uid="uid://cq4n43oieipem"]
+[gd_resource type="Resource" script_class="AmmoResource" load_steps=6 format=3 uid="uid://cq4n43oieipem"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_fsofp"]
 [ext_resource type="PackedScene" uid="uid://br7uyyg4w2kbw" path="res://scene/item/ammo/magnum/magnum_mesh.tscn" id="1_t5jtk"]
 [ext_resource type="PackedScene" uid="uid://1idohcdd01kb" path="res://scene/item/ammo/magnum/magnum_rigid_expend.tscn" id="2_k02qi"]
 [ext_resource type="PackedScene" uid="uid://ck3etkssflf1s" path="res://scene/item/ammo/magnum/magnum_rigid.tscn" id="3_lr6gk"]
+[ext_resource type="Texture2D" uid="uid://1j5anmd7ryi8" path="res://icon/magnum_side.png" id="5_k02qi"]
 
 [resource]
 script = ExtResource("1_fsofp")
@@ -13,6 +14,7 @@ impulse_power = 50.0
 projectiles = 1
 projectile_spread = 0.00174533
 projectile_clustering = 1.0
+ui_texture = ExtResource("5_k02qi")
 scene_round = ExtResource("1_t5jtk")
 scene_round_expended = ExtResource("2_k02qi")
 scene_round_unloaded = ExtResource("3_lr6gk")

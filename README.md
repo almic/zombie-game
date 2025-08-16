@@ -25,6 +25,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # ANGRY TODOS
 
+- [ ] Add special ammo for the revolver only
 - [ ] Make recoil rotation origin marker work
 - [ ] Make bolt rifle scope have input for magnification and focus, also compute
       magnifications so they are accurate. And reticle setting if bullet wind/ drop is added.

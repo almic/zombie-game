@@ -1,4 +1,4 @@
-[gd_scene load_steps=68 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=71 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -32,7 +32,9 @@
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="24_b43sk"]
 [ext_resource type="PackedScene" uid="uid://2ub41p5mtrf1" path="res://scene/weapon/bolt/bolt_rifle.tscn" id="24_wuj0p"]
 [ext_resource type="Material" uid="uid://6tvs7wudhhdq" path="res://material/level/grid_black.tres" id="25_1obi0"]
+[ext_resource type="Resource" uid="uid://ccvoouydse02j" path="res://data/weapon/type/revolver/revolver.tres" id="25_pb8w5"]
 [ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg/csg_steps/csg_steps.gd" id="26_1obi0"]
+[ext_resource type="PackedScene" uid="uid://cntwk6lvbkhi2" path="res://scene/weapon/revolver/revolver.tscn" id="26_f0qux"]
 [ext_resource type="Material" uid="uid://dw056en0eb3vg" path="res://material/level/grid_green.tres" id="27_4tdq6"]
 [ext_resource type="PackedScene" uid="uid://byx787kh4uila" path="res://scene/ramp_collider/ramp_collider.tscn" id="27_xd5hc"]
 [ext_resource type="Script" uid="uid://c70ichse0a8nc" path="res://script/csg/csg_ramp/csg_ramp.gd" id="30_5enf7"]
@@ -77,6 +79,9 @@ radius = 0.6
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_il2y7"]
 radius = 0.6
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_64map"]
+radius = 0.6
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_mhi7v"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dt3as"]
@@ -100,7 +105,6 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-enable_spawning = false
 enable_targetting = false
 target_spawn_count = 20
 spawn_count_extra = 5
@@ -267,6 +271,26 @@ metadata/_edit_lock_ = true
 [node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupBolt/Area3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_il2y7")
+debug_color = Color(0.35, 0.866, 0.152, 0.757)
+metadata/_edit_lock_ = true
+
+[node name="PickupRevolver" type="Marker3D" parent="WeaponPickups"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.689, 2.1, -514.532)
+top_level = true
+script = ExtResource("36_ddy8d")
+item_type = ExtResource("25_pb8w5")
+item_count = 50
+item_scene = ExtResource("26_f0qux")
+metadata/_custom_type_script = "uid://bd4h6hrne4un5"
+
+[node name="Area3D" type="Area3D" parent="WeaponPickups/PickupRevolver"]
+collision_layer = 0
+monitorable = false
+metadata/_edit_lock_ = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WeaponPickups/PickupRevolver/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_64map")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 

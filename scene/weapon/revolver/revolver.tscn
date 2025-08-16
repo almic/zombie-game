@@ -1,0 +1,504 @@
+[gd_scene load_steps=61 format=3 uid="uid://cntwk6lvbkhi2"]
+
+[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_sk0n1"]
+[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_m23wh"]
+[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_avu46"]
+[ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="4_d122g"]
+[ext_resource type="Animation" uid="uid://dtil5m0os6sq7" path="res://animation/revolver/revolver_RESET.res" id="5_avu46"]
+[ext_resource type="AnimationLibrary" uid="uid://d3x5551lmtwxq" path="res://animation/revolver/revolver_animation.res" id="6_d122g"]
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_qyq87"]
+material = ExtResource("3_avu46")
+top_radius = 0.003
+bottom_radius = 0.003
+height = 0.142
+
+[sub_resource type="BoxMesh" id="BoxMesh_thgko"]
+material = ExtResource("3_avu46")
+size = Vector3(0.0078, 0.0125, 0.0045)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m23wh"]
+material = ExtResource("3_avu46")
+size = Vector3(0.006, 0.026, 0.01096)
+
+[sub_resource type="BoxMesh" id="BoxMesh_avu46"]
+material = ExtResource("2_m23wh")
+size = Vector3(0.019, 0.004, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_d122g"]
+material = ExtResource("2_m23wh")
+size = Vector3(0.019, 0.009, 0.1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0b5uw"]
+material = ExtResource("2_m23wh")
+size = Vector3(0.019, 0.065, 0.014)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_aal8d"]
+material = ExtResource("3_avu46")
+top_radius = 0.027
+bottom_radius = 0.027
+height = 0.004
+
+[sub_resource type="BoxMesh" id="BoxMesh_3pk32"]
+material = ExtResource("2_m23wh")
+size = Vector3(0.015, 0.02, 0.06)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a06wg"]
+material = ExtResource("3_avu46")
+size = Vector3(0.0064, 0.0063, 0.03)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_g1dqu"]
+material = ExtResource("2_m23wh")
+top_radius = 0.012
+bottom_radius = 0.012
+height = 0.2
+
+[sub_resource type="BoxMesh" id="BoxMesh_6ngox"]
+material = ExtResource("3_avu46")
+size = Vector3(0.006, 0.19, 0.002)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5kojq"]
+material = ExtResource("4_d122g")
+size = Vector3(0.003, 0.03, 0.009)
+
+[sub_resource type="BoxMesh" id="BoxMesh_aal8d"]
+material = ExtResource("3_avu46")
+size = Vector3(0.031, 0.08, 0.045)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hdjuo"]
+material = ExtResource("2_m23wh")
+size = Vector3(0.019, 0.06, 0.04)
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_0b5uw"]
+_data = {
+&"RESET": ExtResource("5_avu46")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_avu46"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_d122g"]
+animation = &"revolver/fire"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_0b5uw"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_aal8d"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_a06wg"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_g1dqu"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6ngox"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_5kojq"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3pk32"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_a06wg"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_g1dqu"]
+xfade_time = 0.25
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6ngox"]
+xfade_time = 0.15
+advance_mode = 2
+advance_expression = "!is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5kojq"]
+advance_expression = "cocked"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6ihty"]
+xfade_time = 0.05
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_hdjuo"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_gl0t3"]
+xfade_time = 0.05
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_n2mqc"]
+xfade_time = 0.05
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_d140c"]
+xfade_time = 0.05
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_p4v70"]
+xfade_time = 0.05
+advance_expression = "cocked"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5575l"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qi4qq"]
+xfade_time = 0.05
+switch_mode = 2
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5e4de"]
+xfade_time = 0.05
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x5ctt"]
+xfade_time = 0.05
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jfwyt"]
+xfade_time = 0.05
+switch_mode = 2
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1gv76"]
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_bq645"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_a15i6"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vygpa"]
+xfade_time = 0.25
+priority = 0
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mmicr"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_c6lc1"]
+xfade_time = 0.2
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_oepyn"]
+xfade_time = 0.2
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_tir38"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_y0ymr"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jwd5o"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_3pxay"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1f03k"]
+priority = 0
+switch_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pnxij"]
+switch_mode = 2
+advance_mode = 2
+advance_expression = "wants_unload"
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_aal8d"]
+states/charge/node = SubResource("AnimationNodeAnimation_avu46")
+states/charge/position = Vector2(308, -101)
+states/fire/node = SubResource("AnimationNodeAnimation_d122g")
+states/fire/position = Vector2(514, -132)
+states/fire_fan/node = SubResource("AnimationNodeAnimation_0b5uw")
+states/fire_fan/position = Vector2(725, -101)
+states/idle/node = SubResource("AnimationNodeAnimation_aal8d")
+states/idle/position = Vector2(379, 100)
+states/into_unload_reload/node = SubResource("AnimationNodeAnimation_a06wg")
+states/into_unload_reload/position = Vector2(259, 232)
+states/out_unload_reload/node = SubResource("AnimationNodeAnimation_g1dqu")
+states/out_unload_reload/position = Vector2(765, 232)
+states/reload/node = SubResource("AnimationNodeAnimation_6ngox")
+states/reload/position = Vector2(379, 327)
+states/unload/node = SubResource("AnimationNodeAnimation_5kojq")
+states/unload/position = Vector2(654, 327)
+states/walk/node = SubResource("AnimationNodeAnimation_3pk32")
+states/walk/position = Vector2(654, 100)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_a06wg"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_g1dqu"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_6ngox"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_5kojq"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_6ihty"), "idle", "fire_fan", SubResource("AnimationNodeStateMachineTransition_hdjuo"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_gl0t3"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_n2mqc"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_d140c"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_p4v70"), "walk", "fire_fan", SubResource("AnimationNodeStateMachineTransition_5575l"), "fire_fan", "walk", SubResource("AnimationNodeStateMachineTransition_qi4qq"), "fire_fan", "idle", SubResource("AnimationNodeStateMachineTransition_5e4de"), "fire", "idle", SubResource("AnimationNodeStateMachineTransition_x5ctt"), "fire", "walk", SubResource("AnimationNodeStateMachineTransition_jfwyt"), "charge", "fire", SubResource("AnimationNodeStateMachineTransition_1gv76"), "idle", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_bq645"), "walk", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_a15i6"), "into_unload_reload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_vygpa"), "out_unload_reload", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_mmicr"), "out_unload_reload", "idle", SubResource("AnimationNodeStateMachineTransition_c6lc1"), "out_unload_reload", "walk", SubResource("AnimationNodeStateMachineTransition_oepyn"), "into_unload_reload", "reload", SubResource("AnimationNodeStateMachineTransition_tir38"), "into_unload_reload", "unload", SubResource("AnimationNodeStateMachineTransition_y0ymr"), "unload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_jwd5o"), "reload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_3pxay"), "unload", "reload", SubResource("AnimationNodeStateMachineTransition_1f03k"), "reload", "unload", SubResource("AnimationNodeStateMachineTransition_pnxij")]
+graph_offset = Vector2(8, -255)
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_3pk32"]
+graph_offset = Vector2(-388, 45)
+nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_aal8d")
+nodes/StateMachine/position = Vector2(-42, 149)
+node_connections = [&"output", 0, &"StateMachine"]
+
+[node name="revolver" node_paths=PackedStringArray("projectile_marker", "particle_marker") instance=ExtResource("1_sk0n1")]
+projectile_marker = NodePath("Mesh/BarrelMarker")
+particle_marker = NodePath("Mesh/BarrelMarker")
+
+[node name="protomesh" type="Node3D" parent="Mesh" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+
+[node name="cylinder_axel" type="Node3D" parent="Mesh/protomesh" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0055, -0.057, 0)
+
+[node name="cylinder_spin" type="Node3D" parent="Mesh/protomesh/cylinder_axel" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0055, 0.037, -1.45519e-11)
+
+[node name="cylinder" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" index="0"]
+metadata/_edit_lock_ = true
+
+[node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+radius = 0.0317383
+height = 0.07
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="1"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 0.02, 1.45519e-11)
+operation = 2
+radius = 0.009
+height = 0.071
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="2"]
+transform = Transform3D(0.5, 0, -0.866025, 0.866025, -4.37114e-08, 0.5, -3.78552e-08, -1, -2.18557e-08, -0.0172, 0.01, 1.45519e-11)
+operation = 2
+radius = 0.009
+height = 0.071
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="3"]
+transform = Transform3D(-0.5, 0, -0.866025, 0.866025, -4.37114e-08, -0.5, -3.78552e-08, -1, 2.18557e-08, -0.0172, -0.01, 1.45519e-11)
+operation = 2
+radius = 0.009
+height = 0.071
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="4"]
+transform = Transform3D(0.5, 0, 0.866025, -0.866025, -4.37114e-08, 0.5, 3.78552e-08, -1, -2.18557e-08, 0.0172, 0.01, 1.45519e-11)
+operation = 2
+radius = 0.009
+height = 0.071
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="5"]
+transform = Transform3D(-0.5, 0, 0.866025, -0.866025, -4.37114e-08, -0.5, 3.78552e-08, -1, 2.18557e-08, 0.0172, -0.01, 1.45519e-11)
+operation = 2
+radius = 0.009
+height = 0.071
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="6"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, -0.02, 1.45519e-11)
+operation = 2
+radius = 0.009
+height = 0.071
+sides = 16
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="thing_cut" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="7"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.034)
+operation = 2
+radius = 0.0166016
+height = 0.002
+sides = 28
+material = ExtResource("2_m23wh")
+metadata/_edit_lock_ = true
+
+[node name="plunger_slide" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" index="1"]
+
+[node name="plunger" type="MeshInstance3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.034)
+mesh = SubResource("CylinderMesh_qyq87")
+skeleton = NodePath("../../../..")
+metadata/_edit_lock_ = true
+
+[node name="thing" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.034, -1.86265e-09)
+metadata/_edit_lock_ = true
+
+[node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.034)
+radius = 0.0166016
+height = 0.002
+sides = 28
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="1"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 0.02, 0.03507)
+operation = 2
+radius = 0.009
+height = 0.005
+sides = 16
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="2"]
+transform = Transform3D(0.5, 0, -0.866025, 0.866025, -4.37114e-08, 0.5, -3.78552e-08, -1, -2.18557e-08, -0.0172, 0.01, 0.03507)
+operation = 2
+radius = 0.009
+height = 0.005
+sides = 16
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="3"]
+transform = Transform3D(-0.5, 0, -0.866025, 0.866025, -4.37114e-08, -0.5, -3.78552e-08, -1, 2.18557e-08, -0.0172, -0.01, 0.03507)
+operation = 2
+radius = 0.009
+height = 0.005
+sides = 16
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="4"]
+transform = Transform3D(0.5, 0, 0.866025, -0.866025, -4.37114e-08, 0.5, 3.78552e-08, -1, -2.18557e-08, 0.0172, 0.01, 0.03507)
+operation = 2
+radius = 0.009
+height = 0.005
+sides = 16
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="5"]
+transform = Transform3D(-0.5, 0, 0.866025, -0.866025, -4.37114e-08, -0.5, 3.78552e-08, -1, 2.18557e-08, 0.0172, -0.01, 0.03507)
+operation = 2
+radius = 0.009
+height = 0.005
+sides = 16
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/plunger/thing" index="6"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, -0.02, 0.03507)
+operation = 2
+radius = 0.009
+height = 0.005
+sides = 16
+material = ExtResource("3_avu46")
+metadata/_edit_lock_ = true
+
+[node name="hammer_axel" type="Node3D" parent="Mesh/protomesh" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0128, 0.06)
+
+[node name="hammer2" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, -1.45519e-11, 0.0166377, 0.00161392)
+mesh = SubResource("BoxMesh_thgko")
+skeleton = NodePath("../hammer")
+metadata/_edit_lock_ = true
+
+[node name="hammer" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel" index="1"]
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 1.45519e-11, 0.00880404, -0.00669135)
+mesh = SubResource("BoxMesh_m23wh")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="frame" type="Node3D" parent="Mesh/protomesh" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45519e-11, -0.02, -1.45519e-11)
+metadata/_edit_lock_ = true
+
+[node name="frame1" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.0345, 1.45519e-11)
+mesh = SubResource("BoxMesh_avu46")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="frame2" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.037, 1.45519e-11)
+mesh = SubResource("BoxMesh_d122g")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="frame3" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 0.043)
+mesh = SubResource("BoxMesh_0b5uw")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="frame4" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.043)
+mesh = SubResource("BoxMesh_0b5uw")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="plate" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="4"]
+transform = Transform3D(1, 0, 0, 0, 1.31134e-07, 1, 0, -1, 1.31134e-07, 1.45519e-11, 1.45519e-11, 0.0385)
+mesh = SubResource("CylinderMesh_aal8d")
+metadata/_edit_lock_ = true
+
+[node name="plunger_well" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.0035, -0.08)
+mesh = SubResource("BoxMesh_3pk32")
+metadata/_edit_lock_ = true
+
+[node name="irons" type="MeshInstance3D" parent="Mesh/protomesh/frame" index="6"]
+transform = Transform3D(0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0, 0, 1, -0.00675, 0.0383, 0.034)
+mesh = SubResource("BoxMesh_a06wg")
+metadata/_edit_lock_ = true
+
+[node name="irons2" type="MeshInstance3D" parent="Mesh/protomesh/frame/irons" index="0"]
+transform = Transform3D(0.766045, 0.642788, 0, -0.642788, 0.766045, 0, 0, 0, 1, 0.0126859, -0.00461727, 0)
+mesh = SubResource("BoxMesh_a06wg")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" index="3"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.86265e-09, -0.136001)
+mesh = SubResource("CylinderMesh_g1dqu")
+metadata/_edit_lock_ = true
+
+[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh/barrel" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.005, 0.0125)
+mesh = SubResource("BoxMesh_6ngox")
+metadata/_edit_lock_ = true
+
+[node name="sight" type="MeshInstance3D" parent="Mesh/protomesh/barrel" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.085, 0.017954)
+mesh = SubResource("BoxMesh_5kojq")
+metadata/_edit_lock_ = true
+
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh" index="4"]
+transform = Transform3D(1, 0, 0, 0, 0.939874, 0.341521, 0, -0.341521, 0.939874, 0, -0.09, 0.084)
+mesh = SubResource("BoxMesh_aal8d")
+metadata/_edit_lock_ = true
+
+[node name="grip2" type="MeshInstance3D" parent="Mesh/protomesh/grip" index="0"]
+transform = Transform3D(1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 1.45519e-11, 0.0542, -0.0001)
+mesh = SubResource("BoxMesh_hdjuo")
+skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
+
+[node name="BarrelMarker" type="Marker3D" parent="Mesh" index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.24)
+
+[node name="AnimationPlayer" parent="." index="1"]
+libraries = {
+&"": SubResource("AnimationLibrary_0b5uw"),
+&"revolver": ExtResource("6_d122g")
+}
+
+[node name="AnimationTree" parent="." index="2"]
+tree_root = SubResource("AnimationNodeBlendTree_3pk32")

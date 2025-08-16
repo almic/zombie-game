@@ -1,14 +1,14 @@
 [gd_scene load_steps=4 format=3 uid="uid://b5hpy6pfdrwd2"]
 
-[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/ammo/buckshot/buckshot_mesh.tscn" id="1_fncy5"]
+[ext_resource type="PackedScene" uid="uid://xb6bfi75fie0" path="res://scene/item/ammo/buckshot/buckshot_mesh_expend.tscn" id="1_g45qw"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_jh7ex"]
 rough = true
 bounce = 0.2
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_sq4na"]
-height = 0.106
-radius = 0.018
+height = 0.07
+radius = 0.009
 
 [node name="RigidBody3D" type="RigidBody3D"]
 collision_layer = 128
@@ -23,4 +23,4 @@ angular_damp = 0.5
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
 shape = SubResource("CylinderShape3D_sq4na")
 
-[node name="BuckshotMesh" parent="." instance=ExtResource("1_fncy5")]
+[node name="BuckshotMesh" parent="." instance=ExtResource("1_g45qw")]

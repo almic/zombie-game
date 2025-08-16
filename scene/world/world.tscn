@@ -220,6 +220,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("19_udj0i")
+item_count = 4
 item_scene = ExtResource("20_b8n2p")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 
@@ -279,7 +280,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.689, 2.1, -514.532)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("25_pb8w5")
-item_count = 50
+item_count = 6
 item_scene = ExtResource("26_f0qux")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 

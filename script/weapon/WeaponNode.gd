@@ -475,6 +475,11 @@ func _load_weapon_scene() -> void:
     _weapon_scene = weapon_scene
 
     add_child(_weapon_scene)
+
+    # NOTE: Special case for revolver scene and weapon
+    if _weapon_scene is RevolverWeaponScene and weapon_type is RevolverWeapon:
+        _weapon_scene.set_revolver(weapon_type)
+
     _weapon_scene.rotation = Vector3.ZERO
     _weapon_scene.position = weapon_type.scene_offset
     _weapon_scene.fired.connect(on_weapon_fire)

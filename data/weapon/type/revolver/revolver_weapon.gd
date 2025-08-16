@@ -4,6 +4,10 @@
 class_name RevolverWeapon extends WeaponResource
 
 
+## Special signal for the scene to handle port updates
+signal fired()
+
+
 ## Holds ammo expend state, 0 for used, 1 for unused
 var _cylinder_ammo_state: PackedByteArray = []
 
@@ -12,9 +16,6 @@ var _cylinder_position: int = 0
 
 ## If the hammer is cocked
 var _hammer_cocked: bool = false
-
-
-
 
 
 ## Rotates the cylinder by a given number of places. Positive is clockwise,
@@ -30,6 +31,30 @@ func set_ammo_reserve_size(value: int) -> void:
     _mixed_reserve.resize(ammo_reserve_size)
     _cylinder_ammo_state.resize(ammo_reserve_size)
 
+## For the revolver, ejects the current cylinder round only.
+## Returns true if it was live and recovered to ammo bank
+func eject_round() -> bool:
+    # NOTE: For the revolver, all spent rounds are ejected before removing
+    #       live rounds, so this should always replenish stock on a non-empty port
+
+    # Empty port
+    if not _mixed_reserve[_cylinder_position]:
+        return false
+
+    _mixed_reserve[_cylinder_position] = 0
+
+    if _cylinder_ammo_state[_cylinder_position]:
+        # Recover round to ammo stock
+        var stock: Dictionary = ammo_bank.get(_mixed_reserve[_cylinder_position])
+        if stock:
+            stock.amount += 1
+        _cylinder_ammo_state[_cylinder_position] = 0
+        return true
+
+    # NOTE: For debugging, should be removed
+    push_error("Revolver tried to eject a dead round! This is a mistake! Investigate!")
+    return false
+
 ## For the revolver, we can eject if the cylinder is on a round
 func can_eject() -> bool:
     return _mixed_reserve[_cylinder_position] > 0
@@ -44,6 +69,10 @@ func can_charge() -> bool:
 ## For the revolver, you can always unload
 func can_unload() -> bool:
     return true
+
+## For revolver scene to ask if the round in position is live
+func is_round_live() -> bool:
+    return _cylinder_ammo_state[_cylinder_position] != 0
 
 ## For the revolver, charging is just cocking the hammer
 func charge_weapon() -> void:
@@ -74,8 +103,11 @@ func load_rounds(count: int = 1, type: int = 0) -> void:
     if not get_supported_ammunition().has(type):
         push_error('Weapon is loading an unsupported type! This is a mistake! Investigate!')
 
-    _mixed_reserve.set(_cylinder_position, type)
-    _cylinder_ammo_state.set(_cylinder_position, 1)
+    var pos: int
+    for i in range(count):
+        pos = wrapi(i + _cylinder_position, 0, ammo_reserve_size)
+        _mixed_reserve.set(pos, type)
+        _cylinder_ammo_state.set(pos, 1)
 
     # NOTE: This is for debugging, should be removed later
     if _mixed_reserve.size() > ammo_reserve_size:
@@ -95,7 +127,7 @@ func fire_projectiles(base: WeaponNode) -> bool:
     var ammo: AmmoResource = ammo_cache.get(type)
 
     if not ammo:
-        push_error("Firing weapon got no ammo to fire! Investigate!")
+        push_error("Revolver got no ammo to fire! Investigate!")
         return updated_ammo
 
     # NOTE: For debugging only, should be removed
@@ -108,7 +140,7 @@ func fire_projectiles(base: WeaponNode) -> bool:
 
     _do_projectile_raycast(node, ammo, base.weapon_projectile_transform())
 
-    _cylinder_ammo_state[_cylinder_position] = 0
+    fired.emit()
 
     # If we are empty, signal
     if get_reserve_total() < 1:

@@ -428,6 +428,7 @@ func update_weapon_node(delta: float) -> void:
 
     if action == WeaponNode.Action.OKAY:
         _fire_can_buffer = false
+        clear_input_buffer(fire_primary)
     else:
         if triggered:
             if _fire_can_buffer:
@@ -465,7 +466,9 @@ func update_weapon_node(delta: float) -> void:
         # NOTE: Even if the action is blocked, buffer anyway because we
         #       may be waiting to load a round
         action = weapon_node.charge()
-        if action != WeaponNode.Action.OKAY:
+        if action == WeaponNode.Action.OKAY:
+            clear_input_buffer(charge)
+        else:
             update_input_buffer(charge)
     elif is_input_buffered(charge):
         # NOTE: If the action was blocked, keep trying anyway
@@ -476,8 +479,7 @@ func update_weapon_node(delta: float) -> void:
     # NOTE: We may have a fire buffered, but we have failed to shoot, so try
     #       charging the weapon in case we were waiting for that
     elif is_input_buffered(fire_primary):
-        action = weapon_node.charge()
-        if action == WeaponNode.Action.OKAY:
+        if weapon_node.charge() == WeaponNode.Action.OKAY:
             # Requeue the primary fire action as buffer is too short normally
             update_input_buffer(fire_primary)
 
@@ -502,7 +504,9 @@ func update_weapon_node(delta: float) -> void:
             #       may be waiting to cycle a round from reserve
             #print('please reload!')
             action = weapon_node.reload()
-            if action != WeaponNode.Action.OKAY:
+            if action == WeaponNode.Action.OKAY:
+                clear_input_buffer(reload)
+            else:
                 update_input_buffer(reload)
         #else:
             #print('not gonna reload!')
@@ -553,9 +557,10 @@ func is_input_buffered(action: GUIDEAction) -> bool:
 
     return action == _next_input
 
-func clear_input_buffer() -> void:
-    _next_input = null
-    _next_input_timer = 0.0
+func clear_input_buffer(action: GUIDEAction = null) -> void:
+    if action == null or _next_input == action:
+        _next_input = null
+        _next_input_timer = 0.0
 
 func update_input_buffer(action: GUIDEAction, time: float = GENERIC_INPUT_BUFFER_TIME) -> void:
     if action == _last_input:

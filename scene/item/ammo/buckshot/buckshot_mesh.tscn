@@ -1,18 +1,26 @@
-[gd_scene load_steps=3 format=3 uid="uid://dyi2igdvm8b7w"]
+[gd_scene load_steps=5 format=3 uid="uid://dyi2igdvm8b7w"]
 
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="1_pycq4"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_gdod5"]
 
-[node name="BuckshotMesh" type="CSGCombiner3D"]
-
-[node name="shell" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.015)
-radius = 0.018
-height = 0.076
+[sub_resource type="CylinderMesh" id="CylinderMesh_egdve"]
 material = ExtResource("1_pycq4")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.057
 
-[node name="primer" type="CSGCylinder3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.038)
-radius = 0.019
-height = 0.03
+[sub_resource type="CylinderMesh" id="CylinderMesh_l5qih"]
 material = ExtResource("2_gdod5")
+top_radius = 0.009
+bottom_radius = 0.009
+height = 0.013
+
+[node name="BuckshotMesh" type="Node3D"]
+
+[node name="shell" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0065)
+mesh = SubResource("CylinderMesh_egdve")
+
+[node name="primer" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0285)
+mesh = SubResource("CylinderMesh_l5qih")

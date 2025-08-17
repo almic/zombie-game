@@ -94,14 +94,12 @@ func _reload_loop_start() -> void:
 
 func _reload_loop_end() -> void:
     reload_loop.emit()
-    _reload_loop_start_time = -1
 
 func _unload_loop_start() -> void:
     _unload_loop_start_time = anim_state.get_current_play_position()
 
 func _unload_loop_end() -> void:
     unload_loop.emit()
-    _unload_loop_start_time = -1
 
 func _lock_anim() -> void:
     anim_locked = true

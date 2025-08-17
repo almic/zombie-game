@@ -1,10 +1,11 @@
-[gd_scene load_steps=71 format=3 uid="uid://cntwk6lvbkhi2"]
+[gd_scene load_steps=82 format=3 uid="uid://cntwk6lvbkhi2"]
 
 [ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_sk0n1"]
 [ext_resource type="Script" uid="uid://b8c38fv1c1av1" path="res://scene/weapon/revolver/revolver.gd" id="2_d122g"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_m23wh"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_avu46"]
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="4_d122g"]
+[ext_resource type="PackedScene" uid="uid://dyi2igdvm8b7w" path="res://scene/item/ammo/buckshot/buckshot_mesh.tscn" id="5_0b5uw"]
 [ext_resource type="Animation" uid="uid://dtil5m0os6sq7" path="res://animation/revolver/revolver_RESET.res" id="5_avu46"]
 [ext_resource type="AnimationLibrary" uid="uid://d3x5551lmtwxq" path="res://animation/revolver/revolver_animation.res" id="6_d122g"]
 
@@ -94,12 +95,24 @@ animation = &"RESET"
 animation = &"revolver/idle"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_a06wg"]
-animation = &"RESET"
+animation = &"revolver/into_unload_reload"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_g1dqu"]
+animation = &"revolver/out_reload"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_n2mqc"]
+animation = &"revolver/set_cylinder"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_d140c"]
 animation = &"RESET"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_p4v70"]
+animation = &"revolver/set_cylinder"
+
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_6ngox"]
+animation = &"revolver/reload"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_5575l"]
 animation = &"RESET"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hdjuo"]
@@ -157,10 +170,6 @@ xfade_time = 0.05
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_a15i6"]
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vygpa"]
-xfade_time = 0.25
-priority = 0
-
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mmicr"]
 xfade_time = 0.25
 
@@ -182,22 +191,9 @@ advance_mode = 2
 switch_mode = 2
 advance_mode = 2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jwd5o"]
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_3pxay"]
-switch_mode = 2
-advance_mode = 2
-
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1f03k"]
 priority = 0
 switch_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pnxij"]
-switch_mode = 2
-advance_mode = 2
-advance_expression = "wants_unload"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1gv76"]
 xfade_time = 0.05
@@ -242,6 +238,45 @@ advance_mode = 2
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vygpa"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jwd5o"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_3pxay"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pnxij"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jnpdt"]
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0ikgj"]
+xfade_time = 0.2
+switch_mode = 2
+advance_mode = 2
+advance_expression = "is_walking"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vdxg3"]
+xfade_time = 0.2
+switch_mode = 2
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5w16n"]
+switch_mode = 2
+advance_mode = 2
+advance_expression = "wants_unload"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_rliy5"]
+switch_mode = 2
+advance_mode = 2
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_aal8d"]
 states/charge/node = SubResource("AnimationNodeAnimation_avu46")
 states/charge/position = Vector2(654, -64)
@@ -257,33 +292,42 @@ states/idle/node = SubResource("AnimationNodeAnimation_aal8d")
 states/idle/position = Vector2(379, 100)
 states/into_unload_reload/node = SubResource("AnimationNodeAnimation_a06wg")
 states/into_unload_reload/position = Vector2(259, 232)
-states/out_unload_reload/node = SubResource("AnimationNodeAnimation_g1dqu")
-states/out_unload_reload/position = Vector2(765, 232)
+states/out_reload/node = SubResource("AnimationNodeAnimation_g1dqu")
+states/out_reload/position = Vector2(441, 232)
+states/out_reload_set_cylinder/node = SubResource("AnimationNodeAnimation_n2mqc")
+states/out_reload_set_cylinder/position = Vector2(259, 475)
+states/out_unload/node = SubResource("AnimationNodeAnimation_d140c")
+states/out_unload/position = Vector2(693, 315)
+states/out_unload_set_cylinder/node = SubResource("AnimationNodeAnimation_p4v70")
+states/out_unload_set_cylinder/position = Vector2(693, 392)
 states/reload/node = SubResource("AnimationNodeAnimation_6ngox")
-states/reload/position = Vector2(379, 327)
+states/reload/position = Vector2(259, 392)
+states/reload_to_unload/node = SubResource("AnimationNodeAnimation_5575l")
+states/reload_to_unload/position = Vector2(512, 475)
 states/set_cylinder/node = SubResource("AnimationNodeAnimation_hdjuo")
 states/set_cylinder/position = Vector2(512, -150)
 states/unload/node = SubResource("AnimationNodeAnimation_5kojq")
-states/unload/position = Vector2(654, 327)
+states/unload/position = Vector2(512, 392)
 states/walk/node = SubResource("AnimationNodeAnimation_3pk32")
 states/walk/position = Vector2(654, 100)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_a06wg"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_g1dqu"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_6ngox"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_5kojq"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_6ihty"), "idle", "fire_fan", SubResource("AnimationNodeStateMachineTransition_hdjuo"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_gl0t3"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_n2mqc"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_d140c"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_p4v70"), "walk", "fire_fan", SubResource("AnimationNodeStateMachineTransition_5575l"), "idle", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_bq645"), "walk", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_a15i6"), "into_unload_reload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_vygpa"), "out_unload_reload", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_mmicr"), "out_unload_reload", "idle", SubResource("AnimationNodeStateMachineTransition_c6lc1"), "out_unload_reload", "walk", SubResource("AnimationNodeStateMachineTransition_oepyn"), "into_unload_reload", "reload", SubResource("AnimationNodeStateMachineTransition_tir38"), "into_unload_reload", "unload", SubResource("AnimationNodeStateMachineTransition_y0ymr"), "unload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_jwd5o"), "reload", "out_unload_reload", SubResource("AnimationNodeStateMachineTransition_3pxay"), "unload", "reload", SubResource("AnimationNodeStateMachineTransition_1f03k"), "reload", "unload", SubResource("AnimationNodeStateMachineTransition_pnxij"), "idle", "fire_double", SubResource("AnimationNodeStateMachineTransition_1gv76"), "walk", "fire_double", SubResource("AnimationNodeStateMachineTransition_fyuve"), "fire_double", "fire", SubResource("AnimationNodeStateMachineTransition_d122g"), "set_cylinder", "idle", SubResource("AnimationNodeStateMachineTransition_qi4qq"), "set_cylinder", "walk", SubResource("AnimationNodeStateMachineTransition_5e4de"), "fire_fan", "set_cylinder", SubResource("AnimationNodeStateMachineTransition_x5ctt"), "fire", "set_cylinder", SubResource("AnimationNodeStateMachineTransition_jfwyt"), "idle", "fire_empty", SubResource("AnimationNodeStateMachineTransition_o8tcj"), "walk", "fire_empty", SubResource("AnimationNodeStateMachineTransition_8b7h4"), "fire_double", "fire_empty", SubResource("AnimationNodeStateMachineTransition_sajvr"), "fire_empty", "set_cylinder", SubResource("AnimationNodeStateMachineTransition_ifcxm")]
-graph_offset = Vector2(-82, -174)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_a06wg"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_g1dqu"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_6ngox"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_5kojq"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_6ihty"), "idle", "fire_fan", SubResource("AnimationNodeStateMachineTransition_hdjuo"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_gl0t3"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_n2mqc"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_d140c"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_p4v70"), "walk", "fire_fan", SubResource("AnimationNodeStateMachineTransition_5575l"), "idle", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_bq645"), "walk", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_a15i6"), "out_reload", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_mmicr"), "out_reload", "idle", SubResource("AnimationNodeStateMachineTransition_c6lc1"), "out_reload", "walk", SubResource("AnimationNodeStateMachineTransition_oepyn"), "into_unload_reload", "reload", SubResource("AnimationNodeStateMachineTransition_tir38"), "into_unload_reload", "unload", SubResource("AnimationNodeStateMachineTransition_y0ymr"), "unload", "reload", SubResource("AnimationNodeStateMachineTransition_1f03k"), "idle", "fire_double", SubResource("AnimationNodeStateMachineTransition_1gv76"), "walk", "fire_double", SubResource("AnimationNodeStateMachineTransition_fyuve"), "fire_double", "fire", SubResource("AnimationNodeStateMachineTransition_d122g"), "set_cylinder", "idle", SubResource("AnimationNodeStateMachineTransition_qi4qq"), "set_cylinder", "walk", SubResource("AnimationNodeStateMachineTransition_5e4de"), "fire_fan", "set_cylinder", SubResource("AnimationNodeStateMachineTransition_x5ctt"), "fire", "set_cylinder", SubResource("AnimationNodeStateMachineTransition_jfwyt"), "idle", "fire_empty", SubResource("AnimationNodeStateMachineTransition_o8tcj"), "walk", "fire_empty", SubResource("AnimationNodeStateMachineTransition_8b7h4"), "fire_double", "fire_empty", SubResource("AnimationNodeStateMachineTransition_sajvr"), "fire_empty", "set_cylinder", SubResource("AnimationNodeStateMachineTransition_ifcxm"), "reload", "out_reload_set_cylinder", SubResource("AnimationNodeStateMachineTransition_vygpa"), "out_reload_set_cylinder", "out_reload", SubResource("AnimationNodeStateMachineTransition_jwd5o"), "out_unload", "into_unload_reload", SubResource("AnimationNodeStateMachineTransition_3pxay"), "unload", "out_unload_set_cylinder", SubResource("AnimationNodeStateMachineTransition_pnxij"), "out_unload_set_cylinder", "out_unload", SubResource("AnimationNodeStateMachineTransition_jnpdt"), "out_unload", "walk", SubResource("AnimationNodeStateMachineTransition_0ikgj"), "out_unload", "idle", SubResource("AnimationNodeStateMachineTransition_vdxg3"), "out_reload_set_cylinder", "reload_to_unload", SubResource("AnimationNodeStateMachineTransition_5w16n"), "reload_to_unload", "unload", SubResource("AnimationNodeStateMachineTransition_rliy5")]
+graph_offset = Vector2(-94, 2)
+
+[sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_0b5uw"]
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_3pk32"]
-graph_offset = Vector2(-259, 83)
+graph_offset = Vector2(-402, 110)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_aal8d")
-nodes/StateMachine/position = Vector2(-42, 149)
-node_connections = [&"output", 0, &"StateMachine"]
+nodes/StateMachine/position = Vector2(-240, 140)
+nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_0b5uw")
+nodes/TimeSeek/position = Vector2(80, 140)
+node_connections = [&"TimeSeek", 0, &"StateMachine", &"output", 0, &"TimeSeek"]
 
 [node name="revolver" node_paths=PackedStringArray("projectile_marker", "particle_marker", "reload_marker") instance=ExtResource("1_sk0n1")]
 script = ExtResource("2_d122g")
 projectile_marker = NodePath("Mesh/BarrelMarker")
 particle_marker = NodePath("Mesh/BarrelMarker")
 reload_marker = NodePath("ReloadMarker")
-
-[node name="Mesh" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="protomesh" type="Node3D" parent="Mesh" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
@@ -292,10 +336,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.4
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0055, -0.057, 0)
 
 [node name="cylinder_spin" type="Node3D" parent="Mesh/protomesh/cylinder_axel" index="0"]
-transform = Transform3D(1, 2.23546e-24, 1.49515e-12, 0, 1, -1.49515e-12, -1.49515e-12, 1.49515e-12, 1, 0.0055, 0.037, -1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0055, 0.037, -1.45519e-11)
 
 [node name="plunger_slide" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 0)
 
 [node name="plunger" type="MeshInstance3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide" index="0"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.034)
@@ -369,7 +413,6 @@ material = ExtResource("3_avu46")
 metadata/_edit_lock_ = true
 
 [node name="cylinder" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 metadata/_edit_lock_ = true
 
 [node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" index="0"]
@@ -475,6 +518,9 @@ unique_name_in_owner = true
 transform = Transform3D(1, -9.86076e-31, -3.25261e-19, 3.9443e-31, 1, 0, 1.0842e-19, 0, 1, 1.45519e-11, 0.02, 1.45519e-11)
 gizmo_extents = 0.0
 
+[node name="BuckshotMesh" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers/Port6Marker" index="0" instance=ExtResource("5_0b5uw")]
+transform = Transform3D(0.5, 0.866026, 0, -0.866026, 0.5, 2.98023e-08, -8.9407e-08, -2.98023e-08, 1, 0, 0, 0)
+
 [node name="hammer_axel" type="Node3D" parent="Mesh/protomesh" index="1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0128, 0.06)
 
@@ -570,6 +616,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.24)
 gizmo_extents = 0.0
 
 [node name="ReloadMarker" type="Marker3D" parent="." index="1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="BuckshotMesh" parent="ReloadMarker" index="0" instance=ExtResource("5_0b5uw")]
 
 [node name="AnimationPlayer" parent="." index="2"]
 libraries = {
@@ -580,3 +629,7 @@ libraries = {
 [node name="AnimationTree" parent="." index="3"]
 deterministic = false
 tree_root = SubResource("AnimationNodeBlendTree_3pk32")
+parameters/TimeSeek/seek_request = -1.0
+
+[node name="Camera3D" type="Camera3D" parent="." index="4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.225, 0.185, 0.555)

@@ -5,28 +5,28 @@
 [node name="SlugPile" type="Node3D"]
 
 [node name="Slug" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0.02)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.036)
 
 [node name="Slug2" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0.06)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.018)
 
 [node name="Slug3" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.02)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
 
 [node name="Slug4" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.06)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.018)
 
 [node name="Slug5" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, -0.1)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.036)
 
 [node name="Slug6" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, 1.45519e-11)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.0156, 0.027)
 
 [node name="Slug7" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, 0.04)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.0156, 0.009)
 
 [node name="Slug8" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, -0.04)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.0156, -0.009)
 
 [node name="Slug9" parent="." instance=ExtResource("1_4ul0k")]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.032, -0.08)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 1.45519e-11, 0.0156, -0.027)

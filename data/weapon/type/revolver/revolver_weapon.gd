@@ -105,7 +105,8 @@ func load_rounds(count: int = 1, type: int = 0) -> void:
 
     var pos: int
     for i in range(count):
-        pos = wrapi(i + _cylinder_position, 0, ammo_reserve_size)
+        # NOTE: For revolvers, we load in reverse, ahead of the current position
+        pos = wrapi(_cylinder_position - i - 1, 0, ammo_reserve_size)
         _mixed_reserve.set(pos, type)
         _cylinder_ammo_state.set(pos, 1)
 

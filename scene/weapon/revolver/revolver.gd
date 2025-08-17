@@ -31,6 +31,22 @@ var is_round_live: bool:
 
 var _skip_next_rotate: bool = false
 
+var _rotate_loop_start_time: float = -1
+
+
+func _rotate_loop_start() -> void:
+    _rotate_loop_start_time = anim_state.get_current_play_position()
+    update_ports(false)
+
+func _reload_loop_start() -> void:
+    super._reload_loop_start()
+    reload_marker.visible = true
+    _before_rotate_counter_clockwise()
+    update_ports(false)
+
+func _reload_loop_end() -> void:
+    revolver.rotate_cylinder(-1)
+    super._reload_loop_end()
 
 func _emit_fired() -> void:
     if not is_round_live:
@@ -39,6 +55,64 @@ func _emit_fired() -> void:
         revolver.trigger_mechanism.start_cycle()
         return
     super._emit_fired()
+
+func _emit_round_loaded() -> void:
+    super._emit_round_loaded()
+    reload_marker.visible = false
+    update_ports(false)
+
+func _emit_magazine_unloaded() -> void:
+    # HACK: This sucks, but it will work... for now...
+    var velocity: Vector3
+    var weapon_node: WeaponNode = get_parent_node_3d() as WeaponNode
+    if weapon_node and weapon_node.controller:
+        velocity = weapon_node.controller.velocity
+
+    # For the revolver, we can simply go through all the ports and "eject" them
+    var tree: SceneTree = get_tree()
+    var start: int = randi_range(0, PORTS - 1)
+    var delay: float = 0.0
+    var pos: int
+    var port: Marker3D
+    var type: int
+    var ammo: AmmoResource
+    var supported: Dictionary = revolver.get_supported_ammunition()
+    for i in range(PORTS):
+        pos = wrapi(i + start + revolver._cylinder_position, 0, PORTS)
+        type = revolver._mixed_reserve[pos]
+        if not type or revolver._cylinder_ammo_state[pos]:
+            continue
+
+        pos = wrapi(i + start, 0, PORTS)
+        port = ports[pos]
+        for child in port.get_children():
+            port.remove_child(child)
+            child.queue_free()
+
+        ammo = supported.get(type) as AmmoResource
+        if not ammo:
+            continue
+
+        var ammo_scene: PackedScene = ammo.scene_round_expended
+        if not ammo_scene:
+            continue
+
+        var ammo_node: Node3D = ammo_scene.instantiate()
+        tree.current_scene.add_child(ammo_node)
+        tree.create_timer(10.0, false, true).timeout.connect(ammo_node.queue_free)
+
+        ammo_node.global_transform = port.global_transform
+
+        if ammo_node is RigidBody3D:
+            ammo_node.process_mode = Node.PROCESS_MODE_DISABLED
+            tree.create_timer(delay, false).timeout.connect(
+                func ():
+                    ammo_node.process_mode = Node.PROCESS_MODE_INHERIT
+            )
+
+        delay += randf_range(0.02, 0.06)
+
+    super._emit_magazine_unloaded()
 
 
 func can_aim() -> bool:
@@ -64,10 +138,26 @@ func goto_fire() -> bool:
         else:
             travel(FIRE_EMPTY)
     else:
-        var current: StringName = anim_state.get_current_node()
         travel(FIRE_DOUBLE)
     return true
 
+func goto_reload_continue() -> bool:
+    if not is_state(RELOAD):
+        return false
+
+
+    var next_pos: int = wrapi(revolver._cylinder_position - 1, 0, PORTS)
+    if revolver._mixed_reserve[next_pos] > 0:
+        if _reload_loop_start_time >= 0:
+            seek(_rotate_loop_start_time)
+            return true
+        return false
+
+    if _reload_loop_start_time >= 0:
+        seek(_reload_loop_start_time)
+        return true
+
+    return false
 
 func set_revolver(revolver_weapon: RevolverWeapon) -> void:
     if revolver:
@@ -80,8 +170,8 @@ func set_revolver(revolver_weapon: RevolverWeapon) -> void:
     update_ports()
 
 
-func update_ports() -> void:
-    _skip_next_rotate = true
+func update_ports(skip_next_rotate: bool = true) -> void:
+    _skip_next_rotate = skip_next_rotate
 
     var reserve: PackedInt32Array = revolver.get_mixed_reserve()
     var type: int
@@ -131,16 +221,23 @@ func _before_rotate(direction: int) -> void:
         return
 
     var target_port: Marker3D
+    var port: Marker3D
     for i in range(PORTS):
         target_port = ports[wrapi(i + direction, 0, PORTS)]
-        var child: Node = ports[i].get_child(0)
+        port = ports[i]
+        var child: Node
+        if port.get_child_count() > 0:
+            child = port.get_child(0)
         if not child:
             # Empty port
             continue
         ports[i].remove_child(child)
 
         # Add sibling keeps the new child ordered AFTER the sibling
-        var sibling: Node = target_port.get_child(0)
+        var sibling: Node
+        if target_port.get_child_count() > 0:
+            sibling = target_port.get_child(0)
+
         if sibling:
             sibling.add_sibling(child)
         else:

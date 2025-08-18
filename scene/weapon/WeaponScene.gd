@@ -238,8 +238,11 @@ func eject_round(
 func seek(time: float) -> void:
     animation_tree['parameters/TimeSeek/seek_request'] = time
 
-func travel(anim: StringName) -> void:
+func travel(anim: StringName, immediate: bool = false) -> void:
     is_anim_traveling = true
+    if immediate:
+        anim_state.start(anim)
+        return
     anim_target = anim
     anim_state.travel(anim)
 
@@ -318,7 +321,8 @@ func is_idle() -> bool:
 
 ## If the animation state matches the given state
 func is_state(anim: StringName) -> bool:
-    return anim == anim_state.get_current_node()
+    var current: StringName = anim_state.get_current_node()
+    return anim == current
 
 ## If the animation state allows aiming
 func can_aim() -> bool:

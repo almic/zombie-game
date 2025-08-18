@@ -479,9 +479,14 @@ func update_weapon_node(delta: float) -> void:
     # NOTE: We may have a fire buffered, but we have failed to shoot, so try
     #       charging the weapon in case we were waiting for that
     elif is_input_buffered(fire_primary):
-        if weapon_node.charge() == WeaponNode.Action.OKAY:
-            # Requeue the primary fire action as buffer is too short normally
-            update_input_buffer(fire_primary)
+        if weapon_node.weapon_type is RevolverWeapon:
+            # NOTE: Revolver cannot be charged from a buffered trigger.
+            #       This is because it charges as part of a longer fire animation
+            pass
+        else:
+            if weapon_node.charge() == WeaponNode.Action.OKAY:
+                # Requeue the primary fire action as buffer is too short normally
+                update_input_buffer(fire_primary)
 
     if reload.is_triggered():
         var do_reload: bool = false
@@ -681,6 +686,12 @@ func pickup_item(item: Pickup) -> void:
         if item.item_count > 0:
             weapon.load_rounds(item.item_count, weapon.get_default_ammo().type)
             update_ammo()
+
+        # For the revolver, rotate to one after the highest live round index
+        if weapon is RevolverWeapon:
+            var revolver: RevolverWeapon = weapon as RevolverWeapon
+            var highest: int = revolver._cylinder_ammo_state.rfind(1)
+            revolver.rotate_cylinder((highest - 1) - revolver._cylinder_position)
 
     elif item.item_type is AmmoResource:
         var ammo: AmmoResource = item.item_type as AmmoResource

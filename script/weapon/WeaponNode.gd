@@ -612,9 +612,7 @@ func on_weapon_reload_loop() -> void:
         reload_complete.emit()
         return
 
-    if weapon_type.can_reload():
-        _weapon_scene.goto_reload_continue()
-    else:
+    if not weapon_type.can_reload() or not _weapon_scene.goto_reload_continue():
         reload_complete.emit()
         continue_reload = false
 

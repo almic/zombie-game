@@ -4,24 +4,33 @@
 class_name RevolverWeapon extends WeaponResource
 
 
-## Special signal for the scene to handle port updates
-signal fired()
+## Special signal for the scene to handle any state changes
+signal state_updated()
 
 
 ## Holds ammo expend state, 0 for used, 1 for unused
 var _cylinder_ammo_state: PackedByteArray = []
 
-## Position of the cylinder, from 0 to reserve size
-var _cylinder_position: int = 0
+## Position of the cylinder, from 0 to reserve size.
+## Initially 1 ahead of the first port.
+var _cylinder_position: int = -1
 
 ## If the hammer is cocked
 var _hammer_cocked: bool = false
 
 
+func _init() -> void:
+    (func ():
+        _cylinder_position = wrapi(_cylinder_position, 0, ammo_reserve_size)
+    ).call_deferred()
+
+
 ## Rotates the cylinder by a given number of places. Positive is clockwise,
 ## negative is counter-clockwise.
-func rotate_cylinder(places: int = 1) -> void:
+func rotate_cylinder(places: int = 1, emit_updated: bool = true) -> void:
     _cylinder_position = wrapi(_cylinder_position + places, 0, ammo_reserve_size)
+    if emit_updated:
+        state_updated.emit()
 
 func get_reserve_total() -> int:
     return _cylinder_ammo_state.count(1)
@@ -42,6 +51,7 @@ func eject_round() -> bool:
         return false
 
     _mixed_reserve[_cylinder_position] = 0
+    state_updated.emit()
 
     if _cylinder_ammo_state[_cylinder_position]:
         # Recover round to ammo stock
@@ -74,9 +84,11 @@ func can_unload() -> bool:
 func is_round_live() -> bool:
     return _cylinder_ammo_state[_cylinder_position] != 0
 
-## For the revolver, charging is just cocking the hammer
+## For the revolver, charging cocks the hammer and rotates clockwise 1 place
 func charge_weapon() -> void:
     _hammer_cocked = true
+    rotate_cylinder(1, false)
+    state_updated.emit()
 
 ## Loading a round places it into the current position. This clobbers whatever
 ## is at that position, so be sure it is empty!
@@ -105,10 +117,10 @@ func load_rounds(count: int = 1, type: int = 0) -> void:
 
     var pos: int
     for i in range(count):
-        # NOTE: For revolvers, we load in reverse, ahead of the current position
-        pos = wrapi(_cylinder_position - i - 1, 0, ammo_reserve_size)
+        pos = wrapi(_cylinder_position + i, 0, ammo_reserve_size)
         _mixed_reserve.set(pos, type)
         _cylinder_ammo_state.set(pos, 1)
+    state_updated.emit()
 
     # NOTE: This is for debugging, should be removed later
     if _mixed_reserve.size() > ammo_reserve_size:
@@ -120,6 +132,7 @@ func unload_rounds() -> void:
         if _cylinder_ammo_state[i]:
             continue
         _mixed_reserve.set(i, 0)
+    state_updated.emit()
 
 func fire_projectiles(base: WeaponNode) -> bool:
     var updated_ammo: bool = false
@@ -141,7 +154,9 @@ func fire_projectiles(base: WeaponNode) -> bool:
 
     _do_projectile_raycast(node, ammo, base.weapon_projectile_transform())
 
-    fired.emit()
+    _cylinder_ammo_state[_cylinder_position] = 0
+    _hammer_cocked = false
+    state_updated.emit()
 
     # If we are empty, signal
     if get_reserve_total() < 1:

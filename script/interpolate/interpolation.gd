@@ -91,6 +91,7 @@ func update(delta: float) -> Variant:
     return current
 
 func reset(value: Variant = null) -> void:
+    # TODO: should this set `is_target_set` to false?
     is_done = true
     elapsed = 0
     current = value

@@ -3,10 +3,16 @@
 class_name RevolverWeaponScene extends WeaponScene
 
 const PORTS = 6
+const PORT_ANGLE = TAU / PORTS
 const FIRE_DOUBLE = &'fire_double'
 const FIRE_EMPTY = &'fire_empty'
-const SET_CYLINDER = &'set_cylinder'
+const RELOAD_SPIN = &'reload_spin'
+const OUT_RELOAD = &'out_reload'
+const UNLOAD_SPIN = &'unload_spin'
 
+const CYLINDER_ROTATE = &'revolver/cylinder_rotate'
+
+@onready var cylinder_spin: Node3D = %cylinder_spin
 
 @onready var ports: Array[Marker3D] = [
     %Port1Marker,
@@ -29,37 +35,104 @@ var cocked: bool:
 var is_round_live: bool:
     get(): return revolver.is_round_live()
 
-var _skip_next_rotate: bool = false
+#var has_used_rounds: bool = false
+#var has_used_rounds: bool:
+    #get():
+        #print('checking used rounds!')
+        #return true
+        #for i in range(PORTS):
+            #if revolver._mixed_reserve[i] > 0 and not revolver._cylinder_ammo_state[i]:
+                #return true
+        #return false
 
-var _rotate_loop_start_time: float = -1
+func has_used_rounds() -> bool:
+    print('I AM STUPID!')
+    return false
+
+var has_empty_ports: bool:
+    get():
+        return revolver._mixed_reserve.find(0) != -1
 
 
-func _rotate_loop_start() -> void:
-    _rotate_loop_start_time = anim_state.get_current_play_position()
-    update_ports(false)
+var cylinder_anim: Animation
+var cylinder_apply_on_finish: bool = false
+
+var cylinder_interp: Interpolation = Interpolation.new()
+
+
+func _ready() -> void:
+    super._ready()
+    cylinder_anim = animation_tree.get_animation(CYLINDER_ROTATE)
+    if not cylinder_anim:
+        push_error("Revolver could not get the cylinder rotation animation!! Investigate!")
+
+    return
+    var root: AnimationNodeBlendTree = animation_tree.tree_root as AnimationNodeBlendTree
+    var state_mach: AnimationNodeStateMachine = root.get_node('StateMachine') as AnimationNodeStateMachine
+    var transition: AnimationNodeStateMachineTransition
+    for i in range(state_mach.get_transition_count()):
+        if state_mach.get_transition_from(i) == 'open_cylinder' and state_mach.get_transition_to(i) == 'open_to_reload':
+            transition = state_mach.get_transition(i)
+            break
+    var expression: Expression = Expression.new()
+    var error: Error = expression.parse(transition.advance_expression)
+    if error != OK:
+        var error_text: String = expression.get_error_text()
+        print(error_text)
+    else:
+        var ret = expression.execute([], self, true, false)
+        if expression.has_execute_failed():
+            var error_text: String = expression.get_error_text()
+            print(error_text)
+        else:
+            print(transition.advance_expression + ' == ' + str(ret) + ' (' + type_string(typeof(ret)) + ')')
+    pass
+
+func test_method() -> void:
+    print('Called via expression!!!!')
+
+func _process(delta: float) -> void:
+    if cylinder_interp.is_done:
+        return
+
+    var current_time: float = cylinder_interp.update(delta)
+    if cylinder_interp.is_done:
+        apply_rotate_cylinder()
+        return
+
+    var current_value: float = cylinder_anim.bezier_track_interpolate(0, fposmod(current_time, 1.0))
+    # NOTE: animation runs from 0 to -1, invert when going backwards
+    if current_time < 0.0:
+        current_value += PORT_ANGLE
+
+    # NOTE: Clockwise is a NEGATIVE spin
+    cylinder_spin.rotation.z = (
+            -PORT_ANGLE * revolver._cylinder_position
+            + (-PORT_ANGLE * int(current_time) + current_value)
+    )
 
 func _reload_loop_start() -> void:
-    super._reload_loop_start()
-    reload_marker.visible = true
-    _before_rotate_counter_clockwise()
-    update_ports(false)
+    apply_rotate_cylinder()
 
-func _reload_loop_end() -> void:
-    revolver.rotate_cylinder(-1)
-    super._reload_loop_end()
+    # NOTE: It may be possible for all cylinders to be filled, so check for that
+    if revolver._mixed_reserve.find(0) == -1:
+        travel(OUT_RELOAD, true)
+        return
+
+    # If the current port is full, travel straight to the reload spin
+    if revolver._mixed_reserve[revolver._cylinder_position] > 0:
+        travel(RELOAD_SPIN, true)
 
 func _emit_fired() -> void:
     if not is_round_live:
         revolver._hammer_cocked = false
-        revolver.rotate_cylinder(1)
         revolver.trigger_mechanism.start_cycle()
         return
     super._emit_fired()
 
 func _emit_round_loaded() -> void:
     super._emit_round_loaded()
-    reload_marker.visible = false
-    update_ports(false)
+    update_ports()
 
 func _emit_magazine_unloaded() -> void:
     # HACK: This sucks, but it will work... for now...
@@ -114,7 +187,6 @@ func _emit_magazine_unloaded() -> void:
 
     super._emit_magazine_unloaded()
 
-
 func can_aim() -> bool:
     var state: StringName = anim_state.get_current_node()
     return (
@@ -124,9 +196,7 @@ func can_aim() -> bool:
         or state == CHARGE
         or state == FIRE_DOUBLE
         or state == FIRE_EMPTY
-        or state == SET_CYLINDER
     )
-
 
 func goto_fire() -> bool:
     if not is_idle():
@@ -145,49 +215,50 @@ func goto_reload_continue() -> bool:
     if not is_state(RELOAD):
         return false
 
-
-    var next_pos: int = wrapi(revolver._cylinder_position - 1, 0, PORTS)
-    if revolver._mixed_reserve[next_pos] > 0:
-        if _reload_loop_start_time >= 0:
-            seek(_rotate_loop_start_time)
-            return true
+    # NOTE: It may be possible for all cylinders to be filled, so check for that
+    if revolver._mixed_reserve.find(0) == -1:
         return false
 
-    if _reload_loop_start_time >= 0:
-        seek(_reload_loop_start_time)
+    travel(RELOAD_SPIN)
+    return true
+
+func goto_unload_continue() -> bool:
+    if not is_state(UNLOAD_SPIN):
+        return false
+
+    apply_rotate_cylinder()
+
+    if not revolver._mixed_reserve[revolver._cylinder_position]:
+        # Loop in place
+        # NOTE: fidget toy, spin forever!
+        seek(0.0)
         return true
 
-    return false
+    travel(UNLOAD)
+    return true
 
 func set_revolver(revolver_weapon: RevolverWeapon) -> void:
     if revolver:
-        revolver.fired.disconnect(on_fired)
+        revolver.state_updated.disconnect(on_revolver_updated)
 
     revolver = revolver_weapon
     revolver_ammo = revolver.get_supported_ammunition()
-    revolver.fired.connect(on_fired)
+    revolver.state_updated.connect(on_revolver_updated)
 
-    update_ports()
+    on_revolver_updated()
 
-
-func update_ports(skip_next_rotate: bool = true) -> void:
-    _skip_next_rotate = skip_next_rotate
-
+func update_ports() -> void:
     var reserve: PackedInt32Array = revolver.get_mixed_reserve()
     var type: int
     var ammo: AmmoResource
-    var pos: int
     for i in range(PORTS):
-        # NOTE: read reserve from cylinder position
-        pos = wrapi(i + revolver._cylinder_position, 0, PORTS)
-
         # A port would only have 1 child for the mesh scene
         for child in ports[i].get_children():
             ports[i].remove_child(child)
             child.queue_free()
             break
 
-        type = reserve[pos]
+        type = reserve[i]
         if not type:
             # Empty port (type == 0)
             continue
@@ -195,7 +266,7 @@ func update_ports(skip_next_rotate: bool = true) -> void:
         ammo = revolver_ammo.get(type) as AmmoResource
 
         var node: Node3D
-        if revolver._cylinder_ammo_state[pos]:
+        if revolver._cylinder_ammo_state[i]:
             node = ammo.scene_round.instantiate() as Node3D
         else:
             node = ammo.scene_round_expended.instantiate() as Node3D
@@ -204,41 +275,34 @@ func update_ports(skip_next_rotate: bool = true) -> void:
 
         ports[i].add_child(node)
 
-func on_fired() -> void:
-    revolver._cylinder_ammo_state[revolver._cylinder_position] = 0
-    revolver._hammer_cocked = false
-    revolver.rotate_cylinder(1)
+func update_cylinder_spin() -> void:
+    # NOTE: Ports are organized COUNTER CLOCKWISE
+    var rotation_z: float = revolver._cylinder_position * -PORT_ANGLE
 
-func _before_rotate_clockwise() -> void:
-    _before_rotate(-1)
+    # Cancel animation if the cylinder position changes
+    if not cylinder_interp.is_done:
+        cylinder_apply_on_finish = false
+        cylinder_interp.reset(0.0)
 
-func _before_rotate_counter_clockwise() -> void:
-    _before_rotate(1)
+    cylinder_spin.rotation.z = rotation_z
 
-func _before_rotate(direction: int) -> void:
-    if _skip_next_rotate:
-        _skip_next_rotate = false
+func on_revolver_updated() -> void:
+    update_ports()
+    update_cylinder_spin()
+
+func rotate_cylinder(duration: float, apply_on_end: bool, places: int) -> void:
+    apply_rotate_cylinder()
+
+    cylinder_apply_on_finish = apply_on_end
+    cylinder_interp.reset(0.0)
+    cylinder_interp.set_target_delta(float(places), float(places), 0.0)
+    cylinder_interp.duration = duration
+
+func apply_rotate_cylinder() -> void:
+    if not cylinder_apply_on_finish:
         return
 
-    var target_port: Marker3D
-    var port: Marker3D
-    for i in range(PORTS):
-        target_port = ports[wrapi(i + direction, 0, PORTS)]
-        port = ports[i]
-        var child: Node
-        if port.get_child_count() > 0:
-            child = port.get_child(0)
-        if not child:
-            # Empty port
-            continue
-        ports[i].remove_child(child)
-
-        # Add sibling keeps the new child ordered AFTER the sibling
-        var sibling: Node
-        if target_port.get_child_count() > 0:
-            sibling = target_port.get_child(0)
-
-        if sibling:
-            sibling.add_sibling(child)
-        else:
-            target_port.add_child(child)
+    cylinder_apply_on_finish = false
+    revolver.rotate_cylinder(roundi(cylinder_interp.target), false)
+    cylinder_interp.reset(0.0)
+    update_cylinder_spin()

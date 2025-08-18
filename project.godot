@@ -13,7 +13,7 @@ config_version=5
 config/name="Zombie Game"
 run/main_scene="uid://b28fs2sgvdicd"
 run/print_header=false
-config/features=PackedStringArray("4.4", "Forward Plus")
+config/features=PackedStringArray("4.4", "Double Precision", "Forward Plus")
 config/icon="res://icon.svg"
 
 [audio]

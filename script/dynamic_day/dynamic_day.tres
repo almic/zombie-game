@@ -4,7 +4,7 @@
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_05mco"]
 
-[sub_resource type="ViewportTexture" id="ViewportTexture_05mco"]
+[sub_resource type="ViewportTexture" id="ViewportTexture_hf3yr"]
 viewport_path = NodePath(".")
 
 [sub_resource type="Texture2DRD" id="Texture2DRD_8utjm"]
@@ -13,8 +13,8 @@ viewport_path = NodePath(".")
 shader = ExtResource("1_05mco")
 shader_parameter/sky_texture = SubResource("Texture2DRD_8utjm")
 shader_parameter/lut_texture = SubResource("Texture2DRD_05mco")
-shader_parameter/moon_texture = SubResource("ViewportTexture_05mco")
+shader_parameter/moon_texture = SubResource("ViewportTexture_hf3yr")
 shader_parameter/sun_direction = Vector3(0.296161, 0.953402, 0.0575679)
 shader_parameter/sun_angular_diameter = 0.542
-shader_parameter/moon_basis = Basis(0.260175, -0.901235, -0.346532, 0.893222, 0.360945, -0.26809, 0.366691, -0.23978, 0.898912)
+shader_parameter/moon_basis = Basis(0.260175, -0.901235, -0.346532, 0.893223, 0.360945, -0.26809, 0.366691, -0.23978, 0.898912)
 shader_parameter/moon_angular_diameter = 0.51781

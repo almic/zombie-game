@@ -159,11 +159,11 @@ var recoil_spread_max: float = 0.0
 
 ## Angular distance of random recoil, in arc minutes
 @export_range(0.0, 120.0, 0.1, 'or_greater', 'suffix:′')
-var recoil_random_spread: float = 0.0
+var recoil_kick: float = 0.0
 
 ## Minimum recoil power, in arc minutes.
 @export_range(0.0, 100.0, 0.1, 'or_greater', 'suffix:′')
-var recoil_minimum_spread: float = 0.0
+var recoil_random_range: float = 0.0
 
 ## Axis of random recoil, the following parameters operate from this line.
 @export_range(-90.0, 90.0, 0.0001, 'radians_as_degrees')

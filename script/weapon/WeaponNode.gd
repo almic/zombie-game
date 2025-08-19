@@ -542,24 +542,22 @@ func on_weapon_fire() -> void:
 
     # NOTE: Always apply recoil kick
     if weapon_type.recoil_enabled:
-        # NOTE: range of distance is -0.5 - 1.0, so it tends to pull right
         # TODO: Probably make it sway back and forth instead
         var bias: float = weapon_type.recoil_spread_bias
         var distance: float = randf() * (2.0 - abs(bias)) - (1.0 - abs(bias))
         if bias < 0.0:
             distance = -distance
 
-        var spread_range: float = weapon_type.recoil_random_spread - weapon_type.recoil_minimum_spread
         if distance < 0.0:
             distance = -sqrt(-distance)
-            distance *= deg_to_rad(spread_range / 60.0)
-            distance -= deg_to_rad(weapon_type.recoil_minimum_spread / 60.0)
+            distance *= deg_to_rad(weapon_type.recoil_random_range / 60.0)
+            distance -= deg_to_rad(weapon_type.recoil_kick / 60.0)
         else:
             distance = sqrt(distance)
-            distance *= deg_to_rad(spread_range / 60.0)
-            distance += deg_to_rad(weapon_type.recoil_minimum_spread / 60.0)
+            distance *= deg_to_rad(weapon_type.recoil_random_range / 60.0)
+            distance += deg_to_rad(weapon_type.recoil_kick / 60.0)
 
-        var angle: float = (randf() - 0.5) * weapon_type.recoil_spread_angle
+        var angle: float = 2.0 * (randf() - 0.5) * weapon_type.recoil_spread_angle
         if _is_aiming and not is_zero_approx(weapon_type.recoil_aim_control):
             distance *= (1.0 - weapon_type.recoil_aim_control)
             angle *= (1.0 - weapon_type.recoil_aim_control)

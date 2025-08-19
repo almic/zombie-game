@@ -138,7 +138,7 @@ vec3 moon_mie(vec3 eye_dir, vec3 moon_dir, vec3 sun_dir)
 
     // Godot's Mie scattering, modified to reduce horizon glare
     float optical_mass = 1.0 / (zenith + 4.0 * PI * pow(RAD_DEG * zenith, -1.253));
-    
+
     vec3 mie_beta = aerosol_color * aerosol_turbidity * 2.7e-5;
     float mie_scatter = aerosol_density * optical_mass;
 

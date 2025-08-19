@@ -198,7 +198,9 @@ var _moon_tilt_rad: float
 @export var moon_renderer: PackedScene
 
 
-var sky: ShaderMaterial
+var sky: Sky = Sky.new()
+var sky_material: ShaderMaterial = ShaderMaterial.new()
+var sky_shader: Shader = preload('res://script/dynamic_day/dynamic_day.gdshader')
 var sky_texture: Texture2DRD
 var sky_compute: PhysicalSkyCompute
 var moon_view: MoonView
@@ -223,6 +225,14 @@ func _init() -> void:
 
     moon_angular_diameter = moon_angular_diameter
     sun_angular_diameter = sun_angular_diameter
+
+func _notification(what:int) -> void:
+    # NOTE: Prevent shader parameters from saving to disk.
+    match what:
+        NOTIFICATION_EDITOR_PRE_SAVE:
+            environment.sky = null
+        NOTIFICATION_EDITOR_POST_SAVE:
+            environment.sky = sky
 
 func _ready() -> void:
     init_shader()
@@ -360,7 +370,17 @@ func update_moon() -> void:
     Moon.basis = earth.basis * Moon.basis
 
 func init_shader() -> void:
-    sky = environment.sky.sky_material
+    sky_shader.resource_local_to_scene = true
+
+    sky_material.shader = sky_shader
+    sky_material.resource_local_to_scene = true
+
+    sky.sky_material = sky_material
+    sky.process_mode = Sky.PROCESS_MODE_REALTIME
+    sky.radiance_size = Sky.RADIANCE_SIZE_256
+    sky.resource_local_to_scene = true
+
+    environment.sky = sky
 
     if not sky_compute:
         for effect in compositor.compositor_effects:
@@ -374,22 +394,27 @@ func init_shader() -> void:
     if Moon:
         sky_compute.moon_direction = -Moon.basis.z
 
-    moon_view = moon_renderer.instantiate()
-    add_child(moon_view) # Required to start viewport rendering
-    moon_view.moon_distance = moon_distance
-    moon_mesh = moon_view.get_node('%Moon')
-    moon_camera = moon_view.get_node('%Camera3D')
-    moon_view_shader = moon_mesh.mesh.surface_get_material(0)
+    if not moon_view:
+        moon_view = moon_renderer.instantiate()
+        add_child(moon_view) # Required to start viewport rendering
+        moon_view.moon_distance = moon_distance
+        moon_mesh = moon_view.get_node('%Moon')
+        moon_camera = moon_view.get_node('%Camera3D')
+        moon_view_shader = moon_mesh.mesh.surface_get_material(0)
 
     # Force cached angle calculation
     use_moon_render_angle = use_moon_render_angle
 
 func update_shader() -> void:
-    sky.set_shader_parameter("sun_direction", Sun.basis.z)
+    # Fix Godot unloading resources and not putting them back >:(
+    if not environment.sky:
+        environment.sky = sky
+
+    sky_material.set_shader_parameter("sun_direction", Sun.basis.z)
     moon_view_shader.set_shader_parameter("sun_direction", Sun.basis.z)
     sky_compute.sun_direction = -Sun.basis.z
 
-    sky.set_shader_parameter("moon_basis", Moon.basis)
+    sky_material.set_shader_parameter("moon_basis", Moon.basis)
     moon_view_shader.set_shader_parameter("moon_orbit_basis", moon_orbit_basis)
     moon_view_shader.set_shader_parameter("moon_basis", Moon.basis)
     sky_compute.moon_direction = -Moon.basis.z
@@ -418,18 +443,19 @@ func update_shader() -> void:
     # Sun light energy and temperature as it rises
     Sun.light_energy = sky_compute.moon_shadowing * light_horizon(s, _sun_radians)
 
-    sky.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
+    sky_material.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
     if use_moon_render_angle:
-        sky.set_shader_parameter("moon_angular_diameter", moon_camera.fov)
+        sky_material.set_shader_parameter("moon_angular_diameter", moon_camera.fov)
     else:
-        sky.set_shader_parameter("moon_angular_diameter", moon_angular_diameter)
+        sky_material.set_shader_parameter("moon_angular_diameter", moon_angular_diameter)
 
     # This should not need to be necessary, but I keep having this issue where
     # sky_compute is regenerated, breaking the old texture. Doing this seems
     # to have no impact on FPS at all, and it fixes the purple/ black sky, so...
-    sky.set_shader_parameter("sky_texture", sky_compute.sky_texture)
-    sky.set_shader_parameter("lut_texture", sky_compute.lut_texture)
-    sky.set_shader_parameter("moon_texture", moon_view.get_texture())
+    sky_material.set_shader_parameter("sky_texture", sky_compute.sky_texture)
+    sky_material.set_shader_parameter("lut_texture", sky_compute.lut_texture)
+    sky_material.set_shader_parameter("moon_texture", moon_view.get_texture())
+
 
 ## Helper to compute area of intersection of circles A and B, returns the percent
 ## visible of circle A. This is used for eclipse shadowing calculations and

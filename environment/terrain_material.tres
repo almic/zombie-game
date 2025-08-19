@@ -50,6 +50,5 @@ _shader_parameters = {
 }
 world_background = 0
 texture_filtering = 1
-auto_shader = true
 shader_override_enabled = true
 shader_override = ExtResource("1_tvpb4")

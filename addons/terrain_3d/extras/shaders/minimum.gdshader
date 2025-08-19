@@ -30,6 +30,9 @@ uniform int _region_map[1024];
 uniform highp sampler2DArray _height_maps : repeat_disable;
 uniform highp sampler2DArray _control_maps : repeat_disable;
 
+// Public Uniforms
+uniform bool flat_terrain_normals = false;
+
 // Varyings & Types
 // Some are required for editor functions
 varying float v_vertex_xz_dist;
@@ -140,24 +143,24 @@ void fragment() {
 	float region_mip = log2(max(length(base_ddx.xz), length(base_ddy.xz)) * _vertex_density);
 	bool bilerp = region_mip < 0.0;
 
-	ivec3 indexUV[4];
+	ivec3 index[4];
 	// control map lookups, used for some normal lookups as well
-	indexUV[0] = get_index_coord(index_id + offsets.xy, FRAGMENT_PASS);
-	indexUV[1] = get_index_coord(index_id + offsets.yy, FRAGMENT_PASS);
-	indexUV[2] = get_index_coord(index_id + offsets.yx, FRAGMENT_PASS);
-	indexUV[3] = get_index_coord(index_id + offsets.xx, FRAGMENT_PASS);
+	index[0] = get_index_coord(index_id + offsets.xy, FRAGMENT_PASS);
+	index[1] = get_index_coord(index_id + offsets.yy, FRAGMENT_PASS);
+	index[2] = get_index_coord(index_id + offsets.yx, FRAGMENT_PASS);
+	index[3] = get_index_coord(index_id + offsets.xx, FRAGMENT_PASS);
 
 	// Terrain normals
 	vec3 index_normal[4];
-	float h[8];
+	float h[4];
 	// allows additional derivatives, eg world noise, brush previews etc
 	float u = 0.0;
 	float v = 0.0;
 
-	// Re-use the indexUVs for the first lookups, skipping some math. 3 lookups
-	h[3] = texelFetch(_height_maps, indexUV[3], 0).r; // 0 (0,0)
-	h[2] = texelFetch(_height_maps, indexUV[2], 0).r; // 1 (1,0)
-	h[0] = texelFetch(_height_maps, indexUV[0], 0).r; // 2 (0,1)
+	// Re-use index[] for the first lookups, skipping some math. 3 lookups
+	h[3] = texelFetch(_height_maps, index[3], 0).r; // 0 (0,0)
+	h[2] = texelFetch(_height_maps, index[2], 0).r; // 1 (1,0)
+	h[0] = texelFetch(_height_maps, index[0], 0).r; // 2 (0,1)
 	index_normal[3] = normalize(vec3(h[3] - h[2] + u, _vertex_spacing, h[3] - h[0] + v));
 
 	// Set flat world normal - overriden if bilerp is true
@@ -167,16 +170,16 @@ void fragment() {
 	if (bilerp) {
 		// 5 lookups
 		// Fetch the additional required height values for smooth normals
-		h[1] = texelFetch(_height_maps, indexUV[1], 0).r; // 3 (1,1)
-		h[4] = texelFetch(_height_maps, get_index_coord(index_id + offsets.yz, FRAGMENT_PASS), 0).r; // 4 (1,2)
-		h[5] = texelFetch(_height_maps, get_index_coord(index_id + offsets.zy, FRAGMENT_PASS), 0).r; // 5 (2,1)
-		h[6] = texelFetch(_height_maps, get_index_coord(index_id + offsets.zx, FRAGMENT_PASS), 0).r; // 6 (2,0)
-		h[7] = texelFetch(_height_maps, get_index_coord(index_id + offsets.xz, FRAGMENT_PASS), 0).r; // 7 (0,2)
+		h[1] = texelFetch(_height_maps, index[1], 0).r; // 3 (1,1)
+		float h_4 = texelFetch(_height_maps, get_index_coord(index_id + offsets.yz, FRAGMENT_PASS), 0).r; // 4 (1,2)
+		float h_5 = texelFetch(_height_maps, get_index_coord(index_id + offsets.zy, FRAGMENT_PASS), 0).r; // 5 (2,1)
+		float h_6 = texelFetch(_height_maps, get_index_coord(index_id + offsets.zx, FRAGMENT_PASS), 0).r; // 6 (2,0)
+		float h_7 = texelFetch(_height_maps, get_index_coord(index_id + offsets.xz, FRAGMENT_PASS), 0).r; // 7 (0,2)
 
 		// Calculate the normal for the remaining index ids.
-		index_normal[0] = normalize(vec3(h[0] - h[1] + u, _vertex_spacing, h[0] - h[7] + v));
-		index_normal[1] = normalize(vec3(h[1] - h[5] + u, _vertex_spacing, h[1] - h[4] + v));
-		index_normal[2] = normalize(vec3(h[2] - h[6] + u, _vertex_spacing, h[2] - h[1] + v));
+		index_normal[0] = normalize(vec3(h[0] - h[1] + u, _vertex_spacing, h[0] - h_7 + v));
+		index_normal[1] = normalize(vec3(h[1] - h_5 + u, _vertex_spacing, h[1] - h_4 + v));
+		index_normal[2] = normalize(vec3(h[2] - h_6 + u, _vertex_spacing, h[2] - h[1] + v));
 
 		// Set interpolated world normal
 		w_normal =
@@ -192,6 +195,12 @@ void fragment() {
 	NORMAL = mat3(VIEW_MATRIX) * w_normal;
 	TANGENT = mat3(VIEW_MATRIX) * w_tangent;
 	BINORMAL = mat3(VIEW_MATRIX) * w_binormal;
+
+	if (flat_terrain_normals) {
+		NORMAL = normalize(cross(dFdyCoarse(VERTEX),dFdxCoarse(VERTEX)));
+		TANGENT = normalize(cross(NORMAL, VIEW_MATRIX[2].xyz));
+		BINORMAL = normalize(cross(NORMAL, TANGENT));
+	}
 
 	// Apply PBR
 	ALBEDO = vec3(.2);

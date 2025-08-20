@@ -79,9 +79,6 @@ var is_walking: bool = false
 var anim_target: StringName = &''
 var anim_locked: bool = false
 
-func test_method() -> bool:
-    print('tested from base!! AHH')
-    return false
 
 func _ready() -> void:
     animation_tree.active = false

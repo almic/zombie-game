@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://b56tvacq2n1j2"]
 
-[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_gv2v7"]
+[ext_resource type="Script" uid="uid://ddecsnlrrapmh" path="res://scene/weapon/WeaponScene.gd" id="1_7oqv8"]
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="2_mtpfh"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_e0q86"]
 [ext_resource type="Animation" uid="uid://y4af5sgri700" path="res://animation/shovel/shovel_RESET.res" id="4_7oqv8"]
@@ -12,44 +12,51 @@ _data = {
 &"RESET": ExtResource("4_7oqv8")
 }
 
-[node name="Shovel" instance=ExtResource("1_gv2v7")]
+[node name="Shovel" type="Node3D"]
+script = ExtResource("1_7oqv8")
+metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="Mesh" parent="." index="0"]
+[node name="Mesh" type="Node3D" parent="."]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.999999, 0, 0, 0)
 
-[node name="protomesh" type="CSGCombiner3D" parent="Mesh" index="0"]
+[node name="protomesh" type="CSGCombiner3D" parent="Mesh"]
 
-[node name="handle" type="CSGCylinder3D" parent="Mesh/protomesh" index="0"]
+[node name="handle" type="CSGCylinder3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.98455e-08, -0.15, 1.45519e-11)
 radius = 0.023
 height = 1.092
 material = ExtResource("2_mtpfh")
 metadata/_edit_lock_ = true
 
-[node name="scoop" type="CSGBox3D" parent="Mesh/protomesh" index="1"]
+[node name="scoop" type="CSGBox3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.09293e-07, 0.53, 1.45519e-11)
 size = Vector3(0.2286, 0.254, 0.01)
 material = ExtResource("3_e0q86")
 metadata/_edit_lock_ = true
 
-[node name="piece" type="CSGCylinder3D" parent="Mesh/protomesh" index="2"]
+[node name="piece" type="CSGCylinder3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.304, 1.45519e-11)
 radius = 0.025
 height = 0.2
 material = ExtResource("3_e0q86")
 metadata/_edit_lock_ = true
 
-[node name="round" type="CSGSphere3D" parent="Mesh/protomesh" index="3"]
+[node name="round" type="CSGSphere3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.695, 1.45519e-11)
 radius = 0.023
 material = ExtResource("2_mtpfh")
 metadata/_edit_lock_ = true
 
-[node name="AnimationPlayer" parent="." index="1"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 &"": SubResource("AnimationLibrary_bw47e"),
 &"shovel": ExtResource("4_mtpfh")
 }
 
-[node name="AnimationTree" parent="." index="2"]
+[node name="AnimationTree" type="AnimationTree" parent="."]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/..")
 tree_root = ExtResource("6_7oqv8")
+advance_expression_base_node = NodePath("..")
+anim_player = NodePath("../AnimationPlayer")

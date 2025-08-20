@@ -1,6 +1,5 @@
-[gd_scene load_steps=61 format=3 uid="uid://2ub41p5mtrf1"]
+[gd_scene load_steps=36 format=3 uid="uid://2ub41p5mtrf1"]
 
-[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_vskxq"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_h6unu"]
 [ext_resource type="Script" uid="uid://dg2m1isyocicv" path="res://scene/weapon/bolt/bolt_rifle.gd" id="2_jj4xa"]
 [ext_resource type="Shader" uid="uid://bp3in2vqstg1e" path="res://material/scope/scope_shader.gdshader" id="2_ry02v"]
@@ -10,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cdaaqwyy0yma0" path="res://scene/weapon/bolt/reticle.svg" id="5_cxsjy"]
 [ext_resource type="Animation" uid="uid://xsv4a00cgagk" path="res://animation/bolt/bolt_RESET.res" id="5_tda2x"]
 [ext_resource type="AnimationLibrary" uid="uid://4t3lfpv45eo5" path="res://animation/bolt/bolt_animation.res" id="6_ry02v"]
+[ext_resource type="AnimationNodeBlendTree" uid="uid://4tfq1m1mtxok" path="res://animation/bolt/bolt_anim_tree.tres" id="10_cxsjy"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_jj4xa"]
 viewport_path = NodePath("Mesh/SubViewport")
@@ -151,135 +151,25 @@ _data = {
 &"RESET": ExtResource("5_tda2x")
 }
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l3tjp"]
-animation = &"bolt/charge"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ord0y"]
-animation = &"bolt/fire"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_1i8ia"]
-animation = &"RESET"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ec11v"]
-animation = &"bolt/into_reload"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_n7l1y"]
-animation = &"bolt/out_reload"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_51wkv"]
-animation = &"bolt/reload"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_cxsjy"]
-animation = &"RESET"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_l3tjp"]
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ord0y"]
-xfade_time = 0.25
-advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ec11v"]
-xfade_time = 0.15
-advance_mode = 2
-advance_expression = "!is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_n7l1y"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_51wkv"]
-xfade_time = 0.05
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_eg8qc"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2pxpf"]
-xfade_time = 0.05
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_6lakh"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-advance_expression = "!is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4bo56"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_1i8ia"]
-xfade_time = 0.05
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_cxsjy"]
-xfade_time = 0.05
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_clnwt"]
-xfade_time = 0.05
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_l7m5n"]
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_y58sg"]
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_tg1y1"]
-xfade_time = 0.2
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mqmv3"]
-xfade_time = 0.2
-switch_mode = 2
-advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_51wkv"]
-states/charge/node = SubResource("AnimationNodeAnimation_l3tjp")
-states/charge/position = Vector2(616, -61)
-states/fire/node = SubResource("AnimationNodeAnimation_ord0y")
-states/fire/position = Vector2(341, -61)
-states/idle/node = SubResource("AnimationNodeAnimation_1i8ia")
-states/idle/position = Vector2(341, 100)
-states/into_reload/node = SubResource("AnimationNodeAnimation_ec11v")
-states/into_reload/position = Vector2(341, 248)
-states/out_reload/node = SubResource("AnimationNodeAnimation_n7l1y")
-states/out_reload/position = Vector2(616, 248)
-states/reload/node = SubResource("AnimationNodeAnimation_51wkv")
-states/reload/position = Vector2(481, 248)
-states/walk/node = SubResource("AnimationNodeAnimation_cxsjy")
-states/walk/position = Vector2(616, 100)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_l3tjp"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_ord0y"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_ec11v"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_n7l1y"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_51wkv"), "fire", "charge", SubResource("AnimationNodeStateMachineTransition_eg8qc"), "charge", "fire", SubResource("AnimationNodeStateMachineTransition_2pxpf"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_6lakh"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_4bo56"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_1i8ia"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_cxsjy"), "idle", "into_reload", SubResource("AnimationNodeStateMachineTransition_clnwt"), "into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_l7m5n"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_y58sg"), "out_reload", "idle", SubResource("AnimationNodeStateMachineTransition_tg1y1"), "out_reload", "walk", SubResource("AnimationNodeStateMachineTransition_mqmv3")]
-graph_offset = Vector2(35, 58)
-
-[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_eg8qc"]
-graph_offset = Vector2(-386, 106)
-nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_51wkv")
-nodes/StateMachine/position = Vector2(-100, 120)
-node_connections = [&"output", 0, &"StateMachine"]
-
-[node name="bolt_rifle" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker") instance=ExtResource("1_vskxq")]
+[node name="bolt_rifle" type="Node3D" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker")]
 script = ExtResource("2_jj4xa")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")
 particle_marker = NodePath("Mesh/BarrelMarker")
 reload_marker = NodePath("ReloadMarker")
 magazine_marker = NodePath("Mesh/MagazineMarker")
+metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="Mesh" parent="." index="0"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="Mesh" type="Node3D" parent="."]
+unique_name_in_owner = true
 
-[node name="ScopeCameraTarget" type="Marker3D" parent="Mesh" index="0"]
+[node name="ScopeCameraTarget" type="Marker3D" parent="Mesh"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
 gizmo_extents = 0.0
 metadata/_edit_lock_ = true
 
-[node name="SubViewport" type="SubViewport" parent="Mesh" index="1"]
+[node name="SubViewport" type="SubViewport" parent="Mesh"]
 handle_input_locally = false
 msaa_3d = 1
 screen_space_aa = 1
@@ -287,128 +177,128 @@ use_debanding = true
 size = Vector2i(768, 768)
 render_target_clear_mode = 1
 
-[node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport" index="0"]
+[node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
 attributes = ExtResource("4_cxsjy")
 metadata/_edit_lock_ = true
 
-[node name="ScopePicture" type="MeshInstance3D" parent="Mesh" index="2"]
+[node name="ScopePicture" type="MeshInstance3D" parent="Mesh"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.048, 0.26)
 mesh = SubResource("QuadMesh_jj4xa")
 skeleton = NodePath("../protomesh/scope")
 metadata/_edit_lock_ = true
 
-[node name="protomesh" type="Node3D" parent="Mesh" index="3"]
+[node name="protomesh" type="Node3D" parent="Mesh"]
 metadata/_edit_lock_ = true
 
-[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" index="0"]
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.3)
 mesh = SubResource("CylinderMesh_6wx1y")
 metadata/_edit_lock_ = true
 
-[node name="bolt" type="MeshInstance3D" parent="Mesh/protomesh" index="1"]
+[node name="bolt" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.118)
 mesh = SubResource("CylinderMesh_tda2x")
 
-[node name="cap" type="MeshInstance3D" parent="Mesh/protomesh/bolt" index="0"]
+[node name="cap" type="MeshInstance3D" parent="Mesh/protomesh/bolt"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.082, 1.45519e-11)
 mesh = SubResource("SphereMesh_ry02v")
 metadata/_edit_lock_ = true
 
-[node name="handle" type="MeshInstance3D" parent="Mesh/protomesh/bolt" index="1"]
+[node name="handle" type="MeshInstance3D" parent="Mesh/protomesh/bolt"]
 transform = Transform3D(-4.37114e-08, 1, 4.37114e-08, -1, -4.37114e-08, -4.37114e-08, -4.37114e-08, -4.37114e-08, 1, 0.0265, -0.062, 1.45519e-11)
 mesh = SubResource("CapsuleMesh_jj4xa")
 metadata/_edit_lock_ = true
 
-[node name="bolt_connector" type="MeshInstance3D" parent="Mesh/protomesh" index="2"]
+[node name="bolt_connector" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.017)
 mesh = SubResource("CylinderMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="bolt_2" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector" index="0"]
+[node name="bolt_2" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.012, 1.45519e-11)
 mesh = SubResource("CylinderMesh_ec11v")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="bolt_barrel" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector" index="1"]
+[node name="bolt_barrel" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.011, 1.45519e-11)
 mesh = SubResource("CylinderMesh_ord0y")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="under_barrel" type="MeshInstance3D" parent="Mesh/protomesh" index="3"]
+[node name="under_barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(0, -4.37114e-08, 1, -1, -4.37114e-08, 0, 4.37114e-08, -1, -4.37114e-08, 1.45519e-11, -0.025, -0.165)
 mesh = SubResource("PrismMesh_1i8ia")
 metadata/_edit_lock_ = true
 
-[node name="body" type="MeshInstance3D" parent="Mesh/protomesh" index="4"]
+[node name="body" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.025, 0.125)
 mesh = SubResource("BoxMesh_cxsjy")
 metadata/_edit_lock_ = true
 
-[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh" index="5"]
+[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.01, 0.094)
 mesh = SubResource("BoxMesh_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="scope" type="MeshInstance3D" parent="Mesh/protomesh" index="6"]
+[node name="scope" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 2.91038e-11, 0.048, 0.128)
 mesh = SubResource("CylinderMesh_qo7cl")
 skeleton = NodePath("../rail")
 
-[node name="scope2" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="0"]
+[node name="scope2" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.084, 1.45519e-11)
 mesh = SubResource("CylinderMesh_ry02v")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="scope3" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="1"]
+[node name="scope3" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.13, 1.45519e-11)
 mesh = SubResource("CylinderMesh_jj4xa")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="scope4" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="2"]
+[node name="scope4" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.069, 1.45519e-11)
 mesh = SubResource("CylinderMesh_1i8ia")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="scope5" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="3"]
+[node name="scope5" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.106, 1.45519e-11)
 mesh = SubResource("CylinderMesh_cxsjy")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="leg1" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="4"]
+[node name="leg1" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.047, -0.0175957)
 mesh = SubResource("BoxMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="legbase" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg1" index="0"]
+[node name="legbase" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.0035)
 mesh = SubResource("BoxMesh_qo7cl")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="leg2" type="MeshInstance3D" parent="Mesh/protomesh/scope" index="5"]
+[node name="leg2" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.047, -0.0176)
 mesh = SubResource("BoxMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="legbase2" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg2" index="0"]
+[node name="legbase2" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.0035)
 mesh = SubResource("BoxMesh_qo7cl")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="inner_scope" type="CSGCombiner3D" parent="Mesh/protomesh/scope" index="6"]
+[node name="inner_scope" type="CSGCombiner3D" parent="Mesh/protomesh/scope"]
 metadata/_edit_lock_ = true
 
-[node name="scope_eye" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="0"]
+[node name="scope_eye" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.106, 1.45519e-11)
 radius = 0.014
 height = 0.056
@@ -416,7 +306,7 @@ sides = 64
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="scope_middle" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="1"]
+[node name="scope_middle" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.015, 1.45519e-11)
 radius = 0.012
 height = 0.186
@@ -424,7 +314,7 @@ sides = 6
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="scope_end" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="2"]
+[node name="scope_end" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.13, 1.45519e-11)
 radius = 0.018
 height = 0.044
@@ -432,7 +322,7 @@ sides = 18
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="cut" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" index="3"]
+[node name="cut" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.009, 1.45519e-11)
 operation = 2
 radius = 0.01
@@ -441,55 +331,61 @@ sides = 52
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh" index="7"]
+[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(-1.49246e-08, -6.7318e-08, 1, -1, 5.96046e-08, 0, -5.96046e-08, -1, -2.98023e-08, 1.45519e-11, -0.11, 0.425)
 mesh = SubResource("PrismMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="stock_2" type="MeshInstance3D" parent="Mesh/protomesh/stock" index="0"]
+[node name="stock_2" type="MeshInstance3D" parent="Mesh/protomesh/stock"]
 transform = Transform3D(-1, -7.10543e-15, 7.50315e-08, 7.10543e-15, 1, 8.74228e-08, -7.50315e-08, 1.62454e-07, -1, -0.1095, 0, -1.63424e-09)
 mesh = SubResource("PrismMesh_ord0y")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="stock_3" type="MeshInstance3D" parent="Mesh/protomesh/stock" index="1"]
+[node name="stock_3" type="MeshInstance3D" parent="Mesh/protomesh/stock"]
 transform = Transform3D(-1.77636e-15, -1, -5.96046e-08, -2.98023e-08, 5.96046e-08, -1, 1, -1.49246e-08, -6.7318e-08, -0.075, 0, -1.11934e-09)
 mesh = SubResource("BoxMesh_ec11v")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh/stock" index="2"]
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh/stock"]
 transform = Transform3D(-1.77636e-15, -0.906308, -0.422618, -2.98023e-08, 0.422618, -0.906308, 1, 1.49236e-08, -6.73183e-08, -0.042, 0.1507, 1.45519e-11)
 mesh = SubResource("BoxMesh_n7l1y")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="MagazineMarker" type="Marker3D" parent="Mesh" index="4"]
+[node name="MagazineMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.055, 0.09)
 gizmo_extents = 0.0
 metadata/_edit_lock_ = true
 
-[node name="RifleMagMesh" parent="Mesh/MagazineMarker" index="0" instance=ExtResource("4_qo7cl")]
+[node name="RifleMagMesh" parent="Mesh/MagazineMarker" instance=ExtResource("4_qo7cl")]
 transform = Transform3D(1, -3.72529e-09, 0, 5.58794e-09, 1, -1.49012e-08, 1.49012e-08, 2.98023e-08, 1, 0, 0, 0)
 
-[node name="BarrelMarker" type="Marker3D" parent="Mesh" index="5"]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.61)
 visible = false
 metadata/_edit_lock_ = true
 
-[node name="EjectMarker" type="Marker3D" parent="Mesh" index="6"]
+[node name="EjectMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0119953, 1.45519e-11, 0.094)
 visible = false
 
-[node name="ReloadMarker" type="Marker3D" parent="." index="1"]
+[node name="ReloadMarker" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.055, 0.09)
+visible = false
 
-[node name="AnimationPlayer" parent="." index="2"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("")
 libraries = {
 &"": SubResource("AnimationLibrary_jj4xa"),
 &"bolt": ExtResource("6_ry02v")
 }
 
-[node name="AnimationTree" parent="." index="3"]
+[node name="AnimationTree" type="AnimationTree" parent="."]
+unique_name_in_owner = true
 active = false
-tree_root = SubResource("AnimationNodeBlendTree_eg8qc")
+root_node = NodePath("%AnimationTree/..")
+tree_root = ExtResource("10_cxsjy")
+advance_expression_base_node = NodePath("..")
+anim_player = NodePath("../AnimationPlayer")

@@ -1,12 +1,12 @@
-[gd_scene load_steps=43 format=3 uid="uid://dpw3tt0t5w2c4"]
+[gd_scene load_steps=17 format=3 uid="uid://dpw3tt0t5w2c4"]
 
-[ext_resource type="PackedScene" uid="uid://btielayefj03i" path="res://scene/weapon/WeaponScene.tscn" id="1_y638f"]
 [ext_resource type="Script" uid="uid://bwqhte63kxw8" path="res://scene/weapon/rifle/rifle.gd" id="2_fyojs"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_pgrwu"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_y8syv"]
 [ext_resource type="PackedScene" uid="uid://c5jvwtxvcglky" path="res://scene/weapon/rifle/rifle_mag_mesh.tscn" id="4_y8syv"]
 [ext_resource type="Animation" uid="uid://brbgoh5tryvyw" path="res://animation/rifle/rifle_RESET.res" id="5_qqsv1"]
 [ext_resource type="AnimationLibrary" uid="uid://b4bv1ijnrxguc" path="res://animation/rifle/rifle_animation.res" id="6_fyojs"]
+[ext_resource type="AnimationNodeBlendTree" uid="uid://bcv0pipwlmiqy" path="res://animation/rifle/rifle_anim_tree.tres" id="7_fyojs"]
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_xkfre"]
 material = ExtResource("2_pgrwu")
@@ -51,117 +51,7 @@ _data = {
 &"RESET": ExtResource("5_qqsv1")
 }
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_qqsv1"]
-animation = &"rifle/charge"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fyojs"]
-animation = &"rifle/fire"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mbpeo"]
-animation = &"RESET"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_evl3x"]
-animation = &"rifle/into_reload"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_flwm2"]
-animation = &"rifle/out_reload"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3c15l"]
-animation = &"rifle/reload"
-
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3d6q2"]
-animation = &"RESET"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_evl3x"]
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_flwm2"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_uqieo"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4p1ep"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2d63p"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i6awq"]
-xfade_time = 0.25
-advance_mode = 2
-advance_expression = "is_walking
-"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_gal7r"]
-xfade_time = 0.15
-advance_mode = 2
-advance_expression = "!is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_06dra"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5ivui"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_3hea1"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_cpwiv"]
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2w0gh"]
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ua2n1"]
-xfade_time = 0.2
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2o3py"]
-xfade_time = 0.2
-switch_mode = 2
-advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ya014"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fyojs"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mbpeo"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_y8syv"]
-states/charge/node = SubResource("AnimationNodeAnimation_qqsv1")
-states/charge/position = Vector2(628, -52)
-states/fire/node = SubResource("AnimationNodeAnimation_fyojs")
-states/fire/position = Vector2(365, -52)
-states/idle/node = SubResource("AnimationNodeAnimation_mbpeo")
-states/idle/position = Vector2(365, 100)
-states/into_reload/node = SubResource("AnimationNodeAnimation_evl3x")
-states/into_reload/position = Vector2(365, 207)
-states/out_reload/node = SubResource("AnimationNodeAnimation_flwm2")
-states/out_reload/position = Vector2(628, 207)
-states/reload/node = SubResource("AnimationNodeAnimation_3c15l")
-states/reload/position = Vector2(492, 283)
-states/walk/node = SubResource("AnimationNodeAnimation_3d6q2")
-states/walk/position = Vector2(628, 100)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_evl3x"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_flwm2"), "fire", "idle", SubResource("AnimationNodeStateMachineTransition_uqieo"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_4p1ep"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_2d63p"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_i6awq"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_gal7r"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_06dra"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_5ivui"), "idle", "into_reload", SubResource("AnimationNodeStateMachineTransition_3hea1"), "into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_cpwiv"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_2w0gh"), "out_reload", "idle", SubResource("AnimationNodeStateMachineTransition_ua2n1"), "out_reload", "walk", SubResource("AnimationNodeStateMachineTransition_2o3py"), "walk", "into_reload", SubResource("AnimationNodeStateMachineTransition_ya014"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_fyojs"), "fire", "walk", SubResource("AnimationNodeStateMachineTransition_mbpeo")]
-graph_offset = Vector2(-34, -103)
-
-[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_xkfre"]
-nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_y8syv")
-nodes/StateMachine/position = Vector2(-100, 140)
-node_connections = [&"output", 0, &"StateMachine"]
-
-[node name="Rifle" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker", "recoil_marker") instance=ExtResource("1_y638f")]
+[node name="Rifle" type="Node3D" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker", "recoil_marker")]
 script = ExtResource("2_fyojs")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")
@@ -169,69 +59,78 @@ particle_marker = NodePath("Mesh/BarrelMarker")
 reload_marker = NodePath("ReloadMarker")
 magazine_marker = NodePath("Mesh/MagazineMarker")
 recoil_marker = NodePath("RecoilMarker")
+metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="protomesh" type="Node3D" parent="Mesh" index="0"]
+[node name="Mesh" type="Node3D" parent="."]
+unique_name_in_owner = true
 
-[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" index="0"]
+[node name="protomesh" type="Node3D" parent="Mesh"]
+
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -8.78157e-09, -0.22)
 mesh = SubResource("CylinderMesh_xkfre")
 
-[node name="body" type="MeshInstance3D" parent="Mesh/protomesh" index="1"]
+[node name="body" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.01, 0.025)
 mesh = SubResource("BoxMesh_qqsv1")
 
-[node name="barrel_cover" type="MeshInstance3D" parent="Mesh/protomesh" index="2"]
+[node name="barrel_cover" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.29)
 mesh = SubResource("CylinderMesh_fyojs")
 
-[node name="stock_attach" type="MeshInstance3D" parent="Mesh/protomesh" index="3"]
+[node name="stock_attach" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.00944, 0.225)
 mesh = SubResource("BoxMesh_mbpeo")
 
-[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh" index="4"]
+[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.02, 0.36)
 mesh = SubResource("BoxMesh_3c15l")
 
-[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh" index="5"]
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 1.45519e-11, -0.09, 0.135)
 mesh = SubResource("BoxMesh_3d6q2")
 
-[node name="charge_handle" type="MeshInstance3D" parent="Mesh/protomesh" index="6"]
+[node name="charge_handle" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.04, 1.45519e-11, 0.015)
 mesh = SubResource("CylinderMesh_mbpeo")
 
-[node name="handle_track" type="MeshInstance3D" parent="Mesh/protomesh" index="7"]
+[node name="handle_track" type="MeshInstance3D" parent="Mesh/protomesh"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.026, 1.45519e-11, 0.05)
 mesh = SubResource("QuadMesh_3c15l")
 
-[node name="BarrelMarker" type="Marker3D" parent="Mesh" index="1"]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.48)
 visible = false
 
-[node name="MagazineMarker" type="Marker3D" parent="Mesh" index="2"]
+[node name="MagazineMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.075, -0.04)
 gizmo_extents = 0.0
 
-[node name="RifleMagMesh" parent="Mesh/MagazineMarker" index="0" instance=ExtResource("4_y8syv")]
+[node name="RifleMagMesh" parent="Mesh/MagazineMarker" instance=ExtResource("4_y8syv")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.73472e-17, -2.98023e-08, 1.11759e-08)
 
-[node name="EjectMarker" type="Marker3D" parent="Mesh" index="3"]
+[node name="EjectMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0, -0.04)
 visible = false
 
-[node name="AnimationPlayer" parent="." index="1"]
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("")
 libraries = {
 &"": SubResource("AnimationLibrary_3d6q2"),
 &"rifle": ExtResource("6_fyojs")
 }
 
-[node name="AnimationTree" parent="." index="2"]
-tree_root = SubResource("AnimationNodeBlendTree_xkfre")
+[node name="AnimationTree" type="AnimationTree" parent="."]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/..")
+tree_root = ExtResource("7_fyojs")
+advance_expression_base_node = NodePath("..")
+anim_player = NodePath("../AnimationPlayer")
 
-[node name="ReloadMarker" type="Marker3D" parent="." index="3"]
+[node name="ReloadMarker" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.075, -0.04)
 visible = false
 
-[node name="RecoilMarker" type="Marker3D" parent="." index="4"]
+[node name="RecoilMarker" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.42)
 visible = false

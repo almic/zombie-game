@@ -35,7 +35,6 @@ switch_mode = 2
 advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qr2j5"]
-advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_45uv1"]
 states/fire/node = SubResource("AnimationNodeAnimation_e0q86")
@@ -48,7 +47,7 @@ transitions = ["idle", "fire", SubResource("AnimationNodeStateMachineTransition_
 graph_offset = Vector2(-46, -112)
 
 [resource]
-graph_offset = Vector2(-387, -1)
+graph_offset = Vector2(-650, 100)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_45uv1")
 nodes/StateMachine/position = Vector2(-140, 100)
 node_connections = [&"output", 0, &"StateMachine"]

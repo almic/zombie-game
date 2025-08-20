@@ -22,7 +22,6 @@ animation = &"pistol/reload"
 animation = &"pistol/walk"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_h1u7h"]
-advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_p0lhx"]
 xfade_time = 0.25
@@ -105,7 +104,7 @@ states/reload/position = Vector2(472, 221)
 states/walk/node = SubResource("AnimationNodeAnimation_so1fq")
 states/walk/position = Vector2(607, 100)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_h1u7h"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_p0lhx"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_5kv2a"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_t8fvo"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_7dcvx"), "fire", "idle", SubResource("AnimationNodeStateMachineTransition_pf7n4"), "fire", "walk", SubResource("AnimationNodeStateMachineTransition_xbp0l"), "idle", "into_reload", SubResource("AnimationNodeStateMachineTransition_t6itt"), "into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_sj300"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_txw7f"), "out_reload", "walk", SubResource("AnimationNodeStateMachineTransition_5tki4"), "out_reload", "idle", SubResource("AnimationNodeStateMachineTransition_n4xpu"), "into_reload", "idle", SubResource("AnimationNodeStateMachineTransition_7rpbn"), "into_reload", "walk", SubResource("AnimationNodeStateMachineTransition_3kcna"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_3lee7"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_pp7wb"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_ec8u4"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_2tsi3")]
-graph_offset = Vector2(-9, -162)
+graph_offset = Vector2(-137, -27)
 
 [resource]
 graph_offset = Vector2(-50, 30)

@@ -22,7 +22,6 @@ animation = &"rifle/reload"
 animation = &"RESET"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_evl3x"]
-advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_flwm2"]
 
@@ -103,9 +102,10 @@ states/reload/position = Vector2(492, 283)
 states/walk/node = SubResource("AnimationNodeAnimation_3d6q2")
 states/walk/position = Vector2(628, 100)
 transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_evl3x"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_flwm2"), "fire", "idle", SubResource("AnimationNodeStateMachineTransition_uqieo"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_4p1ep"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_2d63p"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_i6awq"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_gal7r"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_06dra"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_5ivui"), "idle", "into_reload", SubResource("AnimationNodeStateMachineTransition_3hea1"), "into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_cpwiv"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_2w0gh"), "out_reload", "idle", SubResource("AnimationNodeStateMachineTransition_ua2n1"), "out_reload", "walk", SubResource("AnimationNodeStateMachineTransition_2o3py"), "walk", "into_reload", SubResource("AnimationNodeStateMachineTransition_ya014"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_fyojs"), "fire", "walk", SubResource("AnimationNodeStateMachineTransition_mbpeo")]
-graph_offset = Vector2(-34, -103)
+graph_offset = Vector2(-281, -17)
 
 [resource]
+graph_offset = Vector2(-378, 109)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_y8syv")
 nodes/StateMachine/position = Vector2(-100, 140)
 node_connections = [&"output", 0, &"StateMachine"]

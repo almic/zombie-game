@@ -22,7 +22,6 @@ animation = &"bolt/reload"
 animation = &"RESET"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_l3tjp"]
-advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ord0y"]
 xfade_time = 0.25
@@ -106,6 +105,7 @@ transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition
 graph_offset = Vector2(35, 58)
 
 [resource]
+graph_offset = Vector2(-432, 129)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_51wkv")
 nodes/StateMachine/position = Vector2(-100, 120)
 node_connections = [&"output", 0, &"StateMachine"]

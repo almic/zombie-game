@@ -5,8 +5,8 @@
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="2_s5bu5"]
 [ext_resource type="Resource" uid="uid://nqh0w26v06v4" path="res://data/weapon/ammo/slug.tres" id="3_2nd26"]
 [ext_resource type="PackedScene" uid="uid://d272705u8gln4" path="res://particle/system/weapon/gunshot_big.tscn" id="4_86fa8"]
+[ext_resource type="PackedScene" uid="uid://c8nmtmax1l5vn" path="res://scene/weapon/revolver/revolver.tscn" id="5_86fa8"]
 [ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="5_gbcyp"]
-[ext_resource type="PackedScene" uid="uid://cntwk6lvbkhi2" path="res://scene/weapon/revolver/revolver.tscn" id="5_jxjno"]
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="7_qdvuk"]
 
 [sub_resource type="Resource" id="Resource_86fa8"]
@@ -55,7 +55,7 @@ recoil_spread_bias = 1.0
 recoil_spread_angle = 0.174533
 recoil_aim_control = 0.4
 crosshair_enabled = false
-scene = ExtResource("5_jxjno")
+scene = ExtResource("5_86fa8")
 scene_offset = Vector3(1.45519e-11, 0.01, 0.05)
 particle_scene = ExtResource("4_86fa8")
 particle_offset = Vector3(0, 0, 0)

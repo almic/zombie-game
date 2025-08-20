@@ -34,7 +34,7 @@
 [ext_resource type="Material" uid="uid://6tvs7wudhhdq" path="res://material/level/grid_black.tres" id="25_1obi0"]
 [ext_resource type="Resource" uid="uid://ccvoouydse02j" path="res://data/weapon/type/revolver/revolver.tres" id="25_pb8w5"]
 [ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg/csg_steps/csg_steps.gd" id="26_1obi0"]
-[ext_resource type="PackedScene" uid="uid://cntwk6lvbkhi2" path="res://scene/weapon/revolver/revolver.tscn" id="26_f0qux"]
+[ext_resource type="PackedScene" uid="uid://c8nmtmax1l5vn" path="res://scene/weapon/revolver/revolver.tscn" id="26_f0qux"]
 [ext_resource type="Material" uid="uid://dw056en0eb3vg" path="res://material/level/grid_green.tres" id="27_4tdq6"]
 [ext_resource type="PackedScene" uid="uid://byx787kh4uila" path="res://scene/ramp_collider/ramp_collider.tscn" id="27_xd5hc"]
 [ext_resource type="Script" uid="uid://c70ichse0a8nc" path="res://script/csg/csg_ramp/csg_ramp.gd" id="30_5enf7"]

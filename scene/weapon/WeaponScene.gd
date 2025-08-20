@@ -14,6 +14,7 @@ const UNLOAD = &'unload'
 @onready var mesh: Node3D = %Mesh
 @onready var animation_tree: AnimationTree = %AnimationTree
 var anim_state: AnimationNodeStateMachinePlayback
+var state_machine: AnimationNodeStateMachine
 
 
 ## For animations that change the main hand
@@ -78,12 +79,17 @@ var is_walking: bool = false
 var anim_target: StringName = &''
 var anim_locked: bool = false
 
-
+func test_method() -> bool:
+    print('tested from base!! AHH')
+    return false
 
 func _ready() -> void:
     animation_tree.active = false
     anim_state = animation_tree['parameters/StateMachine/playback']
     animation_tree.animation_started.connect(_on_anim_start)
+
+    var root: AnimationNodeBlendTree = animation_tree.tree_root as AnimationNodeBlendTree
+    state_machine = root.get_node('StateMachine') as AnimationNodeStateMachine
 
     if reload_marker:
         reload_marker.visible = false
@@ -137,8 +143,10 @@ func _emit_charged() -> void:
 
 func _on_anim_start(anim: StringName) -> void:
     anim_locked = false
-
-    if anim == anim_target:
+    var node: StringName = anim_state.get_current_node()
+    #print('node ' + node + ' (' + anim + ')')
+    if anim_state.get_current_node() == anim_target:
+        #print('Travel to ' + anim_target + ' (' + anim + ') finished!')
         is_anim_traveling = false
         anim_target = &''
 
@@ -234,17 +242,19 @@ func eject_round(
 
     round_body.apply_impulse(forward * force, impulse_point)
 
-
 func seek(time: float) -> void:
     animation_tree['parameters/TimeSeek/seek_request'] = time
 
-func travel(anim: StringName, immediate: bool = false) -> void:
-    is_anim_traveling = true
+func travel(node: StringName, immediate: bool = false) -> void:
     if immediate:
-        anim_state.start(anim)
+        anim_state.start(node)
         return
-    anim_target = anim
-    anim_state.travel(anim)
+    var anim_node: AnimationNodeAnimation = state_machine.get_node(node) as AnimationNodeAnimation
+    if anim_node:
+        anim_target = node
+        is_anim_traveling = true
+        #print('Traveling to ' + node + ' (' + anim_node.animation + ')')
+    anim_state.travel(node)
 
 ## Weapon is ready to be used
 func goto_ready() -> bool:

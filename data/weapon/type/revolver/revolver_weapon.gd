@@ -47,7 +47,8 @@ func eject_round() -> bool:
     #       live rounds, so this should always replenish stock on a non-empty port
 
     # Empty port
-    if not _mixed_reserve[_cylinder_position]:
+    var type: int = _mixed_reserve[_cylinder_position]
+    if not type:
         return false
 
     _mixed_reserve[_cylinder_position] = 0
@@ -55,7 +56,7 @@ func eject_round() -> bool:
 
     if _cylinder_ammo_state[_cylinder_position]:
         # Recover round to ammo stock
-        var stock: Dictionary = ammo_bank.get(_mixed_reserve[_cylinder_position])
+        var stock: Dictionary = ammo_bank.get(type)
         if stock:
             stock.amount += 1
         _cylinder_ammo_state[_cylinder_position] = 0

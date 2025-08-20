@@ -1,14 +1,27 @@
 
 ## Special scene just for the revolver
-class_name RevolverWeaponScene extends WeaponScene
+extends WeaponScene
 
 const PORTS = 6
 const PORT_ANGLE = TAU / PORTS
 const FIRE_DOUBLE = &'fire_double'
 const FIRE_EMPTY = &'fire_empty'
+
+const OPEN_CYLINDER_RELOAD = &'open_cylinder_reload'
+const EJECT_ROUNDS_BEFORE_RELOAD = &'eject_rounds_before_reload'
+const EJECT_TO_RELOAD = &'eject_to_reload'
+const OPEN_TO_RELOAD = &'open_to_reload'
 const RELOAD_SPIN = &'reload_spin'
+const RELOAD_OUT_SPIN = &'reload_out_spin'
 const OUT_RELOAD = &'out_reload'
+
+const OPEN_CYLINDER_UNLOAD = &'open_cylinder_unload'
+const EJECT_ROUNDS_BEFORE_UNLOAD = &'eject_rounds_before_unload'
+const EJECT_TO_UNLOAD = &'eject_to_unload'
+const OPEN_TO_UNLOAD = &'open_to_unload'
 const UNLOAD_SPIN = &'unload_spin'
+const UNLOAD_OUT_SPIN = &'unload_out_spin'
+const OUT_UNLOAD = &'out_unload'
 
 const CYLINDER_ROTATE = &'revolver/cylinder_rotate'
 
@@ -24,6 +37,10 @@ const CYLINDER_ROTATE = &'revolver/cylinder_rotate'
 ]
 
 
+## Marker for the round to be unloaded
+@export var unload_marker: Marker3D
+
+
 var revolver: RevolverWeapon:
     set = set_revolver
 
@@ -36,18 +53,13 @@ var is_round_live: bool:
     get(): return revolver.is_round_live()
 
 #var has_used_rounds: bool = false
-#var has_used_rounds: bool:
-    #get():
-        #print('checking used rounds!')
-        #return true
-        #for i in range(PORTS):
-            #if revolver._mixed_reserve[i] > 0 and not revolver._cylinder_ammo_state[i]:
-                #return true
-        #return false
+var has_used_rounds: bool:
+    get():
+        for i in range(PORTS):
+            if revolver._mixed_reserve[i] > 0 and not revolver._cylinder_ammo_state[i]:
+                return true
+        return false
 
-func has_used_rounds() -> bool:
-    print('I AM STUPID!')
-    return false
 
 var has_empty_ports: bool:
     get():
@@ -59,37 +71,15 @@ var cylinder_apply_on_finish: bool = false
 
 var cylinder_interp: Interpolation = Interpolation.new()
 
+var _unload_one_spin: bool = false
+
+
 
 func _ready() -> void:
     super._ready()
     cylinder_anim = animation_tree.get_animation(CYLINDER_ROTATE)
     if not cylinder_anim:
         push_error("Revolver could not get the cylinder rotation animation!! Investigate!")
-
-    return
-    var root: AnimationNodeBlendTree = animation_tree.tree_root as AnimationNodeBlendTree
-    var state_mach: AnimationNodeStateMachine = root.get_node('StateMachine') as AnimationNodeStateMachine
-    var transition: AnimationNodeStateMachineTransition
-    for i in range(state_mach.get_transition_count()):
-        if state_mach.get_transition_from(i) == 'open_cylinder' and state_mach.get_transition_to(i) == 'open_to_reload':
-            transition = state_mach.get_transition(i)
-            break
-    var expression: Expression = Expression.new()
-    var error: Error = expression.parse(transition.advance_expression)
-    if error != OK:
-        var error_text: String = expression.get_error_text()
-        print(error_text)
-    else:
-        var ret = expression.execute([], self, true, false)
-        if expression.has_execute_failed():
-            var error_text: String = expression.get_error_text()
-            print(error_text)
-        else:
-            print(transition.advance_expression + ' == ' + str(ret) + ' (' + type_string(typeof(ret)) + ')')
-    pass
-
-func test_method() -> void:
-    print('Called via expression!!!!')
 
 func _process(delta: float) -> void:
     if cylinder_interp.is_done:
@@ -123,6 +113,66 @@ func _reload_loop_start() -> void:
     if revolver._mixed_reserve[revolver._cylinder_position] > 0:
         travel(RELOAD_SPIN, true)
 
+func _unload_loop_start() -> void:
+    apply_rotate_cylinder()
+
+    # If the current port is empty, travel straight to the unload spin
+    var type: int = revolver._mixed_reserve[revolver._cylinder_position]
+    if not type:
+        if _unload_one_spin:
+            _unload_one_spin = false
+            travel(UNLOAD_SPIN, true)
+        elif cocked:
+            travel(UNLOAD_OUT_SPIN, true)
+        else:
+            travel(OUT_UNLOAD, true)
+        return
+
+    # Apply current round unload scene
+    if not unload_marker:
+        return
+
+    # Expect only one child max, so just remove and break
+    for child in unload_marker.get_children():
+        unload_marker.remove_child(child)
+        break
+
+    var ammo: AmmoResource = revolver.get_supported_ammunition().get(type) as AmmoResource
+    if not ammo:
+        return
+
+    var round_scene: PackedScene
+    if is_round_live:
+        round_scene = ammo.scene_round_unloaded
+    else:
+        round_scene = ammo.scene_round_expended
+
+    if not round_scene:
+        return
+
+    var round_node: Node3D = round_scene.instantiate() as Node3D
+    round_node.process_mode = PROCESS_MODE_DISABLED
+
+    unload_marker.add_child(round_node)
+
+    var ttl: float
+    if is_round_live:
+        ttl = 1.3
+    else:
+        ttl = 11.0
+
+    get_tree().create_timer(ttl).timeout.connect(round_node.queue_free)
+
+
+## Sets the visibility of the current port for unloading
+func _hide_unload_port() -> void:
+    var port: Marker3D = ports[revolver._cylinder_position]
+
+    # NOTE: only one child expected, so break after the first
+    for child in port.get_children():
+        child.visible = false
+        break
+
 func _emit_fired() -> void:
     if not is_round_live:
         revolver._hammer_cocked = false
@@ -133,6 +183,22 @@ func _emit_fired() -> void:
 func _emit_round_loaded() -> void:
     super._emit_round_loaded()
     update_ports()
+
+func _emit_round_unloaded() -> void:
+    super._emit_round_unloaded()
+    update_ports()
+
+    if not unload_marker:
+        return
+
+    # Activate the unload marker child
+    for child in unload_marker.get_children():
+        var child_transform: Transform3D = child.global_transform
+        unload_marker.remove_child(child)
+        get_tree().current_scene.add_child(child)
+        child.global_transform = child_transform
+        child.process_mode = Node.PROCESS_MODE_INHERIT
+        break
 
 func _emit_magazine_unloaded() -> void:
     # HACK: This sucks, but it will work... for now...
@@ -211,6 +277,52 @@ func goto_fire() -> bool:
         travel(FIRE_DOUBLE)
     return true
 
+func goto_reload() -> bool:
+    var state: StringName = anim_state.get_current_node()
+    if (
+           state == WALK
+        or state == IDLE
+        or state == OPEN_CYLINDER_UNLOAD
+        or state == OUT_UNLOAD
+    ):
+        travel(OPEN_CYLINDER_RELOAD)
+        return true
+    elif (
+           state == UNLOAD
+        or state == UNLOAD_SPIN
+        or state == UNLOAD_OUT_SPIN
+        or state == EJECT_ROUNDS_BEFORE_UNLOAD
+        or state == EJECT_TO_UNLOAD
+        or state == OPEN_TO_UNLOAD
+    ):
+        travel(RELOAD)
+        return true
+    return false
+
+func goto_unload() -> bool:
+    var state: StringName = anim_state.get_current_node()
+    if (
+           state == WALK
+        or state == IDLE
+        or state == OPEN_CYLINDER_RELOAD
+        or state == OUT_RELOAD
+    ):
+        travel(OPEN_CYLINDER_UNLOAD)
+        _unload_one_spin = true
+        return true
+    elif (
+           state == RELOAD
+        or state == RELOAD_SPIN
+        or state == RELOAD_OUT_SPIN
+        or state == EJECT_ROUNDS_BEFORE_RELOAD
+        or state == EJECT_TO_RELOAD
+        or state == OPEN_TO_RELOAD
+    ):
+        travel(UNLOAD)
+        _unload_one_spin = true
+        return true
+    return false
+
 func goto_reload_continue() -> bool:
     if not is_state(RELOAD):
         return false
@@ -223,18 +335,12 @@ func goto_reload_continue() -> bool:
     return true
 
 func goto_unload_continue() -> bool:
-    if not is_state(UNLOAD_SPIN):
-        return false
+    _unload_one_spin = true
 
-    apply_rotate_cylinder()
+    if not is_state(UNLOAD):
+        return is_state(UNLOAD_SPIN)
 
-    if not revolver._mixed_reserve[revolver._cylinder_position]:
-        # Loop in place
-        # NOTE: fidget toy, spin forever!
-        seek(0.0)
-        return true
-
-    travel(UNLOAD)
+    travel(UNLOAD_SPIN)
     return true
 
 func set_revolver(revolver_weapon: RevolverWeapon) -> void:

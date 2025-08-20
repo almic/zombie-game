@@ -289,6 +289,11 @@ func update_aiming(delta: float) -> void:
         if not _aim_is_aiming:
             _aim_is_aiming = true
             _aim_time = 0
+
+            # NOTE: Special revolver input, aiming charges if not charged
+            if weapon_node.weapon_type is RevolverWeapon and weapon_node.weapon_type.can_charge():
+                weapon_node.charge()
+
     elif _aim_is_aiming:
         _aim_is_aiming = false
         _aim_time = 0
@@ -434,6 +439,10 @@ func update_weapon_node(delta: float) -> void:
             if _fire_can_buffer:
                 # Use the longer buffer for reloading
                 if weapon_node.continue_reload:
+                    update_input_buffer(fire_primary)
+                # NOTE: For the revolver only, use the longer buffer if we are charging.
+                #       This happens when aiming auto-charges, which is longer than the buffer.
+                elif weapon_node.weapon_type is RevolverWeapon and weapon_node._weapon_scene.is_state(WeaponScene.CHARGE):
                     update_input_buffer(fire_primary)
                 else:
                     update_input_buffer(fire_primary, FIRE_INPUT_BUFFER_TIME)

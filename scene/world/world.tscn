@@ -1,4 +1,4 @@
-[gd_scene load_steps=71 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=70 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -58,13 +58,6 @@
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
 [ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="49_il2y7"]
 [ext_resource type="PackedScene" uid="uid://bvgviih6lyk0p" path="res://scene/item/ammo/fmj/fmj_pile.tscn" id="50_il2y7"]
-
-[sub_resource type="Resource" id="Resource_3wrw6"]
-resource_local_to_scene = true
-script = ExtResource("12_a331h")
-max_health = 100.0
-health = 100.0
-metadata/_custom_type_script = "uid://cugishrosnaex"
 
 [sub_resource type="Resource" id="Resource_a331h"]
 resource_local_to_scene = true
@@ -169,7 +162,6 @@ visible = false
 process_mode = 1
 physics_interpolation_mode = 1
 transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -324.644, 2.04, -514.535)
-life = SubResource("Resource_3wrw6")
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]

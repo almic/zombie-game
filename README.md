@@ -25,6 +25,13 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # ANGRY TODOS
 
+- [ ] Allow aiming while walking with the bolt, but greatly reduce move speed and
+      add a substantial amount of walking sway.
+- [ ] When aiming with the bolt, move projectile marker to the scope, and turn off
+      weapon targetting. This makes shots line up with the scope, and prevents weird
+      rotation for close targets.
+      ALTERNATIVELY: special targetting that only rotates the projectile marker
+      and not the weapon. SILLY.
 - [ ] Make revolver scene ports only update changes, instead of clearing and resetting
 - [ ] Add way to spin revolver cylinder randomly, and obscure the ammo order for UI
 - [ ] Add special ammo for the revolver only

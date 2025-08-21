@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=88 format=3 uid="uid://7qgp0c8ytmj1"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=99 format=3 uid="uid://7qgp0c8ytmj1"]
 
 [ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_5kk23"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/move.tres" id="2_fwd1p"]
@@ -29,6 +29,10 @@
 [ext_resource type="Resource" uid="uid://upe5t1x0l8xr" path="res://data/input/actions/unload.tres" id="23_m8yck"]
 [ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/melee.tres" id="24_j51jp"]
 [ext_resource type="Resource" uid="uid://dheiirlyouuld" path="res://data/input/actions/weapon_charge.tres" id="28_1dtex"]
+[ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/fan_hammer.tres" id="29_750xq"]
+[ext_resource type="Script" uid="uid://4oycuh0lr0i" path="res://addons/guide/triggers/guide_trigger_combo_cancel_action.gd" id="30_6wxkn"]
+[ext_resource type="Script" uid="uid://bbeymasvwpgql" path="res://addons/guide/triggers/guide_trigger_combo.gd" id="31_nja5n"]
+[ext_resource type="Script" uid="uid://0wtlaaqmn457" path="res://addons/guide/triggers/guide_trigger_combo_step.gd" id="32_r204x"]
 
 [sub_resource type="Resource" id="Resource_2myea"]
 script = ExtResource("4_ha628")
@@ -445,8 +449,57 @@ script = ExtResource("1_5kk23")
 action = ExtResource("28_1dtex")
 input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_pachv")])
 
+[sub_resource type="Resource" id="Resource_n7ml6"]
+script = ExtResource("32_r204x")
+action = ExtResource("20_2txww")
+completion_events = 1
+time_to_actuate = 60.0
+metadata/_custom_type_script = "uid://0wtlaaqmn457"
+
+[sub_resource type="Resource" id="Resource_rb5e2"]
+script = ExtResource("32_r204x")
+action = ExtResource("20_2txww")
+completion_events = 16
+time_to_actuate = 0.15
+metadata/_custom_type_script = "uid://0wtlaaqmn457"
+
+[sub_resource type="Resource" id="Resource_awvdf"]
+script = ExtResource("32_r204x")
+action = ExtResource("20_2txww")
+completion_events = 1
+time_to_actuate = 0.2
+metadata/_custom_type_script = "uid://0wtlaaqmn457"
+
+[sub_resource type="Resource" id="Resource_pmu2j"]
+script = ExtResource("32_r204x")
+action = ExtResource("20_2txww")
+completion_events = 16
+time_to_actuate = 0.15
+metadata/_custom_type_script = "uid://0wtlaaqmn457"
+
+[sub_resource type="Resource" id="Resource_x6356"]
+script = ExtResource("31_nja5n")
+enable_debug_print = false
+steps = Array[ExtResource("32_r204x")]([SubResource("Resource_n7ml6"), SubResource("Resource_rb5e2"), SubResource("Resource_awvdf"), SubResource("Resource_pmu2j")])
+cancellation_actions = Array[ExtResource("30_6wxkn")]([])
+actuation_threshold = 0.5
+
+[sub_resource type="Resource" id="Resource_5juv8"]
+script = ExtResource("3_nvbr2")
+override_action_settings = false
+is_remappable = false
+display_name = ""
+display_category = ""
+modifiers = Array[ExtResource("5_0jx6m")]([])
+triggers = Array[ExtResource("8_46ss4")]([SubResource("Resource_x6356")])
+
+[sub_resource type="Resource" id="Resource_50vkl"]
+script = ExtResource("1_5kk23")
+action = ExtResource("29_750xq")
+input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_5juv8")])
+
 [resource]
 script = ExtResource("2_pme3w")
 display_name = ""
-mappings = Array[ExtResource("1_5kk23")]([SubResource("Resource_kfofi"), SubResource("Resource_46ss4"), SubResource("Resource_hwbnv"), SubResource("Resource_6wxkn"), SubResource("Resource_5blti"), SubResource("Resource_3a0jo"), SubResource("Resource_mul2j"), SubResource("Resource_3krds"), SubResource("Resource_qnh3i"), SubResource("Resource_e4g2w"), SubResource("Resource_10dph"), SubResource("Resource_sfbg0"), SubResource("Resource_icp33"), SubResource("Resource_wuy35")])
+mappings = Array[ExtResource("1_5kk23")]([SubResource("Resource_kfofi"), SubResource("Resource_46ss4"), SubResource("Resource_hwbnv"), SubResource("Resource_6wxkn"), SubResource("Resource_5blti"), SubResource("Resource_3a0jo"), SubResource("Resource_mul2j"), SubResource("Resource_3krds"), SubResource("Resource_qnh3i"), SubResource("Resource_e4g2w"), SubResource("Resource_10dph"), SubResource("Resource_sfbg0"), SubResource("Resource_icp33"), SubResource("Resource_wuy35"), SubResource("Resource_50vkl")])
 metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

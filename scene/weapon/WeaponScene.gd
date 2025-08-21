@@ -138,9 +138,9 @@ func _emit_charged() -> void:
     charged.emit()
 
 
-func _on_anim_start(anim: StringName) -> void:
+func _on_anim_start(_anim: StringName) -> void:
     anim_locked = false
-    var node: StringName = anim_state.get_current_node()
+    #var node: StringName = anim_state.get_current_node()
     #print('node ' + node + ' (' + anim + ')')
     if anim_state.get_current_node() == anim_target:
         #print('Travel to ' + anim_target + ' (' + anim + ') finished!')

@@ -8,6 +8,10 @@ class_name RevolverWeapon extends WeaponResource
 signal state_updated()
 
 
+## Additional offset when fanning the hammer, on top of the scene offset
+@export var fan_offset: Vector3 = Vector3.ZERO
+
+
 ## Holds ammo expend state, 0 for used, 1 for unused
 var _cylinder_ammo_state: PackedByteArray = []
 
@@ -70,9 +74,9 @@ func eject_round() -> bool:
 func can_eject() -> bool:
     return _mixed_reserve[_cylinder_position] > 0
 
-## For the revolver, you can always pull the trigger
+## For the revolver, you can always pull the trigger when cycled
 func can_fire() -> bool:
-    return true
+    return trigger_mechanism.is_cycled()
 
 func can_charge() -> bool:
     return not _hammer_cocked
@@ -87,6 +91,8 @@ func is_round_live() -> bool:
 
 ## For the revolver, charging cocks the hammer and rotates clockwise 1 place
 func charge_weapon() -> void:
+    if _hammer_cocked:
+        return
     _hammer_cocked = true
     rotate_cylinder(1, false)
     state_updated.emit()

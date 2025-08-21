@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=27 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -13,6 +13,7 @@
 [ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/melee.tres" id="8_fkbv7"]
 [ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/weapon_next.tres" id="8_muf2e"]
 [ext_resource type="Resource" uid="uid://bt316ku33273" path="res://data/input/actions/flashlight.tres" id="9_a5sw3"]
+[ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/fan_hammer.tres" id="9_aph6w"]
 [ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/weapon_prev.tres" id="9_jo6ux"]
 [ext_resource type="Resource" uid="uid://dheiirlyouuld" path="res://data/input/actions/weapon_charge.tres" id="10_aph6w"]
 [ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/reload.tres" id="10_muf2e"]
@@ -45,21 +46,22 @@ script = ExtResource("1_y482n")
 life = ExtResource("3_lqp71")
 right_hand = true
 weapon_position = Vector3(0.225, -0.195, -0.605)
-look_speed = 0.55
+look_speed = 0.00872665
 fov = 75.0
 camera_smooth_enabled = false
 camera_smooth_target_node = NodePath("Neck/CameraTarget")
 camera_smooth_max_distance = 0.45
 aim_move_speed = 0.6
-look_aim_speed = 0.25
-look_aim_time = 0.6
-look_aim_return_time = 0.4
+look_aim_speed = 0.00436332
+look_aim_time = 0.28
+look_aim_return_time = 0.22
 weapon_aim_position = Vector3(1.45519e-11, -0.1, -0.5)
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
 fire_primary = ExtResource("5_eu8pa")
 aim = ExtResource("8_7mvkq")
+fan_hammer = ExtResource("9_aph6w")
 flashlight = ExtResource("9_a5sw3")
 charge = ExtResource("10_aph6w")
 melee = ExtResource("8_fkbv7")

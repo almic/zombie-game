@@ -1,6 +1,6 @@
 
 ## Special scene just for the revolver
-extends WeaponScene
+class_name RevolverWeaponScene extends WeaponScene
 
 const PORTS = 6
 const PORT_ANGLE = TAU / PORTS
@@ -22,6 +22,11 @@ const OPEN_TO_UNLOAD = &'open_to_unload'
 const UNLOAD_SPIN = &'unload_spin'
 const UNLOAD_OUT_SPIN = &'unload_out_spin'
 const OUT_UNLOAD = &'out_unload'
+
+const FIRE_FAN = &'fire_fan'
+const FIRE_FAN_CHARGE = &'fire_fan_charge'
+const FIRE_FAN_EMPTY = &'fire_fan_empty'
+
 
 const CYLINDER_ROTATE = &'revolver/cylinder_rotate'
 
@@ -45,6 +50,8 @@ var revolver: RevolverWeapon:
     set = set_revolver
 
 var revolver_ammo: Dictionary
+
+var is_fanning: bool = false
 
 var cocked: bool:
     get(): return revolver._hammer_cocked
@@ -264,24 +271,66 @@ func can_aim() -> bool:
         or state == FIRE_EMPTY
     )
 
-func goto_fire() -> bool:
+func can_fan() -> bool:
+    var state: StringName = anim_state.get_current_node()
+    return (
+           state == IDLE
+        or state == WALK
+        or state == FIRE_FAN
+        or state == FIRE_FAN_CHARGE
+        or state == FIRE_FAN_EMPTY
+    )
+
+func goto_fan() -> bool:
     if not is_idle():
         return false
 
-    if cocked:
-        if is_round_live:
-            travel(FIRE)
-        else:
-            travel(FIRE_EMPTY)
-    else:
-        travel(FIRE_DOUBLE)
+    is_fanning = true
     return true
+
+func goto_fire() -> bool:
+    var state: StringName = anim_state.get_current_node()
+    if (
+           state == IDLE
+        or state == WALK
+    ):
+        if is_fanning:
+            # NOTE: always ensure revolver is cocked when fanning
+            revolver.charge_weapon()
+            if is_round_live:
+                travel(FIRE_FAN)
+            else:
+                travel(FIRE_FAN_EMPTY)
+        elif cocked:
+            if is_round_live:
+                travel(FIRE)
+            else:
+                travel(FIRE_EMPTY)
+        else:
+            travel(FIRE_DOUBLE)
+        return true
+    elif (
+           state == FIRE_FAN
+        or state == FIRE_FAN_CHARGE
+        or state == FIRE_FAN_EMPTY
+    ):
+        # NOTE: This is tech, could aim while fanning if you shoot fast enough
+        # if is_fanning:
+
+        # NOTE: always ensure revolver is cocked when fanning
+        revolver.charge_weapon()
+        if is_round_live:
+            travel(FIRE_FAN, state != FIRE_FAN_CHARGE)
+        else:
+            travel(FIRE_FAN_EMPTY, state != FIRE_FAN_CHARGE)
+        return true
+
+    return false
 
 func goto_reload() -> bool:
     var state: StringName = anim_state.get_current_node()
     if (
-           state == WALK
-        or state == IDLE
+           is_idle()
         or state == OPEN_CYLINDER_UNLOAD
         or state == OUT_UNLOAD
     ):
@@ -302,8 +351,7 @@ func goto_reload() -> bool:
 func goto_unload() -> bool:
     var state: StringName = anim_state.get_current_node()
     if (
-           state == WALK
-        or state == IDLE
+           is_idle()
         or state == OPEN_CYLINDER_RELOAD
         or state == OUT_RELOAD
     ):

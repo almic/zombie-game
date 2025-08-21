@@ -226,13 +226,13 @@ func on_attack_start() -> void:
 func on_attack_end() -> void:
     attack_hitbox.disable()
 
-func update_movement(delta: float) -> void:
+func update_movement(delta: float, speed: float = top_speed) -> void:
 
     if _sleep_wakeup_time > 0.0:
         _sleep_wakeup_time -= delta
         return
 
-    super.update_movement(delta)
+    super.update_movement(delta, speed)
 
     if last_velocity.length_squared() < sleep_min_travel:
         if _sleep_timeout_time > sleep_timeout:

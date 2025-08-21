@@ -12,11 +12,12 @@
 [sub_resource type="Resource" id="Resource_86fa8"]
 script = ExtResource("5_gbcyp")
 automatic_fire = false
-cycle_time = 1.45519e-11
+cycle_time = 0.1
 metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]
 script = ExtResource("2_l6v7f")
+fan_offset = Vector3(-0.0814, -0.032, 0.08)
 name = "Revolver"
 slot = 6
 melee_is_primary = false

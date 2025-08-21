@@ -16,8 +16,7 @@ class_name SingleFireMechanism extends TriggerMechanism
 var _released: bool = true
 
 
-func start_cycle() -> void:
-    super.start_cycle()
+func actuated() -> void:
     _released = false
 
 func update_trigger(triggered: bool) -> void:

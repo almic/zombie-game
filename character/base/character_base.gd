@@ -190,7 +190,7 @@ func is_grounded() -> bool:
 ## Using the current movement direction and velocity, move the character body,
 ## stepping and sliding as needed. This will also compute an acceleration that
 ## can be used with animations.
-func update_movement(delta: float) -> void:
+func update_movement(delta: float, speed: float = top_speed) -> void:
     # Prepare variables
     var stationary: bool = movement_direction.is_zero_approx()
     var grounded: bool = is_grounded()
@@ -206,7 +206,7 @@ func update_movement(delta: float) -> void:
         else:
             stable_move = movement_direction
 
-        var limit_in_dir: float = top_speed * slope_slow
+        var limit_in_dir: float = speed * slope_slow
         var speed_in_dir: float = velocity.dot(stable_move)
         if speed_in_dir < limit_in_dir + 0.01:
             var movement: float = move_acceleration * slope_slow * delta
@@ -244,20 +244,20 @@ func update_movement(delta: float) -> void:
         var ground_dot_up: float = up_direction.dot(ground_details.normal)
         if ground_dot_up > 0:
             var ground_velocity: Vector3 = (velocity - ground_details.velocity).slide(ground_details.normal)
-            var speed: float = ground_velocity.length()
-            if not is_zero_approx(speed):
-                var ground_direction: Vector3 = ground_velocity / speed
+            var ground_speed: float = ground_velocity.length()
+            if not is_zero_approx(ground_speed):
+                var ground_direction: Vector3 = ground_velocity / ground_speed
                 if stationary:
-                    if speed > 1.0:
-                        friction = -ground_direction * move_friction * speed
+                    if ground_speed > 1.0:
+                        friction = -ground_direction * move_friction * ground_speed
                     else:
                         friction = -ground_velocity / delta
                 else:
-                    if speed > top_speed:
-                        friction = speed * compute_friction(move_friction, ground_direction, Vector3.ZERO, move_turn_speed_keep)
-                        friction = friction.slide(stable_move) + stable_move * stable_move.dot(friction) * ((speed - top_speed) / speed) * 0.5
+                    if ground_speed > speed:
+                        friction = ground_speed * compute_friction(move_friction, ground_direction, Vector3.ZERO, move_turn_speed_keep)
+                        friction = friction.slide(stable_move) + stable_move * stable_move.dot(friction) * ((ground_speed - speed) / ground_speed) * 0.5
                     else:
-                        friction = speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
+                        friction = ground_speed * compute_friction(move_friction, ground_direction, stable_move, move_turn_speed_keep)
                 friction *= delta
 
     # Gravity
@@ -458,8 +458,8 @@ func update_movement(delta: float) -> void:
     #print('velocity = ' + str(velocity))
 
     acceleration = real_velocity - last_velocity
-    #var speed: float = velocity.length()
-    #print('speed = ' + str(speed))
+    #var vel_speed: float = velocity.length()
+    #print('speed = ' + str(vel_speed))
     last_velocity = real_velocity
 
 @warning_ignore('shadowed_variable_base_class')

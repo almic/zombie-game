@@ -31,8 +31,14 @@ func tick(delta: float) -> void:
     if _weapon_cycle > 0.0:
         _weapon_cycle -= delta
 
+## Begin weapon cycling
 func start_cycle() -> void:
     _weapon_cycle = cycle_time
+
+## The mechanism has been actuated, but is not yet cycling. This means the weapon
+## will cycle at some point in the future.
+func actuated() -> void:
+    pass
 
 func is_cycled() -> bool:
     return not _weapon_cycle > 0.0

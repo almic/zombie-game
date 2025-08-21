@@ -2,6 +2,11 @@
 
 class_name Player extends CharacterBase
 
+
+const LOOK_UP_MAX = deg_to_rad(89)
+const LOOK_DOWN_MAX = deg_to_rad(-89)
+
+
 @onready var neck: Node3D = %Neck
 @onready var camera_target: Node3D = %CameraTarget
 @onready var camera_3d: Camera3D = %Camera3D
@@ -22,7 +27,8 @@ class_name Player extends CharacterBase
 @export_group("Camera")
 
 ## Look speed input multiplier
-@export var look_speed: float = 0.5
+@export_range(0.0001, 1.0, 0.0001, 'or_greater', 'radians_as_degrees')
+var look_speed: float = deg_to_rad(0.5)
 
 ## FOV of the camera
 @export_range(1.0, 179.0, 0.001, 'suffix:°')
@@ -47,15 +53,16 @@ var fov: float = 75.0
 var aim_move_speed: float = 0.6
 
 ## Target aiming speed
-@export var look_aim_speed: float = 0.7
+@export_range(0.0001, 1.0, 0.0001, 'or_greater', 'radians_as_degrees')
+var look_aim_speed: float = deg_to_rad(0.25)
 
 ## Interpolation time when aiming
 @export_range(0.001, 1.0, 0.001)
-var look_aim_time: float = 0.6
+var look_aim_time: float = 0.28
 
 ## Interpolation time when leaving aim, should be a bit faster
 @export_range(0.001, 1.0, 0.001)
-var look_aim_return_time: float = 0.4
+var look_aim_return_time: float = 0.22
 
 ## Position of the weapon node when aiming, relative to the camera
 @export var weapon_aim_position: Vector3 = Vector3.ZERO
@@ -68,6 +75,7 @@ var look_aim_return_time: float = 0.4
 @export var move: GUIDEAction
 @export var fire_primary: GUIDEAction
 @export var aim: GUIDEAction
+@export var fan_hammer: GUIDEAction
 @export var flashlight: GUIDEAction
 @export var charge: GUIDEAction
 @export var melee: GUIDEAction
@@ -86,35 +94,44 @@ var weapons: Dictionary = {}
 var weapon_index: int = 0
 var weapon_aim_offset: Vector3 = Vector3.ZERO
 var weapon_aim_roll: float = 0.0
+## FOV when aiming, set to the weapon's FOV value
+var weapon_aim_fov: float = fov
+## Look speed multiplier when aiming, set by the weapon
+var weapon_aim_look_speed: float = 1.0
 
 var ammo_bank: Dictionary = {}
 
-## The current aim time, used for animation
-var _aim_time: float = 0.0
 ## If we are aiming
 var _aim_is_aiming: bool = false
 ## If we were trying to aim on the last tick
 var _aim_was_triggered: bool = false
-## Current top speed, modified when aiming
-var _current_top_speed: float = top_speed
-## FOV when aiming, set to the weapon's FOV value
-var _aim_fov: float = fov
-## Look speed multiplier when aiming, set by the weapon
-var _aim_look_speed: float = 1.0
-## Current FOV, modified when aiming
-var _current_fov: float = fov
-## Current look speed, modified when aiming
-var _current_look_speed: float = look_speed
-## Camera roll, modified when aiming
-var _current_look_roll: float = 0.0
+## Top speed interpolation, used for aiming
+var _top_speed: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_OUT)
+## FOV interpolation, used for aiming
+var _fov: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+## Look speed interpolation, used for aiming
+var _look_speed: Interpolation = Interpolation.new(0.0, Tween.TRANS_LINEAR)
+## Camera roll interpolation, used for aiming
+var _look_roll: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+## Weapon position interpolation, used for aiming
+var _weapon_position: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+
+## Transform containing recoil deltas
+var _recoil_transform: Transform3D
+## Transform containing look deltas
+var _look_transform: Transform3D
 
 ## Camera smoothing duration
 var _camera_smooth_duration: float = 0.0
 ## The elapsed smoothing time
 var _camera_smooth_time: float = 0.0
+## Computed position of the camera for smoothing
+var _camera_smooth_position: Vector3
+## Mutex for setting camera smoothing values
+var _camera_smooth_lock: Mutex = Mutex.new()
 
-## The last location of the character
-var _camera_smooth_last_position: Vector3 = Vector3.ZERO
+## The last location of the smooth target node
+var _camera_smooth_target_last_position: Vector3 = Vector3.ZERO
 ## The initial transform of the camera
 var _camera_smooth_initial_position: Vector3
 ## Target position of the camera
@@ -147,6 +164,12 @@ const GENERIC_INPUT_BUFFER_TIME = 0.8
 const FIRE_INPUT_BUFFER_TIME = 0.13
 
 
+## How long aim action must be triggered to actually aim, only for the revolver
+## as fanning is two rapid aim inputs.
+const REVOLVER_AIM_TIME = 0.075
+var _revolver_aim_time: float = 0.0
+
+
 func _ready() -> void:
     super._ready()
 
@@ -157,8 +180,8 @@ func _ready() -> void:
 
     if camera_smooth_enabled and not Engine.is_editor_hint():
         camera_3d.top_level = true
-        _camera_smooth_initial_position = camera_3d.global_position
-        _camera_smooth_last_position = global_position
+        _camera_smooth_initial_position = camera_smooth_target_node.global_position
+        _camera_smooth_target_last_position = _camera_smooth_initial_position
 
     weapons = weapons.duplicate()
 
@@ -166,6 +189,12 @@ func _ready() -> void:
 
     if Engine.is_editor_hint():
         return
+
+    _fov.current = fov
+    _look_roll.current = 0.0
+    _look_speed.current = look_speed
+    _top_speed.current = top_speed
+    _weapon_position.current = weapon_position
 
     aim_target.add_exception(hurtbox)
     aim_target.add_exception(self)
@@ -187,21 +216,60 @@ func _process(delta: float) -> void:
 
     update_aiming(delta)
 
-    camera_3d.fov = _current_fov
+    if not _look_roll.is_done:
+        _look_roll.update(delta)
 
-    rotation_degrees.y -= look.value_axis_2d.x * _current_look_speed
-    camera_target.rotation_degrees.x = clampf(
-        camera_target.rotation_degrees.x - look.value_axis_2d.y * _current_look_speed,
-        -89, 89
+    if not _look_speed.is_done:
+        _look_speed.update(delta)
+
+    if not _fov.is_done:
+        _fov.update(delta)
+
+    if not _top_speed.is_done:
+        _top_speed.update(delta)
+
+    camera_3d.fov = _fov.current
+
+    rotation.y -= look.value_axis_2d.x * _look_speed.current
+
+    neck.rotation.z = _look_roll.current
+    weapon_node.rotation.z = -_look_roll.current * 0.5
+
+    _look_transform = _look_transform.rotated_local(
+            Vector3.RIGHT,
+            -look.value_axis_2d.y * _look_speed.current
     )
-    neck.rotation.z = _current_look_roll
-    camera_3d.rotation.z = -_current_look_roll * 0.5
-    weapon_node.rotation.z = -_current_look_roll * 0.5
+    var look_euler: Vector3 = _look_transform.basis.get_euler()
+    look_euler.x = clampf(look_euler.x, LOOK_DOWN_MAX, LOOK_UP_MAX)
+    look_euler.z = _look_roll.current * 0.5
+    look_euler.y = rotation.y
+    _look_transform.basis = Basis.from_euler(look_euler)
 
-    update_camera(delta)
+    interpolate_camera_smooth(delta)
+    _look_transform.origin = _camera_smooth_position
 
-    # NOTE: Must be after rotations, otherwise we delay the weapon aiming
+    # NOTE: this allows recoil to push the camera over max rotations, but
+    #       I will accept this because it would be hard to intuitively remove
+    camera_3d.transform = _look_transform
+    camera_3d.transform *= _recoil_transform
+
+    var was_fanning: bool
+    var revolver: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
+    if revolver:
+        was_fanning = revolver.is_fanning
+
+    # NOTE: Must be after rotations, otherwise weapon would fire at old rotations
     update_weapon_node(delta)
+
+    if revolver:
+        update_fanning(revolver, was_fanning)
+
+    if not _weapon_position.is_done:
+        _weapon_position.update(delta)
+
+    # NOTE: set weapon position after update_fanning(), as we may need to start
+    #       moving to a new position.
+    weapon_node.position = _weapon_position.current
 
     # NOTE: Reload cancel uses this to track if it should ignore aim attempts
     #       if we were not already trying to aim
@@ -243,154 +311,136 @@ func _physics_process(delta: float) -> void:
     # NOTE: Only process input in _process(), so we do not
     # miss inputs shorter than a physics frame.
 
+    var initial_camera_position: Vector3 = camera_smooth_target_node.global_position
+
     var last_accel: Vector3 = acceleration
-    var top_speed_temp: float = top_speed
-    top_speed = _current_top_speed
-    update_movement(delta)
-    top_speed = top_speed_temp
+    update_movement(delta, _top_speed.current)
 
     if just_jumped:
         _jump_ready = false
 
     if camera_smooth_enabled:
-        var jerk: Vector3 = acceleration - last_accel
+        if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_target_last_position):
+            _camera_smooth_target_last_position = camera_smooth_target_node.global_position
 
-        if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_last_position):
-            _camera_smooth_last_position = camera_smooth_target_node.global_position
+            var jerk: Vector3 = acceleration - last_accel
 
-            _camera_smooth_initial_position = camera_3d.global_position
-            _camera_smooth_target_position = camera_smooth_target_node.global_position
+            _camera_smooth_lock.lock()
+
+            _camera_smooth_initial_position = initial_camera_position
+            _camera_smooth_target_position = _camera_smooth_target_last_position
             _camera_smooth_next_position_a = _camera_smooth_target_position + (last_velocity + acceleration + jerk) * delta
             _camera_smooth_next_position_b = _camera_smooth_next_position_a + (last_velocity + (acceleration + jerk + jerk)) * delta
-            _camera_smooth_time = 0.0
 
+            _camera_smooth_time = 0.0
             _camera_smooth_duration = delta * 3
+
+            _camera_smooth_lock.unlock()
+
         else:
             _camera_smooth_duration = 0.0
 
 func get_camera() -> Camera3D:
     return camera_3d
 
-func get_camera_rotation() -> Vector3:
-    return camera_target.rotation
-
-func set_camera_rotation(rot: Vector3) -> void:
-    camera_target.rotation = rot
+func set_recoil_transform(recoil_transform: Transform3D) -> void:
+    _recoil_transform = recoil_transform
 
 func update_aiming(delta: float) -> void:
-    var duration: float
-    var target_position: Vector3
-    var target_speed: float
-    var target_fov: float
-    var target_roll: float
-    var target_look: float
-
+    var aim_starting: bool = false
+    var aim_ending: bool = false
     if aim.is_triggered() and weapon_node.can_aim():
         if not _aim_is_aiming:
-            _aim_is_aiming = true
-            _aim_time = 0
+            # NOTE: Special revolver input, aiming is delayed, charges if not
+            #       charged, and cancels fan hammer state.
+            if weapon_node.weapon_type is RevolverWeapon:
+                var revolver_scene: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
+                if revolver_scene and revolver_scene.is_fanning:
+                    revolver_scene.is_fanning = false
 
-            # NOTE: Special revolver input, aiming charges if not charged
-            if weapon_node.weapon_type is RevolverWeapon and weapon_node.weapon_type.can_charge():
-                weapon_node.charge()
+                if is_zero_approx(_revolver_aim_time):
+                    _revolver_aim_time = REVOLVER_AIM_TIME
+                else:
+                    _revolver_aim_time -= delta
+
+                if _revolver_aim_time < 0.001:
+                    aim_starting = true
+                    _revolver_aim_time = 0.0
+
+                    if weapon_node.weapon_type.can_charge():
+                        weapon_node.charge()
+            else:
+                aim_starting = true
 
     elif _aim_is_aiming:
-        _aim_is_aiming = false
-        _aim_time = 0
+        aim_ending = true
+        _revolver_aim_time = 0.0
 
-    if _aim_time < 10.0:
-        _aim_time += delta
+    if aim_starting:
+        _aim_is_aiming = true
+        weapon_node.set_aiming(true)
 
-    weapon_node.set_aiming(_aim_is_aiming)
+        _fov.duration = look_aim_time
+        _fov.set_target_delta(weapon_aim_fov, weapon_aim_fov - _fov.current)
 
-    if _aim_is_aiming:
-        duration = look_aim_time
-        target_speed = top_speed * aim_move_speed
-        target_look = (_aim_fov / fov) * look_aim_speed * _aim_look_speed
-        target_fov = _aim_fov
+        _look_speed.duration = look_aim_time
+        var target_look_speed = (weapon_aim_fov / fov) * look_aim_speed * weapon_aim_look_speed
+        _look_speed.set_target_delta(target_look_speed, target_look_speed - _look_speed.current)
+
+        _top_speed.duration = look_aim_time
+        var target_speed: float = top_speed * aim_move_speed
+        _top_speed.set_target_delta(target_speed, target_speed - _top_speed.current)
+
         if weapon_index:
-            target_position = weapon_aim_offset
-            target_roll = weapon_aim_roll
-        else:
-            target_position = weapon_position
-            target_roll = 0.0
-    else:
-        duration = look_aim_return_time
-        target_speed = top_speed
-        target_look = look_speed
-        target_fov = fov
-        target_position = weapon_position
-        target_roll = 0.0
+            _weapon_position.duration = look_aim_time
+            _weapon_position.set_target_delta(weapon_aim_offset, weapon_aim_offset - _weapon_position.current)
 
-    if not weapon_node.position.is_equal_approx(target_position):
-        weapon_node.position = Tween.interpolate_value(
-                weapon_node.position,
-                target_position - weapon_node.position,
-                _aim_time,
-                duration,
-                Tween.TRANS_SINE,
-                Tween.EASE_IN_OUT
-        )
-        var diff: float = (weapon_node.position - target_position).length_squared()
-        if diff < 0.000001:
-            weapon_node.position = target_position
-    if not is_equal_approx(_current_look_roll, target_roll):
-        _current_look_roll = Tween.interpolate_value(
-                _current_look_roll,
-                target_roll - _current_look_roll,
-                _aim_time,
-                duration,
-                Tween.TRANS_SINE,
-                Tween.EASE_IN_OUT
-        )
-        var diff: float = abs(_current_look_roll - target_roll)
-        # This is about 0.1 degrees, which I can't notice
-        if diff < 0.002:
-            _current_look_roll = target_roll
-    if not is_equal_approx(_current_look_speed, target_look):
-        _current_look_speed = Tween.interpolate_value(
-                _current_look_speed,
-                target_look - _current_look_speed,
-                _aim_time,
-                duration,
-                Tween.TRANS_LINEAR,
-                Tween.EASE_IN_OUT
-        )
-        var diff: float = abs(_current_look_speed - target_look)
-        if diff < 0.01:
-            _current_look_speed = target_look
-    if not is_equal_approx(_current_fov, target_fov):
-        _current_fov = Tween.interpolate_value(
-                _current_fov,
-                target_fov - _current_fov,
-                _aim_time,
-                duration,
-                Tween.TRANS_SINE,
-                Tween.EASE_IN_OUT
-        )
-        var diff: float = abs(_current_fov - target_fov)
-        if diff < 0.01:
-            _current_fov = target_fov
-    if not is_equal_approx(_current_top_speed, target_speed):
-        _current_top_speed = Tween.interpolate_value(
-                _current_top_speed,
-                target_speed - _current_top_speed,
-                _aim_time,
-                duration,
-                Tween.TRANS_SINE,
-                Tween.EASE_OUT
-        )
-        var diff: float = abs(_current_top_speed - target_speed)
-        if diff < 0.001:
-            _current_top_speed = target_speed
+            _look_roll.duration = look_aim_time
+            _look_roll.set_target_delta(weapon_aim_roll, weapon_aim_roll - _look_roll.current)
 
-func update_camera(delta: float) -> void:
+    elif aim_ending:
+        _aim_is_aiming = false
+        weapon_node.set_aiming(false)
+
+        _fov.duration = look_aim_return_time
+        _fov.set_target_delta(fov, fov - _fov.current)
+
+        _look_roll.duration = look_aim_return_time
+        _look_roll.set_target_delta(0.0, -_look_roll.current)
+
+        _look_speed.duration = look_aim_return_time
+        _look_speed.set_target_delta(look_speed, look_speed - _look_speed.current)
+
+        _top_speed.duration = look_aim_time
+        _top_speed.set_target_delta(top_speed, top_speed - _top_speed.current)
+
+        _weapon_position.duration = look_aim_return_time
+        _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
+
+func update_fanning(revolver: RevolverWeaponScene, was_fanning: bool) -> void:
+    if revolver.is_fanning and not revolver.can_fan():
+        revolver.is_fanning = false
+
+        # NOTE: aiming will move into position for us, so only return if we need
+        if not _aim_is_aiming:
+            weapon_node.set_aiming(false)
+            _weapon_position.duration = look_aim_return_time
+            _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
+    elif not was_fanning and revolver.is_fanning:
+        weapon_node.set_aiming(true)
+        _weapon_position.duration = look_aim_time
+        var target_position: Vector3 = weapon_position + weapon_node.weapon_type.fan_offset
+        _weapon_position.set_target_delta(target_position, target_position - _weapon_position.current)
+
+func interpolate_camera_smooth(delta: float) -> void:
     if not camera_smooth_enabled:
         return
 
-    camera_3d.global_basis = camera_smooth_target_node.global_basis
+    _camera_smooth_lock.lock()
 
     if is_zero_approx(_camera_smooth_duration):
+        _camera_smooth_position = _camera_smooth_target_position
+        _camera_smooth_lock.unlock()
         return
 
     _camera_smooth_time = minf(_camera_smooth_time + delta, _camera_smooth_duration)
@@ -399,16 +449,17 @@ func update_camera(delta: float) -> void:
     var t2: float = t * t
     var t3: float = t2 * t
 
-    camera_3d.global_position = (
+    if is_equal_approx(_camera_smooth_time, _camera_smooth_duration):
+        _camera_smooth_duration = 0.0
+
+    _camera_smooth_position = (
             _camera_smooth_initial_position * (-t3 + 3.0 * t2 - 3.0 * t + 1.0)
             + _camera_smooth_target_position * (3.0 * t3 - 6.0 * t2 + 3.0 * t)
             + _camera_smooth_next_position_a * (-3.0 * t3 + 3.0 * t2)
             + _camera_smooth_next_position_b * (t3)
     )
 
-    if is_equal_approx(_camera_smooth_time, _camera_smooth_duration):
-        _camera_smooth_duration = 0.0
-        return
+    _camera_smooth_lock.unlock()
 
     #print('lag ' + str(camera_3d.global_position.distance_to(camera_smooth_target_node.global_position)))
 
@@ -467,6 +518,27 @@ func update_weapon_node(delta: float) -> void:
             _melee_ready = false
     else:
         _melee_ready = true
+
+    if fan_hammer.is_triggered():
+        # NOTE: ignore this action unless we have a revolver
+        if weapon_node.weapon_type is RevolverWeapon:
+            weapon_node.continue_reload = false
+            update_last_input(fan_hammer)
+
+            var revolver_scene: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
+            if revolver_scene:
+                var okay: bool = revolver_scene.goto_fan()
+                if okay:
+
+                    clear_input_buffer(fan_hammer)
+                else:
+                    update_input_buffer(fan_hammer)
+    elif is_input_buffered(fan_hammer):
+        var revolver_scene: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
+        if revolver_scene:
+            var okay: bool = revolver_scene.goto_fan()
+            if okay:
+                clear_input_buffer()
 
     if charge.is_triggered():
         weapon_node.continue_reload = false
@@ -643,11 +715,14 @@ func select_weapon(slot: int) -> void:
 
     var weapon: WeaponResource = weapons.get(slot) as WeaponResource
     weapon_node.weapon_type = weapon
-    _aim_fov = weapon.aim_camera_fov
-    _aim_look_speed = weapon.aim_camera_look_speed_scale
+    weapon_aim_fov = weapon.aim_camera_fov
+    weapon_aim_look_speed = weapon.aim_camera_look_speed_scale
 
     get_tree().call_group('hud', 'set_crosshair_visible', weapon.crosshair_enabled)
 
+    weapon_node.set_aiming(false)
+    _aim_is_aiming = false
+    _weapon_position.reset(weapon_position)
     weapon_aim_offset = weapon_aim_position + weapon.aim_offset
     weapon_aim_roll = -weapon.aim_camera_roll
 

@@ -86,7 +86,6 @@ metadata/_custom_type_script = "uid://b8c38fv1c1av1"
 
 [node name="Mesh" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
 [node name="protomesh" type="Node3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
@@ -378,13 +377,13 @@ gizmo_extents = 0.0
 
 [node name="ReloadMarker" type="Marker3D" parent="."]
 visible = false
+gizmo_extents = 0.0
 
 [node name="BuckshotMesh" parent="ReloadMarker" instance=ExtResource("4_a06wg")]
-transform = Transform3D(0.44452, -0.890554, 0.096518, 0.0982687, -0.0586171, -0.993432, 0.890362, 0.451085, 0.0614571, 0.119998, 0.0937401, 0.244865)
 
 [node name="UnloadMarker" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 visible = false
+gizmo_extents = 0.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {

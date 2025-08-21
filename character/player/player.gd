@@ -420,12 +420,9 @@ func update_aiming(delta: float) -> void:
 func update_fanning(revolver: RevolverWeaponScene, was_fanning: bool) -> void:
     if revolver.is_fanning and not revolver.can_fan():
         revolver.is_fanning = false
-
-        # NOTE: aiming will move into position for us, so only return if we need
-        if not _aim_is_aiming:
-            weapon_node.set_aiming(false)
-            _weapon_position.duration = look_aim_return_time
-            _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
+        weapon_node.set_aiming(false)
+        _weapon_position.duration = look_aim_return_time
+        _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
     elif not was_fanning and revolver.is_fanning:
         weapon_node.set_aiming(true)
         _weapon_position.duration = look_aim_time

@@ -13,6 +13,7 @@ const EJECT_TO_RELOAD = &'eject_to_reload'
 const OPEN_TO_RELOAD = &'open_to_reload'
 const RELOAD_SPIN = &'reload_spin'
 const RELOAD_OUT_SPIN = &'reload_out_spin'
+const RELOAD_TO_UNLOAD = &'reload_to_unload'
 const OUT_RELOAD = &'out_reload'
 
 const OPEN_CYLINDER_UNLOAD = &'open_cylinder_unload'
@@ -21,6 +22,7 @@ const EJECT_TO_UNLOAD = &'eject_to_unload'
 const OPEN_TO_UNLOAD = &'open_to_unload'
 const UNLOAD_SPIN = &'unload_spin'
 const UNLOAD_OUT_SPIN = &'unload_out_spin'
+const UNLOAD_TO_RELOAD = &'unload_to_reload'
 const OUT_UNLOAD = &'out_unload'
 
 const FIRE_FAN = &'fire_fan'
@@ -298,9 +300,9 @@ func goto_fire() -> bool:
             # NOTE: always ensure revolver is cocked when fanning
             revolver.charge_weapon()
             if is_round_live:
-                travel(FIRE_FAN)
+                travel(FIRE_FAN, true)
             else:
-                travel(FIRE_FAN_EMPTY)
+                travel(FIRE_FAN_EMPTY, true)
         elif cocked:
             if is_round_live:
                 travel(FIRE)
@@ -320,9 +322,9 @@ func goto_fire() -> bool:
         # NOTE: always ensure revolver is cocked when fanning
         revolver.charge_weapon()
         if is_round_live:
-            travel(FIRE_FAN, state != FIRE_FAN_CHARGE)
+            travel(FIRE_FAN, true)
         else:
-            travel(FIRE_FAN_EMPTY, state != FIRE_FAN_CHARGE)
+            travel(FIRE_FAN_EMPTY, true)
         return true
 
     return false
@@ -335,6 +337,11 @@ func goto_reload() -> bool:
         or state == OUT_UNLOAD
     ):
         travel(OPEN_CYLINDER_RELOAD)
+        return true
+    elif state == RELOAD_TO_UNLOAD:
+        travel(UNLOAD_TO_RELOAD)
+        return true
+    elif state == UNLOAD_TO_RELOAD:
         return true
     elif (
            state == UNLOAD
@@ -357,6 +364,12 @@ func goto_unload() -> bool:
     ):
         travel(OPEN_CYLINDER_UNLOAD)
         _unload_one_spin = true
+        return true
+    elif state == UNLOAD_TO_RELOAD:
+        travel(RELOAD_TO_UNLOAD)
+        _unload_one_spin = true
+        return true
+    elif state == RELOAD_TO_UNLOAD:
         return true
     elif (
            state == RELOAD

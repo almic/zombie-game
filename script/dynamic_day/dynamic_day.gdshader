@@ -116,15 +116,15 @@ vec3 eye_to_sky(vec3 eye_dir)
     ele = sqrt(abs(ele) / (PI * 0.5)) * sign(ele) * 0.5 + 0.5;
 
     // TODO: when GODOT allows x/y split repeating, use X repeat only and remove this clamp()
-    return texture(sky_texture, vec2(azi, clamp(ele, 0.0019, 0.9981))).rgb;
+    return texture(sky_texture, vec2(azi, clamp(ele, 0.001946, 0.99806))).rgb;
 }
 
 #if MOON_MIE
 vec3 moon_mie(vec3 eye_dir, vec3 moon_dir, vec3 sun_dir)
 {
-    const float aerosol_turbidity = 0.76;
+    const float aerosol_turbidity = 0.38;
     const float aerosol_density = 1.25e3;
-    const vec3 aerosol_color = vec3(0.69, 0.67, 0.9);
+    const vec3 aerosol_color = vec3(0.69, 0.67, 0.74);
 
     const float g = 0.8;
     const float gg = g * g;

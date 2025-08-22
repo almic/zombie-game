@@ -121,7 +121,7 @@ moon_day_length = 239.3
 moon_orbital_period = 239.3
 moon_inclination_phase = 0.25
 moon_tilt_phase = 1.25
-moon_orbit_offset = 0.2
+moon_orbit_offset = 0.9
 moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
@@ -139,7 +139,7 @@ directional_shadow_fade_start = 0.9
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.260175, -0.901235, -0.346532, 0.893223, 0.360945, -0.26809, 0.366691, -0.23978, 0.898912, 0, 0, 0)
+transform = Transform3D(-0.394488, -0.901235, -0.179318, -0.454416, 0.360945, -0.814386, 0.798677, -0.23978, -0.551924, 0, 0, 0)
 light_intensity_lux = 100.0
 light_temperature = 7100.0
 directional_shadow_mode = 0
@@ -161,7 +161,7 @@ visible = false
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -324.644, 2.04, -514.535)
+transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -150.244, 0.50301, 483.6)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]

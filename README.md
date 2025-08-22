@@ -3,14 +3,31 @@
 My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and blast zombies.
 
 
+# Day / Night
+
+- [ ] Flashlight which can be toggled
+- [ ] Optimize sky shader, should skip sun and moon disk for radiance maps
+- [ ] Turn off moon when below horizon.
+- [ ] Moon/ Sun shadow casting when above the horizon, turn off moon shadow if
+      Sun is up. Scale shadow opacity to zero before turning off moon shadow.
+- [ ] Sun light to diminish accurately to the transmittance in the sky (lut texture)
+- [ ] Light color to match transmittance in the sky (lut texture)
+- [ ] Moon illumination to scale depending on the phase, look up real equations.
+      The full moon is more than 2x brighter than a half-moon! Non-linear!
+- [ ] Match mie power to moon illuminance (see above)
+- [ ] Fog at dawn and dusk, set with a curve. This looks bad right now.
+
+
 # TODO
 
-- [ ] Add all weapons
-- [ ] Investigate if stairs can be fixed with sliding/ stepping up
 - [ ] Set up day / night settings for transitions
+- [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [ ] Investigate weird snapping bug
+- [ ] Make each weapon have its own UI scene for displaying the weapon and ammo
 - [ ] Add more zombie types
 - [ ] Level blocking
 - [ ] Camera Smooth (generic)
+- [X] Add all weapons
 - [X] Make WeaponNode do random weapon kick and sway instead of animations
 - [X] Fix CharacterBase friction on slopes (cannot climb slopes anymore)
 - [X] Add idle/ walk animation to shotgun + pistol

@@ -21,7 +21,7 @@ const float EARTH_RADIUS = 6371.0;
 const float ATMOSPHERE_THICKNESS = 100.0;
 const float ATMOSPHERE_RADIUS = EARTH_RADIUS + ATMOSPHERE_THICKNESS;
 const float EYE_DISTANCE_TO_EARTH_CENTER = EARTH_RADIUS + EYE_ALTITUDE;
-const vec4 GROUND_ALBEDO = vec4(0.3);
+const vec4 GROUND_ALBEDO = vec4(0.1);
 
 // These are real values for sun irradiance, rayleigh scattering, and ozone
 // absorption, sampled at wavelengths 630, 560, 490, 430 nanometers.
@@ -43,12 +43,12 @@ const vec4 ozone_absorption_cross_section = vec4(3.472e-21, 3.914e-21, 1.349e-21
 // average of those values.
 const float ozone_concentration = 337.0;
 
-// Mie constants. This are the "Urban" values. Play with turbidity if you change
+// Mie constants. These are the "Remote Continental" values. Play with turbidity if you change
 // them, only Urban works with high values, the rest need MUCH lower values.
-const float aerosol_turbidity = 0.76;
-const vec4 aerosol_absorption_cross_section = vec4(2.8722e-24, 4.6168e-24, 7.9706e-24, 1.3578e-23);
-const vec4 aerosol_scattering_cross_section = vec4(1.5908e-22, 1.7711e-22, 2.0942e-22, 2.4033e-22);
-const float aerosol_base_density = 1.3681e20;
+const float aerosol_turbidity = 0.0005;
+const vec4 aerosol_absorption_cross_section = vec4(4.5307e-18, 5.0662e-18, 4.4877e-18, 3.7917e-18);
+const vec4 aerosol_scattering_cross_section = vec4(1.8764e-18, 1.746e-18, 1.6902e-18, 1.479e-18);
+const float aerosol_base_density = 6.103e18;
 const float aerosol_background_density = 2e6;
 const float aerosol_height_scale = 0.73;
 

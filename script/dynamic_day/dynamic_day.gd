@@ -293,6 +293,15 @@ func update_lights(force: bool = false) -> void:
 
     update_shader()
 
+    # Sun light energy and temperature as it rises
+    Sun.light_energy = sky_compute.moon_shadowing * light_horizon(Sun.basis.z, _sun_radians)
+
+    # Disable sun light when energy is too low
+    Sun.visible = Sun.light_energy > 0.000001
+
+    # Enable moon when fully above horizon
+    Moon.visible = Moon.basis.z.y > 0.00275
+
     _local_time[0] = _local_time[1]
     _moon_time[0] = _moon_time[1]
     _moon_orbit[0] = _moon_orbit[1]
@@ -466,9 +475,6 @@ func update_shader() -> void:
             ),
             moon_shadowing_min
     )
-
-    # Sun light energy and temperature as it rises
-    Sun.light_energy = sky_compute.moon_shadowing * light_horizon(s, _sun_radians)
 
     sky_material.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)
     if use_moon_render_angle:

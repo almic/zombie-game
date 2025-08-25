@@ -18,6 +18,72 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] Fog at dawn and dusk, set with a curve. This looks bad right now.
 
 
+# Lighting Solutions
+
+Here is what I would like:
+    - Dynamic shadows and time of day
+    - Interior of buildings can get dark when no light is reaching the back
+    - Able to see the flashlight during the day, needed to see dark corners inside
+    - When inside a building and looking near windows, outside appears too bright
+      to see detail, when looking at the window, exposure changes and you can see
+      outside, and inside becomes darker.
+
+This is what I tried:
+    - SDFGI; failed because it just sucks. (BAD AND EXPENSIVE)
+    - VoxelGI; failed because too many bugs, only works in certain directions,
+      weird color flashing when the light moves slowly (DEAL BREAKER)
+    - LightmapGI; it sucks. use blender instead.
+
+What I cannot do:
+    - I cannot spend time to fix the bugs of VoxelGI
+    - I cannot use any available real-time solution, none of them work for interiors.
+    - I cannot do nothing, interiors have to be dark.
+
+Ideas:
+    - Make separate levels for buildings, this allows baked lighting to work and
+      you can get perfect results. Time of day can be cut into a few moments.
+    - Bake lightmaps in blender for all interiors. This would look great but needs
+      to be implemented so lightmaps fade. Need to worry about file size, too.
+    - Turn off ambient light globally, and use spot lights to illuminate large
+      outdoor shadows, implement directly into terrain shader so ground shadows
+      look good. Use emissive planes to light interiors.
+    - Place planes on windows into buildings. Trace line from plane into direction
+      of the sun. Where it hits a wall, draw a texture and place a light to
+      simulate bounce lighting. Can even get color of surface for colored lighting.
+
+Common ideas:
+    - Baked lighting.
+    - Time of day interiors are staggered.
+    - Interiors receive no light from outside.
+
+In order of time to implement (fastest to longest):
+    - Separated interior levels.
+        - PROS:
+            - Reduce game scope, only a few interiors can be entered.
+            - Full control over lighting.
+            - Mask time of day from player, they could not be aware how much time is passing.
+        - CONS:
+            - Loading scenes
+            - Cannot see inside from the exterior (could be "fixed" with high effort)
+            - Means more effort for interiors since you could have more detail
+    - Turn off ambient light.
+        - PROS:
+            - No lightmaps needed, just more light sources.
+            - VERY dark interiors instantly.
+            - Light only goes where you want, a lot of control.
+        - CONS:
+            - Looks worse without a lot of effort in lighting.
+            - Difficult to make it look good at all times of day.
+    - Baked lightmaps.
+        - PROS:
+            - Perfect realistic lighting on static surfaces.
+        - CONS:
+            - Long time to bake if you decide to change anything about the sky.
+            - Would have to blend between lightmaps throughout the day, could be noticeable.
+            - File size could get very large for high quality results.
+            - Does not fix character lighting on its own, would need to place lights
+              to light up characters.
+
 # TODO
 
 - [ ] Set up day / night settings for transitions

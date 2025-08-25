@@ -201,7 +201,8 @@ var _moon_tilt_rad: float
 var sky: Sky = Sky.new()
 var sky_material: ShaderMaterial = ShaderMaterial.new()
 var sky_shader: Shader = preload('res://script/dynamic_day/dynamic_day.gdshader')
-var sky_texture: Texture2DRD
+var sky_radiance: Variant
+var sky_intensity: float
 var sky_compute: PhysicalSkyCompute
 var moon_view: MoonView
 var moon_mesh: MeshInstance3D
@@ -238,6 +239,7 @@ func _ready() -> void:
     init_shader()
 
 func _process(delta: float) -> void:
+    # NOTE: Editor preview runs in _process()
     if not Engine.is_editor_hint():
         return
 
@@ -247,6 +249,7 @@ func _process(delta: float) -> void:
     update_lights(true)
 
 func _physics_process(delta: float) -> void:
+    # NOTE: Application runs in _physics_process()
     if Engine.is_editor_hint():
         return
 
@@ -409,6 +412,30 @@ func update_shader() -> void:
     # Fix Godot unloading resources and not putting them back >:(
     if not environment.sky:
         environment.sky = sky
+
+    if not sky_radiance or not sky_radiance.texture_rd_rid.is_valid():
+        sky_radiance = TextureCubemapRD.new()
+        var radiance_rid: RID = sky.get_radiance_rd()
+        sky_radiance.texture_rd_rid = radiance_rid
+
+        RenderingServer.global_shader_parameter_set('radiance_cubemap', sky_radiance)
+
+        var roughness_layers: int = ProjectSettings.get_setting('rendering/reflections/sky_reflections/roughness_layers')
+        RenderingServer.global_shader_parameter_set('max_roughness_layers', float(roughness_layers) - 1.0)
+
+    if not is_equal_approx(sky_intensity, environment.background_intensity):
+        sky_intensity = environment.background_intensity
+
+        var cam: CameraAttributesPhysical = camera_attributes as CameraAttributesPhysical
+        var current_exposure: float = (
+                (cam.exposure_aperture * cam.exposure_aperture)
+                * cam.exposure_shutter_speed
+                * (100.0 / cam.exposure_sensitivity)
+        )
+        current_exposure = 1.0 / (current_exposure * 1.2)
+        current_exposure *= sky_intensity
+
+        RenderingServer.global_shader_parameter_set('ibl_exposure_normalization', current_exposure)
 
     sky_material.set_shader_parameter("sun_direction", Sun.basis.z)
     moon_view_shader.set_shader_parameter("sun_direction", Sun.basis.z)

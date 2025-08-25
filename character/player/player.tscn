@@ -75,21 +75,25 @@ collider_shape = SubResource("CapsuleShape3D_qh58e")
 [node name="collider" parent="." index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_qh58e")
+metadata/_edit_lock_ = true
 
 [node name="capsule" type="MeshInstance3D" parent="collider" index="0"]
 layers = 524288
 gi_mode = 0
 mesh = SubResource("CapsuleMesh_glpr6")
 skeleton = NodePath("../..")
+metadata/_edit_lock_ = true
 
 [node name="Neck" type="Node3D" parent="." index="1"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.395, 1.45519e-11)
+metadata/_edit_lock_ = true
 
 [node name="CameraTarget" type="Node3D" parent="Neck" index="0"]
 unique_name_in_owner = true
 editor_description = "Target position for the Camera3D, used to smooth vertical jitter."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.15, 1.45519e-11)
+metadata/_edit_lock_ = true
 
 [node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget" index="0"]
 unique_name_in_owner = true
@@ -97,6 +101,7 @@ cull_mask = 524287
 current = true
 near = 0.02
 far = 2000.0
+metadata/_edit_lock_ = true
 
 [node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
 unique_name_in_owner = true
@@ -107,8 +112,10 @@ hitbox = NodePath("../../../../Hitbox")
 aim_target = NodePath("../AimTarget")
 aim_duration = 0.25
 metadata/_custom_type_script = "uid://n578e74oit7v"
+metadata/_edit_lock_ = true
 
 [node name="hud" parent="Neck/CameraTarget/Camera3D" index="1" instance=ExtResource("11_vuhga")]
+metadata/_edit_lock_ = true
 
 [node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D" index="2"]
 unique_name_in_owner = true
@@ -119,6 +126,19 @@ target_position = Vector3(1.45519e-11, 1.45519e-11, -50)
 collision_mask = 24
 hit_back_faces = false
 collide_with_areas = true
+metadata/_edit_lock_ = true
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D" index="3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.61914e-08, 0, -0.413982)
+light_intensity_lumens = 2500.0
+light_temperature = 6000.0
+light_cull_mask = 4294443007
+shadow_enabled = true
+shadow_caster_mask = 4294443007
+spot_range = 50.0
+spot_attenuation = 2.0
+spot_angle = 30.0
+metadata/_edit_lock_ = true
 
 [node name="Hurtbox" type="Area3D" parent="." index="2"]
 unique_name_in_owner = true
@@ -128,6 +148,7 @@ collision_mask = 0
 monitoring = false
 script = ExtResource("5_px5sl")
 metadata/_custom_type_script = "uid://cx8x5g2jhcrm6"
+metadata/_edit_lock_ = true
 
 [node name="collider" type="CollisionShape3D" parent="Hurtbox" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
@@ -144,6 +165,7 @@ monitorable = false
 script = ExtResource("13_jo6ux")
 hitbox_owner = NodePath("..")
 metadata/_custom_type_script = "uid://dc77cbpvaw8jo"
+metadata/_edit_lock_ = true
 
 [node name="collider" type="CollisionShape3D" parent="Hitbox" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1, 1.45519e-11)

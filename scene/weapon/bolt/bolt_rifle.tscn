@@ -1,10 +1,9 @@
-[gd_scene load_steps=36 format=3 uid="uid://2ub41p5mtrf1"]
+[gd_scene load_steps=35 format=3 uid="uid://2ub41p5mtrf1"]
 
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_h6unu"]
 [ext_resource type="Script" uid="uid://dg2m1isyocicv" path="res://scene/weapon/bolt/bolt_rifle.gd" id="2_jj4xa"]
 [ext_resource type="Shader" uid="uid://bp3in2vqstg1e" path="res://material/scope/scope_shader.gdshader" id="2_ry02v"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_qo7cl"]
-[ext_resource type="CameraAttributesPhysical" uid="uid://bnqestbdi6xgh" path="res://scene/weapon/bolt/scope_view_attributes.tres" id="4_cxsjy"]
 [ext_resource type="PackedScene" uid="uid://cviablxulltv2" path="res://scene/weapon/bolt/bolt_mag_mesh.tscn" id="4_qo7cl"]
 [ext_resource type="Texture2D" uid="uid://cdaaqwyy0yma0" path="res://scene/weapon/bolt/reticle.svg" id="5_cxsjy"]
 [ext_resource type="Animation" uid="uid://xsv4a00cgagk" path="res://animation/bolt/bolt_RESET.res" id="5_tda2x"]
@@ -180,7 +179,8 @@ render_target_clear_mode = 1
 [node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
-attributes = ExtResource("4_cxsjy")
+fov = 3.05505
+near = 0.5
 metadata/_edit_lock_ = true
 
 [node name="ScopePicture" type="MeshInstance3D" parent="Mesh"]

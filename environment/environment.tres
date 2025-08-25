@@ -5,7 +5,6 @@ background_mode = 2
 ambient_light_source = 3
 reflected_light_source = 2
 tonemap_mode = 1
-ssao_enabled = true
 fog_enabled = true
 fog_sun_scatter = 0.02
 fog_density = 0.0004

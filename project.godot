@@ -104,6 +104,22 @@ theme/default_font_hinting=2
 lights_and_shadows/use_physical_light_units=true
 lights_and_shadows/directional_shadow/size=8192
 lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+reflections/sky_reflections/texture_array_reflections=false
 textures/default_filters/anisotropic_filtering_level=1
 anti_aliasing/quality/msaa_3d=1
 anti_aliasing/quality/use_debanding=true
+
+[shader_globals]
+
+radiance_cubemap={
+"type": "samplerCube",
+"value": ""
+}
+ibl_exposure_normalization={
+"type": "float",
+"value": 0.0
+}
+max_roughness_layers={
+"type": "float",
+"value": 0.0
+}

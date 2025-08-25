@@ -122,7 +122,7 @@ vec3 eye_to_sky(vec3 eye_dir)
 #if MOON_MIE
 vec3 moon_mie(vec3 eye_dir, vec3 moon_dir, vec3 sun_dir)
 {
-    const float aerosol_turbidity = 0.38;
+    const float aerosol_turbidity = 0.018;
     const float aerosol_density = 1.25e3;
     const vec3 aerosol_color = vec3(0.69, 0.67, 0.74);
 

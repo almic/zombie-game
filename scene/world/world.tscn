@@ -6,12 +6,13 @@
 [ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="4_2u3nc"]
 [ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="4_036b0"]
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
+[ext_resource type="CameraAttributesPhysical" uid="uid://djs1o5pq2224k" path="res://environment/camera_attributes_physical.tres" id="6_pb8w5"]
 [ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
-[ext_resource type="CameraAttributesPractical" uid="uid://c8syb78be0yjj" path="res://environment/camera_attributes.tres" id="8_wse8f"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="PackedScene" uid="uid://bb3wt0w01eidc" path="res://ui/gameover.tscn" id="11_18ff0"]
 [ext_resource type="NavigationMesh" uid="uid://cebu7iwn3onb" path="res://nav/mesh/terrain_nav_mesh.res" id="11_udxuc"]
 [ext_resource type="Script" uid="uid://cugishrosnaex" path="res://script/combat/LifeResource.gd" id="12_a331h"]
+[ext_resource type="PackedScene" uid="uid://dtnbm25ngrmtq" path="res://scene/debug/light_spheres/light_spheres.tscn" id="12_f0qux"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
 [ext_resource type="Resource" uid="uid://bcd20ysn860xe" path="res://data/weapon/type/shovel/shovel.tres" id="15_4duv0"]
 [ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="15_d2i0j"]
@@ -41,6 +42,7 @@
 [ext_resource type="PackedScene" uid="uid://cud8vqgxop8ju" path="res://scene/item/ammo/magnum/magnum_pile.tscn" id="32_fur4y"]
 [ext_resource type="Script" uid="uid://bd4h6hrne4un5" path="res://script/pickup/pickup.gd" id="36_ddy8d"]
 [ext_resource type="Script" uid="uid://0egn31rtalxq" path="res://script/spawning/spawn_point.gd" id="38_4duv0"]
+[ext_resource type="PackedScene" uid="uid://dx7k0wv2ucjia" path="res://scene/world/cabin.tscn" id="42_fur4y"]
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="43_0wajj"]
 [ext_resource type="Curve3D" uid="uid://127ohk5nm1v2" path="res://scene/world/road_curves/able_curve.res" id="44_3wrw6"]
 [ext_resource type="PackedScene" uid="uid://u117tr8ds8nh" path="res://scene/item/ammo/buckshot/buckshot_pile.tscn" id="44_mhi7v"]
@@ -105,12 +107,12 @@ metadata/_edit_lock_ = true
 [node name="DynamicDay" type="WorldEnvironment" parent="." node_paths=PackedStringArray("Sun", "Moon")]
 process_mode = 1
 environment = ExtResource("7_ioo17")
-camera_attributes = ExtResource("8_wse8f")
+camera_attributes = ExtResource("6_pb8w5")
 compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-local_time = 0.5
+local_time = 0.80477
 time_scale = 30.0
 north = 79.0
 latitude = 41.0
@@ -123,7 +125,7 @@ moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.190809, -0.935885, 0.296161, 4.62126e-17, 0.301704, 0.953402, -0.981627, -0.181918, 0.0575679, 0, 0, 0)
+transform = Transform3D(0.541872, -0.521827, -0.658841, 0.71046, 0.703205, 0.0273626, 0.449022, -0.482907, 0.751784, 0, 0, 0)
 light_temperature = 5500.0
 light_specular = 0.5
 shadow_enabled = true
@@ -132,11 +134,11 @@ directional_shadow_split_1 = 0.004
 directional_shadow_split_2 = 0.011
 directional_shadow_split_3 = 0.034
 directional_shadow_blend_splits = true
-directional_shadow_fade_start = 0.9
+directional_shadow_fade_start = 0.975
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.394488, -0.901235, -0.179318, -0.454416, 0.360945, -0.814386, 0.798677, -0.23978, -0.551924, 0, 0, 0)
+transform = Transform3D(-0.0976754, -0.527141, 0.844145, -0.526497, 0.747158, 0.405655, -0.844547, -0.404818, -0.350517, 0, 0, 0)
 light_intensity_lux = 100.0
 light_temperature = 7100.0
 directional_shadow_mode = 0
@@ -155,10 +157,13 @@ unique_name_in_owner = true
 process_mode = 4
 visible = false
 
+[node name="LightSpheres" parent="." instance=ExtResource("12_f0qux")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -133.393, 1.81304, 475.196)
+
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(1.053e-07, 0, 1, 0, 1, 0, -1, 0, 1.053e-07, -150.244, 0.50301, 483.6)
+transform = Transform3D(0.957522, 0, 0.288362, 0, 1, 0, -0.288362, 0, 0.957522, -130.559, 0.630863, 494.447)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -1211,13 +1216,8 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -34.9,
 size = Vector3(1.872, 1.849, 4.912)
 material = ExtResource("22_cm2xv")
 
-[node name="ZeroPlatform" type="CSGCombiner3D" parent="LevelBlocking"]
-visible = false
-
-[node name="floor" type="CSGBox3D" parent="LevelBlocking/ZeroPlatform"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.19209e-07, 0, 2.38419e-07)
-size = Vector3(7.8, 1, 14.2)
-material = ExtResource("25_1obi0")
+[node name="Cabin" parent="." instance=ExtResource("42_fur4y")]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -134.262, 0.65, 476.161)
 
 [node name="ZombiePlayground" type="CSGCombiner3D" parent="." groups=["terrain_nav_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -354, 2, -475)

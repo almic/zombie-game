@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://dtnbm25ngrmtq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oxejk"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+metallic = 1.0
+roughness = 0.07
+
+[sub_resource type="SphereMesh" id="SphereMesh_o6c60"]
+lightmap_size_hint = Vector2i(1, 1)
+material = SubResource("StandardMaterial3D_oxejk")
+add_uv2 = true
+radius = 0.2
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jtnhl"]
+albedo_color = Color(0.9, 0.9, 0.9, 1)
+roughness = 0.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_g70yi"]
+lightmap_size_hint = Vector2i(1, 1)
+material = SubResource("StandardMaterial3D_jtnhl")
+add_uv2 = true
+radius = 0.2
+height = 0.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_30mvt"]
+albedo_color = Color(0.02, 0.02, 0.02, 1)
+roughness = 0.8
+
+[sub_resource type="SphereMesh" id="SphereMesh_vsjho"]
+lightmap_size_hint = Vector2i(1, 1)
+material = SubResource("StandardMaterial3D_30mvt")
+add_uv2 = true
+radius = 0.2
+height = 0.4
+
+[node name="LightSpheres" type="Node3D"]
+
+[node name="Reflective" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1, 1.45519e-11)
+gi_lightmap_texel_scale = 0.01
+mesh = SubResource("SphereMesh_o6c60")
+
+[node name="White" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.5, 1.45519e-11)
+gi_lightmap_texel_scale = 0.01
+mesh = SubResource("SphereMesh_g70yi")
+
+[node name="Black" type="MeshInstance3D" parent="."]
+gi_lightmap_texel_scale = 0.01
+mesh = SubResource("SphereMesh_vsjho")

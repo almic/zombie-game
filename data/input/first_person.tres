@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=99 format=3 uid="uid://7qgp0c8ytmj1"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=100 format=3 uid="uid://7qgp0c8ytmj1"]
 
 [ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_5kk23"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/move.tres" id="2_fwd1p"]
@@ -310,6 +310,10 @@ alt = false
 meta = false
 allow_additional_modifiers = true
 
+[sub_resource type="Resource" id="Resource_i3p8k"]
+script = ExtResource("14_46ss4")
+actuation_threshold = 0.5
+
 [sub_resource type="Resource" id="Resource_pr8ev"]
 script = ExtResource("3_nvbr2")
 override_action_settings = false
@@ -318,7 +322,7 @@ display_name = ""
 display_category = ""
 input = SubResource("Resource_6c25b")
 modifiers = Array[ExtResource("5_0jx6m")]([])
-triggers = Array[ExtResource("8_46ss4")]([])
+triggers = Array[ExtResource("8_46ss4")]([SubResource("Resource_i3p8k")])
 
 [sub_resource type="Resource" id="Resource_qnh3i"]
 script = ExtResource("1_5kk23")

@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=28 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://duylaogq2cjd6" path="res://ui/hud.tscn" id="11_vuhga"]
 [ext_resource type="Resource" uid="uid://upe5t1x0l8xr" path="res://data/input/actions/unload.tres" id="12_pedpu"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="13_jo6ux"]
+[ext_resource type="Texture2D" uid="uid://coxs2jiel83vg" path="res://textures/light_func/flashlight_function.png" id="20_aph6w"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
 radius = 0.34
@@ -62,7 +63,7 @@ move = ExtResource("2_otwb2")
 fire_primary = ExtResource("5_eu8pa")
 aim = ExtResource("8_7mvkq")
 fan_hammer = ExtResource("9_aph6w")
-flashlight = ExtResource("9_a5sw3")
+flashlight_action = ExtResource("9_a5sw3")
 charge = ExtResource("10_aph6w")
 melee = ExtResource("8_fkbv7")
 weapon_next = ExtResource("8_muf2e")
@@ -128,16 +129,20 @@ hit_back_faces = false
 collide_with_areas = true
 metadata/_edit_lock_ = true
 
-[node name="SpotLight3D" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D" index="3"]
+[node name="Flashlight" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D" index="3"]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.61914e-08, 0, -0.413982)
-light_intensity_lumens = 2500.0
+visible = false
+light_intensity_lumens = 2800.0
 light_temperature = 6000.0
+light_projector = ExtResource("20_aph6w")
 light_cull_mask = 4294443007
 shadow_enabled = true
 shadow_caster_mask = 4294443007
 spot_range = 50.0
 spot_attenuation = 2.0
-spot_angle = 30.0
+spot_angle = 36.0
+spot_angle_attenuation = 0.0116912
 metadata/_edit_lock_ = true
 
 [node name="Hurtbox" type="Area3D" parent="." index="2"]

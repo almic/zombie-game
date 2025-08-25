@@ -13,6 +13,7 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 @onready var hurtbox: HurtBox = %Hurtbox
 @onready var weapon_node: WeaponNode = %WeaponNode
 @onready var aim_target: RayCast3D = %AimTarget
+@onready var flashlight: SpotLight3D = %Flashlight
 
 
 
@@ -76,7 +77,7 @@ var look_aim_return_time: float = 0.22
 @export var fire_primary: GUIDEAction
 @export var aim: GUIDEAction
 @export var fan_hammer: GUIDEAction
-@export var flashlight: GUIDEAction
+@export var flashlight_action: GUIDEAction
 @export var charge: GUIDEAction
 @export var melee: GUIDEAction
 @export var weapon_next: GUIDEAction
@@ -287,6 +288,9 @@ func _process(delta: float) -> void:
             do_jump()
     else:
         _jump_ready = true
+
+    if flashlight_action.is_triggered():
+        flashlight.visible = !flashlight.visible
 
     if _next_input_timer > 0.0:
         _next_input_timer -= delta

@@ -13,6 +13,7 @@ global uniform float ibl_exposure_normalization;
 
 
 uniform sampler2D ambient_texture: hint_roughness_gray, filter_linear;
+uniform float ambient_energy = 1.0;
 
 
 #include "light_diffuse_specular.gdshaderinc"
@@ -25,7 +26,7 @@ void light()
         vec3 ambient_dir = (inverse(mat3(1.0)) * mat3(INV_VIEW_MATRIX)) * NORMAL;
         vec3 cubemap_ambient = textureLod(radiance_cubemap, ambient_dir, max_roughness_layers).rgb;
         cubemap_ambient *= ibl_exposure_normalization;
-        cubemap_ambient *= texture(ambient_texture, UV).r;
+        cubemap_ambient *= texture(ambient_texture, UV).r * ambient_energy;
         
         DIFFUSE_LIGHT += cubemap_ambient;
     }

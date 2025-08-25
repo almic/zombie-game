@@ -1,0 +1,6 @@
+*.*
+
+!.gitignore
+!cabin_mesh.res
+!textures/cabin_ambient.png
+!textures/cabin_ambient.png.import

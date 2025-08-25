@@ -139,6 +139,7 @@ directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
 transform = Transform3D(-0.0976754, -0.527141, 0.844145, -0.526497, 0.747158, 0.405655, -0.844547, -0.404818, -0.350517, 0, 0, 0)
+visible = false
 light_intensity_lux = 100.0
 light_temperature = 7100.0
 directional_shadow_mode = 0
@@ -158,16 +159,16 @@ process_mode = 4
 visible = false
 
 [node name="LightSpheres" parent="." instance=ExtResource("12_f0qux")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -133.393, 1.81304, 475.196)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.773, 1.81304, 474.896)
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(0.957522, 0, 0.288362, 0, 1, 0, -0.288362, 0, 0.957522, -130.559, 0.630863, 494.447)
+transform = Transform3D(0.526361, 0, -0.850262, 0, 1, 0, 0.850262, 0, 0.526361, -147.981, 0.520044, 486.535)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
-transform = Transform3D(0.866026, -1.99303e-07, -0.5, 2.14103e-07, 1, 2.70686e-08, 0.5, 8.9407e-08, 0.866026, -322.256, 2.01153, -470.173)
+transform = Transform3D(0.707107, -1.99303e-07, 0.707107, 2.90354e-07, 1, 2.81857e-07, -0.707107, 8.9407e-08, 0.707107, -138.156, 1.15168, 475.793)
 velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
@@ -1218,6 +1219,23 @@ material = ExtResource("22_cm2xv")
 
 [node name="Cabin" parent="." instance=ExtResource("42_fur4y")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -134.262, 0.65, 476.161)
+
+[node name="ReflectionProbe" type="ReflectionProbe" parent="Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 4.38, -0.013112)
+blend_distance = 0.4
+size = Vector3(17, 9.2, 12.6)
+enable_shadows = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Cabin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.58, 0)
+light_intensity_lumens = 100000.0
+light_bake_mode = 1
+shadow_enabled = true
+shadow_transmittance_bias = -0.424
+shadow_caster_mask = 4294443007
+omni_range = 5.23
+omni_attenuation = 2.0
+omni_shadow_mode = 0
 
 [node name="ZombiePlayground" type="CSGCombiner3D" parent="." groups=["terrain_nav_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -354, 2, -475)

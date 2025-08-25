@@ -1,9 +1,5 @@
 shader_type sky;
 
-#define MOON_MIE 1
-#define ACES 0
-#define GAMMA_CORRECT 0
-
 uniform sampler2D sky_texture : filter_linear, repeat_enable;
 uniform sampler2D lut_texture : filter_linear, repeat_disable;
 uniform sampler2D moon_texture : filter_linear, repeat_disable;
@@ -47,51 +43,6 @@ highp vec4 transmittance_from_lut(float cos_theta, float normalized_altitude)
     return texture(lut_texture, uv);
 }
 
-#if ACES
-/*
- * ACES tonemapping fit for the sRGB color space
- * https://github.com/TheRealMJP/BakingLab/blob/master/BakingLab/ACES.hlsl
- */
-// sRGB => XYZ => D65_2_D60 => AP1 => RRT_SAT
-const mat3 aces_input_mat = mat3(
-    vec3(0.59719, 0.07600, 0.02840),
-    vec3(0.35458, 0.90834, 0.13383),
-    vec3(0.04823, 0.01566, 0.83777)
-);
-
-// ODT_SAT => XYZ => D60_2_D65 => sRGB
-const mat3 aces_output_mat = mat3(
-    vec3(1.60475, -0.10208, -0.00327),
-    vec3(-0.53108,  1.10813, -0.07276),
-    vec3(-0.07367, -0.00605,  1.07602)
-);
-
-vec3 rrt_and_odt_fit(vec3 v)
-{
-    vec3 a = v * (v + 0.0245786) - 0.000090537;
-    vec3 b = v * (0.983729 * v + 0.4329510) + 0.238081;
-    return a / b;
-}
-
-vec3 aces_fitted(vec3 color)
-{
-    color = aces_input_mat * color;
-    color = rrt_and_odt_fit(color);
-    color = aces_output_mat * color;
-    return clamp(color, 0.0, 1.0);
-}
-#endif
-
-#if GAMMA_CORRECT
-vec3 gamma_correct(vec3 linear_srgb)
-{
-    vec3 a = 12.92 * linear_srgb;
-    vec3 b = 1.055 * pow(linear_srgb, vec3(1.0 / 2.4)) - 0.055;
-    vec3 c = step(vec3(0.0031308), linear_srgb);
-    return mix(a, b, c);
-}
-#endif
-
 /**
  * Smooths the edge of astro-disks
  */
@@ -119,7 +70,6 @@ vec3 eye_to_sky(vec3 eye_dir)
     return texture(sky_texture, vec2(azi, clamp(ele, 0.001946, 0.99806))).rgb;
 }
 
-#if MOON_MIE
 vec3 moon_mie(vec3 eye_dir, vec3 moon_dir, vec3 sun_dir)
 {
     const float aerosol_turbidity = 0.018;
@@ -155,7 +105,6 @@ vec3 moon_mie(vec3 eye_dir, vec3 moon_dir, vec3 sun_dir)
 
     return light;
 }
-#endif
 
 vec4 get_moon_color(vec3 eye_dir)
 {
@@ -237,39 +186,27 @@ void sky() {
     // Sample sky
     color = eye_to_sky(EYEDIR);
 
-#if MOON_MIE
+
     // Moon has special single-sample mie scattering, mostly to look like haze
     if (!AT_CUBEMAP_PASS)
     {
         color += moon_mie(EYEDIR, moon_basis[2], sun_direction);
+
+        // Obtain moon info early so we can cut the Sun disk if needed
+
+        // We have to translate EYEDIR into "moon-space" so there's no distortions.
+        // Must double the diameter to be correct
+        vec4 moon_color = get_moon_color(EYEDIR);
+        color += (moon_color.rgb * TAU) * moon_color.a;
+
+        // Drawing the Sun disk
+        vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
+
+        // After a bit of testing, I found this blending to look the most
+        // accurate. Screen may be correct, but I can't solve the artifacting problem.
+        color = max(color, color + (sun_color.rgb * sun_color.a));
     }
-#endif
 
-    // Obtain moon info early so we can cut the Sun disk if needed
-
-    // We have to translate EYEDIR into "moon-space" so there's no distortions.
-    // Must double the diameter to be correct
-    vec4 moon_color = get_moon_color(EYEDIR);
-    color += (moon_color.rgb * TAU) * moon_color.a;
-
-    // Drawing the Sun disk
-    vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
-
-    // After a bit of testing, I found this blending to look the most
-    // accurate. Screen may be correct, but I can't solve the artifacting problem.
-    color = max(color, color + (sun_color.rgb * sun_color.a));
-
-#if ACES
-    color = color * exp2(-5.0);
-    color = aces_fitted(color);
-#else
     const float k = 0.065;
-    color = 1.0 - exp(-k * color);
-#endif
-
-#if GAMMA_CORRECT
-    color = clamp(gamma_correct(color), 0.0, 1.0);
-#endif
-
-    COLOR = color;
+    COLOR = 1.0 - exp(-k * color);
 }

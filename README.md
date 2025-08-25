@@ -5,7 +5,6 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # Day / Night
 
-- [ ] Optimize sky shader, should skip sun and moon disk for radiance maps
 - [ ] Turn off moon when below horizon.
 - [ ] Moon/ Sun shadow casting when above the horizon, turn off moon shadow if
       Sun is up. Scale shadow opacity to zero before turning off moon shadow.
@@ -15,6 +14,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       The full moon is more than 2x brighter than a half-moon! Non-linear!
 - [ ] Match mie power to moon illuminance (see above)
 - [ ] Fog at dawn and dusk, set with a curve. This looks bad right now.
+- [X] Optimize sky shader, should skip sun and moon disk for radiance maps
 - [X] Flashlight which can be toggled
 
 

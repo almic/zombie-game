@@ -209,7 +209,10 @@ var moon_mesh: MeshInstance3D
 var moon_camera: Camera3D
 var moon_view_shader: ShaderMaterial
 var moon_orbit_basis: Basis
-var moon_shadowing_min: float = 0.03
+var moon_shadow_opacity: Interpolation = Interpolation.new(30.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+
+## Minimum Sun illuminance when fully eclipsed by the Moon
+var eclipse_min: float = 0.03
 
 func _init() -> void:
     # force cached calculations
@@ -226,6 +229,8 @@ func _init() -> void:
 
     moon_angular_diameter = moon_angular_diameter
     sun_angular_diameter = sun_angular_diameter
+
+    moon_shadow_opacity.current = 0.0
 
 func _notification(what:int) -> void:
     # NOTE: Prevent shader parameters from saving to disk.
@@ -246,7 +251,7 @@ func _process(delta: float) -> void:
     if editor_realtime:
         update_time(delta)
 
-    update_lights(true)
+    update_lights(delta, true)
 
 func _physics_process(delta: float) -> void:
     # NOTE: Application runs in _physics_process()
@@ -256,7 +261,7 @@ func _physics_process(delta: float) -> void:
     if time_enabled:
         update_time(delta)
 
-    update_lights()
+    update_lights(delta)
 
 func update_time(delta: float) -> void:
     var rate: float = delta * time_scale
@@ -276,7 +281,7 @@ func update_time(delta: float) -> void:
     if _moon_orbit[1] >= 1.0:
         _moon_orbit[1] = _moon_orbit[1] - 1.0
 
-func update_lights(force: bool = false) -> void:
+func update_lights(delta: float, force: bool = false) -> void:
     var updated: bool = false
     if force or not is_equal_approx(_local_time[0], _local_time[1]):
         update_sun()
@@ -301,6 +306,26 @@ func update_lights(force: bool = false) -> void:
 
     # Enable moon when fully above horizon
     Moon.visible = Moon.basis.z.y > 0.00275
+
+    # Brightness of the Sun to enable Moon shadows, in LUX
+    const sun_low_light_level = 1000
+
+    if not Moon.visible:
+        Moon.shadow_enabled = false
+        Moon.shadow_opacity = 0.0
+    else:
+        if Sun.light_energy * Sun.light_intensity_lux < sun_low_light_level:
+            if not Moon.shadow_enabled:
+                Moon.shadow_enabled = true
+                moon_shadow_opacity.set_target_delta(1.0, 1.0 - Moon.shadow_opacity)
+        elif Moon.shadow_enabled and (not moon_shadow_opacity.is_target_set or not is_zero_approx(moon_shadow_opacity.target)):
+            moon_shadow_opacity.set_target_delta(0.0, -Moon.shadow_opacity)
+
+        if not moon_shadow_opacity.is_done:
+            Moon.shadow_opacity = moon_shadow_opacity.update(delta)
+
+            if moon_shadow_opacity.is_done and is_zero_approx(Moon.shadow_opacity):
+                Moon.shadow_enabled = false
 
     _local_time[0] = _local_time[1]
     _moon_time[0] = _moon_time[1]
@@ -473,7 +498,7 @@ func update_shader() -> void:
                 _moon_radians,
                 cos_theta
             ),
-            moon_shadowing_min
+            eclipse_min
     )
 
     sky_material.set_shader_parameter("sun_angular_diameter", sun_angular_diameter)

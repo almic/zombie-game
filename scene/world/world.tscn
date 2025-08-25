@@ -141,6 +141,7 @@ directional_shadow_max_distance = 2000.0
 transform = Transform3D(-0.0976754, -0.527141, 0.844145, -0.526497, 0.747158, 0.405655, -0.844547, -0.404818, -0.350517, 0, 0, 0)
 light_intensity_lux = 100.0
 light_temperature = 7100.0
+shadow_opacity = 0.0
 directional_shadow_mode = 0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]

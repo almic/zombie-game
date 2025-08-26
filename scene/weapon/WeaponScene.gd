@@ -246,6 +246,11 @@ func travel(node: StringName, immediate: bool = false) -> void:
     if immediate:
         anim_state.start(node)
         return
+
+    # NOTE: For development only, remove later
+    if state_machine == null:
+        push_warning('Did you override WeaponScene\'s _ready() method? Make sure you call super._ready()!!!')
+
     var anim_node: AnimationNodeAnimation = state_machine.get_node(node) as AnimationNodeAnimation
     if anim_node:
         anim_target = node

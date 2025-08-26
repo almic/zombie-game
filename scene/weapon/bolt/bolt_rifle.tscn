@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://2ub41p5mtrf1"]
+[gd_scene load_steps=36 format=3 uid="uid://2ub41p5mtrf1"]
 
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_h6unu"]
 [ext_resource type="Script" uid="uid://dg2m1isyocicv" path="res://scene/weapon/bolt/bolt_rifle.gd" id="2_jj4xa"]
@@ -9,6 +9,8 @@
 [ext_resource type="Animation" uid="uid://xsv4a00cgagk" path="res://animation/bolt/bolt_RESET.res" id="5_tda2x"]
 [ext_resource type="AnimationLibrary" uid="uid://4t3lfpv45eo5" path="res://animation/bolt/bolt_animation.res" id="6_ry02v"]
 [ext_resource type="AnimationNodeBlendTree" uid="uid://4tfq1m1mtxok" path="res://animation/bolt/bolt_anim_tree.tres" id="10_cxsjy"]
+
+[sub_resource type="Compositor" id="Compositor_1i8ia"]
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_jj4xa"]
 viewport_path = NodePath("Mesh/SubViewport")
@@ -174,13 +176,11 @@ msaa_3d = 1
 screen_space_aa = 1
 use_debanding = true
 size = Vector2i(768, 768)
-render_target_clear_mode = 1
 
 [node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
-fov = 3.05505
-near = 0.5
+compositor = SubResource("Compositor_1i8ia")
 metadata/_edit_lock_ = true
 
 [node name="ScopePicture" type="MeshInstance3D" parent="Mesh"]
@@ -376,7 +376,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.055, 0.09)
 visible = false
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-root_node = NodePath("")
 libraries = {
 &"": SubResource("AnimationLibrary_jj4xa"),
 &"bolt": ExtResource("6_ry02v")

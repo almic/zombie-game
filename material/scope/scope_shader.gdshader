@@ -2,9 +2,9 @@ shader_type spatial;
 
 render_mode unshaded;
 
-uniform sampler2D viewport: source_color, filter_linear;
+uniform sampler2D viewport: source_color, filter_linear, repeat_disable;
 
-uniform sampler2D reticle: source_color, filter_linear;
+uniform sampler2D reticle: source_color, filter_linear, repeat_disable;
 uniform vec2 reticle_offset;
 
 

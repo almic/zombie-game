@@ -659,18 +659,20 @@ func compute_sky_intensity() -> float:
     var data: PackedByteArray = sky_texture.get_data()
 
     var total: Vector3
-    var inv_total: float = 1.0 # 1.0 / size.x
     var time: int = Time.get_ticks_usec()
     for i in range(size.x):
         if Time.get_ticks_msec() - (time * 1000.0) > 1:
             push_warning('Took too long to compute average color!')
-            return 30000.0
+            return sky_intensity_max
 
         var y: float = i + (size.y * size.x)
 
-        total.x += inv_total * data.decode_float(y * 16)
-        total.y += inv_total * data.decode_float(y * 16 + 4)
-        total.z += inv_total * data.decode_float(y * 16 + 8)
+        total.x += data.decode_float(y * 16)
+        total.y += data.decode_float(y * 16 + 4)
+        total.z += data.decode_float(y * 16 + 8)
+
+    total *= 1.0 / size.x
+    total *= 256.0 # This factor gives better results. Ask me how I found out.
 
     time = Time.get_ticks_usec() - time
 
@@ -688,6 +690,7 @@ func compute_sky_intensity() -> float:
     var intensity: float = ease(luminance / luminance_maximum, sky_intensity_curve)
     intensity = intensity * (sky_intensity_max - sky_intensity_min) + sky_intensity_min
     print('intensity: ' + str(intensity))
+    print('time: ' + clock_time)
 
     return intensity
 

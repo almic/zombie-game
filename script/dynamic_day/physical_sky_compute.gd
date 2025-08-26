@@ -201,6 +201,7 @@ func create_lut() -> void:
 
 func create_sky() -> void:
     var sky_tf: RDTextureFormat = RDTextureFormat.new()
+    # NOTE: Alpha channel is unused, but must be in the format to support sampler2d
     sky_tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
     sky_tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
     sky_tf.width = sky_size

@@ -9,7 +9,12 @@ class_name DynamicDay extends WorldEnvironment
     set(value):
         local_time = value
         _local_time[1] = value
+        update_clock_time()
 var _local_time: PackedFloat64Array = [0, 0]
+
+## Readout of local time to 24hr clock time
+@export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
+var clock_time: String = '00:00:00'
 
 ## If time passage happens in-game
 @export var time_enabled: bool = true
@@ -39,6 +44,28 @@ var time_scale: float = 100
         if not sky_compute:
             return
         sky_compute.reload_shaders()
+
+
+@export_category("Sky Attributes")
+
+## Relative luminance for maximum intensity
+@export_range(0.01, 8.0, 0.0001, 'or_greater')
+var luminance_maximum: float = 6.0
+
+## Maximum sky intensity, at the relative luminance max.
+## Sky intensity will never exceed this value.
+@export_range(0.0, 40000.0, 0.1, 'or_greater')
+var sky_intensity_max: float = 30000.0
+
+## Minimum sky intensity, when relative luminance is zero.
+## Sky intensity will never drop below this value.
+@export_range(0.0, 20000.0, 0.1, 'or_greater')
+var sky_intensity_min: float = 9900.0
+
+## Curve for sky intesity, applied to luminance between 0.0 and `luminance_maximum`
+@export_custom(PROPERTY_HINT_EXP_EASING, '')
+var sky_intensity_curve: float = 0.5
+
 
 @export_category("Planet Attributes")
 
@@ -202,7 +229,6 @@ var sky: Sky = Sky.new()
 var sky_material: ShaderMaterial = ShaderMaterial.new()
 var sky_shader: Shader = preload('res://script/dynamic_day/dynamic_day.gdshader')
 var sky_radiance: Variant
-var sky_intensity: float
 var sky_compute: PhysicalSkyCompute
 var moon_view: MoonView
 var moon_mesh: MeshInstance3D
@@ -213,6 +239,16 @@ var moon_shadow_opacity: Interpolation = Interpolation.new(30.0, Tween.TRANS_SIN
 
 ## Minimum Sun illuminance when fully eclipsed by the Moon
 var eclipse_min: float = 0.03
+
+## How frequently to read sky texture to set sky intensity
+const SKY_INTESITY_RATE: float = 1.0
+
+## Sky intensity interpolation, changes as sky texture luminance changes
+var sky_intensity: Interpolation = Interpolation.new(SKY_INTESITY_RATE, Tween.TRANS_LINEAR)
+
+## Last changed background intesity, used to set exposure on ambient light
+var last_background_intensity: float
+
 
 func _init() -> void:
     # force cached calculations
@@ -242,6 +278,8 @@ func _notification(what:int) -> void:
 
 func _ready() -> void:
     init_shader()
+
+    sky_intensity.current = environment.background_intensity
 
 func _process(delta: float) -> void:
     # NOTE: Editor preview runs in _process()
@@ -281,15 +319,34 @@ func update_time(delta: float) -> void:
     if _moon_orbit[1] >= 1.0:
         _moon_orbit[1] = _moon_orbit[1] - 1.0
 
+    update_clock_time()
+
+func update_clock_time() -> void:
+    var hour: float = _local_time[1] * 24.0
+    var minute: float = (hour - int(hour)) * 60.0
+    var second: float = (minute - int(minute)) * 60.0
+
+    clock_time = "%02d:%02d:%02d" % [hour, minute, second]
+
 func update_lights(delta: float, force: bool = false) -> void:
     var updated: bool = false
-    if force or not is_equal_approx(_local_time[0], _local_time[1]):
+
+    var local_time_changed: bool = (
+               not is_equal_approx(_local_time[0], _local_time[1])
+    )
+
+    var moon_time_changed: bool = (
+               not is_equal_approx(_moon_time[0],  _moon_time[1])
+            or not is_equal_approx(_moon_orbit[0], _moon_orbit[1])
+    )
+
+    var time_changed: bool = local_time_changed or moon_time_changed
+
+    if force or local_time_changed:
         update_sun()
         updated = true
 
-    if force \
-            or not is_equal_approx(_moon_time[0], _moon_time[1]) \
-            or not is_equal_approx(_moon_orbit[0], _moon_orbit[1]):
+    if force or moon_time_changed:
         update_moon()
         updated = true
 
@@ -327,6 +384,17 @@ func update_lights(delta: float, force: bool = false) -> void:
             if moon_shadow_opacity.is_done and is_zero_approx(Moon.shadow_opacity):
                 Moon.shadow_enabled = false
 
+    # BUG: Godot only updates textures in-game, wack
+    if not Engine.is_editor_hint():
+        if sky_intensity.is_done:
+            if time_changed:
+                var target: float = compute_sky_intensity()
+                sky_intensity.set_target_delta(target, target - sky_intensity.current)
+
+        if not sky_intensity.is_done:
+            environment.background_intensity = sky_intensity.update(delta)
+
+    # NOTE: Slide time windows last
     _local_time[0] = _local_time[1]
     _moon_time[0] = _moon_time[1]
     _moon_orbit[0] = _moon_orbit[1]
@@ -457,9 +525,7 @@ func update_shader() -> void:
         var roughness_layers: int = ProjectSettings.get_setting('rendering/reflections/sky_reflections/roughness_layers')
         RenderingServer.global_shader_parameter_set('max_roughness_layers', float(roughness_layers) - 1.0)
 
-    if not is_equal_approx(sky_intensity, environment.background_intensity):
-        sky_intensity = environment.background_intensity
-
+    if not is_equal_approx(last_background_intensity, environment.background_intensity):
         var cam: CameraAttributesPhysical = camera_attributes as CameraAttributesPhysical
         var current_exposure: float = (
                 (cam.exposure_aperture * cam.exposure_aperture)
@@ -467,9 +533,10 @@ func update_shader() -> void:
                 * (100.0 / cam.exposure_sensitivity)
         )
         current_exposure = 1.0 / (current_exposure * 1.2)
-        current_exposure *= sky_intensity
+        current_exposure *= environment.background_intensity
 
         RenderingServer.global_shader_parameter_set('ibl_exposure_normalization', current_exposure)
+        last_background_intensity = environment.background_intensity
 
     sky_material.set_shader_parameter("sun_direction", Sun.basis.z)
     moon_view_shader.set_shader_parameter("sun_direction", Sun.basis.z)
@@ -578,3 +645,57 @@ func light_horizon(light: Vector3, radius: float) -> float:
     var beta: float = (PI * 0.5) * (cos(PI * rho * 0.5) + 1.0)
     var alpha: float = beta / PI
     return alpha
+
+func compute_sky_intensity() -> float:
+    # The first run won't have a texture, so wait for it
+    if not sky_intensity.is_target_set:
+        RenderingServer.force_sync()
+
+    var sky_texture: Image = sky_compute.sky_texture.get_image()
+    var size: Vector2 = sky_texture.get_size()
+    size.y = size.y / 2.0
+
+    # Compute average pixel value, sum with sqrt transformation
+    var data: PackedByteArray = sky_texture.get_data()
+
+    var total: Vector3
+    var inv_total: float = 1.0 # 1.0 / size.x
+    var time: int = Time.get_ticks_usec()
+    for i in range(size.x):
+        if Time.get_ticks_msec() - (time * 1000.0) > 1:
+            push_warning('Took too long to compute average color!')
+            return 30000.0
+
+        var y: float = i + (size.y * size.x)
+
+        total.x += inv_total * data.decode_float(y * 16)
+        total.y += inv_total * data.decode_float(y * 16 + 4)
+        total.z += inv_total * data.decode_float(y * 16 + 8)
+
+    time = Time.get_ticks_usec() - time
+
+    var luminance: float = inv_luminance(total)
+    print('computed average color: ' + str(total))
+    print('luminance: ' + str(luminance))
+    print('took ' + str(time) + ' us')
+
+    # NOTE: Testing put the lowest luminance > 0.01, so approx zero is fine
+    if is_zero_approx(luminance):
+        return environment.background_intensity
+
+    luminance = clampf(luminance, 0.0, luminance_maximum)
+
+    var intensity: float = ease(luminance / luminance_maximum, sky_intensity_curve)
+    intensity = intensity * (sky_intensity_max - sky_intensity_min) + sky_intensity_min
+    print('intensity: ' + str(intensity))
+
+    return intensity
+
+
+static func inv_luminance(c: Vector3) -> float:
+    const scale = 1.0 / 17.4862339609375
+    c.x = 20.0 * log(1.0 + c.x)
+    c.y = 20.0 * log(1.0 + c.y)
+    c.z = 20.0 * log(1.0 + c.z)
+    var lum: float = 0.2126729 * c.x + 0.7151522 * c.y + 0.0721750 * c.z
+    return lum * scale

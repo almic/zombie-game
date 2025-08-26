@@ -207,6 +207,6 @@ void sky() {
         color = max(color, color + (sun_color.rgb * sun_color.a));
     }
 
-    const float k = 0.065;
+    const float k = 0.05;
     COLOR = 1.0 - exp(-k * color);
 }

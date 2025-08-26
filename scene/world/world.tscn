@@ -114,6 +114,9 @@ Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
 local_time = 0.80477
 time_scale = 30.0
+luminance_maximum = 7.0
+sky_intensity_min = 8440.0
+sky_intensity_curve = 1.0
 north = 79.0
 latitude = 41.0
 moon_day_length = 239.3
@@ -1226,9 +1229,9 @@ blend_distance = 0.4
 size = Vector3(17, 9.2, 12.6)
 enable_shadows = true
 
-[node name="OmniLight3D" type="OmniLight3D" parent="Cabin"]
+[node name="InteriorLight" type="OmniLight3D" parent="Cabin"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.58, 0)
-light_intensity_lumens = 100000.0
+light_intensity_lumens = 10000.0
 light_bake_mode = 1
 shadow_enabled = true
 shadow_transmittance_bias = -0.424
@@ -1236,6 +1239,15 @@ shadow_caster_mask = 4294443007
 omni_range = 5.23
 omni_attenuation = 2.0
 omni_shadow_mode = 0
+
+[node name="StreetLight" type="SpotLight3D" parent="Cabin"]
+transform = Transform3D(1, 0, 0, 0, 6.12323e-17, 1, 0, -1, 6.12323e-17, -19, 6.9, -7)
+light_intensity_lumens = 60000.0
+light_volumetric_fog_energy = 0.1
+spot_range = 18.048
+spot_attenuation = 2.0
+spot_angle = 44.25
+spot_angle_attenuation = 0.466516
 
 [node name="ZombiePlayground" type="CSGCombiner3D" parent="." groups=["terrain_nav_group"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -354, 2, -475)

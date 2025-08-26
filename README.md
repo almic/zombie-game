@@ -6,11 +6,12 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 # Day / Night
 
 - [ ] Sun light to diminish accurately to the transmittance in the sky (lut texture)
-- [ ] Light color to match transmittance in the sky (lut texture)
+- [ ] Sun light color to match transmittance in the sky (lut texture)
 - [ ] Moon illumination to scale depending on the phase, look up real equations.
       The full moon is more than 2x brighter than a half-moon! Non-linear!
 - [ ] Match mie power to moon illuminance (see above)
 - [ ] Fog at dawn and dusk, set with a curve. This looks bad right now.
+- [X] Sky intensity to match brightness of the sky texture
 - [X] Moon/ Sun shadow casting when above the horizon, turn off moon shadow if
       Sun is up. Scale shadow opacity to zero before turning off moon shadow.
 - [X] Turn off moon when below horizon.
@@ -108,6 +109,7 @@ In order of time to implement (fastest to longest):
 
 # ANGRY TODOS
 
+- [ ] If aiming at the sun with the bolt scope, midday, flashbang the entire screen
 - [ ] Allow aiming while walking with the bolt, but greatly reduce move speed and
       add a substantial amount of walking sway.
 - [ ] When aiming with the bolt, move projectile marker to the scope, and turn off

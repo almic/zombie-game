@@ -241,13 +241,19 @@ var moon_shadow_opacity: Interpolation = Interpolation.new(30.0, Tween.TRANS_SIN
 var eclipse_min: float = 0.03
 
 ## How frequently to read sky texture to set sky intensity
-const SKY_INTESITY_RATE: float = 1.0
+const SKY_INTENSITY_RATE: float = 1.0
 
 ## Sky intensity interpolation, changes as sky texture luminance changes
-var sky_intensity: Interpolation = Interpolation.new(SKY_INTESITY_RATE, Tween.TRANS_LINEAR)
+var sky_intensity: Interpolation = Interpolation.new(SKY_INTENSITY_RATE, Tween.TRANS_LINEAR)
+
+## Sun light color interpolation, changes as the sun moves through the sky
+var sun_light_color: Interpolation = Interpolation.new(0.1, Tween.TRANS_EXPO, Tween.EASE_OUT)
 
 ## Last changed background intesity, used to set exposure on ambient light
 var last_background_intensity: float
+
+## Look-Up-Table for sky transmittance, used to compute Sun color
+var lut_texture: Image
 
 
 func _init() -> void:
@@ -331,7 +337,7 @@ func update_clock_time() -> void:
 func update_lights(delta: float, force: bool = false) -> void:
     var updated: bool = false
 
-    var local_time_changed: bool = (
+    var time_changed: bool = (
                not is_equal_approx(_local_time[0], _local_time[1])
     )
 
@@ -340,9 +346,7 @@ func update_lights(delta: float, force: bool = false) -> void:
             or not is_equal_approx(_moon_orbit[0], _moon_orbit[1])
     )
 
-    var time_changed: bool = local_time_changed or moon_time_changed
-
-    if force or local_time_changed:
+    if force or time_changed:
         update_sun()
         updated = true
 
@@ -388,11 +392,32 @@ func update_lights(delta: float, force: bool = false) -> void:
     if not Engine.is_editor_hint():
         if sky_intensity.is_done:
             if time_changed:
+                #var time: int = Time.get_ticks_usec()
                 var target: float = compute_sky_intensity()
+                #time = Time.get_ticks_usec() - time
+                #print('Sky intensity time: ' + str(time) + 'us')
+
                 sky_intensity.set_target_delta(target, target - sky_intensity.current)
 
         if not sky_intensity.is_done:
             environment.background_intensity = sky_intensity.update(delta)
+
+        # NOTE: Sun light color can change abruptly, and it's relatively cheap
+        #       to check, so check constantly and update the target
+        if time_changed:
+            #var time: int = Time.get_ticks_usec()
+            var target: Color = compute_sun_color()
+            #time = Time.get_ticks_usec() - time
+            #print('Sun color time: ' + str(time) + 'us')
+
+            # If this is our first set, apply the color immediately
+            if not sun_light_color.is_target_set or not target.is_equal_approx(sun_light_color.current):
+                if not sun_light_color.is_target_set:
+                    sun_light_color.current = target
+                sun_light_color.set_target_delta(target, target - sun_light_color.current)
+
+        if not sun_light_color.is_done:
+            Sun.light_color = sun_light_color.update(delta)
 
     # NOTE: Slide time windows last
     _local_time[0] = _local_time[1]
@@ -652,34 +677,27 @@ func compute_sky_intensity() -> float:
         RenderingServer.force_sync()
 
     var sky_texture: Image = sky_compute.sky_texture.get_image()
-    var size: Vector2 = sky_texture.get_size()
-    size.y = size.y / 2.0
+    var size: Vector2i = sky_texture.get_size()
+    @warning_ignore('integer_division')
+    size.y = (size.y - 1) / 2 + 1
 
     # Compute average pixel value, sum with sqrt transformation
     var data: PackedByteArray = sky_texture.get_data()
 
     var total: Vector3
-    var time: int = Time.get_ticks_usec()
     for i in range(size.x):
-        if Time.get_ticks_msec() - (time * 1000.0) > 1:
-            push_warning('Took too long to compute average color!')
-            return sky_intensity_max
-
-        var y: float = i + (size.y * size.x)
+        var y: int = i + (size.y * size.x)
 
         total.x += data.decode_float(y * 16)
         total.y += data.decode_float(y * 16 + 4)
         total.z += data.decode_float(y * 16 + 8)
 
-    total *= 1.0 / size.x
+    total = total / size.x
     total *= 256.0 # This factor gives better results. Ask me how I found out.
 
-    time = Time.get_ticks_usec() - time
-
     var luminance: float = inv_luminance(total)
-    print('computed average color: ' + str(total))
-    print('luminance: ' + str(luminance))
-    print('took ' + str(time) + ' us')
+    #print('computed average color: ' + str(total))
+    #print('luminance: ' + str(luminance))
 
     # NOTE: Testing put the lowest luminance > 0.01, so approx zero is fine
     if is_zero_approx(luminance):
@@ -689,11 +707,124 @@ func compute_sky_intensity() -> float:
 
     var intensity: float = ease(luminance / luminance_maximum, sky_intensity_curve)
     intensity = intensity * (sky_intensity_max - sky_intensity_min) + sky_intensity_min
-    print('intensity: ' + str(intensity))
-    print('time: ' + clock_time)
+    #print('intensity: ' + str(intensity))
 
     return intensity
 
+func compute_sun_color() -> Color:
+    # If the Sun is not visible, keep the current color
+    if not Sun.visible:
+        # NOTE: for testing, may not be needed later if game has a sunset
+        #       before the first sunrise
+        if not Sun.light_color.is_equal_approx(Color.WHITE):
+            return Sun.light_color
+
+    # Test brightest portion for color, sync until we have data
+    if not lut_texture:
+        RenderingServer.force_sync()
+        var image: Image = sky_compute.lut_texture.get_image()
+        var coord: Vector2i = image.get_size()
+        var sample: Color = image.get_pixel(coord.x - 1, coord.y - 1)
+        if is_zero_approx(sample.r) \
+                and is_zero_approx(sample.g) \
+                and is_zero_approx(sample.b) \
+                and is_zero_approx(sample.a):
+            return Sun.light_color
+        lut_texture = image
+
+
+    const spectral: Color = Color(1.679, 1.828, 1.986, 1.307)
+    var transmittance: Color = transmittance_from_lut(
+            lut_texture,
+            # NOTE: poll the top half of the sun disk for a better result
+            Sun.basis.rotated(Sun.basis.x, _sun_radians * 0.5).z
+    )
+    var color: Color = spectral_to_rgb(spectral * transmittance)
+    color = gamma_correct(color)
+
+    return color
+
+static func transmittance_from_lut(lut: Image, direction: Vector3) -> Color:
+    var uv: Vector2 = Vector2(maxf(0.0, direction.dot(Vector3.UP)), 0.0)
+    uv.y = clampf(3.0 * uv.x * uv.x, 0.0, 1.0)
+    uv.x = clampf(uv.x * 0.5 + 0.5, 0.0, 1.0)
+
+    var size: Vector2i = lut.get_size()
+    var coord: Vector2 = Vector2(size) * uv
+    var cell: Vector2 = (coord - Vector2(0.5, 0.5)).floor()
+    var offset: Vector2 = (coord - Vector2(0.5, 0.5)) - cell
+
+    # Collect pixel values for interpolation
+    var pixels: PackedFloat32Array
+    pixels.resize(64)
+
+    for y in range(4):
+        for x in range(4):
+            var color: Color = lut.get_pixel(
+                    clampi(int(cell.x) + x - 1, 0, size.x - 1),
+                    clampi(int(cell.y) + y - 1, 0, size.y - 1)
+            )
+            var i: int = ((x * 4) + (y * 16))
+            pixels[i]     = color.r
+            pixels[i + 1] = color.g
+            pixels[i + 2] = color.b
+            pixels[i + 3] = color.a
+
+    var t := offset
+    var t2 := t * t
+    var t3 := t * t2
+
+    var q1 := 0.5 * (-t3 + 2.0 * t2 - t)
+    var q2 := 0.5 * (3.0 * t3 - 5.0 * t2 + Vector2(2.0, 2.0))
+    var q3 := 0.5 * (-3.0 * t3 + 4.0 * t2 + t)
+    var q4 := 0.5 * (t3 - t2)
+
+    # Row interpolation
+    for u in range(4):
+        u *= 16
+        pixels[u]     = pixels[u]     * q1.x + pixels[u + 4] * q2.x + pixels[u + 8]  * q3.x + pixels[u + 12] * q4.x
+        pixels[u + 1] = pixels[u + 1] * q1.x + pixels[u + 5] * q2.x + pixels[u + 9]  * q3.x + pixels[u + 13] * q4.x
+        pixels[u + 2] = pixels[u + 2] * q1.x + pixels[u + 6] * q2.x + pixels[u + 10] * q3.x + pixels[u + 14] * q4.x
+        pixels[u + 3] = pixels[u + 3] * q1.x + pixels[u + 7] * q2.x + pixels[u + 11] * q3.x + pixels[u + 15] * q4.x
+
+    # Final interpolation
+    var result: Color = Color(
+            pixels[0] * q1.y + pixels[16] * q2.y + pixels[32] * q3.y + pixels[48] * q4.y,
+            pixels[1] * q1.y + pixels[17] * q2.y + pixels[33] * q3.y + pixels[49] * q4.y,
+            pixels[2] * q1.y + pixels[18] * q2.y + pixels[34] * q3.y + pixels[50] * q4.y,
+            pixels[3] * q1.y + pixels[19] * q2.y + pixels[35] * q3.y + pixels[51] * q4.y,
+    )
+
+    return result
+
+static func spectral_to_rgb(s: Color) -> Color:
+    var color := Color(
+        137.672389239975     * s.r +  32.549094028629234 * s.g + -38.91428392614275 * s.b +   8.572844237945445 * s.a,
+         -8.632904716299537  * s.r +  91.29801417199785  * s.g +  34.31665471469816 * s.b + -11.103384660054624 * s.a,
+         -1.7181567391931372 * s.r + -12.005406444382531 * s.g +  29.89044807197628 * s.b + 117.47585277566478  * s.a
+    )
+
+    const k = 0.05
+    color.r = 1.0 - exp(-k * color.r)
+    color.g = 1.0 - exp(-k * color.g)
+    color.b = 1.0 - exp(-k * color.b)
+
+    return color
+
+static func gamma_correct(color: Color) -> Color:
+    const gamma = 12.92
+    const theta = 1.0 / 2.4
+    const lambda = 0.0031308
+
+    var result: Color
+    for i in range(3):
+        var c: float = color[i]
+        if c < lambda:
+            result[i] = gamma * c
+        else:
+            result[i] = 1.055 * pow(c, theta) - 0.055
+
+    return result.clamp()
 
 static func inv_luminance(c: Vector3) -> float:
     const scale = 1.0 / 17.4862339609375

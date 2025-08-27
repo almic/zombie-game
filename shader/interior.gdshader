@@ -19,7 +19,7 @@ uniform float ambient_energy = 1.0;
 #include "light_diffuse_specular.gdshaderinc"
 
 
-void light() 
+void light()
 {
     if (LIGHT_IS_DIRECTIONAL && length(DIFFUSE_LIGHT) < 1e-6)
     {
@@ -27,7 +27,7 @@ void light()
         vec3 cubemap_ambient = textureLod(radiance_cubemap, ambient_dir, max_roughness_layers).rgb;
         cubemap_ambient *= ibl_exposure_normalization;
         cubemap_ambient *= texture(ambient_texture, UV).r * ambient_energy;
-        
+
         DIFFUSE_LIGHT += cubemap_ambient;
     }
 
@@ -45,6 +45,6 @@ void light()
         BACKLIGHT,
         ALBEDO
     );
-    
+
 }
 #endif

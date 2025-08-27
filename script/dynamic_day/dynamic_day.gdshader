@@ -22,6 +22,7 @@ const vec4 ZENITH_IRRADIANCE =
         (ZENITH_ILLUMINANCE / 100000.0)
         * SUN_SPECTRAL;
 // Spectral to RGB matrix, don't touch this!
+// > Seriously, this is correct! I double-checked August 26, 2025!
 const mat4 M = mat4(
     vec4(137.672389239975,     -8.632904716299537,  -1.7181567391931372, 0.0),
     vec4( 32.549094028629234,  91.29801417199785,  -12.005406444382531,  0.0),
@@ -30,7 +31,7 @@ const mat4 M = mat4(
 );
 vec3 linear_srgb_from_spectral_samples(vec4 L)
 {
-    return (M * L).xyz;
+    return (M * L).rgb;
 }
 
 highp vec4 transmittance_from_lut(float cos_theta, float normalized_altitude)
@@ -142,7 +143,7 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
     vec4 zenith_transmittance = transmittance_from_lut(1.0, 0.0);
     vec4 space_irradiance = ZENITH_IRRADIANCE / zenith_transmittance;
     float xy = dot(eye_dir, vec3(0.0, 1.0, 0.0));
-    vec4 transmittance = transmittance_from_lut(xy, xy);
+    vec4 transmittance = transmittance_from_lut(xy, 3.0 * xy * xy);
 
     float sun_diameter_radians = sun_angular_diameter * PI / 180.0;
     vec4 sun_color = vec4(0.0);
@@ -202,9 +203,8 @@ void sky() {
         // Drawing the Sun disk
         vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
 
-        // After a bit of testing, I found this blending to look the most
-        // accurate. Screen may be correct, but I can't solve the artifacting problem.
-        color = max(color, color + (sun_color.rgb * sun_color.a));
+        // Sun color could be removing blue (matrix stuff), so only add positive values
+        color = max(color, color + sun_color.rgb);
     }
 
     const float k = 0.05;

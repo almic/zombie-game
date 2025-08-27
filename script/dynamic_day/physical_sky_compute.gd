@@ -15,7 +15,7 @@ var _lut_size_changed: bool = true
 
 ## Transmittance LUT steps, computed once only when needed and retained for
 ## future frames. Since it is cached, consider using high values.
-@export_range(1, 32, 1)
+@export_range(1, 128, 1)
 var lut_steps: int = 32:
     set(value):
         if value == lut_steps:

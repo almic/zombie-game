@@ -5,12 +5,14 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # Day / Night
 
-- [ ] Sun light to diminish accurately to the transmittance in the sky (lut texture)
-- [ ] Sun light color to match transmittance in the sky (lut texture)
+- [ ] Apply horizon disk effect, e.g. can see celestial bodies earlier and they
+      linger closer to the horizon for longer. Apply to sun and moon light basis.
+- [ ] Sun light energy to diminish accurately to the transmittance in the sky (lut texture)
 - [ ] Moon illumination to scale depending on the phase, look up real equations.
       The full moon is more than 2x brighter than a half-moon! Non-linear!
 - [ ] Match mie power to moon illuminance (see above)
 - [ ] Fog at dawn and dusk, set with a curve. This looks bad right now.
+- [X] Sun light color to match transmittance in the sky (lut texture)
 - [X] Sky intensity to match brightness of the sky texture
 - [X] Moon/ Sun shadow casting when above the horizon, turn off moon shadow if
       Sun is up. Scale shadow opacity to zero before turning off moon shadow.

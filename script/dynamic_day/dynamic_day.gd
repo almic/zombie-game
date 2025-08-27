@@ -357,7 +357,20 @@ func update_lights(delta: float, force: bool = false) -> void:
     if not updated:
         return
 
-    update_shader()
+    # Cache true values for shader
+    var sun_true: Vector3 = Sun.basis.z
+    var moon_true: Basis = Moon.basis
+
+    # Add refraction to apparant elevation
+    Sun.rotate_x(compute_refraction(Sun.basis.z.y))
+    Moon.rotate_x(compute_refraction(Moon.basis.z.y))
+
+    update_shader(
+        sun_true,
+        Sun.basis.z,
+        moon_true,
+        Moon.basis
+    )
 
     # Sun light energy and temperature as it rises
     Sun.light_energy = sky_compute.moon_shadowing * light_horizon(Sun.basis.z, _sun_radians)
@@ -535,7 +548,12 @@ func init_shader() -> void:
     # Force cached angle calculation
     use_moon_render_angle = use_moon_render_angle
 
-func update_shader() -> void:
+func update_shader(
+    sun_true: Vector3,
+    sun_apparent: Vector3,
+    moon_true: Basis,
+    moon_apparent: Basis
+) -> void:
     # Fix Godot unloading resources and not putting them back >:(
     if not environment.sky:
         environment.sky = sky
@@ -563,19 +581,19 @@ func update_shader() -> void:
         RenderingServer.global_shader_parameter_set('ibl_exposure_normalization', current_exposure)
         last_background_intensity = environment.background_intensity
 
-    sky_material.set_shader_parameter("sun_direction", Sun.basis.z)
-    moon_view_shader.set_shader_parameter("sun_direction", Sun.basis.z)
-    sky_compute.sun_direction = -Sun.basis.z
+    sky_material.set_shader_parameter("sun_direction", sun_apparent)
+    moon_view_shader.set_shader_parameter("sun_direction", sun_true)
+    sky_compute.sun_direction = -sun_apparent
 
-    sky_material.set_shader_parameter("moon_basis", Moon.basis)
+    sky_material.set_shader_parameter("moon_basis", moon_apparent)
     moon_view_shader.set_shader_parameter("moon_orbit_basis", moon_orbit_basis)
-    moon_view_shader.set_shader_parameter("moon_basis", Moon.basis)
-    sky_compute.moon_direction = -Moon.basis.z
+    moon_view_shader.set_shader_parameter("moon_basis", moon_true)
+    sky_compute.moon_direction = -moon_apparent.z
 
     # Moon shadowing calculation, uses a min value to account for corona/ atmosphere
     # Manually computing because built-in dot() is low precision and causes a ton of flickering
-    var s: Vector3 = Sun.basis.z
-    var m: Vector3 = Moon.basis.z
+    var s: Vector3 = sun_apparent
+    var m: Vector3 = moon_apparent.z
     var cos_theta: float = (
         (s.x * m.x + s.y * m.y + s.z * m.z) /
         (
@@ -833,3 +851,11 @@ static func inv_luminance(c: Vector3) -> float:
     c.z = 20.0 * log(1.0 + c.z)
     var lum: float = 0.2126729 * c.x + 0.7151522 * c.y + 0.0721750 * c.z
     return lum * scale
+
+## Computes an elevation offset due to atmospheric refraction.
+## Returns angle difference in radians.
+static func compute_refraction(sin_theta: float) -> float:
+    var angle: float = rad_to_deg(asin(sin_theta))
+    if angle < -5.0:
+        return 0.0
+    return deg_to_rad(1.02 / (60.0 * tan(deg_to_rad(angle + (10.3 / (angle + 5.11))))))

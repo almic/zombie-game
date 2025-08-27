@@ -111,6 +111,7 @@ In order of time to implement (fastest to longest):
 
 # ANGRY TODOS
 
+- [ ] Add random refraction and squashing to moon and sun near horizon for shaders.
 - [ ] If aiming at the sun with the bolt scope, midday, flashbang the entire screen
 - [ ] Allow aiming while walking with the bolt, but greatly reduce move speed and
       add a substantial amount of walking sway.

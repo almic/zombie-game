@@ -117,7 +117,7 @@ time_scale = 30.0
 luminance_maximum = 7.0
 sky_intensity_min = 8440.0
 sky_intensity_curve = 1.0
-north = 79.0
+north = 79.6
 latitude = 41.0
 moon_day_length = 239.3
 moon_orbital_period = 239.3
@@ -128,7 +128,7 @@ moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.666309, -0.645993, -0.372459, -0.693926, 0.720008, -0.00738538, 0.272944, 0.253538, -0.928019, 0, 0, 0)
+transform = Transform3D(-0.663332, -0.643388, -0.382155, -0.694005, 0.719931, -0.00743028, 0.279906, 0.260289, -0.924068, 0, 0, 0)
 visible = false
 light_temperature = 5750.0
 light_energy = 0.0
@@ -143,7 +143,7 @@ directional_shadow_fade_start = 0.975
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.697841, -0.709259, -0.0998464, 0.631422, 0.674991, -0.381698, 0.338119, 0.20332, 0.918878, 0, 0, 0)
+transform = Transform3D(0.701343, -0.707091, -0.0902186, 0.631422, 0.674991, -0.381698, 0.330792, 0.210736, 0.919873, 0, 0, 0)
 visible = false
 light_intensity_lux = 100.0
 light_temperature = 7100.0

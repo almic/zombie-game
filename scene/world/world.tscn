@@ -508,6 +508,7 @@ collision_mode = 3
 collision_layer = 16
 collision_mask = 0
 mesh_size = 36
+render_layers = 2147483651
 cast_shadows = 2
 process_mode = 1
 top_level = true
@@ -1225,10 +1226,12 @@ material = ExtResource("22_cm2xv")
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -134.262, 0.65, 476.161)
 
 [node name="ReflectionProbe" type="ReflectionProbe" parent="Cabin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 4.38, -0.013112)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 3.8, 1.45519e-11)
 blend_distance = 0.4
-size = Vector3(17, 9.2, 12.6)
+size = Vector3(13, 8, 8)
 enable_shadows = true
+cull_mask = 2
+reflection_mask = 4
 
 [node name="InteriorLight" type="OmniLight3D" parent="Cabin"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.58, 0)

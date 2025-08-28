@@ -38,14 +38,17 @@ height = 0.4
 
 [node name="Reflective" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1, 1.45519e-11)
+layers = 7
 gi_lightmap_texel_scale = 0.01
 mesh = SubResource("SphereMesh_o6c60")
 
 [node name="White" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.5, 1.45519e-11)
+layers = 7
 gi_lightmap_texel_scale = 0.01
 mesh = SubResource("SphereMesh_g70yi")
 
 [node name="Black" type="MeshInstance3D" parent="."]
+layers = 7
 gi_lightmap_texel_scale = 0.01
 mesh = SubResource("SphereMesh_vsjho")

@@ -76,6 +76,9 @@ theme/default_font_hinting=2
 
 [layer_names]
 
+3d_render/layer_2="Reflection Static"
+3d_render/layer_3="Reflection Probe Receive"
+3d_render/layer_4="Reflection Dynamic"
 3d_render/layer_5="Muzzle Flash Self-Lighting"
 3d_render/layer_20="Editor Only"
 3d_physics/layer_1="PlayerVirtual"

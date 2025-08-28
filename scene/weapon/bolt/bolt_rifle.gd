@@ -5,7 +5,6 @@ class_name ScopeRifle extends WeaponScene
 
 @onready var scope_camera_target: Marker3D = %ScopeCameraTarget
 @onready var scope_camera: Camera3D = %ScopeCamera
-@onready var sub_viewport: SubViewport = %SubViewport
 
 
 ## Scope FOV

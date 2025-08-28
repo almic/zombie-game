@@ -14,8 +14,10 @@ size = Vector3(0.036, 0.008, 0.094)
 [node name="RifleMagMesh" type="Node3D"]
 
 [node name="case" type="MeshInstance3D" parent="."]
+layers = 5
 mesh = SubResource("BoxMesh_3t20o")
 
 [node name="base" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.047, 1.45519e-11)
+layers = 5
 mesh = SubResource("BoxMesh_wqusq")

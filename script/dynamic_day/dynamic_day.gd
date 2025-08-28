@@ -235,7 +235,7 @@ var moon_mesh: MeshInstance3D
 var moon_camera: Camera3D
 var moon_view_shader: ShaderMaterial
 var moon_orbit_basis: Basis
-var moon_shadow_opacity: Interpolation = Interpolation.new(30.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+var moon_light_energy: Interpolation = Interpolation.new(30.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 
 ## Minimum Sun illuminance when fully eclipsed by the Moon
 var eclipse_min: float = 0.03
@@ -272,7 +272,7 @@ func _init() -> void:
     moon_angular_diameter = moon_angular_diameter
     sun_angular_diameter = sun_angular_diameter
 
-    moon_shadow_opacity.current = 0.0
+    moon_light_energy.current = 0.0
 
 func _notification(what:int) -> void:
     # NOTE: Prevent shader parameters from saving to disk.
@@ -335,26 +335,14 @@ func update_clock_time() -> void:
     clock_time = "%02d:%02d:%02d" % [hour, minute, second]
 
 func update_lights(delta: float, force: bool = false) -> void:
-    var updated: bool = false
-
     var time_changed: bool = (
                not is_equal_approx(_local_time[0], _local_time[1])
     )
 
-    var moon_time_changed: bool = (
-               not is_equal_approx(_moon_time[0],  _moon_time[1])
-            or not is_equal_approx(_moon_orbit[0], _moon_orbit[1])
-    )
-
     if force or time_changed:
         update_sun()
-        updated = true
-
-    if force or moon_time_changed:
         update_moon()
-        updated = true
-
-    if not updated:
+    else:
         return
 
     # Cache true values for shader
@@ -380,6 +368,12 @@ func update_lights(delta: float, force: bool = false) -> void:
             * sqrt(Sun.light_color.srgb_to_linear().get_luminance())
     )
 
+    # Moon light enery calculation
+    var phase_angle: float = moon_true.z.dot(sun_true)
+    # NOTE: the Moon is far brighter when at opposition with the Sun, so
+    #       squaring the phase angle produces such an effect.
+    Moon.light_energy = phase_angle * phase_angle
+
     # Disable sun light when energy is too low
     Sun.visible = Sun.light_energy > 0.000001
 
@@ -391,20 +385,19 @@ func update_lights(delta: float, force: bool = false) -> void:
 
     if not Moon.visible:
         Moon.shadow_enabled = false
-        Moon.shadow_opacity = 0.0
     else:
         if Sun.light_energy * Sun.light_intensity_lux < sun_low_light_level:
             if not Moon.shadow_enabled:
                 Moon.shadow_enabled = true
-                moon_shadow_opacity.set_target_delta(1.0, 1.0 - Moon.shadow_opacity)
-        elif Moon.shadow_enabled and (not moon_shadow_opacity.is_target_set or not is_zero_approx(moon_shadow_opacity.target)):
-            moon_shadow_opacity.set_target_delta(0.0, -Moon.shadow_opacity)
+                moon_light_energy.set_target_delta(1.0, 1.0, 0.0)
+        elif Moon.shadow_enabled and (not moon_light_energy.is_target_set or not is_zero_approx(moon_light_energy.target)):
+            moon_light_energy.set_target_delta(0.0, -moon_light_energy.current)
 
-        if not moon_shadow_opacity.is_done:
-            Moon.shadow_opacity = moon_shadow_opacity.update(delta)
+        if moon_light_energy.is_target_set:
+            Moon.light_energy *= moon_light_energy.update(delta)
 
-            if moon_shadow_opacity.is_done and is_zero_approx(Moon.shadow_opacity):
-                Moon.shadow_enabled = false
+        if moon_light_energy.is_done and is_zero_approx(Moon.light_energy):
+            Moon.shadow_enabled = false
 
     # BUG: Godot only updates textures in-game, wack
     if not Engine.is_editor_hint():

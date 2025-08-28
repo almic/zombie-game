@@ -372,8 +372,13 @@ func update_lights(delta: float, force: bool = false) -> void:
         Moon.basis
     )
 
-    # Sun light energy and temperature as it rises
-    Sun.light_energy = sky_compute.moon_shadowing * light_horizon(Sun.basis.z, _sun_radians)
+    # Sun light energy calculation
+    Sun.light_energy = (
+              sky_compute.moon_shadowing
+            * light_horizon(Sun.basis.z, _sun_radians)
+            # NOTE: better effect, make color more important to energy
+            * sqrt(Sun.light_color.srgb_to_linear().get_luminance())
+    )
 
     # Disable sun light when energy is too low
     Sun.visible = Sun.light_energy > 0.000001
@@ -759,6 +764,11 @@ func compute_sun_color() -> Color:
     )
     var color: Color = spectral_to_rgb(spectral * transmittance)
     color = gamma_correct(color)
+
+    # NOTE: make the colors less saturated by pulling them up in value
+    color.r = sqrt(color.r)
+    color.g = sqrt(color.g)
+    color.b = sqrt(color.b)
 
     return color
 

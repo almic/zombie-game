@@ -296,6 +296,7 @@ func compute_sky() -> void:
     # Must wait for LUT to finish, and then finish sky before sending to shader
     rd.compute_list_add_barrier(compute)
     rd.compute_list_dispatch(compute, groups, groups, 1)
+    # TODO: Is this barrier needed? Could be a few FPS if removed?
     rd.compute_list_add_barrier(compute)
 
     rd.compute_list_end()

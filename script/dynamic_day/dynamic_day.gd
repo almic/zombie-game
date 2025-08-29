@@ -408,6 +408,7 @@ func update_lights(delta: float, force: bool = false) -> void:
                 #print('Sky intensity time: ' + str(time) + 'us')
 
                 sky_intensity.set_target_delta(target, target - sky_intensity.current)
+                #print('sky intensity target: ' + str(target))
 
         if not sky_intensity.is_done:
             environment.background_intensity = sky_intensity.update(delta)

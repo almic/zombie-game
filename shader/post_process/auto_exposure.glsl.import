@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://bmbigt3578eso"
+path="res://.godot/imported/auto_exposure.glsl-7105f104e2e2f96beafe04b040eae68a.res"
+
+[deps]
+
+source_file="res://shader/post_process/auto_exposure.glsl"
+dest_files=["res://.godot/imported/auto_exposure.glsl-7105f104e2e2f96beafe04b040eae68a.res"]
+
+[params]
+

@@ -1,7 +1,19 @@
-[gd_resource type="Compositor" load_steps=4 format=3 uid="uid://lqdw34ardwn6"]
+[gd_resource type="Compositor" load_steps=6 format=3 uid="uid://lqdw34ardwn6"]
 
 [ext_resource type="CompositorEffect" uid="uid://devd6x2sd38ht" path="res://environment/sky_compute.tres" id="1_67d1k"]
-[ext_resource type="Script" uid="uid://btplab813vjpc" path="res://script/post_process/post_process_effect.gd" id="2_mgpe3"]
+[ext_resource type="Script" uid="uid://cke0kq5c5l0ai" path="res://script/post_process/tonemap.gd" id="2_mgpe3"]
+[ext_resource type="Script" uid="uid://kot5fg2d3vpw" path="res://script/post_process/auto_exposure.gd" id="3_vss2t"]
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_nsl78"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("3_vss2t")
+o_factor = 0.09783
+metadata/_custom_type_script = "uid://kot5fg2d3vpw"
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_vss2t"]
 resource_local_to_scene = false
@@ -11,9 +23,8 @@ effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("2_mgpe3")
-shader_path = "uid://bkejc1crgvo63"
 white = 6.0
-metadata/_custom_type_script = "uid://btplab813vjpc"
+metadata/_custom_type_script = "uid://cke0kq5c5l0ai"
 
 [resource]
-compositor_effects = Array[CompositorEffect]([ExtResource("1_67d1k"), SubResource("CompositorEffect_vss2t")])
+compositor_effects = Array[CompositorEffect]([ExtResource("1_67d1k"), SubResource("CompositorEffect_nsl78"), SubResource("CompositorEffect_vss2t")])

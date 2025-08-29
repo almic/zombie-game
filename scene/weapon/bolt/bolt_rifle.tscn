@@ -172,15 +172,14 @@ metadata/_edit_lock_ = true
 
 [node name="SubViewport" type="SubViewport" parent="Mesh"]
 handle_input_locally = false
-msaa_3d = 1
-screen_space_aa = 1
-use_debanding = true
+use_hdr_2d = true
 size = Vector2i(768, 768)
 
 [node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.048, -0.02)
 compositor = SubResource("Compositor_1i8ia")
+fov = 5.0
 metadata/_edit_lock_ = true
 
 [node name="ScopePicture" type="MeshInstance3D" parent="Mesh"]

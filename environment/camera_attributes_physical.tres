@@ -1,7 +1,6 @@
 [gd_resource type="CameraAttributesPhysical" format=3 uid="uid://djs1o5pq2224k"]
 
 [resource]
-auto_exposure_enabled = true
 auto_exposure_scale = 0.25
 auto_exposure_speed = 1.0
 frustum_focus_distance = 0.5

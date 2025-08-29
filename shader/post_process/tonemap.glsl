@@ -6,14 +6,15 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 
 layout(rgba16f, set = 0, binding = 0) uniform image2D screen;
+layout(set = 0, binding = 1) uniform sampler2D auto_exposure;
 
 
 layout(push_constant, std430) uniform Params
 {
 
-    uvec2 size;     // 0, 4
-    float white;    // 8
-    float reserved; // 12
+    uvec2 size;           // 0, 4
+    float white;          // 8
+    float exposure_scale; // 12
 
 } params;
 
@@ -46,6 +47,9 @@ void main()
 
     ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
     vec4 color = imageLoad(screen, uv);
+
+    vec3 exposure = vec3(params.exposure_scale) / texelFetch(auto_exposure, ivec2(0, 0), 0).rgb;
+    color.rgb *= mix(exposure, vec3(1.0), isinf(exposure));
 
     // color.rgb = srgb_to_linear(color.rgb);
     color.rgb = tonemap(color.rgb, params.white);

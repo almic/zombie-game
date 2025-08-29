@@ -12,7 +12,7 @@ effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("3_vss2t")
-o_factor = 0.09783
+o_factor = 0.126987
 metadata/_custom_type_script = "uid://kot5fg2d3vpw"
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_vss2t"]

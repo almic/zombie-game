@@ -60,8 +60,13 @@ void main() {
         float s = 0.5 / sqrt(2.0 * PI * o2);
 
         vec2 uv = vec2(pos) / vec2(params.size);
+        uv -= 0.5;
+        uv.x *= params.size.x / params.size.y;
 
-        tmp_data[t] *= s * (exp(-(pow(uv.x - 0.5, 2.0) / (2.0 * o2))) + exp(-(pow(uv.y - 0.5, 2.0) / (2.0 * o2))));
+        tmp_data[t] *= s * sqrt(
+                exp(-(uv.x * uv.x / (2.0 * o2)))
+              * exp(-(uv.y * uv.x / (2.0 * o2)))
+        );
 #else
         tmp_data[t] = imageLoad(source_luminance, pos).rgb;
 #endif

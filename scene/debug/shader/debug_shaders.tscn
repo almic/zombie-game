@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://docqiuv4qrdd6"]
+
+[ext_resource type="Shader" uid="uid://w5j1knicaxro" path="res://scene/debug/shader/auto_exposure_uv.gdshader" id="1_tg0sf"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_7xpc4"]
+shader = ExtResource("1_tg0sf")
+shader_parameter/o_factor = 0.126987
+
+[node name="DebugShaders" type="Node3D"]
+
+[node name="2DShaders" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="2DShaders"]
+material = SubResource("ShaderMaterial_7xpc4")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

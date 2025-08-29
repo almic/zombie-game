@@ -144,8 +144,7 @@ directional_shadow_max_distance = 2000.0
 transform = Transform3D(-0.125148, -0.536225, 0.834746, -0.544069, 0.740662, 0.394219, -0.829655, -0.404824, -0.384436, 0, 0, 0)
 light_intensity_lux = 5.0
 light_temperature = 7100.0
-light_energy = 0.0
-shadow_enabled = true
+light_energy = 0.653788
 shadow_opacity = 0.0
 directional_shadow_mode = 0
 

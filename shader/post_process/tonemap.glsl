@@ -48,8 +48,8 @@ void main()
     ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
     vec4 color = imageLoad(screen, uv);
 
-    vec3 exposure = vec3(params.exposure_scale) / texelFetch(auto_exposure, ivec2(0, 0), 0).rgb;
-    color.rgb *= mix(exposure, vec3(1.0), isinf(exposure));
+    float exposure = params.exposure_scale / texelFetch(auto_exposure, ivec2(0, 0), 0).r;
+    color.rgb *= mix(exposure, 1.0, isinf(exposure));
 
     // color.rgb = srgb_to_linear(color.rgb);
     color.rgb = tonemap(color.rgb, params.white);

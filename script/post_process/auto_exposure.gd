@@ -9,10 +9,6 @@ const READ_TEXTURE = '#define READ_TEXTURE'
 const INTERPOLATE_LUMINANCE = '#define INTERPOLATE_LUMINANCE'
 
 
-@export_range(0.0, 1.0, 0.00001)
-var o_factor: float = 0.1269873
-
-
 var current: RID
 var buffers: Array[RID]
 
@@ -127,7 +123,7 @@ func setup_buffers(size: Vector2i) -> void:
         var final: bool = w == 1 and h == 1
         var tf: RDTextureFormat = RDTextureFormat.new()
 
-        tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
+        tf.format = RenderingDevice.DATA_FORMAT_R32_SFLOAT
         tf.width = w
         tf.height = h
 
@@ -176,7 +172,6 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
     push_constants.encode_float(8, max_exposure)
     push_constants.encode_float(12, min_exposure)
     push_constants.encode_float(16, adjustment)
-    push_constants.encode_float(20, o_factor)
 
     var compute_list := rd.compute_list_begin()
     var compute_shader: RID

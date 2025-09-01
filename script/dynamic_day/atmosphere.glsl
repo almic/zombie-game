@@ -18,7 +18,7 @@ layout(push_constant, std430) uniform Params
 
     vec3 sun_dir;     // 16, 20, 24
     // padded to 28 (32 bytes total)
-    
+
 } params;
 
 vec4 compute_inscattering(

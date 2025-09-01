@@ -4,24 +4,28 @@ class_name DynamicDay extends WorldEnvironment
 
 @export var Sun: DirectionalLight3D
 @export var Moon: DirectionalLight3D
-## Local time of day, where 0.25 is morning, 0.5 is midday, and 1 & 0 are midnight
-@export_range(0.0, 1.0, 0.00001) var local_time: float = 0.345:
-    set(value):
-        local_time = value
-        _local_time[1] = value
-        update_clock_time()
-var _local_time: PackedFloat64Array = [0, 0]
 
-## Readout of local time to 24hr clock time
+
+## Initial time of day for the viewer, where 0.25 is morning, 0.5 is midday,
+## and 1.0 & 0.0 are midnight. This value is not updated during gameplay. Use
+## either 'clock_time' or 'local_hour' to obtain a value synchronized to the
+## position of the Sun.
+@export_range(0.0, 1.0, 0.00001)
+var initial_time: float = 0.345
+
+## Readout of local time to 24hr clock time, modifying this does nothing.
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY)
 var clock_time: String = '00:00:00'
 
 ## If time passage happens in-game
 @export var time_enabled: bool = true
 
-## Rate of time passage relative to real time.
+## Rate of time passage, relative to real time.
 @export_range(1.0, 200.0, 0.001, 'or_greater')
 var time_scale: float = 100
+
+
+@export_group("Editor-Only Options")
 
 ## Enable this to play the local time value in the editor.
 @export var editor_realtime: bool = false
@@ -30,12 +34,14 @@ var time_scale: float = 100
 @export var reset_realtime: bool = false:
     set(value):
         reset_realtime = false
-        _local_time = [0, 0]
-        local_time = local_time
-        _moon_time = [0, 0]
-        _moon_orbit = [0, 0]
+        planet_orbit = 0
+        planet_rotation = 0
+        moon_rotation = 0
+        moon_orbit = 0
+        local_hour = initial_time
+        apply_time_changes()
 
-## Reload sky shaders
+## Reload sky shaders (broken?)
 @export var reload_shaders: bool = false:
     set(value):
         reload_shaders = false
@@ -44,6 +50,32 @@ var time_scale: float = 100
         if not sky_compute:
             return
         sky_compute.reload_shaders()
+
+
+@export_category("Viewer Attributes")
+
+## The direction of north, with zero being aligned with the negative Z axis.
+## This is a "rise east, set west" model, so sunrise would happen at positive X,
+## and sunset would happen at negative X, with everything being default.
+@export_range(-180.0, 180.0, 0.0001, 'radians_as_degrees')
+var north: float = 0.0
+
+## Latitude of the viewer, affects how high the sun rises at noon, and to an
+## extent, the time of sunrise and sunset. Together with planet tilt and orbital
+## phase, the Sun may stay above (or below) the horizon for much longer than
+## the length of a day.
+@export_range(-90.0, 90.0, 0.0001, 'radians_as_degrees')
+var latitude: float = 0.0
+
+## Longitude of the viewer, affects the local hour of the viewer. This could be
+## changed slowly to simulate the effect of traveling large distances on the
+## planet, extending or shortening the percieved length of a day, at least
+## temporarily. You should leave this at zero and only change it during gameplay.
+@export_range(-180.0, 180.0, 0.0001, 'radians_as_degrees')
+var longitude: float = 0.0:
+    set(value):
+        longitude_dirty = not is_equal(longitude, value)
+        longitude = value
 
 
 @export_category("Sky Attributes")
@@ -60,7 +92,7 @@ var sky_intensity_max: float = 30000.0
 ## Minimum sky intensity, when relative luminance is zero.
 ## Sky intensity will never drop below this value.
 @export_range(0.0, 20000.0, 0.1, 'or_greater')
-var sky_intensity_min: float = 9900.0
+var sky_intensity_min: float = 10000.0
 
 ## Curve for sky intesity, applied to luminance between 0.0 and `luminance_maximum`
 @export_custom(PROPERTY_HINT_EXP_EASING, '')
@@ -69,46 +101,60 @@ var sky_intensity_curve: float = 0.5
 
 @export_category("Planet Attributes")
 
-## The direction of north. This is a "rise east, set west" model.
-@export_range(-180.0, 180.0, 0.00001) var north: float:
-    set(value):
-        north = value
-        _north_rad = deg_to_rad(north) - (PI / 2)
-var _north_rad: float
-
-## Latitude of the viewer, affects how high the sun rises at midday. Depending
-## on the tilt, the Sun may always (or never) be visible.
-@export_range(-90.0, 90.0, 0.00001) var latitude: float:
-    set(value):
-        latitude = value
-        _latitude_rad = (PI / 2) - deg_to_rad(latitude)
-var _latitude_rad: float
-
-## Planet axial tilt in the direction of the sun. Earth's tilt is about 23.44 degrees.
-@export_range(0.0, 180.0, 0.00001) var planet_tilt: float = 23.44:
-    set(value):
-        planet_tilt = value
-        _tilt_rad = deg_to_rad(planet_tilt)
-var _tilt_rad: float
-
-## Hours in a day, this is NOT the rate at which time passes. See "Time Scale".
-## Because of the orbit, Earth's days are not exactly 24 hours.
-@export_range(1.0, 100.0, 0.00001, 'or_greater')
-var day_length: float = 23.93:
+## Hours in a day, or how long it takes for the planet to complete a full 360
+## degree rotation, if time scale was 1.0. This is known as the Sidereal Day.
+## This is different from a Solar Day, which is typically longer due to the
+## orbit of the planet around the host star.
+## Earth's sidereal day is approximately 23 hours and 56 minutes.
+@export_range(1.0, 100.0, 0.0001, 'or_greater')
+var day_length: float = 23.9345:
     set(value):
         day_length = value
-        _inv_day_length[0] = 1.0 / (day_length * 3600)
-var _inv_day_length: PackedFloat64Array = [0]
+        update_periods()
+
+## Planet orbital period, in sidereal days. This is the sidereal year, the time
+## it takes for the planet to return to the same position in its orbit.
+## Earth's sidereal year is approximately 365 siderial days + 6 hours.
+@export_range(0.00001, 1000.0, 0.00001, 'or_greater')
+var year_length: float = 365.25636:
+    set(value):
+        year_length = value
+        update_periods()
+
+
+@export_group("Orbital Parameters", "planet")
+
+## Planet axial tilt relative to its orbital plane. This is applied in the
+## direction of the host star, and defines the maximum elevation of the star at
+## the north pole during the summer soltice.
+## Earth's tilt is about 23.44 degrees.
+@export_range(-180.0, 180.0, 0.0001, 'radians_as_degrees')
+var planet_tilt: float = deg_to_rad(23.44)
+
+## Planet tilt phase, in N-pi radians. This is a friendly parameter to set the
+## initial time of year by rotating the axis of tilt. Leaving at 0.0 makes the
+## simulation start at the Summer soltice (for the northern hemisphere), setting
+## to 1.0 makes it the Winter soltice, with the usual seasons in between.
+@export_range(0.0, 2.0, 0.0001)
+var planet_tilt_phase: float = 0.0
+
 
 @export_category("Sun Attributes")
 
-## Angular diameter of the sun in degrees
+## Angular diameter of the sun, in degrees
 @export_range(0.0, 3.0, 0.0001, 'or_greater')
 var sun_angular_diameter: float = 0.542:
     set(value):
         sun_angular_diameter = value
         _sun_radians = deg_to_rad(sun_angular_diameter) * 0.5
 var _sun_radians: float
+
+## Minimum Sun illuminance when fully eclipsed by the Moon. This influences the
+## amount of scattered light in the sky, and the energy of the Sun light.
+## Currently, eclipses are partially supported by the shader, glow is unaffected
+## by elipses.
+@export_range(0.0, 1.0, 0.0001)
+var eclipse_min: float = 0.03
 
 
 @export_category("Moon Attributes")
@@ -128,7 +174,7 @@ var _sun_radians: float
                 # Reset to slider value
                 moon_angular_diameter = moon_angular_diameter
 
-## Angular diameter of the moon in degrees
+## Angular diameter of the moon, in degrees
 @export_range(0.0, 3.0, 0.0001, 'or_greater')
 var moon_angular_diameter: float = 0.568:
     set(value):
@@ -144,7 +190,7 @@ var _moon_radians: float
 var moon_day_length: float = 720.73:
     set(value):
         moon_day_length = value
-        _inv_moon_periods[0] = 1.0 / (moon_day_length * 3600)
+        update_periods()
 
 ## The time taken to orbit around the Earth. The Moon takes about 720.73 hours,
 ## which is the same as its rotational period (a lunar day).
@@ -152,10 +198,12 @@ var moon_day_length: float = 720.73:
 var moon_orbital_period: float = 720.73:
     set(value):
         moon_orbital_period = value
-        _inv_moon_periods[1] = 1.0 / (moon_orbital_period * 3600)
+        update_periods()
 
-## When "Use Moon Render Angle" is enabled, this controls the apparent distance
-## to the moon from the viewer.
+## Apparent distance to the moon from the viewer, in kilometers. Only effective
+## when "Use Moon Render Angle" is enabled and the moon view scene supports it.
+## This effect breaks when the distance is too low for low resolution textures.
+## So if you plan to smash the moon into the planet, plan accordingly.
 @export_range(100.0, 500000.0, 0.01, 'or_greater')
 var moon_distance: float = 384400:
     set(value):
@@ -163,35 +211,24 @@ var moon_distance: float = 384400:
         if moon_view:
             moon_view.moon_distance = moon_distance
 
-## Day, orbit
-var _inv_moon_periods: PackedFloat64Array = [0, 0]
-
-## Time
-var _moon_time: PackedFloat64Array = [0, 0]
-
-## Orbit
-var _moon_orbit: PackedFloat64Array = [0, 0]
 
 @export_group("Orbital Parameters", "moon")
 
-## The inclination of the moon's orbit to the ecliptic plane, in degrees. This
-## is applied as if the Moon was between the Earth and Sun, towards earth. It
-## also affects the orbital motion, in prograde for values 0-90, and retrograde
+## The inclination of the moon's orbit to the ecliptic plane. This is applied
+## as if looking in-line with the orbital plane, with the main planet between
+## the host star and the moon.
+##
+## Simple diagram for reference: O  --P-- m
+##
+## This affects the orbital motion, in prograde for values 0-90, and retrograde
 ## from 90-180. See "Inclination Phase" to spin the orbital nodes.
 ## The Moon's inclination is about 5.145 degrees.
-@export_range(0.0, 180.0, 0.00001) var moon_inclination: float = 5.145:
-    set(value):
-        moon_inclination = value
-        _moon_incl_rad = deg_to_rad(moon_inclination)
-var _moon_incl_rad: float
+@export_range(0.0, 180.0, 0.00001, 'radians_as_degrees')
+var moon_inclination: float = deg_to_rad(5.145)
 
-## Moon axial tilt from its orbital plane, in degrees. The Moon's tilt is about
-## 6.688 degrees.
-@export_range(0.0, 180.0, 0.00001) var moon_tilt: float = 6.688:
-    set(value):
-        moon_tilt = value
-        _moon_tilt_rad = deg_to_rad(moon_tilt)
-var _moon_tilt_rad: float
+## Moon axial tilt from its orbital plane. The Moon's tilt is about 6.688 degrees.
+@export_range(0.0, 180.0, 0.00001, 'radians_as_degrees')
+var moon_tilt: float = deg_to_rad(6.688)
 
 ## Spin of the moon's inclination, in N-pi radians. The Moon's orbit precesses,
 ## relative to Earth's equator, with a period of 18.3 years. However, due to the
@@ -199,23 +236,28 @@ var _moon_tilt_rad: float
 ## every 173.3 days, resulting in Lunar and Solar eclipses. To create eclipses,
 ## modify this phase to be near 0.5 or 1.5. See "Tilt Phase" and offset it by 1.0
 ## to remain physically accurate.
-@export_range(0.0, 2.0, 0.00001) var moon_inclination_phase: float = 0.0
+@export_range(0.0, 2.0, 0.00001)
+var moon_inclination_phase: float = 0.0
 
 ## Spin of the moon's tilt, in N-pi radians. The Moon's tilt is perfectly out
 ## of phase with the orbit (1.0), so it stays at a tilt of 1.543 to the ecliptic
 ## plane at all times. To have the tilt change orientation, modify this phase.
-@export_range(0.0, 2.0, 0.00001) var moon_tilt_phase: float = 1.0
+@export_range(0.0, 2.0, 0.00001)
+var moon_tilt_phase: float = 1.0
 
 
 @export_group("Orbit & Time Offsets", "moon")
 
 ## Offset applied to the Moon's orbit, use this to progress the moon through
-## its orbit. For convenience, this is added to the time progress as well.
-@export_range(0.0, 1.0, 0.00001) var moon_orbit_offset: float = 0.0
+## its orbit. For convenience, time progress adds this value so the initial
+## offset is relative to line between the observer and moon.
+@export_range(-0.5, 0.5, 0.00001)
+var moon_orbit_offset: float = 0.0
 
 ## Offset applied to the Moon's local time, use this to change the local time on
 ## the Moon. Even for custom moon configurations, you should leave this at zero.
-@export_range(0.0, 1.0, 0.00001) var moon_time_offset: float = 0.0
+@export_range(0.0, 1.0, 0.00001)
+var moon_time_offset: float = 0.0
 
 
 @export_group("Moon Renderer", "moon")
@@ -225,10 +267,76 @@ var _moon_tilt_rad: float
 @export var moon_renderer: PackedScene
 
 
+## Quantity of day progress per simulation second
+var inv_day_length: float = 0.0
+
+## Quantity of year progress per simulation second
+var inv_year_length: float = 0.0
+
+## Quantity of day progress on the moon per simulation second
+var inv_moon_day_length: float = 0.0
+
+## Quantity of orbital progress for the moon per simulation second
+var inv_moon_orbit_length: float = 0.0
+
+
+## Local hour of the observer, equivalent to the position of the Sun in the sky.
+## 1.0 & 0.0 are 00:00, 0.25 is 06:00, 0.5 is 12:00, and 0.75 is 18:00. Setting
+## this value in-game while 'time_enabled' is true will progress time forward to
+## the given hour, so not to break the consistency of any simulation parameters.
+## Otherwise, the planet is effectively rotated instantly to the given value.
+## Because of latitude, planet tilt, and time of year, this cannot be used to
+## progress the sun to a particular elevation in the sky. Another function will
+## be written to query the approximate time of day for a normalized altitude,
+## making it possible to set the time precisely in relation to the Sun, such as
+## setting the time to exactly 1 hour before sunrise.
+var local_hour: float:
+    set = set_local_hour, get = get_local_hour
+
+
+## Internal progress values for planet and moon.
+## The working value is the first in each pair, and the true value is after.
+## This enables time updates in-editor to match the in-game initial conditions,
+## without deviations building up in-editor that displace the sky.
+var _time_data: PackedFloat64Array = [
+        0.0, 0.0, # planet_rotation
+        0.0, 0.0, # planet_orbit
+        0.0, 0.0, # moon_rotation
+        0.0, 0.0, # moon_orbit
+]
+
+## Planet rotation, not to be confused with the local time.
+var planet_rotation: float:
+    set(value):   _time_data[0] = value
+    get(): return _time_data[1]
+
+## Planet orbital progress
+var planet_orbit: float:
+    set(value):   _time_data[2] = value
+    get(): return _time_data[3]
+
+## Moon rotation, not to be confused with the moon's local time.
+var moon_rotation: float:
+    set(value):   _time_data[4] = value
+    get(): return _time_data[5]
+
+## Moon orbital progress
+var moon_orbit: float:
+    set(value):   _time_data[6] = value
+    get(): return _time_data[7]
+
+## If the longitude has changed, and thus the sky must be updated
+var longitude_dirty: bool = false
+
 var sky: Sky = Sky.new()
 var sky_material: ShaderMaterial = ShaderMaterial.new()
 var sky_shader: Shader = preload('res://script/dynamic_day/dynamic_day.gdshader')
 var sky_compute: PhysicalSkyCompute
+
+var planet_basis: Basis
+var viewer_basis: Basis
+var planet_viewer_basis: Basis
+
 var moon_view: MoonView
 var moon_mesh: MeshInstance3D
 var moon_camera: Camera3D
@@ -236,8 +344,6 @@ var moon_view_shader: ShaderMaterial
 var moon_orbit_basis: Basis
 var moon_light_energy: Interpolation = Interpolation.new(30.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 
-## Minimum Sun illuminance when fully eclipsed by the Moon
-var eclipse_min: float = 0.03
 
 ## How frequently to read sky texture to set sky intensity
 const SKY_INTENSITY_RATE: float = 1.0
@@ -255,21 +361,14 @@ var last_background_intensity: float
 var lut_texture: Image
 
 
+var first_run: bool = true
+
 func _init() -> void:
     # force cached calculations
-    local_time = local_time
-    north = north
-    latitude = latitude
-    planet_tilt = planet_tilt
-    day_length = day_length
-
-    moon_day_length = moon_day_length
-    moon_orbital_period = moon_orbital_period
-    moon_inclination = moon_inclination
-    moon_tilt = moon_tilt
-
     moon_angular_diameter = moon_angular_diameter
     sun_angular_diameter = sun_angular_diameter
+
+    update_periods()
 
     moon_light_energy.current = 0.0
 
@@ -292,9 +391,11 @@ func _process(delta: float) -> void:
         return
 
     if editor_realtime:
-        update_time(delta)
+        update_time(delta * time_scale, false)
+    else:
+        update_clock_time()
 
-    update_lights(delta, true)
+    update_sky(delta, true)
 
 func _physics_process(delta: float) -> void:
     # NOTE: Application runs in _physics_process()
@@ -302,43 +403,76 @@ func _physics_process(delta: float) -> void:
         return
 
     if time_enabled:
-        update_time(delta)
+        update_time(delta * time_scale)
 
-    update_lights(delta)
+    update_sky(delta, first_run)
+    first_run = false
 
-func update_time(delta: float) -> void:
-    var rate: float = delta * time_scale
+func update_periods() -> void:
+    var seconds_per_day = day_length * 3600
 
-    # Sun time
-    _local_time[1] = _local_time[1] + (rate * _inv_day_length[0])
-    if _local_time[1] >= 1.0:
-        _local_time[1] = _local_time[1] - 1.0
+    inv_day_length = 1.0 / seconds_per_day
+    inv_year_length = 1.0 / (year_length * seconds_per_day)
 
-    # Moon time
-    _moon_time[1] = _moon_time[1] + (rate * _inv_moon_periods[0])
-    if _moon_time[1] >= 1.0:
-        _moon_time[1] = _moon_time[1] - 1.0
+    inv_moon_day_length = 1.0 / (moon_day_length * 3600)
+    inv_moon_orbit_length = 1.0 / (moon_orbital_period * 3600)
 
-    # Moon orbit
-    _moon_orbit[1] = _moon_orbit[1] + (rate * _inv_moon_periods[1])
-    if _moon_orbit[1] >= 1.0:
-        _moon_orbit[1] = _moon_orbit[1] - 1.0
+func get_local_hour() -> float:
+    return fposmod(planet_rotation + initial_time - planet_orbit - (longitude / TAU), 1.0)
+
+func set_local_hour(hour: float) -> void:
+    if Engine.is_editor_hint() or not time_enabled:
+        # Simply teleport to the rotation needed for this time
+        planet_rotation = fposmod(planet_rotation + (hour - get_local_hour()), 1.0)
+        return
+
+    # "Fast-forward" to the next occurance of this hour
+    var seconds_to_target: float = fposmod(hour - get_local_hour(), 1.0)
+    seconds_to_target *= day_length * 3600
+
+    update_time(seconds_to_target)
+
+func update_time(delta: float, do_orbit: bool = true) -> void:
+    planet_rotation = fposmod(planet_rotation + (delta * inv_day_length), 1.0)
+
+    if do_orbit:
+        moon_rotation = fposmod(moon_rotation + (delta * inv_moon_day_length), 1.0)
+        planet_orbit = fposmod(planet_orbit + (delta * inv_year_length), 1.0)
+        moon_orbit = fposmod(moon_orbit + (delta * inv_moon_orbit_length), 1.0)
 
     update_clock_time()
 
 func update_clock_time() -> void:
-    var hour: float = _local_time[1] * 24.0
+    var hour: float = local_hour * 24.0
     var minute: float = (hour - int(hour)) * 60.0
     var second: float = (minute - int(minute)) * 60.0
 
     clock_time = "%02d:%02d:%02d" % [hour, minute, second]
 
-func update_lights(delta: float, force: bool = false) -> void:
-    var time_changed: bool = (
-               not is_equal_approx(_local_time[0], _local_time[1])
+static func is_equal(a: float, b: float, e: float = 0.00000000001) -> bool:
+    return abs(a - b) < e
+
+func time_changed() -> bool:
+    return (
+           longitude_dirty
+        or not is_equal(_time_data[0], _time_data[1])
+        or not is_equal(_time_data[2], _time_data[3])
+        or not is_equal(_time_data[4], _time_data[5])
+        or not is_equal(_time_data[6], _time_data[7])
     )
 
-    if force or time_changed:
+func apply_time_changes() -> void:
+    # Move the working value to the true value
+    _time_data[1] = _time_data[0]
+    _time_data[3] = _time_data[2]
+    _time_data[5] = _time_data[4]
+    _time_data[7] = _time_data[6]
+
+func update_sky(delta: float, force: bool = false) -> void:
+    var sky_changed: bool = time_changed()
+
+    if force or sky_changed:
+        update_planet_viewer()
         update_sun()
         update_moon()
     else:
@@ -348,9 +482,18 @@ func update_lights(delta: float, force: bool = false) -> void:
     var sun_true: Vector3 = Sun.basis.z
     var moon_true: Basis = Moon.basis
 
-    # Add refraction to apparant elevation
-    Sun.rotate_x(compute_refraction(Sun.basis.z.y))
-    Moon.rotate_x(compute_refraction(Moon.basis.z.y))
+    # Add refraction to apparant elevation of sky lights
+    for light in [Sun, Moon] as Array[DirectionalLight3D]:
+        var refraction_axis: Vector3 = light.basis.z.cross(Vector3.UP)
+        if not refraction_axis.is_zero_approx():
+            refraction_axis = refraction_axis.normalized()
+            var refraction: float = compute_refraction(light.basis.z.y)
+            # TODO: I'm too tired to figure out how to compute the proper vector
+            #       so fuck it I'm just checking if the rotation made it point
+            #       more up and if not I do the opposite
+            if light.basis.z.rotated(refraction_axis, refraction).y < light.basis.z.y:
+                refraction = -refraction
+            light.rotate(refraction_axis, refraction)
 
     update_shader(
         sun_true,
@@ -401,7 +544,7 @@ func update_lights(delta: float, force: bool = false) -> void:
     # BUG: Godot only updates textures in-game, wack
     if not Engine.is_editor_hint():
         if sky_intensity.is_done:
-            if time_changed:
+            if sky_changed:
                 #var time: int = Time.get_ticks_usec()
                 var target: float = compute_sky_intensity()
                 #time = Time.get_ticks_usec() - time
@@ -415,7 +558,7 @@ func update_lights(delta: float, force: bool = false) -> void:
 
         # NOTE: Sun light color can change abruptly, and it's relatively cheap
         #       to check, so check constantly and update the target
-        if time_changed:
+        if sky_changed:
             #var time: int = Time.get_ticks_usec()
             var target: Color = compute_sun_color()
             #time = Time.get_ticks_usec() - time
@@ -430,85 +573,87 @@ func update_lights(delta: float, force: bool = false) -> void:
         if not sun_light_color.is_done:
             Sun.light_color = sun_light_color.update(delta)
 
-    # NOTE: Slide time windows last
-    _local_time[0] = _local_time[1]
-    _moon_time[0] = _moon_time[1]
-    _moon_orbit[0] = _moon_orbit[1]
+    apply_time_changes()
 
+## Compute viewer + planet orientation
+func update_planet_viewer() -> void:
+    planet_basis = Basis.IDENTITY
+    viewer_basis = Basis.IDENTITY
+
+    var tilt_axis: Vector3 = planet_basis.x.rotated(planet_basis.y, planet_tilt_phase * PI)
+
+    # Orbit effectively acts as a clockwise rotation
+    planet_basis = planet_basis.rotated(planet_basis.y, -planet_orbit * TAU)
+
+    # Tilt
+    planet_basis = planet_basis.rotated(tilt_axis, planet_tilt)
+
+    # Rotate counter-clockwise on axis
+    planet_basis = planet_basis.rotated(planet_basis.y, (planet_rotation + initial_time - 0.5) * TAU)
+
+    # Put viewer on planet
+    viewer_basis = viewer_basis.rotated(viewer_basis.x, PI / 2)
+
+    # Apply latitude and longitude rotations on the viewer.
+    var longitude_axis: Vector3 = viewer_basis.z
+    viewer_basis = viewer_basis.rotated(viewer_basis.x, -latitude)
+    viewer_basis = viewer_basis.rotated(longitude_axis, longitude)
+
+    # Apply north offset
+    viewer_basis = viewer_basis.rotated(viewer_basis.y, north)
+
+    planet_viewer_basis = (planet_basis * viewer_basis)
+
+
+## Compute sun orientation
 func update_sun() -> void:
     if not Sun:
         return
 
-    var hour_angle: float = (_local_time[1] - 0.5) * TAU - (PI / 2)
+    # Sun is very simple, just the inverse of our planet viewer
+    Sun.basis = planet_viewer_basis.inverse()
 
-    Sun.basis = Basis.IDENTITY
-
-    # Place viewer on Earth first
-    Sun.rotate_z(_latitude_rad)
-
-    # Earth rotates counter-clockwise
-    Sun.rotate_object_local(Vector3.DOWN, hour_angle)
-
-    # Tilt towards Sun
-    Sun.rotate_object_local(Vector3.LEFT, _tilt_rad)
-
-    # Spin viewer to face north
-    Sun.rotate_y(_north_rad)
-
+## Compute moon orientation
 func update_moon() -> void:
     if not Moon:
         return
 
-    # Local time, required for combination with Earth's rotation
-    var hour_angle: float = (_local_time[1] - 0.5) * TAU - (PI / 2)
-
-    # Orbit time
-    var orbit_angle: float = (_moon_orbit[1] + moon_orbit_offset - 0.5) * TAU
-
-    # Spin the moon mesh according to lunar time
-    if moon_mesh:
-        moon_mesh.basis = Basis.IDENTITY
-
-        # Lunar time
-        var orbit_time_offset: float = moon_time_offset + (moon_orbit_offset * moon_orbital_period / moon_day_length)
-        var lunar_hour: float = (_moon_time[1] + orbit_time_offset - 0.5) * TAU
-
-        # Moon is prograde with Earth, counter-clockwise rotation
-        moon_mesh.rotate_y(lunar_hour)
-
-        # Compute tilt axis. Don't want tilt to spin the whole model, so we rotate
-        # the tilt axis by itself, then apply that tilt. We are rotating the Y-axis
-        # about the X-axis (towards Z), so start with the Right (East) vector.
-        var tilt_axis: Vector3 = Vector3.RIGHT
-        tilt_axis = tilt_axis.rotated(Vector3.UP, moon_tilt_phase * PI)
-        moon_mesh.rotate(tilt_axis, _moon_tilt_rad)
-
-    # Compute the inclination axis. Same as tilt, we don't want it to spin the
-    # orbital position, so rotate the inclination axis by itself.
-    var incl_axis: Vector3 = Vector3.RIGHT
-    incl_axis = incl_axis.rotated(Vector3.UP, moon_inclination_phase * PI)
-
-    # The Moon's rotations apply after Earth's rotations
-
-    # Earth + Viewer rotations
-    var earth: Transform3D = Transform3D.IDENTITY
-    earth = earth.rotated(Vector3.BACK, _latitude_rad)
-    earth = earth.rotated_local(Vector3.DOWN, hour_angle)
-    earth = earth.rotated_local(Vector3.LEFT, _tilt_rad)
-    earth = earth.rotated(Vector3.UP, _north_rad)
-
-    # Moon's orbital position
+    # Moon is pretty simple, orbital goes on the light, local on the mesh
     Moon.basis = Basis.IDENTITY
-    # The moon is prograde, the Sun appears to "chase" the Moon
-    Moon.rotate_y(orbit_angle)
-    # Apply orbital tilt
-    Moon.rotate(incl_axis, _moon_incl_rad)
+
+    # Inclination
+    Moon.basis = Moon.basis.rotated(
+            Moon.basis.x.rotated(Moon.basis.y, moon_inclination_phase * PI),
+            moon_inclination
+    )
+
+    # Orbit
+    Moon.basis = Moon.basis.rotated(Moon.basis.y, (moon_orbit + moon_orbit_offset + 0.5) * TAU)
 
     # Stash for moon renderer
     moon_orbit_basis = Moon.basis
 
-    # Combine
-    Moon.basis = earth.basis * Moon.basis
+    # Apply planet+viewer perspective
+    Moon.basis = planet_viewer_basis.inverse() * Moon.basis
+
+    # Local rotations
+    if not moon_mesh:
+        return
+
+    moon_mesh.basis = Basis.IDENTITY
+
+    # Spin the tilt axis. Because we don't want this to spin the model, we use
+    # a separate vector to spin
+    var tilt_axis: Vector3 = Vector3.RIGHT
+    tilt_axis = tilt_axis.rotated(Vector3.UP, moon_tilt_phase * PI)
+    # Tilt towards the reference
+    moon_mesh.basis = moon_mesh.basis.rotated(tilt_axis, -moon_tilt)
+
+    # Spin is prograde with the planet, though tilt can be used to invert
+    # the spin to appear retrograde. Add orbital offset as well, keeping the
+    # body facing in the same direction after orbital perspective
+    var orbit_rotation: float = 0.5 + moon_orbit_offset * moon_orbital_period / moon_day_length
+    moon_mesh.basis = moon_mesh.basis.rotated(moon_mesh.basis.y, (moon_time_offset + moon_rotation + orbit_rotation) * TAU)
 
 func init_shader() -> void:
     sky_shader.resource_local_to_scene = true

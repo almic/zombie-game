@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3 uid="uid://bk3t5jcoteii"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tap0b"]
+shading_mode = 0
+albedo_color = Color(1.6, 1.5, 1.4, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_0gx5q"]
+material = SubResource("StandardMaterial3D_tap0b")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_py2b5"]
+albedo_color = Color(0.243137, 0.643137, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_3v0rx"]
+material = SubResource("StandardMaterial3D_py2b5")
+radius = 0.1
+height = 0.2
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_gg104"]
+radius = 0.008
+height = 0.038
+
+[sub_resource type="SphereMesh" id="SphereMesh_tap0b"]
+radius = 0.03
+height = 0.06
+
+[node name="SolarModel" type="Node3D"]
+
+[node name="Sun" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_0gx5q")
+
+[node name="Earth" type="MeshInstance3D" parent="Sun"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -4)
+mesh = SubResource("SphereMesh_3v0rx")
+
+[node name="Viewer" type="MeshInstance3D" parent="Sun/Earth"]
+transform = Transform3D(0.897989, -0.440018, 3.08149e-33, 2.69434e-17, 5.4986e-17, -1, 0.440018, 0.897989, 6.12323e-17, -0.0593251, -1.78e-18, 0.0930675)
+mesh = SubResource("CapsuleMesh_gg104")
+
+[node name="Moon" type="MeshInstance3D" parent="Sun/Earth"]
+transform = Transform3D(0.757637, 0, 0.652676, 0.109722, 0.985768, -0.127368, -0.643387, 0.168112, 0.746854, 0.145644, 0.0137336, 0.174292)
+mesh = SubResource("SphereMesh_tap0b")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Sun/Earth/Moon"]
+light_intensity_lux = 1000.0
+light_temperature = 13712.0
+metadata/_edit_lock_ = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]

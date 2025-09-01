@@ -2,7 +2,7 @@ shader_type sky;
 
 uniform sampler2D sky_texture : filter_linear, repeat_enable;
 uniform sampler2D lut_texture : filter_linear, repeat_disable;
-uniform sampler2D moon_texture : filter_linear, repeat_disable;
+uniform sampler2D moon_texture : filter_linear, repeat_disable, source_color;
 
 uniform vec3 sun_direction;
 uniform float sun_angular_diameter;

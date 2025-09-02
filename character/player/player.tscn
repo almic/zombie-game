@@ -141,7 +141,7 @@ shadow_enabled = true
 shadow_caster_mask = 4294443007
 spot_range = 50.0
 spot_attenuation = 2.0
-spot_angle = 36.0
+spot_angle = 33.0
 spot_angle_attenuation = 0.0116912
 metadata/_edit_lock_ = true
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=69 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=70 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -57,6 +57,7 @@
 [ext_resource type="Curve3D" uid="uid://g4rbrs5lxhnf" path="res://scene/world/road_curves/kepler_curve.res" id="49_8ighw"]
 [ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="49_il2y7"]
 [ext_resource type="PackedScene" uid="uid://bvgviih6lyk0p" path="res://scene/item/ammo/fmj/fmj_pile.tscn" id="50_il2y7"]
+[ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
 
 [sub_resource type="Resource" id="Resource_a331h"]
 resource_local_to_scene = true
@@ -112,12 +113,12 @@ compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-initial_time = 0.8
+initial_time = 0.757
 time_scale = 20.0
 north = -2.04204
 latitude = 0.715585
 luminance_maximum = 7.0
-sky_intensity_min = 2000.0
+sky_intensity_min = 700.0
 sky_intensity_curve = 1.0
 planet_tilt_phase = 0.5
 moon_day_length = 239.3
@@ -129,7 +130,7 @@ moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(0.371285, -0.893912, 0.251134, 0.919512, 0.316398, -0.233218, 0.129018, 0.317511, 0.939437, 0, 0, 0)
+transform = Transform3D(0.281317, -0.85888, 0.428002, 0.953062, 0.302099, -0.0202004, -0.11195, 0.413596, 0.903552, 0, 0, 0)
 rotation_edit_mode = 2
 top_level = true
 visible = false
@@ -146,11 +147,11 @@ directional_shadow_fade_start = 0.975
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.498814, -0.850862, 0.164977, -0.321748, 0.358536, 0.876316, -0.804775, 0.384038, -0.452606, 0, 0, 0)
+transform = Transform3D(-0.588525, -0.80844, -0.00790053, -0.503672, 0.358981, 0.785778, -0.632419, 0.466429, -0.618458, 0, 0, 0)
 top_level = true
 light_intensity_lux = 0.5
 light_temperature = 7100.0
-light_energy = 0.00801462
+light_energy = 0.346016
 shadow_enabled = true
 directional_shadow_split_1 = 0.08
 directional_shadow_split_2 = 0.16
@@ -180,7 +181,7 @@ transform = Transform3D(0.526361, 0, -0.850262, 0, 1, 0, 0.850262, 0, 0.526361, 
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
-transform = Transform3D(0.707107, -1.99303e-07, 0.707107, 2.90354e-07, 1, 2.81857e-07, -0.707107, 8.9407e-08, 0.707107, -138.156, 1.15168, 475.793)
+transform = Transform3D(0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, 0.707107, -129.979, 1.15168, 471.811)
 velocity = Vector3(0, -938.906, 0)
 target_search_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
@@ -1697,3 +1698,6 @@ metadata/_edit_lock_ = true
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.796252, -0.030462, -0.604198, -0.000888604, 0.998672, -0.0515213, 0.604964, 0.0415608, 0.795167, -163.365, 2.2, 496.226)
 fov = 25.3494
+
+[node name="ColorSquares" parent="." instance=ExtResource("58_pb8w5")]
+transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -142.45, 0.506972, 486.142)

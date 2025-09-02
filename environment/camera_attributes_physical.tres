@@ -1,10 +1,12 @@
 [gd_resource type="CameraAttributesPhysical" format=3 uid="uid://djs1o5pq2224k"]
 
 [resource]
-auto_exposure_scale = 0.25
-auto_exposure_speed = 1.0
+auto_exposure_scale = 0.18
+auto_exposure_speed = 0.25
 frustum_focus_distance = 0.5
 frustum_focal_length = 3.0
 frustum_near = 0.02
 frustum_far = 2900.0
-auto_exposure_min_exposure_value = -5.0
+exposure_aperture = 20.0
+auto_exposure_min_exposure_value = -8.01
+auto_exposure_max_exposure_value = -0.25

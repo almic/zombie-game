@@ -11,6 +11,7 @@ const INTERPOLATE_LUMINANCE = '#define INTERPOLATE_LUMINANCE'
 
 var current: RID
 var buffers: Array[RID]
+var buffer_size: Vector2i
 
 var read_shader: RID
 var interpolate_shader: RID
@@ -108,10 +109,21 @@ func clear_buffers() -> void:
     buffers.clear()
 
 func setup_buffers(size: Vector2i) -> void:
+    # NOTE: try to maintain current exposure value when resizing
+    var clear_color: Color = Color.GRAY
+    if current.is_valid():
+        RenderingServer.force_sync()
+        var image_data: PackedByteArray = rd.texture_get_data(current, 0)
+        var exposure: float = image_data.decode_float(0)
+        for i in range(3):
+            clear_color[i] = exposure
+
     clear_buffers()
 
     var w: int = size.x
     var h: int = size.y
+    buffer_size.x = w
+    buffer_size.y = h
 
     # what the Godot moment
     while true:
@@ -130,13 +142,17 @@ func setup_buffers(size: Vector2i) -> void:
         tf.usage_bits = RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
 
         if final:
-            tf.usage_bits |= RenderingDevice.TEXTURE_USAGE_CAN_COPY_TO_BIT | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+            tf.usage_bits |= (
+                      RenderingDevice.TEXTURE_USAGE_CAN_COPY_TO_BIT
+                    | RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
+                    | RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+            )
 
         buffers.append(rd.texture_create(tf, RDTextureView.new()))
 
         if final:
             current = rd.texture_create(tf, RDTextureView.new())
-            rd.texture_clear(current, Color(), 0, 1, 0, 1)
+            rd.texture_clear(current, clear_color, 0, 1, 0, 1)
             break
 
 func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) -> void:
@@ -148,6 +164,8 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
     ):
         return
 
+    # TODO: Make this skip processing when the game is paused.
+
     var render_scene_buffers: RenderSceneBuffersRD = p_render_data.get_render_scene_buffers()
     if not render_scene_buffers:
         return
@@ -156,7 +174,7 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
     if size.x == 0 and size.y == 0:
         return
 
-    if not current.is_valid():
+    if not current.is_valid() or buffer_size != size:
         setup_buffers(size)
 
     var camera_attributes: RID = p_render_data.get_camera_attributes()
@@ -227,7 +245,9 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
 
             rd.compute_list_set_push_constant(compute_list, push_constants, push_constants.size())
 
+            @warning_ignore('integer_division')
             var groups_x: int = (size.x + 7) / 8
+            @warning_ignore('integer_division')
             var groups_y: int = (size.y + 7) / 8
             rd.compute_list_dispatch(compute_list, groups_x, groups_y, 1)
 

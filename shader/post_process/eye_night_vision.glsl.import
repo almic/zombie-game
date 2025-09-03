@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://c701v1qsya3q5"
+path="res://.godot/imported/eye_night_vision.glsl-99861c580dd1b87b2e13047d96e8d9a3.res"
+
+[deps]
+
+source_file="res://shader/post_process/eye_night_vision.glsl"
+dest_files=["res://.godot/imported/eye_night_vision.glsl-99861c580dd1b87b2e13047d96e8d9a3.res"]
+
+[params]
+

@@ -338,6 +338,7 @@ var viewer_basis: Basis
 var planet_viewer_basis: Basis
 
 var moon_view: MoonView
+var moon_phase_angle: float
 var moon_mesh: MeshInstance3D
 var moon_camera: Camera3D
 var moon_view_shader: ShaderMaterial
@@ -361,7 +362,7 @@ var last_background_intensity: float
 var lut_texture: Image
 
 
-var first_run: bool = true
+var initialize_ticks: int = 15
 
 func _init() -> void:
     # force cached calculations
@@ -397,6 +398,8 @@ func _process(delta: float) -> void:
 
     update_sky(delta, true)
 
+    tick_sky_lights(delta)
+
 func _physics_process(delta: float) -> void:
     # NOTE: Application runs in _physics_process()
     if Engine.is_editor_hint():
@@ -405,8 +408,13 @@ func _physics_process(delta: float) -> void:
     if time_enabled:
         update_time(delta * time_scale)
 
-    update_sky(delta, first_run)
-    first_run = false
+    if initialize_ticks > 0:
+        initialize_ticks -= 1
+        update_sky(delta, true)
+    else:
+        update_sky(delta)
+
+    tick_sky_lights(delta)
 
 func update_periods() -> void:
     var seconds_per_day = day_length * 3600
@@ -482,6 +490,8 @@ func update_sky(delta: float, force: bool = false) -> void:
     var sun_true: Vector3 = Sun.basis.z
     var moon_true: Basis = Moon.basis
 
+    moon_phase_angle = moon_true.z.dot(sun_true)
+
     # Add refraction to apparant elevation of sky lights
     for light in [Sun, Moon] as Array[DirectionalLight3D]:
         var refraction_axis: Vector3 = light.basis.z.cross(Vector3.UP)
@@ -502,6 +512,8 @@ func update_sky(delta: float, force: bool = false) -> void:
         Moon.basis
     )
 
+    apply_time_changes()
+
     # Sun light energy calculation
     Sun.light_energy = (
               sky_compute.moon_shadowing
@@ -510,11 +522,10 @@ func update_sky(delta: float, force: bool = false) -> void:
             * sqrt(Sun.light_color.srgb_to_linear().get_luminance())
     )
 
-    # Moon light enery calculation
-    var phase_angle: float = moon_true.z.dot(sun_true)
+    # Moon light energy calculation
     # NOTE: the Moon is far brighter when at opposition with the Sun, so
     #       squaring the phase angle produces such an effect.
-    Moon.light_energy = phase_angle * phase_angle
+    Moon.light_energy = moon_phase_angle * moon_phase_angle
 
     # Disable sun light when energy is too low
     Sun.visible = Sun.light_energy > 0.000001
@@ -535,16 +546,10 @@ func update_sky(delta: float, force: bool = false) -> void:
         elif Moon.shadow_enabled and (not moon_light_energy.is_target_set or not is_zero_approx(moon_light_energy.target)):
             moon_light_energy.set_target_delta(0.0, -moon_light_energy.current)
 
-        if moon_light_energy.is_target_set:
-            Moon.light_energy *= moon_light_energy.update(delta)
-
-        if moon_light_energy.is_done and is_zero_approx(Moon.light_energy):
-            Moon.shadow_enabled = false
-
     # BUG: Godot only updates textures in-game, wack
     if not Engine.is_editor_hint():
-        if sky_intensity.is_done:
-            if sky_changed:
+        if sky_intensity.is_done or force:
+            if sky_changed or force:
                 #var time: int = Time.get_ticks_usec()
                 var target: float = compute_sky_intensity()
                 #time = Time.get_ticks_usec() - time
@@ -553,12 +558,9 @@ func update_sky(delta: float, force: bool = false) -> void:
                 sky_intensity.set_target_delta(target, target - sky_intensity.current)
                 #print('sky intensity target: ' + str(target))
 
-        if not sky_intensity.is_done:
-            environment.background_intensity = sky_intensity.update(delta)
-
         # NOTE: Sun light color can change abruptly, and it's relatively cheap
         #       to check, so check constantly and update the target
-        if sky_changed:
+        if sky_changed or force:
             #var time: int = Time.get_ticks_usec()
             var target: Color = compute_sun_color()
             #time = Time.get_ticks_usec() - time
@@ -570,10 +572,22 @@ func update_sky(delta: float, force: bool = false) -> void:
                     sun_light_color.current = target
                 sun_light_color.set_target_delta(target, target - sun_light_color.current)
 
-        if not sun_light_color.is_done:
-            Sun.light_color = sun_light_color.update(delta)
 
-    apply_time_changes()
+func tick_sky_lights(delta: float) -> void:
+    if Moon.visible:
+        if moon_light_energy.is_target_set:
+            # Reset energy for modifier
+            Moon.light_energy = moon_phase_angle * moon_phase_angle
+            Moon.light_energy *= moon_light_energy.update(delta)
+
+        if moon_light_energy.is_done and is_zero_approx(Moon.light_energy):
+            Moon.shadow_enabled = false
+
+    if not sky_intensity.is_done:
+        environment.background_intensity = sky_intensity.update(delta)
+
+    if not sun_light_color.is_done:
+        Sun.light_color = sun_light_color.update(delta)
 
 ## Compute viewer + planet orientation
 func update_planet_viewer() -> void:
@@ -603,7 +617,6 @@ func update_planet_viewer() -> void:
     viewer_basis = viewer_basis.rotated(viewer_basis.y, north)
 
     planet_viewer_basis = (planet_basis * viewer_basis)
-
 
 ## Compute sun orientation
 func update_sun() -> void:

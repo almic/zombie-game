@@ -15,8 +15,18 @@ layout(push_constant, std430) uniform Params
     uvec2 size;           // 0, 4
     float white;          // 8
     float exposure_scale; // 12
+    vec3 night_vision_color; // 16
+    float light_curve;       // 28
+    vec3 night_sensitivity;  // 32
+    float reserved;          // 44
 
 } params;
+
+
+float curve(float l, float o)
+{
+    return o / (o + l);
+}
 
 // Functions copied from Godot's effects shaders
 
@@ -48,8 +58,15 @@ void main()
     ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
     vec4 color = imageLoad(screen, uv);
 
-    float exposure = params.exposure_scale / texelFetch(auto_exposure, ivec2(0, 0), 0).r;
+    vec2 auto_values = texelFetch(auto_exposure, ivec2(0), 0).rg;
+    float exposure = params.exposure_scale / auto_values.r;
+    // Apply exposure before blending night vision, that way it has the correct luminance
     color.rgb *= mix(exposure, 1.0, isinf(exposure));
+
+    vec3 v = params.night_sensitivity;
+    float night_luminance = v.r * color.r + v.g * color.g + v.b * color.b;
+    vec3 night_color = params.night_vision_color * auto_values.g * night_luminance;
+    color.rgb = mix(color.rgb, night_color, curve(auto_values.r, params.light_curve));
 
     // color.rgb = srgb_to_linear(color.rgb);
     color.rgb = tonemap(color.rgb, params.white);

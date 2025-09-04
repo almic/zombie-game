@@ -15,33 +15,42 @@ layout(local_size_x = SIZE, local_size_y = SIZE, local_size_z = 1) in;
 layout(push_constant, std430) uniform Params
 {
 
-    ivec2 size;            // 0, 4
-    float max_luminance;   // 8
-    float min_luminance;   // 12
-    float exposure_adjust; // 16
-    float reserved[3];     // 20
+    ivec2 size;          // 0, 4
+    float max_luminance; // 8
+    float min_luminance; // 12
+    float time_step;     // 16
+    float dark_time;     // 20
+    float light_time;    // 24
+    float light_curve;   // 28
+    vec3 night_sensitivity; // 32
+    float reserved;      // 44
 
 } params;
 
 
-shared float tmp_data[SIZE * SIZE];
+shared vec2 tmp_data[SIZE * SIZE];
 
-#ifdef READ_TEXTURE
+#ifdef READ
 
 //use for main texture
-layout(set = 0, binding = 0) uniform sampler2D source_texture;
+layout(set = 0, binding = 0) uniform sampler2D screen;
 
 #else
 
 //use for intermediate textures
-layout(r32f, set = 0, binding = 0) uniform restrict readonly image2D source_luminance;
+layout(rg32f, set = 0, binding = 0) uniform restrict readonly image2D source;
 
 #endif
 
-layout(r32f, set = 1, binding = 0) uniform restrict writeonly image2D dest_luminance;
+layout(rg32f, set = 1, binding = 0) uniform restrict writeonly image2D destination;
 
-#ifdef INTERPOLATE_LUMINANCE
-layout(set = 2, binding = 0) uniform sampler2D prev_luminance;
+#ifdef INTERPOLATE
+layout(set = 2, binding = 0) uniform sampler2D previous;
+
+float curve(float l, float o)
+{
+    return o / (o + l);
+}
 #endif
 
 void main() {
@@ -49,25 +58,30 @@ void main() {
     ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
 
     if (any(lessThan(pos, params.size))) {
-#ifdef READ_TEXTURE
-        vec3 v = texelFetch(source_texture, pos, 0).rgb;
+#ifdef READ
+        vec3 n = params.night_sensitivity;
+        vec3 v = texelFetch(screen, pos, 0).rgb;
 
         // tmp_data[t] = max(v.r, max(v.g, v.b));
-        tmp_data[t] = 0.2126729 * v.r + 0.7151522 * v.g + 0.0721750 * v.b;
+        tmp_data[t] = vec2(
+                0.2126729 * v.r + 0.7151522 * v.g + 0.0721750 * v.b,
+                n.r * v.r + n.g * v.g + n.b * v.b
+        );
 
         vec2 uv = vec2(pos) / vec2(params.size);
         uv -= 0.5;
         uv.x *= params.size.x / params.size.y;
 
-        tmp_data[t] *= s * sqrt(
+        // Only apply to auto exposure, night vision reads full screen
+        tmp_data[t].r *= s * sqrt(
                 exp(-(uv.x * uv.x / (2.0 * o2)))
               * exp(-(uv.y * uv.x / (2.0 * o2)))
         );
 #else
-        tmp_data[t] = imageLoad(source_luminance, pos).r;
+        tmp_data[t] = imageLoad(source, pos).rg;
 #endif
     } else {
-        tmp_data[t] = 0.0;
+        tmp_data[t] = vec2(0.0);
     }
 
     groupMemoryBarrier();
@@ -88,18 +102,20 @@ void main() {
     if (t == 0) {
         //compute rect size
         ivec2 rect_size = min(params.size - pos, ivec2(SIZE));
-        float avg = tmp_data[0] / float(rect_size.x * rect_size.y);
-        //float avg = tmp_data[0] / float(BLOCK_SIZE*BLOCK_SIZE);
+        vec2 avg = tmp_data[0] / float(rect_size.x * rect_size.y);
         pos /= ivec2(SIZE);
-#ifdef INTERPOLATE_LUMINANCE
-        float prev_lum = texelFetch(prev_luminance, ivec2(0, 0), 0).r;
+#ifdef INTERPOLATE
+        vec2 prev = texelFetch(previous, ivec2(0, 0), 0).rg;
+        avg.g = curve(avg.g, params.light_curve);
+        float m = curve(mix(prev.r, avg.r, step(prev.r, avg.r)), params.light_curve);
+        float time = mix(params.light_time, params.dark_time, m);
         avg = clamp(
-            prev_lum + (avg - prev_lum) * params.exposure_adjust,
-            params.min_luminance,
-            params.max_luminance
+            prev + (avg - prev) * (1.0 - exp(-(params.time_step / time))),
+            vec2(params.min_luminance, 0.0),
+            vec2(params.max_luminance, 1.0)
         );
 #endif
-        imageStore(dest_luminance, pos, vec4(avg));
+        imageStore(destination, pos, vec4(avg, 0.0, 0.0));
     }
 }
 

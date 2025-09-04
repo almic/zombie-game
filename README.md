@@ -21,6 +21,48 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [X] Flashlight which can be toggled
 
 
+# Spectral values for RGB / CIE / LMS peaks
+
+sRGB
+    red ~= 610nm. rods = 0.015930
+    green ~= 555nm. rods @ 550 = 0.481000, @ 560 = 0.328800 (0.4049)
+    blue ~= 465nm. rods @ 460 = 0.567000, @ 470 = 0.676000 (0.6215)
+
+
+Thoughts:
+    - Monochromatic night vision, which essentially applies a color to very
+      low luminance values of a scene. As the average luminance decreases,
+      night vision begins to color low luminance with a particular color.
+    - "Tiring" colors. E.G. a pure red scene gradually desaturates red. This is
+      not to say it saturates other colors specifically, but in the LMS color
+      space it would effectively desaturate nearby colors over time. This
+      should be done subtly, not enough to "white balance," but enough to be
+      perceptible when moving to an environment with lower levels of the "tired"
+      color.
+
+Implementation:
+    Night Vision
+    1. Select a color vector to act as color displayed for "night vision"
+    2. Produce a function that takes as input the scene color, and returns a
+       sensitivity value. This function should consider low values of luminance
+       to increase sensitivity, blue and green color to reduce, and partially
+       ignore red color even at higher relative luminance.
+    3. This sensitivity would multiply with a luminance curve, such that low
+       luminance returns 1.0 and high luminance returns 0.0.
+    4. Multiply the result with the night vision color and add to result.
+
+    Tired Color
+    1. Select a value to act as the maximum reduction in LMS color space
+    2. Produce a function that takes as input the scene color, and returns a
+       target LMS sensitivity as a vector multiplier.
+    3. Convert RGB to LMS, multiply by the sensitivity multiplier, convert back
+       to RGB to return final color.
+    4. Normalize the multiplier so it doesn't result in a feedback loop that
+       greately reduce scene luminance. E.g. while reducing green would also
+       reduce red and blue to some degree, the result should scale up so red and
+       blue are less affected.
+
+
 # Lighting Solutions
 
 Here is what I would like:
@@ -111,6 +153,8 @@ In order of time to implement (fastest to longest):
 
 # ANGRY TODOS
 
+- [ ] Apply Kawase Blur during night vision, depth based (further = more blurry)
+      Should be active based on exposure value, use pos multiplier as depth (cheap)
 - [ ] Add random refraction and squashing to moon and sun near horizon for shaders.
 - [ ] If aiming at the sun with the bolt scope, midday, flashbang the entire screen
 - [ ] Allow aiming while walking with the bolt, but greatly reduce move speed and

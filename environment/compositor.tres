@@ -3,7 +3,7 @@
 [ext_resource type="CompositorEffect" uid="uid://devd6x2sd38ht" path="res://environment/sky_compute.tres" id="1_67d1k"]
 [ext_resource type="Script" uid="uid://cke0kq5c5l0ai" path="res://script/post_process/tonemap.gd" id="2_mgpe3"]
 [ext_resource type="Script" uid="uid://kot5fg2d3vpw" path="res://script/post_process/auto_exposure.gd" id="3_vss2t"]
-[ext_resource type="Script" uid="uid://dt07w2ijuanmm" path="res://script/post_process/eye_night_vision.gd" id="4_nsl78"]
+[ext_resource type="Script" uid="uid://bbvr8t4osor6u" path="res://script/post_process/kawase_blur.gd" id="5_p7n54"]
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_nsl78"]
 resource_local_to_scene = false
@@ -13,6 +13,9 @@ effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("3_vss2t")
+dark_time = 25.0
+light_curve = -4.8019
+night_vision_sensitivity = Color(0.011223, 0.390058, 0.598719, 1)
 metadata/_custom_type_script = "uid://kot5fg2d3vpw"
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_vss2t"]
@@ -24,21 +27,22 @@ needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("2_mgpe3")
 white = 6.0
+light_curve = -4.4929
+night_vision_sensitivity = Color(0.011223, 0.390058, 0.598719, 1)
+night_vision_color = Color(1.05, 0.97, 1.27, 1)
 metadata/_custom_type_script = "uid://cke0kq5c5l0ai"
 
-[sub_resource type="CompositorEffect" id="CompositorEffect_p7n54"]
+[sub_resource type="CompositorEffect" id="CompositorEffect_lqsra"]
 resource_local_to_scene = false
 resource_name = ""
-enabled = true
+enabled = false
 effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
-script = ExtResource("4_nsl78")
-dark_time = 20.0
-light_time = 5.0
-night_vision_color = Color(1.05, 0.97, 1.27, 1)
-sensitivity = Color(0.011223, 0.390058, 0.598719, 1)
-metadata/_custom_type_script = "uid://dt07w2ijuanmm"
+script = ExtResource("5_p7n54")
+passes = PackedFloat32Array(0.5, 1.5, 2.5, 2.5, 3.5)
+offset_multiplier = 1.0
+metadata/_custom_type_script = "uid://bbvr8t4osor6u"
 
 [resource]
-compositor_effects = Array[CompositorEffect]([ExtResource("1_67d1k"), SubResource("CompositorEffect_nsl78"), SubResource("CompositorEffect_vss2t"), SubResource("CompositorEffect_p7n54")])
+compositor_effects = Array[CompositorEffect]([ExtResource("1_67d1k"), SubResource("CompositorEffect_nsl78"), SubResource("CompositorEffect_vss2t"), SubResource("CompositorEffect_lqsra")])

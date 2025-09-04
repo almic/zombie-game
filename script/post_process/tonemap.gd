@@ -1,18 +1,31 @@
 @tool
 class_name TonemapEffect extends PostProcessEffect
 
+
 ## The white reference value for tonemapping. For photorealistic lighting,
 ## recommended values are between 6.0 and 8.0.
 @export_range(0.0, 16.0, 0.01)
 var white: float = 6.0
 
+## Relative "darkness" exposure level. Darkness luminance computed as 10 ^ x.
+@export_range(-10.0, 10.0, 0.0001, 'or_less')
+var light_curve: float = -3.39794
+
+## Night vision sensitivity response, this is essentially a luminance function
+## to convert RGB to the monochromatic night vision color
+@export var night_vision_sensitivity: Color = Color(0.011223, 0.390058, 0.598719)
+
+## Color shown during night vision exposure, can use values over 1.0, alpha
+## multiplies the color.
+@export var night_vision_color: Color = Color(1.05, 0.97, 1.27)
+
 
 var sampler: RID
 
 
+
 func _init() -> void:
     super._init()
-
 
 func _shader_path() -> StringName:
     return &"res://shader/post_process/tonemap.glsl"
@@ -52,11 +65,25 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
     var exposure_scale: float = RenderingServer.camera_attributes_get_auto_exposure_scale(camera_attributes)
 
     var push_constants: PackedByteArray = []
-    push_constants.resize(16) # size, white, padding
+    push_constants.resize(48)
+
+    # size
     push_constants.encode_u32(0, size.x)
     push_constants.encode_u32(4, size.y)
+
+    # tone mapping + exposure
     push_constants.encode_float(8, white)
     push_constants.encode_float(12, exposure_scale)
+    push_constants.encode_float(28, pow(10.0, light_curve))
+
+    # night vision
+    push_constants.encode_float(16, night_vision_sensitivity.r)
+    push_constants.encode_float(20, night_vision_sensitivity.g)
+    push_constants.encode_float(24, night_vision_sensitivity.b)
+    push_constants.encode_float(32, night_vision_color.r * night_vision_color.a)
+    push_constants.encode_float(36, night_vision_color.g * night_vision_color.a)
+    push_constants.encode_float(40, night_vision_color.b * night_vision_color.a)
+
 
     var view_count = render_scene_buffers.get_view_count()
     for view in range(view_count):

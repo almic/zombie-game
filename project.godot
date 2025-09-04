@@ -25,6 +25,7 @@ buses/default_bus_layout="uid://b0yeincxuh5vu"
 GUIDE="*res://addons/guide/guide.gd"
 DrawLine3d="*res://script/draw_line_3d/DrawLine3D.gd"
 AutoExposureGlobal="*res://script/post_process/auto_exposure_global.gd"
+KawaseBlurGlobal="*res://script/post_process/kawase_blur_global.gd"
 
 [debug]
 

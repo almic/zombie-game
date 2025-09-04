@@ -172,12 +172,12 @@ process_mode = 4
 visible = false
 
 [node name="LightSpheres" parent="." instance=ExtResource("12_f0qux")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -135.773, 1.81304, 474.896)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(0.526361, 0, -0.850262, 0, 1, 0, 0.850262, 0, 0.526361, -149.866, 0.563723, 488.712)
+transform = Transform3D(0.467584, 0, 0.883949, 0, 1, 0, -0.883949, 0, 0.467584, -138.668, 0.563723, 488.133)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -1236,6 +1236,7 @@ transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 
 
 [node name="ReflectionProbe" type="ReflectionProbe" parent="Cabin"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 3.8, 1.45519e-11)
+visible = false
 blend_distance = 0.4
 size = Vector3(13, 8, 8)
 enable_shadows = true
@@ -1243,7 +1244,7 @@ cull_mask = 2
 reflection_mask = 4
 
 [node name="InteriorLight" type="OmniLight3D" parent="Cabin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 3.58, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10, 3.58, 1.45519e-11)
 light_intensity_lumens = 10000.0
 light_bake_mode = 1
 shadow_enabled = true
@@ -1700,4 +1701,4 @@ transform = Transform3D(0.796252, -0.030462, -0.604198, -0.000888604, 0.998672, 
 fov = 25.3494
 
 [node name="ColorSquares" parent="." instance=ExtResource("58_pb8w5")]
-transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -142.45, 0.506972, 486.142)
+transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)

@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://slphfehdtwww"
+path="res://.godot/imported/kawase.glsl-6977b6ee52b85a25a7d304ed0ecf5f41.res"
+
+[deps]
+
+source_file="res://shader/post_process/kawase.glsl"
+dest_files=["res://.godot/imported/kawase.glsl-6977b6ee52b85a25a7d304ed0ecf5f41.res"]
+
+[params]
+

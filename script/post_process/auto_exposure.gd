@@ -5,8 +5,24 @@ class_name AutoExposureEffect extends PostProcessEffect
 
 
 const VERSION_DEFINES = '#VERSION_DEFINES'
-const READ_TEXTURE = '#define READ_TEXTURE'
-const INTERPOLATE_LUMINANCE = '#define INTERPOLATE_LUMINANCE'
+const READ_TEXTURE = '#define READ'
+const INTERPOLATE_LUMINANCE = '#define INTERPOLATE'
+
+
+## Exposure time when exposing below a certain value, immitates the eye's
+## slower speed when adjusting to extremely dark environments.
+@export_range(0.01, 4.0, 0.0001, 'or_greater')
+var dark_time: float = 2.0
+
+## Relative "darkness" exposure level. Darkness luminance computed as 10 ^ x.
+@export_range(-10.0, 10.0, 0.0001, 'or_less')
+var light_curve: float = -3.39794
+
+## Night vision sensitivity response, seeing RGB drops night vision. This should
+## be a normalized value; all components add to 1.0. Similar to real life, night
+## vision is mostly insensitive to red light.
+@export var night_vision_sensitivity: Color = Color(0.011223, 0.390058, 0.598719)
+
 
 
 var current: RID
@@ -20,6 +36,7 @@ var read_pipeline: RID
 var interpolate_pipeline: RID
 
 var sampler: RID
+
 
 func _shader_path() -> StringName:
     return &"res://shader/post_process/auto_exposure.glsl"
@@ -111,12 +128,12 @@ func clear_buffers() -> void:
 func setup_buffers(size: Vector2i) -> void:
     # NOTE: try to maintain current exposure value when resizing
     var clear_color: Color = Color.GRAY
+    clear_color.g = 0.0
     if current.is_valid():
         RenderingServer.force_sync()
         var image_data: PackedByteArray = rd.texture_get_data(current, 0)
-        var exposure: float = image_data.decode_float(0)
-        for i in range(3):
-            clear_color[i] = exposure
+        clear_color.r = image_data.decode_float(0)
+        clear_color.g = image_data.decode_float(4)
 
     clear_buffers()
 
@@ -135,7 +152,7 @@ func setup_buffers(size: Vector2i) -> void:
         var final: bool = w == 1 and h == 1
         var tf: RDTextureFormat = RDTextureFormat.new()
 
-        tf.format = RenderingDevice.DATA_FORMAT_R32_SFLOAT
+        tf.format = RenderingDevice.DATA_FORMAT_R32G32_SFLOAT
         tf.width = w
         tf.height = h
 
@@ -180,16 +197,29 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
     var camera_attributes: RID = p_render_data.get_camera_attributes()
     var min_exposure: float = RenderingServer.camera_attributes_get_auto_exposure_min_sensitivity(camera_attributes)
     var max_exposure: float = RenderingServer.camera_attributes_get_auto_exposure_max_sensitivity(camera_attributes)
-    var adjustment: float = RenderingServer.camera_attributes_get_auto_exposure_adjust_speed(camera_attributes)
-    adjustment *= p_render_data.get_render_scene_data().get_time_step()
+    var light_time: float = 1.0 / RenderingServer.camera_attributes_get_auto_exposure_adjust_speed(camera_attributes)
 
     var push_constants: PackedByteArray = []
-    push_constants.resize(32) # size, min, max, adjustment, padding
+    push_constants.resize(48)
+
+    # size
     push_constants.encode_s32(0, size.x)
     push_constants.encode_s32(4, size.y)
+
+    # exposure values
     push_constants.encode_float(8, max_exposure)
     push_constants.encode_float(12, min_exposure)
-    push_constants.encode_float(16, adjustment)
+
+    # response time
+    push_constants.encode_float(16, p_render_data.get_render_scene_data().get_time_step())
+    push_constants.encode_float(20, dark_time)
+    push_constants.encode_float(24, light_time)
+    push_constants.encode_float(28, pow(10.0, light_curve))
+
+    # Night vision sensitivity
+    push_constants.encode_float(32, night_vision_sensitivity.r)
+    push_constants.encode_float(36, night_vision_sensitivity.g)
+    push_constants.encode_float(40, night_vision_sensitivity.b)
 
     var compute_list := rd.compute_list_begin()
     var compute_shader: RID

@@ -333,6 +333,8 @@ var sky_material: ShaderMaterial = ShaderMaterial.new()
 var sky_shader: Shader = preload('res://script/dynamic_day/dynamic_day.gdshader')
 var sky_compute: PhysicalSkyCompute
 
+var sky_intensity_thread: Thread
+
 var planet_basis: Basis
 var viewer_basis: Basis
 var planet_viewer_basis: Basis
@@ -457,6 +459,10 @@ func update_clock_time() -> void:
 
     clock_time = "%02d:%02d:%02d" % [hour, minute, second]
 
+    # HACK: this should not be done like this
+    get_tree().call_group('hud', 'update_time', clock_time)
+
+
 static func is_equal(a: float, b: float, e: float = 0.00000000001) -> bool:
     return abs(a - b) < e
 
@@ -476,7 +482,7 @@ func apply_time_changes() -> void:
     _time_data[5] = _time_data[4]
     _time_data[7] = _time_data[6]
 
-func update_sky(delta: float, force: bool = false) -> void:
+func update_sky(_delta: float, force: bool = false) -> void:
     var sky_changed: bool = time_changed()
 
     if force or sky_changed:
@@ -549,13 +555,20 @@ func update_sky(delta: float, force: bool = false) -> void:
     # BUG: Godot only updates textures in-game, wack
     if not Engine.is_editor_hint():
         if sky_intensity.is_done or force:
-            if sky_changed or force:
+            if sky_intensity_thread:
+                if not sky_intensity_thread.is_alive():
+                    var target: float = sky_intensity_thread.wait_to_finish()
+                    sky_intensity_thread = null
+                    sky_intensity.set_target_delta(target, target - sky_intensity.current)
+            elif sky_changed or force:
+                sky_intensity_thread = Thread.new()
+                sky_intensity_thread.start(compute_sky_intensity)
                 #var time: int = Time.get_ticks_usec()
-                var target: float = compute_sky_intensity()
+                #var target: float = compute_sky_intensity()
                 #time = Time.get_ticks_usec() - time
                 #print('Sky intensity time: ' + str(time) + 'us')
 
-                sky_intensity.set_target_delta(target, target - sky_intensity.current)
+
                 #print('sky intensity target: ' + str(target))
 
         # NOTE: Sun light color can change abruptly, and it's relatively cheap
@@ -755,6 +768,8 @@ func update_shader(
     # to have no impact on FPS at all, and it fixes the purple/ black sky, so...
     sky_material.set_shader_parameter("sky_texture", sky_compute.sky_texture)
     sky_material.set_shader_parameter("lut_texture", sky_compute.lut_texture)
+    sky_material.set_shader_parameter("lut_size", Vector2i(sky_compute.lut_size, sky_compute.lut_size))
+    #sky_material.set_shader_parameter("sky_size", Vector2i(sky_compute.sky_size, sky_compute.sky_size))
     sky_material.set_shader_parameter("moon_texture", moon_view.get_texture())
 
 
@@ -823,42 +838,52 @@ func light_horizon(light: Vector3, radius: float) -> float:
     return alpha
 
 func compute_sky_intensity() -> float:
+
     # The first run won't have a texture, so wait for it
     if not sky_intensity.is_target_set:
         RenderingServer.force_sync()
 
     var sky_texture: Image = sky_compute.sky_texture.get_image()
     var size: Vector2i = sky_texture.get_size()
-    @warning_ignore('integer_division')
-    size.y = (size.y - 1) / 2 + 1
 
-    # Compute average pixel value, sum with sqrt transformation
+    # Compute average pixel value
     var data: PackedByteArray = sky_texture.get_data()
+    var length: int = data.size()
 
-    var total: Vector3
-    for i in range(size.x):
-        var y: int = i + (size.y * size.x)
+    var total: Vector4
 
-        total.x += data.decode_float(y * 16)
-        total.y += data.decode_float(y * 16 + 4)
-        total.z += data.decode_float(y * 16 + 8)
+    var start: int = Time.get_ticks_usec()
+    @warning_ignore('integer_division')
+    for y in range(int(size.y / 2), size.y):
+        var dy: float = 2.0 * (float(y) / float(size.y) - 0.5)
+        var d: float = 8.0 * sqrt(1.0 - (dy * dy))
+        for x in range(size.x):
+            var i: int = ((y * size.x) + x) * 16
 
-    total = total / size.x
-    total *= 256.0 # This factor gives better results. Ask me how I found out.
+            total.x += d * data.decode_float(i)
+            total.y += d * data.decode_float(i + 4)
+            total.z += d * data.decode_float(i + 8)
 
-    var luminance: float = inv_luminance(total)
-    #print('computed average color: ' + str(total))
-    #print('luminance: ' + str(luminance))
+    var duration: int = Time.get_ticks_usec() - start
+    print('took ' + str(duration) + 'us')
 
-    # NOTE: Testing put the lowest luminance > 0.01, so approx zero is fine
-    if is_zero_approx(luminance):
+    total = total / (size.x * size.y * 0.5)
+
+    # NOTE: relative luminance calculation from original sky shader
+    var luminance: float = 0.2126729 * total.x + 0.7151522 * total.y + 0.0721750 * total.z
+    luminance = luminance / 17.4862339609375
+    print('computed average color: ' + str(total))
+    print('luminance: ' + str(luminance))
+
+    # NOTE: This always computes zero in-engine, so return current value
+    if Engine.is_editor_hint() and is_zero_approx(luminance):
         return environment.background_intensity
 
     luminance = clampf(luminance, 0.0, luminance_maximum)
 
     var intensity: float = ease(luminance / luminance_maximum, sky_intensity_curve)
     intensity = intensity * (sky_intensity_max - sky_intensity_min) + sky_intensity_min
-    #print('intensity: ' + str(intensity))
+    print('intensity: ' + str(intensity))
 
     return intensity
 
@@ -981,14 +1006,6 @@ static func gamma_correct(color: Color) -> Color:
             result[i] = 1.055 * pow(c, theta) - 0.055
 
     return result.clamp()
-
-static func inv_luminance(c: Vector3) -> float:
-    const scale = 1.0 / 17.4862339609375
-    c.x = 20.0 * log(1.0 + c.x)
-    c.y = 20.0 * log(1.0 + c.y)
-    c.z = 20.0 * log(1.0 + c.z)
-    var lum: float = 0.2126729 * c.x + 0.7151522 * c.y + 0.0721750 * c.z
-    return lum * scale
 
 ## Computes an elevation offset due to atmospheric refraction.
 ## Returns angle difference in radians.

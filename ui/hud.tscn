@@ -117,3 +117,13 @@ label_settings = SubResource("LabelSettings_276te")
 [node name="ammo_flow" type="HBoxContainer" parent="weapon_box"]
 unique_name_in_owner = true
 layout_mode = 2
+
+[node name="clock" type="HBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+
+[node name="time" type="Label" parent="clock"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "00:00:00"

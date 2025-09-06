@@ -1,8 +1,11 @@
 shader_type sky;
 
 uniform sampler2D sky_texture : filter_linear, repeat_enable;
-uniform sampler2D lut_texture : filter_linear, repeat_disable;
-uniform sampler2D moon_texture : filter_linear, repeat_disable, source_color;
+uniform sampler2D lut_texture : filter_nearest, repeat_disable;
+uniform sampler2D moon_texture : filter_linear, repeat_disable;
+
+uniform ivec2 lut_size;
+//uniform ivec2 sky_size;
 
 uniform vec3 sun_direction;
 uniform float sun_angular_diameter;
@@ -15,7 +18,7 @@ const float ZENITH_ILLUMINANCE = 100000.0;
 
 // Spectral stuff copied from common_inc.glsl
 // Sun spectral brightness (color), can be changed
-const vec4 SUN_SPECTRAL = vec4(1.679, 1.828, 1.986, 1.307);
+const vec4 SUN_SPECTRAL = vec4(1.679, 1.828, 1.986, 1.307) * TAU;
 // precomputed ground irradiance at zenith
 const vec4 ZENITH_IRRADIANCE =
         // Scale to illuminance scale factor
@@ -23,25 +26,69 @@ const vec4 ZENITH_IRRADIANCE =
         * SUN_SPECTRAL;
 // Spectral to RGB matrix, don't touch this!
 // > Seriously, this is correct! I double-checked August 26, 2025!
-const mat4 M = mat4(
+const highp mat4 M = mat4(
     vec4(137.672389239975,     -8.632904716299537,  -1.7181567391931372, 0.0),
     vec4( 32.549094028629234,  91.29801417199785,  -12.005406444382531,  0.0),
     vec4(-38.91428392614275,   34.31665471469816,   29.89044807197628,   0.0),
     vec4(  8.572844237945445, -11.103384660054624, 117.47585277566478,   0.0)
 );
-vec3 linear_srgb_from_spectral_samples(vec4 L)
+highp vec3 linear_srgb_from_spectral_samples(highp vec4 L)
 {
     return (M * L).rgb;
 }
 
-highp vec4 transmittance_from_lut(float cos_theta, float normalized_altitude)
+vec4 bicubic(sampler2D tex, vec2 uv, ivec2 size)
 {
-    highp float u = clamp(cos_theta * 0.5 + 0.5, 0.0, 1.0);
-    highp float v = clamp(normalized_altitude, 0.0, 1.0);
-    highp vec2 uv;
-    uv.x = u;
-    uv.y = v;
-    return texture(lut_texture, uv);
+    vec2 coord = uv * vec2(size);
+    vec2 cell = floor(coord - 0.5);
+    vec2 offset = (coord - 0.5) - cell;
+
+    // Collect pixel values for interpolation
+    vec4 pixels[16];
+
+    for (int y = 0; y < 4; ++y)
+    {
+        for (int x = 0; x < 4; ++x)
+        {
+            pixels[x + (y * 4)] = clamp(texelFetch(
+                    tex,
+                    ivec2(
+                        clamp(int(cell.x) + x - 1, 0, size.x - 1),
+                        clamp(int(cell.y) + y - 1, 0, size.y - 1)
+                    ),
+                    0
+            ), 0.0, 1.0);
+        }
+    }
+
+    vec2 t = offset;
+    vec2 t2 = t * t;
+    vec2 t3 = t * t2;
+
+    vec2 q1 = 0.5 * (-t3 + 2.0 * t2 - t);
+    vec2 q2 = 0.5 * (3.0 * t3 - 5.0 * t2 + 2.0);
+    vec2 q3 = 0.5 * (-3.0 * t3 + 4.0 * t2 + t);
+    vec2 q4 = 0.5 * (t3 - t2);
+
+    // Row interpolation
+    for (int i = 0; i < 4; ++i)
+    {
+        int u = i * 4;
+        pixels[u] = pixels[u] * q1.x + pixels[u + 1] * q2.x + pixels[u + 2] * q3.x + pixels[u + 3] * q4.x;
+    }
+
+    // Final interpolation
+    return pixels[0] * q1.y + pixels[4] * q2.y + pixels[8] * q3.y + pixels[12] * q4.y;
+}
+
+vec4 transmittance_from_lut(highp float cos_theta, highp float normalized_altitude)
+{
+    vec2 uv = vec2(
+        clamp(cos_theta * 0.5 + 0.5, 0.0, 1.0),
+        clamp(normalized_altitude, 0.0, 1.0)
+    );
+
+    return bicubic(lut_texture, uv, lut_size);
 }
 
 /**
@@ -59,23 +106,24 @@ vec3 eye_to_sky(vec3 eye_dir)
     vec3 ray_dir = eye_dir.xzy; // swap y and z
 
     // horizontal direction
-    float azi = atan(ray_dir.y, ray_dir.x);
+    highp float azi = atan(ray_dir.y, ray_dir.x);
     azi = azi / PI * 0.5 + 0.5;
 
     // vertical direction
-    float ele = asin(ray_dir.z);
+    highp float ele = asin(ray_dir.z);
     // map to non-linear vertical (higher detail horizon pixels)
-    ele = sqrt(abs(ele) / (PI * 0.5)) * sign(ele) * 0.5 + 0.5;
+    ele = sqrt((2.0 * abs(ele) / PI)) * sign(ele) * 0.5 + 0.5;
 
     // TODO: when GODOT allows x/y split repeating, use X repeat only and remove this clamp()
     return texture(sky_texture, vec2(azi, clamp(ele, 0.001946, 0.99806))).rgb;
+    //return bicubic(sky_texture, vec2(azi, ele), sky_size).rgb;
 }
 
 vec3 moon_mie(vec3 eye_dir, vec3 moon_dir, vec3 sun_dir)
 {
-    const float aerosol_turbidity = 0.018;
-    const float aerosol_density = 1.25e3;
-    const vec3 aerosol_color = vec3(0.69, 0.67, 0.74);
+    const float aerosol_turbidity = 0.007;
+    const float aerosol_density = 1.25e2;
+    const vec3 aerosol_color = vec3(0.72, 0.74, 0.76);
 
     const float g = 0.8;
     const float gg = g * g;
@@ -128,6 +176,18 @@ vec4 get_moon_color(vec3 eye_dir)
     ) {
         float moon_angle = length(eye_dir - moon_basis[2]);
         moon_color = texture(moon_texture, moon_uv.xy);
+
+        // Convert to grayscale and apply spectral color
+        float luminance = 0.2126729 * moon_color.r + 0.7151522 * moon_color.g + 0.0721750 * moon_color.b;
+        luminance *= 0.002;
+
+        // Apply a little transmittance
+        float xy = dot(eye_dir, vec3(0.0, 1.0, 0.0));
+        vec4 transmittance = transmittance_from_lut(xy, xy);
+        moon_color.rgb = linear_srgb_from_spectral_samples(
+                mix(SUN_SPECTRAL, SUN_SPECTRAL * transmittance, 0.96)
+            ) * luminance;
+
         moon_color.a *= smooth_disk(moon_angle, moon_diameter_radians, 0.98);
     }
 
@@ -139,16 +199,13 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
     // Sun disk smoothing
     const float factor = 0.96;
 
-    // Sun spectral color
-    vec4 zenith_transmittance = transmittance_from_lut(1.0, 0.0);
-    vec4 space_irradiance = ZENITH_IRRADIANCE / zenith_transmittance;
     float xy = dot(eye_dir, vec3(0.0, 1.0, 0.0));
-    vec4 transmittance = transmittance_from_lut(xy, 3.0 * xy * xy);
+    vec4 transmittance = transmittance_from_lut(xy, 0.5 * xy * xy);
 
     float sun_diameter_radians = sun_angular_diameter * PI / 180.0;
-    vec4 sun_color = vec4(0.0);
+    float alpha = 0.0;
 
-    // Bloom effect
+    // Bloom outside disk
     float min_sun_cos_theta = cos(sun_diameter_radians * factor);
     float cos_theta = dot(eye_dir, sun_direction);
     if (cos_theta < min_sun_cos_theta)
@@ -158,25 +215,43 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
         float gaussian = exp(-offset * 50000.0) * 0.5;
         float inv_bloom = 1.0 / (0.02 + offset * 300.0) * 0.01;
 
-        float bloom = gaussian + inv_bloom;
+        float bloom = smoothstep(0.006, 1.0, gaussian + inv_bloom);
+
         // Reduce greatly at the horizon
-        sun_color += transmittance * space_irradiance * smoothstep(0.002, 1.0, bloom);
+        bloom *= pow(max(transmittance.g, transmittance.b), 2.0 / PI);
+
+        alpha += step(0.0002, bloom) * bloom;
     }
 
     float sun_angle = length(eye_dir - sun_direction);
     if (sun_angle < sun_diameter_radians)
     { // Sun disk adding
-        vec4 sun_disk = (PI / 2.0) * space_irradiance * moon_mask;
-        sun_color = mix(
-                sun_color,
-                sun_disk,
-                smooth_disk(sun_angle, sun_diameter_radians, factor)
-        );
+        alpha += max(0.0, smooth_disk(sun_angle, sun_diameter_radians, factor));
     }
 
+    // Apply moon mask
+    alpha = clamp(alpha, 0.0, 1.0) * moon_mask;
+
+    // Sun spectral color
+    vec4 zenith_transmittance = transmittance_from_lut(1.0, 0.0);
+    vec4 space_irradiance = ZENITH_IRRADIANCE / zenith_transmittance;
+    space_irradiance *= pow(max(transmittance, vec4(0.0)), vec4(1.2));
+
+    // Sun color
     return vec4(
-            linear_srgb_from_spectral_samples(sun_color * transmittance),
-            1.0
+            linear_srgb_from_spectral_samples(space_irradiance / (1.5 * PI)),
+            alpha
+    );
+}
+
+vec3 gamma_func(vec3 color)
+{
+    float lum = 0.2126729 * color.r + 0.7151522 * color.g + 0.0721750 * color.b;
+    //float lum = max(color.r, max(color.g, color.b));
+    return mix(
+        color * color,
+        color,
+        smoothstep(0.001, 0.18, lum)
     );
 }
 
@@ -187,6 +262,9 @@ void sky() {
     // Sample sky
     color = eye_to_sky(EYEDIR);
 
+    //const float k = 0.18;
+    //color = 1.0 - exp(-k * color);
+    color.rgb = gamma_func(color.rgb);
 
     // Moon has special single-sample mie scattering, mostly to look like haze
     if (!AT_CUBEMAP_PASS)
@@ -198,15 +276,15 @@ void sky() {
         // We have to translate EYEDIR into "moon-space" so there's no distortions.
         // Must double the diameter to be correct
         vec4 moon_color = get_moon_color(EYEDIR);
-        color += (moon_color.rgb * TAU) * moon_color.a;
+        //moon_color.rgb = 1.0 - exp(-k * moon_color.rgb);
+        color += moon_color.rgb * moon_color.a;
 
         // Drawing the Sun disk
         vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
+        //sun_color.rgb = 1.0 - exp(-k * sun_color.rgb);
 
-        // Sun color could be removing blue (matrix stuff), so only add positive values
-        color = max(color, color + sun_color.rgb);
+        color.rgb += sun_color.rgb * sun_color.a;
     }
 
-    const float k = 0.05;
-    COLOR = 1.0 - exp(-k * color);
+    COLOR = color;
 }

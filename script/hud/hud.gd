@@ -9,6 +9,8 @@ class_name HUD extends Control
 
 @onready var health_bar: ProgressBar = %health_bar
 
+@onready var time: Label = %time
+
 @onready var weapon_texture: TextureRect = %weapon_texture
 @onready var stock_texture: TextureRect = %stock_texture
 @onready var stock_amount: Label = %stock_amount
@@ -98,6 +100,9 @@ func update_score(score: int) -> void:
 
 func update_health(health: float) -> void:
     health_bar.value = health
+
+func update_time(clock_time: String) -> void:
+    time.text = clock_time
 
 func update_weapon_ammo(weapon: WeaponResource) -> void:
 

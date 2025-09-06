@@ -4,7 +4,7 @@ extends CompositorEffect
 
 ## Transmittance LUT resolution, computed once only when needed and retained
 ## for future frames. Since it is cached, be mindful of memory usage.
-@export_enum("64:64","128:128","256:256","512:512","1024:1024")
+@export_enum("64:64","128:128","256:256","512:512","1024:1024","2048:2048")
 var lut_size: int = 512:
     set(value):
         if value == lut_size:
@@ -183,12 +183,12 @@ func create_lut() -> void:
     lut_tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
     lut_tf.width = lut_size
     lut_tf.height = lut_size
-    lut_tf.mipmaps = 1
+    lut_tf.mipmaps = 1 # NOTE: 1 = no mips, dumb api tbh
     lut_tf.usage_bits = (
-        RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
-        RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT |
-        RenderingDevice.TEXTURE_USAGE_STORAGE_BIT |
-        RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
+          RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+        | RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT
+        | RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
+        | RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
     )
 
     lut = rd.texture_create(lut_tf, RDTextureView.new())
@@ -206,12 +206,12 @@ func create_sky() -> void:
     sky_tf.texture_type = RenderingDevice.TEXTURE_TYPE_2D
     sky_tf.width = sky_size
     sky_tf.height = sky_size
-    sky_tf.mipmaps = 1
+    sky_tf.mipmaps = 1 # NOTE: 1 = no mips, dumb api tbh
     sky_tf.usage_bits = (
-        RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT |
-        RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT |
-        RenderingDevice.TEXTURE_USAGE_STORAGE_BIT |
-        RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
+          RenderingDevice.TEXTURE_USAGE_SAMPLING_BIT
+        | RenderingDevice.TEXTURE_USAGE_COLOR_ATTACHMENT_BIT
+        | RenderingDevice.TEXTURE_USAGE_STORAGE_BIT
+        | RenderingDevice.TEXTURE_USAGE_CAN_COPY_FROM_BIT
     )
 
     # Investigate if this really gives a performance benefit
@@ -243,6 +243,7 @@ func _render_callback(p_effect_callback_type: int, _render_data: RenderData) -> 
 
     if _lut_steps_changed:
         compute_lut()
+        print('computing lut!')
         _lut_steps_changed = false
 
     # Run the sky shader every frame

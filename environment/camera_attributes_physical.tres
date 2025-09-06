@@ -8,5 +8,5 @@ frustum_focal_length = 3.0
 frustum_near = 0.02
 frustum_far = 2900.0
 exposure_aperture = 20.0
-auto_exposure_min_exposure_value = -13.8
+auto_exposure_min_exposure_value = -13.5
 auto_exposure_max_exposure_value = -0.25

@@ -730,7 +730,7 @@ func select_weapon(slot: int) -> void:
     update_ammo()
 
     # NOTE: Special behavior for scoped rifle, it needs our camera attributes
-    var scoped_rifle: ScopeRifle = weapon_node._weapon_scene
+    var scoped_rifle: ScopeRifle = weapon_node._weapon_scene as ScopeRifle
     if scoped_rifle:
         var cam_attributes: CameraAttributes = camera_3d.attributes
         if not cam_attributes:

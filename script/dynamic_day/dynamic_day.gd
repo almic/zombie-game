@@ -78,27 +78,6 @@ var longitude: float = 0.0:
         longitude = value
 
 
-@export_category("Sky Attributes")
-
-## Relative luminance for maximum intensity
-@export_range(0.01, 8.0, 0.0001, 'or_greater')
-var luminance_maximum: float = 6.0
-
-## Maximum sky intensity, at the relative luminance max.
-## Sky intensity will never exceed this value.
-@export_range(0.0, 40000.0, 0.1, 'or_greater')
-var sky_intensity_max: float = 30000.0
-
-## Minimum sky intensity, when relative luminance is zero.
-## Sky intensity will never drop below this value.
-@export_range(0.0, 20000.0, 0.1, 'or_greater')
-var sky_intensity_min: float = 10000.0
-
-## Curve for sky intesity, applied to luminance between 0.0 and `luminance_maximum`
-@export_custom(PROPERTY_HINT_EXP_EASING, '')
-var sky_intensity_curve: float = 0.5
-
-
 @export_category("Planet Attributes")
 
 ## Hours in a day, or how long it takes for the planet to complete a full 360
@@ -333,8 +312,6 @@ var sky_material: ShaderMaterial = ShaderMaterial.new()
 var sky_shader: Shader = preload('res://script/dynamic_day/dynamic_day.gdshader')
 var sky_compute: PhysicalSkyCompute
 
-var sky_intensity_thread: Thread
-
 var planet_basis: Basis
 var viewer_basis: Basis
 var planet_viewer_basis: Basis
@@ -348,17 +325,8 @@ var moon_orbit_basis: Basis
 var moon_light_energy: Interpolation = Interpolation.new(30.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 
 
-## How frequently to read sky texture to set sky intensity
-const SKY_INTENSITY_RATE: float = 1.0
-
-## Sky intensity interpolation, changes as sky texture luminance changes
-var sky_intensity: Interpolation = Interpolation.new(SKY_INTENSITY_RATE, Tween.TRANS_LINEAR)
-
 ## Sun light color interpolation, changes as the sun moves through the sky
 var sun_light_color: Interpolation = Interpolation.new(0.1, Tween.TRANS_EXPO, Tween.EASE_OUT)
-
-## Last changed background intesity, used to set exposure on ambient light
-var last_background_intensity: float
 
 ## Look-Up-Table for sky transmittance, used to compute Sun color
 var lut_texture: Image
@@ -385,8 +353,6 @@ func _notification(what:int) -> void:
 
 func _ready() -> void:
     init_shader()
-
-    sky_intensity.current = environment.background_intensity
 
 func _process(delta: float) -> void:
     # NOTE: Editor preview runs in _process()
@@ -550,23 +516,6 @@ func update_sky(_delta: float, force: bool = false) -> void:
 
     # BUG: Godot only updates textures in-game, wack
     if not Engine.is_editor_hint():
-        if sky_intensity.is_done or force:
-            if sky_intensity_thread:
-                if not sky_intensity_thread.is_alive():
-                    var target: float = sky_intensity_thread.wait_to_finish()
-                    sky_intensity_thread = null
-                    sky_intensity.set_target_delta(target, target - sky_intensity.current)
-            elif sky_changed or force:
-                sky_intensity_thread = Thread.new()
-                sky_intensity_thread.start(compute_sky_intensity)
-                #var time: int = Time.get_ticks_usec()
-                #var target: float = compute_sky_intensity()
-                #time = Time.get_ticks_usec() - time
-                #print('Sky intensity time: ' + str(time) + 'us')
-
-
-                #print('sky intensity target: ' + str(target))
-
         # NOTE: Sun light color can change abruptly, and it's relatively cheap
         #       to check, so check constantly and update the target
         if sky_changed or force:
@@ -590,9 +539,6 @@ func tick_sky_lights(delta: float) -> void:
             #       squaring the phase angle produces such an effect.
             Moon.light_energy = moon_phase_angle * moon_phase_angle
             Moon.light_energy *= moon_light_energy.update(delta)
-
-    if not sky_intensity.is_done:
-        environment.background_intensity = sky_intensity.update(delta)
 
     if not sun_light_color.is_done:
         Sun.light_color = sun_light_color.update(delta)
@@ -831,56 +777,6 @@ func light_horizon(light: Vector3, radius: float) -> float:
     var beta: float = (PI * 0.5) * (cos(PI * rho * 0.5) + 1.0)
     var alpha: float = beta / PI
     return alpha
-
-func compute_sky_intensity() -> float:
-
-    # The first run won't have a texture, so wait for it
-    if not sky_intensity.is_target_set:
-        RenderingServer.force_sync()
-
-    var sky_texture: Image = sky_compute.sky_texture.get_image()
-    var size: Vector2i = sky_texture.get_size()
-
-    # Compute average pixel value
-    var data: PackedByteArray = sky_texture.get_data()
-    var length: int = data.size()
-
-    var total: Vector4
-
-    var start: int = Time.get_ticks_usec()
-    @warning_ignore('integer_division')
-    for y in range(int(size.y / 2), size.y):
-        var dy: float = 2.0 * (float(y) / float(size.y) - 0.5)
-        var d: float = 8.0 * sqrt(1.0 - (dy * dy))
-        for x in range(size.x):
-            var i: int = ((y * size.x) + x) * 16
-
-            total.x += d * data.decode_float(i)
-            total.y += d * data.decode_float(i + 4)
-            total.z += d * data.decode_float(i + 8)
-
-    var duration: int = Time.get_ticks_usec() - start
-    print('took ' + str(duration) + 'us')
-
-    total = total / (size.x * size.y * 0.5)
-
-    # NOTE: relative luminance calculation from original sky shader
-    var luminance: float = 0.2126729 * total.x + 0.7151522 * total.y + 0.0721750 * total.z
-    luminance = luminance / 17.4862339609375
-    print('computed average color: ' + str(total))
-    print('luminance: ' + str(luminance))
-
-    # NOTE: This always computes zero in-engine, so return current value
-    if Engine.is_editor_hint() and is_zero_approx(luminance):
-        return environment.background_intensity
-
-    luminance = clampf(luminance, 0.0, luminance_maximum)
-
-    var intensity: float = ease(luminance / luminance_maximum, sky_intensity_curve)
-    intensity = intensity * (sky_intensity_max - sky_intensity_min) + sky_intensity_min
-    print('intensity: ' + str(intensity))
-
-    return intensity
 
 func compute_sun_color() -> Color:
     # If the Sun is not visible, keep the current color

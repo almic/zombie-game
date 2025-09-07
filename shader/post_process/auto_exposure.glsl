@@ -107,12 +107,26 @@ void main() {
 #ifdef INTERPOLATE
         vec2 prev = texelFetch(previous, ivec2(0, 0), 0).rg;
         avg.g = curve(avg.g, params.light_curve);
-        float m = curve(mix(prev.r, avg.r, step(prev.r, avg.r)), params.light_curve);
-        float time = mix(params.light_time, params.dark_time, m);
-        avg = clamp(
-            prev + (avg - prev) * (1.0 - exp(-(params.time_step / time))),
-            vec2(params.min_luminance, 0.0),
-            vec2(params.max_luminance, 1.0)
+        float time = mix(
+                mix(
+                    params.light_time,
+                    params.dark_time,
+                    curve(prev.r, params.light_curve)
+                ),
+                params.light_time,
+                step(prev.r, avg.r)
+        );
+        // Auto exposure has varying speed
+        avg.r = clamp(
+            prev.r + (avg.r - prev.r) * (1.0 - exp(-(params.time_step / time))),
+            params.min_luminance,
+            params.max_luminance
+        );
+        // Night vision uses the slowest speed
+        avg.g = clamp(
+            prev.g + (avg.g - prev.g) * (1.0 - exp(-(params.time_step / params.dark_time))),
+            0.0,
+            1.0
         );
 #endif
         imageStore(destination, pos, vec4(avg, 0.0, 0.0));

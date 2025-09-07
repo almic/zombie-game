@@ -528,11 +528,6 @@ func update_sky(_delta: float, force: bool = false) -> void:
             * sqrt(Sun.light_color.srgb_to_linear().get_luminance())
     )
 
-    # Moon light energy calculation
-    # NOTE: the Moon is far brighter when at opposition with the Sun, so
-    #       squaring the phase angle produces such an effect.
-    Moon.light_energy = moon_phase_angle * moon_phase_angle
-
     # Disable sun light when energy is too low
     Sun.visible = Sun.light_energy > 0.000001
 
@@ -549,7 +544,8 @@ func update_sky(_delta: float, force: bool = false) -> void:
             if not Moon.shadow_enabled:
                 Moon.shadow_enabled = true
                 moon_light_energy.set_target_delta(1.0, 1.0, 0.0)
-        elif Moon.shadow_enabled and (not moon_light_energy.is_target_set or not is_zero_approx(moon_light_energy.target)):
+        elif not moon_light_energy.is_target_set or not is_zero_approx(moon_light_energy.target):
+            Moon.shadow_enabled = false
             moon_light_energy.set_target_delta(0.0, -moon_light_energy.current)
 
     # BUG: Godot only updates textures in-game, wack
@@ -588,13 +584,12 @@ func update_sky(_delta: float, force: bool = false) -> void:
 
 func tick_sky_lights(delta: float) -> void:
     if Moon.visible:
-        if moon_light_energy.is_target_set:
-            # Reset energy for modifier
+        if moon_light_energy.is_target_set and not moon_light_energy.is_done:
+            # Moon light energy calculation
+            # NOTE: the Moon is far brighter when at opposition with the Sun, so
+            #       squaring the phase angle produces such an effect.
             Moon.light_energy = moon_phase_angle * moon_phase_angle
             Moon.light_energy *= moon_light_energy.update(delta)
-
-        if moon_light_energy.is_done and is_zero_approx(Moon.light_energy):
-            Moon.shadow_enabled = false
 
     if not sky_intensity.is_done:
         environment.background_intensity = sky_intensity.update(delta)

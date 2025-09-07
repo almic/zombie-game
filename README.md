@@ -5,12 +5,12 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
-- [ ] Investigate if stairs can be fixed with sliding/ stepping up
-- [ ] Investigate weird snapping bug
 - [ ] Make each weapon have its own UI scene for displaying the weapon and ammo
 - [ ] Add more zombie types
 - [ ] Level blocking
 - [ ] Camera Smooth (generic)
+- [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [X] Investigate weird snapping bug
 - [X] Set up day / night settings for transitions
 - [X] Moon illumination to scale depending on the phase, look up real equations.
       The full moon is more than 2x brighter than a half-moon! Non-linear!

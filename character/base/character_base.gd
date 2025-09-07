@@ -145,8 +145,7 @@ var snap_accumulation: Vector3 = Vector3.ZERO
 # Ground stuff
 var ground_state: GroundState = GroundState.NOT_GROUNDED
 var ground_details: GroundDetails = GroundDetails.new()
-# If the last tick had ground. Mainly used to enable b-hopping for high speed
-var ground_was_grounded: bool
+var last_ground_details: GroundDetails = GroundDetails.new()
 
 # Fluid stuff
 var fluid_state: FluidState = FluidState.AIR
@@ -233,6 +232,12 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
             jump_direction = 0.6 * up_direction + 0.4 * ground_details.normal
         else:
             jump_direction = up_direction
+
+        # Remove velocity opposite to jump direction
+        var speed_opposite_jump: float = velocity.dot(-jump_direction)
+        if speed_opposite_jump > 0:
+            velocity += jump_direction * min(speed_opposite_jump, jump_power)
+
         velocity += jump_direction * jump_power
         just_jumped = true
         grounded = false
@@ -275,6 +280,12 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
     snap_accumulation = Vector3.ZERO
     var rid: RID = get_rid()
 
+    apply_ground_details(
+        last_ground_details,
+        ground_details.normal,
+        ground_details.position,
+        ground_details.body
+    )
     ground_details.reset()
     var best_ground_dot: float = -INF
 
@@ -413,8 +424,12 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
 
     var real_velocity: Vector3 = (global_position - last_position) - snap_accumulation
 
-    # Snap to floor if we just detached from the ground
-    if grounded and not ground_details.has_ground():
+    # Check if old ground is still there, and if not try to snap
+    if (
+                grounded
+            and not ground_details.has_ground()
+            and not check_last_ground(last_position, last_ground_details)
+    ):
         var do_forward_test: bool = real_velocity.dot(up_direction) > 0
         var forward_test_direction: Vector3
         if do_forward_test:
@@ -492,6 +507,34 @@ static func compute_friction(friction: float, direction: Vector3, wish_direction
 
     return -direction * loss + wish_direction * loss * keep
 
+
+## Uses a raycast to check if the last ground is still under the character,
+## prevents random ground loss since we may not always hit the ground. If this
+## returns true, ground_details has been updated with new ground
+func check_last_ground(last_position: Vector3, last_ground: GroundDetails) -> bool:
+    var from: Vector3 = global_position + (last_ground.position - last_position)
+    var to: Vector3 = from - (up_direction * 0.008)
+    from += up_direction * 0.005
+
+    var space := get_world_3d().direct_space_state
+    var raycast := space.intersect_ray(PhysicsRayQueryParameters3D.create(
+            from,
+            to,
+            collision_mask,
+            [get_rid()]
+    ))
+
+    if not raycast or raycast.collider != last_ground.body:
+        return false
+
+    apply_ground_details(
+        ground_details,
+        raycast.normal,
+        raycast.position,
+        raycast.collider
+    )
+
+    return true
 
 ## Tries to step up using the remainder distance, updates the ground details when
 ## successful, returns the new remainder travel distance

@@ -9,7 +9,7 @@
 [ext_resource type="PackedScene" uid="uid://hd5ypgu0xccr" path="res://scene/weapon/pistol/pistol_mag_mesh.tscn" id="5_5uu0m"]
 [ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="6_1v76v"]
 [ext_resource type="PackedScene" uid="uid://cu1aswulumms5" path="res://ui/weapon/pistol/pistol_ui.tscn" id="6_b060m"]
-[ext_resource type="Texture2D" uid="uid://cvrw12mrwdvui" path="res://icon/pistol_side.png" id="8_3dsxi"]
+[ext_resource type="Texture2D" uid="uid://buhlyxv70vjtb" path="res://icon/pistol_side_DEV_ONLY.png" id="10_b060m"]
 
 [sub_resource type="Resource" id="Resource_1v76v"]
 resource_local_to_scene = true
@@ -58,7 +58,7 @@ recoil_spread_bias = 1.0
 recoil_spread_angle = 0.349066
 recoil_aim_control = 0.5
 crosshair_enabled = true
-ui_texture = ExtResource("8_3dsxi")
+ui_texture = ExtResource("10_b060m")
 scene = ExtResource("4_6v0uo")
 scene_offset = Vector3(0, 0, 0)
 scene_magazine = ExtResource("5_5uu0m")

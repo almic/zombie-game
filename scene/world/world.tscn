@@ -201,7 +201,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupPistol" type="Marker3D" parent="WeaponPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -319.952, 2.2, -509.636)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -319.952, 2.1, -509.636)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("17_lpj8c")
@@ -259,7 +259,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
 [node name="PickupBolt" type="Marker3D" parent="WeaponPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -150.909, 1, 480.608)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -322.51, 2.1, -506.307)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("23_x6gsb")
@@ -301,7 +301,7 @@ metadata/_edit_lock_ = true
 [node name="AmmoPickups" type="Node" parent="."]
 
 [node name="PickupBuckshot" type="Marker3D" parent="AmmoPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("43_0wajj")
@@ -339,7 +339,7 @@ shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupFMJ" type="Marker3D" parent="AmmoPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.2, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.122, 2.1, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("49_il2y7")
@@ -357,7 +357,7 @@ shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupMagnum" type="Marker3D" parent="AmmoPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.64, 2.2, -514.44)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -325.672, 2.1, -514.44)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("31_rf70f")
@@ -375,7 +375,7 @@ shape = SubResource("BoxShape3D_pb8w5")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="Pickup9mm" type="Marker3D" parent="AmmoPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.4, 2.2, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.4, 2.1, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("45_51258")

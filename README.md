@@ -14,6 +14,9 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       charging a magazine weapon if the chambered round is a different type than
       the reserve. Maybe require the input to be held for some time to prevent
       "check" charges from ejecting a round.
+- [ ] Pack weapon images and round icons into two textures, one for all weapons,
+      one for all round types. WeaponResource and AmmoResource will need to have
+      icon indexes added to support this.
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
 - [X] Investigate weird snapping bug

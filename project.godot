@@ -58,7 +58,8 @@ folder_colors={
 "res://particle/": "teal",
 "res://scene/": "green",
 "res://script/": "purple",
-"res://shader/": "pink"
+"res://shader/": "pink",
+"res://ui/": "orange"
 }
 
 [global_group]

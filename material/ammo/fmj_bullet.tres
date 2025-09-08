@@ -1,0 +1,33 @@
+[gd_resource type="StandardMaterial3D" load_steps=7 format=3 uid="uid://dd7sulmnefn7e"]
+
+[sub_resource type="Gradient" id="Gradient_3wujd"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.88, 0.9, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 0.937838, 0.937838, 1, 0.862745, 0, 0, 1, 0.862745, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_y6tma"]
+gradient = SubResource("Gradient_3wujd")
+width = 50
+
+[sub_resource type="Gradient" id="Gradient_rqrqk"]
+offsets = PackedFloat32Array(0, 0.88, 0.9, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_6nnpk"]
+gradient = SubResource("Gradient_rqrqk")
+width = 50
+
+[sub_resource type="Gradient" id="Gradient_lmpki"]
+offsets = PackedFloat32Array(0, 0.88, 0.9, 1)
+colors = PackedColorArray(0.294118, 0.294118, 0.294118, 1, 0.295867, 0.295866, 0.295866, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_luu2h"]
+gradient = SubResource("Gradient_lmpki")
+width = 50
+
+[resource]
+albedo_color = Color(0.752941, 0.521569, 0.305882, 1)
+albedo_texture = SubResource("GradientTexture1D_y6tma")
+metallic = 1.0
+metallic_texture = SubResource("GradientTexture1D_6nnpk")
+roughness_texture = SubResource("GradientTexture1D_luu2h")

@@ -3,14 +3,16 @@
 [ext_resource type="PackedScene" uid="uid://duq343l2kavnw" path="res://scene/item/ammo/9mm/9mm_mesh_expend.tscn" id="1_7l4lv"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_0ahty"]
-height = 0.019
-radius = 0.009
+height = 0.045
+radius = 0.006
 
 [node name="9MilRigid" type="RigidBody3D"]
 collision_layer = 128
 collision_mask = 244
-mass = 0.002
+mass = 0.004
 continuous_cd = true
+linear_damp = 0.5
+angular_damp = 0.333
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)

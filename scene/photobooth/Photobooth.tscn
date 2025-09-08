@@ -27,7 +27,7 @@ msaa_3d = 3
 screen_space_aa = 1
 size = Vector2i(256, 256)
 script = ExtResource("1_nf7f5")
-filename = "9mm_side"
+filename = "fmj_side"
 metadata/_custom_type_script = "uid://dph67clkgrjv8"
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -38,7 +38,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1)
 projection = 1
 current = true
-size = 0.033
+size = 0.058
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_bhagj")
@@ -62,6 +62,7 @@ visible = false
 
 [node name="9MilMesh" parent="." instance=ExtResource("6_7e4lp")]
 transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 0, 0, 0)
+visible = false
 
 [node name="Pistol" parent="." instance=ExtResource("7_thyps")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
@@ -69,7 +70,6 @@ visible = false
 
 [node name="fmj_mesh" parent="." instance=ExtResource("8_efp2y")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
-visible = false
 
 [node name="WeaponScene" parent="." instance=ExtResource("9_6v3wl")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)

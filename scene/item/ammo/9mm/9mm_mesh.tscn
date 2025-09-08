@@ -5,5 +5,5 @@
 [node name="9MilMesh" type="Node3D"]
 
 [node name="mesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 1.45519e-11, 1.45519e-11, 0.003)
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
 mesh = ExtResource("1_uxv3u")

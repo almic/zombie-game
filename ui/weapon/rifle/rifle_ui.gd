@@ -13,7 +13,7 @@ var ammo_icon_size: float = 18.0:
         if not is_node_ready():
             return
 
-        for row in [ammo_row_1, ammo_row_2]:
+        for row in rows:
             for child in row.get_children():
                 var rect: TextureRect = child as TextureRect
                 if not rect:
@@ -42,12 +42,11 @@ func update(weapon: WeaponResource) -> void:
     reserve_type = update_reserve_rows(
         weapon,
         rows,
-        -2,
+        1,
         reserve_opacity,
         reserve_type,
         _add_ammo_reserve
     )
-
 
 func _add_ammo_reserve(ammo: AmmoResource, parent: HBoxContainer) -> TextureRect:
     var round_texture: TextureRect = create_texture_rect(

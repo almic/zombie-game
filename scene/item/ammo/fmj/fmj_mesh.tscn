@@ -1,45 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://cql2ehaj8f2h3"]
+[gd_scene load_steps=2 format=3 uid="uid://cql2ehaj8f2h3"]
 
-[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="1_006i2"]
-[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_myvi6"]
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_0b428"]
-material = ExtResource("1_006i2")
-top_radius = 0.009
-bottom_radius = 0.009
-height = 0.04
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_ahp6g"]
-material = ExtResource("1_006i2")
-top_radius = 0.007
-bottom_radius = 0.009
-height = 0.007
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_006i2"]
-material = ExtResource("1_006i2")
-top_radius = 0.007
-bottom_radius = 0.007
-height = 0.01
-
-[sub_resource type="SphereMesh" id="SphereMesh_myvi6"]
-material = ExtResource("2_myvi6")
-radius = 0.006
-height = 0.03
+[ext_resource type="ArrayMesh" uid="uid://dia8pkulwxp8y" path="res://model/ammo/fmj/fmj_mesh.res" id="1_ahp6g"]
 
 [node name="fmj_mesh" type="Node3D"]
 
-[node name="case" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.017)
-mesh = SubResource("CylinderMesh_0b428")
-
-[node name="taper" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0065)
-mesh = SubResource("CylinderMesh_ahp6g")
-
-[node name="neck" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.015)
-mesh = SubResource("CylinderMesh_006i2")
-
-[node name="bullet" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.022)
-mesh = SubResource("SphereMesh_myvi6")
+[node name="mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+mesh = ExtResource("1_ahp6g")

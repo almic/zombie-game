@@ -112,15 +112,16 @@ func update_weapon_hud(weapon: WeaponResource) -> void:
             _weapon_ui_scene.queue_free()
             _weapon_ui_scene = null
 
-        _weapon_ui_scene = weapon.scene_ui.instantiate() as WeaponUI
-        _weapon_hud_scene_path = weapon.scene_ui.resource_path
+        if weapon:
+            _weapon_ui_scene = weapon.scene_ui.instantiate() as WeaponUI
+            _weapon_hud_scene_path = weapon.scene_ui.resource_path
 
-        # NOTE: temporary for development, should be removed
-        if not _weapon_ui_scene:
-            push_error('Weapon type does not have a UI scene set correctly! Investigate!')
-            return
+            # NOTE: temporary for development, should be removed
+            if not _weapon_ui_scene:
+                push_error('Weapon type does not have a UI scene set correctly! Investigate!')
+                return
 
-        weapon_hud.add_child(_weapon_ui_scene)
+            weapon_hud.add_child(_weapon_ui_scene)
 
     if weapon:
         var stock: Dictionary = weapon.ammo_stock

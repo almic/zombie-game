@@ -3,13 +3,16 @@
 [ext_resource type="PackedScene" uid="uid://bfxlt0jok1ocg" path="res://scene/item/ammo/fmj/fmj_mesh_expend.tscn" id="1_ljiww"]
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_0ahty"]
-height = 0.057
-radius = 0.009
+height = 0.045
+radius = 0.006
 
 [node name="FMJRigidExpend" type="RigidBody3D"]
 collision_layer = 128
 collision_mask = 244
 mass = 0.008
+continuous_cd = true
+linear_damp = 1.0
+angular_damp = 0.5
 
 [node name="fmj_mesh_expend" parent="." instance=ExtResource("1_ljiww")]
 

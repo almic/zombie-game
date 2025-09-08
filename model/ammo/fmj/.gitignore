@@ -1,0 +1,6 @@
+*.*
+
+!.gitignore
+!fmj_mesh.res
+!fmj_case_mesh.res
+

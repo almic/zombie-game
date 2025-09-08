@@ -16,13 +16,13 @@ theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 script = ExtResource("1_u73cx")
-ammo_icon_size = 44.0
-reserve_opacity = null
+ammo_icon_size = 26.0
+reserve_opacity = 0.4
 metadata/_custom_type_script = "uid://n24dm7nfx3mh"
 
 [node name="weapon_texture" type="TextureRect" parent="."]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(1.45519e-11, 80)
+custom_minimum_size = Vector2(1.45519e-11, 100)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -31,8 +31,8 @@ expand_mode = 3
 
 [node name="ammo_margin" type="MarginContainer" parent="."]
 layout_mode = 2
-theme_override_constants/margin_left = 68
-theme_override_constants/margin_top = 33
+theme_override_constants/margin_left = 73
+theme_override_constants/margin_top = 42
 
 [node name="ammo_flow" type="VBoxContainer" parent="ammo_margin"]
 layout_mode = 2

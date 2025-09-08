@@ -201,7 +201,7 @@ func _ready() -> void:
     aim_target.add_exception(self)
 
     weapon_node.ammo_bank = ammo_bank
-    weapon_node.ammo_updated.connect(update_ammo)
+    weapon_node.ammo_updated.connect(update_weapon_hud)
     weapon_node.reload_complete.connect(on_reload_complete)
 
     connect_hurtboxes()
@@ -727,7 +727,7 @@ func select_weapon(slot: int) -> void:
     weapon_aim_offset = weapon_aim_position + weapon.aim_offset
     weapon_aim_roll = -weapon.aim_camera_roll
 
-    update_ammo()
+    update_weapon_hud()
 
     # NOTE: Special behavior for scoped rifle, it needs our camera attributes
     var scoped_rifle: ScopeRifle = weapon_node._weapon_scene as ScopeRifle
@@ -747,8 +747,8 @@ func set_score(value: int) -> void:
 
     get_tree().call_group('hud', 'update_score', score)
 
-func update_ammo() -> void:
-    get_tree().call_group('hud', 'update_weapon_ammo', weapon_node.weapon_type)
+func update_weapon_hud() -> void:
+    get_tree().call_group('hud', 'update_weapon_hud', weapon_node.weapon_type)
 
 func pickup_item(item: Pickup) -> void:
     if item.item_type is WeaponResource:
@@ -780,7 +780,7 @@ func pickup_item(item: Pickup) -> void:
 
         if item.item_count > 0:
             weapon.load_rounds(item.item_count, weapon.get_default_ammo().type)
-            update_ammo()
+            update_weapon_hud()
 
         # For the revolver, rotate to one after the highest live round index
         if weapon is RevolverWeapon:
@@ -797,9 +797,9 @@ func pickup_item(item: Pickup) -> void:
         if weapon_index and not weapon_node.has_ammo_stock():
             # NOTE: this will update ammo on the hud if true
             if not weapon_node.switch_ammo():
-                update_ammo()
+                update_weapon_hud()
         else:
-            update_ammo()
+            update_weapon_hud()
 
         item.queue_free()
 

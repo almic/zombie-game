@@ -1,0 +1,33 @@
+[gd_scene load_steps=3 format=3 uid="uid://bucw1701uwbvx"]
+
+[ext_resource type="Texture2D" uid="uid://catrmqsiu168b" path="res://icon/shotgun_side.png" id="1_dlceg"]
+[ext_resource type="Script" uid="uid://basife1pfjwnu" path="res://ui/weapon/shotgun/shotgun_ui.gd" id="1_sv0l5"]
+
+[node name="shotgun_ui" type="MarginContainer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -49.0
+offset_right = 251.0
+grow_vertical = 0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+script = ExtResource("1_sv0l5")
+
+[node name="weapon_box" type="VBoxContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="weapon_texture" type="TextureRect" parent="weapon_box"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("1_dlceg")
+
+[node name="ammo_flow" type="HBoxContainer" parent="weapon_box"]
+unique_name_in_owner = true
+layout_mode = 2

@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://cu1aswulumms5"]
+
+[ext_resource type="Script" uid="uid://dkdttkwdaf8ga" path="res://ui/weapon/pistol/pistol_ui.gd" id="1_u73cx"]
+[ext_resource type="Texture2D" uid="uid://cvrw12mrwdvui" path="res://icon/pistol_side.png" id="2_i6cw7"]
+
+[node name="pistol_ui" type="MarginContainer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -49.0
+offset_right = 93.0
+grow_vertical = 0
+mouse_filter = 0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+script = ExtResource("1_u73cx")
+ammo_icon_size = 44.0
+reserve_opacity = null
+metadata/_custom_type_script = "uid://n24dm7nfx3mh"
+
+[node name="weapon_texture" type="TextureRect" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(1.45519e-11, 80)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("2_i6cw7")
+expand_mode = 3
+
+[node name="ammo_margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 68
+theme_override_constants/margin_top = 33
+
+[node name="ammo_flow" type="VBoxContainer" parent="ammo_margin"]
+layout_mode = 2
+
+[node name="ammo_row_1" type="HBoxContainer" parent="ammo_margin/ammo_flow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 8
+
+[node name="ammo_row_2" type="HBoxContainer" parent="ammo_margin/ammo_flow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 8

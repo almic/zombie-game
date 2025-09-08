@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=11 format=3 uid="uid://d3ao7jq6qeasg"]
+[gd_resource type="Resource" script_class="WeaponResource" load_steps=12 format=3 uid="uid://d3ao7jq6qeasg"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_3vreh"]
 [ext_resource type="PackedScene" uid="uid://d30d6ot2ufjtr" path="res://particle/system/weapon/gunshot_small.tscn" id="1_6v0uo"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="4_6v0uo"]
 [ext_resource type="PackedScene" uid="uid://hd5ypgu0xccr" path="res://scene/weapon/pistol/pistol_mag_mesh.tscn" id="5_5uu0m"]
 [ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="6_1v76v"]
+[ext_resource type="PackedScene" uid="uid://cu1aswulumms5" path="res://ui/weapon/pistol/pistol_ui.tscn" id="6_b060m"]
 [ext_resource type="Texture2D" uid="uid://cvrw12mrwdvui" path="res://icon/pistol_side.png" id="8_3dsxi"]
 
 [sub_resource type="Resource" id="Resource_1v76v"]
@@ -61,6 +62,7 @@ ui_texture = ExtResource("8_3dsxi")
 scene = ExtResource("4_6v0uo")
 scene_offset = Vector3(0, 0, 0)
 scene_magazine = ExtResource("5_5uu0m")
+scene_ui = ExtResource("6_b060m")
 particle_scene = ExtResource("1_6v0uo")
 particle_offset = Vector3(1.45519e-11, 1.45519e-11, 1.45519e-11)
 particle_test = false

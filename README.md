@@ -8,6 +8,12 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] Make each weapon have its own UI scene for displaying the weapon and ammo
 - [ ] Add more zombie types
 - [ ] Level blocking
+- [ ] For magazine weapons, allow keeping live round chambered during reload.
+      Perhaps keep chambered if reload input is held when it would normally
+      eject, allowing an effective "mixed" load on magazine weapons. Also, allow
+      charging a magazine weapon if the chambered round is a different type than
+      the reserve. Maybe require the input to be held for some time to prevent
+      "check" charges from ejecting a round.
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
 - [X] Investigate weird snapping bug

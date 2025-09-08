@@ -98,6 +98,7 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
+enable_spawning = false
 enable_targetting = false
 target_spawn_count = 20
 spawn_count_extra = 5
@@ -171,7 +172,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(0.467584, 0, 0.883949, 0, 1, 0, -0.883949, 0, 0.467584, -138.668, 0.563723, 488.133)
+transform = Transform3D(-0.15127, 0, 0.988493, 0, 1, 0, -0.988493, 0, -0.15127, -316.456, 2.07585, -509.027)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -200,7 +201,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupPistol" type="Marker3D" parent="WeaponPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.5, 2.2, -514.42)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -319.952, 2.2, -509.636)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("17_lpj8c")
@@ -218,7 +219,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupShotgun" type="Marker3D" parent="WeaponPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -484.565)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("19_udj0i")
@@ -278,7 +279,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
 [node name="PickupRevolver" type="Marker3D" parent="WeaponPickups"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.689, 2.1, -514.532)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -323.726, 2.1, -514.532)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("25_pb8w5")

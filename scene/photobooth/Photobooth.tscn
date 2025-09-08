@@ -15,9 +15,11 @@
 [sub_resource type="Environment" id="Environment_bhagj"]
 background_mode = 1
 background_color = Color(1, 1, 1, 1)
+background_energy_multiplier = 0.0
 
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_jwu63"]
-exposure_multiplier = 0.0
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_klyui"]
+auto_exposure_enabled = true
+auto_exposure_speed = 0.01
 
 [node name="Photobooth" type="SubViewport"]
 transparent_bg = true
@@ -25,19 +27,22 @@ msaa_3d = 3
 screen_space_aa = 1
 size = Vector2i(256, 256)
 script = ExtResource("1_nf7f5")
-filename = "magnum_side"
+filename = "9mm_side"
 metadata/_custom_type_script = "uid://dph67clkgrjv8"
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+sky_mode = 1
 
 [node name="Camera3D" type="Camera3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1)
 projection = 1
 current = true
-size = 0.096
+size = 0.033
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_bhagj")
-camera_attributes = SubResource("CameraAttributesPractical_jwu63")
+camera_attributes = SubResource("CameraAttributesPractical_klyui")
 
 [node name="Shotgun" parent="." instance=ExtResource("2_vd35b")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.095, 1.45519e-11, 1.45519e-11)
@@ -56,8 +61,7 @@ transform = Transform3D(-4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 
 visible = false
 
 [node name="9MilMesh" parent="." instance=ExtResource("6_7e4lp")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
-visible = false
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 0, 0, 0)
 
 [node name="Pistol" parent="." instance=ExtResource("7_thyps")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
@@ -77,5 +81,6 @@ visible = false
 
 [node name="magnum_mesh" parent="." instance=ExtResource("11_uhgnh")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+visible = false
 
 [editable path="Shovel"]

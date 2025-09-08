@@ -1,25 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://b1p051vpkyejp"]
+[gd_scene load_steps=2 format=3 uid="uid://b1p051vpkyejp"]
 
-[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="1_seebo"]
-[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_m226j"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_mjp3a"]
-material = ExtResource("2_m226j")
-radius = 0.009
-height = 0.027
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_seebo"]
-material = ExtResource("1_seebo")
-top_radius = 0.009
-bottom_radius = 0.009
-height = 0.03
+[ext_resource type="ArrayMesh" uid="uid://cm87l1h0330nc" path="res://model/ammo/9mm/9mm_mesh.res" id="1_uxv3u"]
 
 [node name="9MilMesh" type="Node3D"]
 
-[node name="bullet" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0095)
-mesh = SubResource("SphereMesh_mjp3a")
-
-[node name="case" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.008)
-mesh = SubResource("CylinderMesh_seebo")
+[node name="mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 1.45519e-11, 1.45519e-11, 0.003)
+mesh = ExtResource("1_uxv3u")

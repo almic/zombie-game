@@ -194,6 +194,7 @@ var _recoil_aim_control: float = 0.0
 @export var scene: PackedScene
 @export var scene_offset: Vector3
 @export var scene_magazine: PackedScene
+@export var scene_ui: PackedScene
 
 
 @export_group("Particle System", "particle")
@@ -328,9 +329,15 @@ func get_default_ammo() -> AmmoResource:
     return ammo_supported[0]
 
 func get_chamber_round() -> Dictionary:
+    var ammo: AmmoResource = null
+    if _chambered_round_type != 0:
+        # NOTE: If you get a null error here, the problem is that ammo_bank
+        #       is missing the ammo type chambered in this weapon. Go ensure
+        #       ammo bank is being updated with the ammo contained in the gun!
+        ammo = ammo_bank.get(_chambered_round_type).ammo
     return {
         'is_live': _chambered_round_live,
-        'ammo': ammo_bank.get(_chambered_round_type).ammo
+        'ammo': ammo
     }
 
 func set_ammo_bank(value: Dictionary) -> void:
@@ -353,6 +360,9 @@ func set_ammo_reserve_size(value: int) -> void:
 
 func is_chambered() -> bool:
     return _chambered_round_type > 0
+
+func is_chambered_live() -> bool:
+    return _chambered_round_live
 
 func is_reserve_full() -> bool:
     return not get_reserve_total() < ammo_reserve_size

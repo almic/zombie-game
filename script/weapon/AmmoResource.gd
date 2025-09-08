@@ -32,6 +32,11 @@ var projectile_clustering: float = 0.5
 
 @export var ui_texture: Texture2D
 
+@export_range(-180.0, 180.0, 0.001, 'radians_as_degrees')
+var ui_texture_rotation: float = 0.0
+
+@export var ui_texture_pivot: Vector2 = Vector2.ZERO
+
 ## Scene used for a fresh round
 @export var scene_round: PackedScene
 

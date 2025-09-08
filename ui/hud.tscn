@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://duylaogq2cjd6"]
+[gd_scene load_steps=11 format=3 uid="uid://duylaogq2cjd6"]
 
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
-[ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="2_en2x2"]
-[ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="3_1v5rv"]
-[ext_resource type="Texture2D" uid="uid://catrmqsiu168b" path="res://icon/shotgun_side.png" id="5_q43x7"]
+[ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="2_en2x2"]
+[ext_resource type="Resource" uid="uid://dbg6mglqc5jqu" path="res://data/weapon/ammo/9mm.tres" id="3_1v5rv"]
+[ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="5_1v5rv"]
+[ext_resource type="Texture2D" uid="uid://cm2tf0y18pwsl" path="res://icon/9mm_side.png" id="5_q43x7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr31g"]
 bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
@@ -12,14 +13,19 @@ bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lqp71"]
 bg_color = Color(1, 0.258138, 0.322135, 1)
 
-[sub_resource type="LabelSettings" id="LabelSettings_276te"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_q43x7"]
+shader = ExtResource("5_1v5rv")
+shader_parameter/rotation = 0.523599
+shader_parameter/pivot = Vector2(0.5, 0.5)
+shader_parameter/size = Vector2(18, 52.6154)
+
+[sub_resource type="LabelSettings" id="LabelSettings_7ihmi"]
 font_size = 40
 font_color = Color(1, 0.92549, 0.72549, 1)
 shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.501961)
 
 [node name="hud" type="MarginContainer" groups=["hud"]]
-clip_contents = true
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -32,10 +38,11 @@ theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 20
 script = ExtResource("1_276te")
 _preview_weapon = ExtResource("2_en2x2")
-_preview_weapon_ammo_mix = PackedInt32Array(2, 3)
+_preview_weapon_ammo_reserve_type = 1
+_preview_weapon_ammo_reserve_total = 1
 _preview_stock_ammo = {
 "ammo": ExtResource("3_1v5rv"),
-"amount": 8
+"amount": 13
 }
 
 [node name="crosshair_root" type="CenterContainer" parent="."]
@@ -83,40 +90,39 @@ max_value = 1.0
 value = 1.0
 show_percentage = false
 
-[node name="weapon_box" type="VBoxContainer" parent="."]
+[node name="weapon_hud" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
-alignment = 2
 
-[node name="weapon_box" type="HBoxContainer" parent="weapon_box"]
+[node name="stock_box_container" type="MarginContainer" parent="weapon_hud"]
 layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-size_flags_stretch_ratio = 0.0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
 
-[node name="weapon_texture" type="TextureRect" parent="weapon_box/weapon_box"]
-unique_name_in_owner = true
+[node name="stock_box" type="HBoxContainer" parent="weapon_hud/stock_box_container"]
 layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-texture = ExtResource("5_q43x7")
+theme_override_constants/separation = 8
 
-[node name="stock_texture" type="TextureRect" parent="weapon_box/weapon_box"]
+[node name="stock_texture" type="TextureRect" parent="weapon_hud/stock_box_container/stock_box"]
 unique_name_in_owner = true
+material = SubResource("ShaderMaterial_q43x7")
+custom_minimum_size = Vector2(18, 1.45519e-11)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
+texture = ExtResource("5_q43x7")
+expand_mode = 5
 
-[node name="stock_amount" type="Label" parent="weapon_box/weapon_box"]
+[node name="stock_amount" type="Label" parent="weapon_hud/stock_box_container/stock_box"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-label_settings = SubResource("LabelSettings_276te")
-
-[node name="ammo_flow" type="HBoxContainer" parent="weapon_box"]
-unique_name_in_owner = true
-layout_mode = 2
+text = "13"
+label_settings = SubResource("LabelSettings_7ihmi")
 
 [node name="clock" type="HBoxContainer" parent="."]
 layout_mode = 2

@@ -5,64 +5,64 @@
 [node name="9MmPile" type="Node3D"]
 
 [node name="9MilMesh" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, -2.17952e-09, 0.0498617)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.03)
 
 [node name="9MilMesh2" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, -1.3053e-09, 0.0298617)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.02)
 
 [node name="9MilMesh3" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, -4.31068e-10, 0.00986168)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.01)
 
 [node name="9MilMesh4" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 4.4316e-10, -0.0101383)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
 
 [node name="9MilMesh5" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.31739e-09, -0.0301383)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.01)
 
 [node name="9MilMesh6" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 2.19162e-09, -0.0501383)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.02)
 
 [node name="9MilMesh7" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 3.06584e-09, -0.0701383)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.03)
 
 [node name="9MilMesh15" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, -2.63548e-09, 0.0602927)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, -2.63548e-09, 0.035)
 
 [node name="9MilMesh16" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, -1.76125e-09, 0.0402927)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, -1.76125e-09, 0.025)
 
 [node name="9MilMesh17" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, -8.87022e-10, 0.0202927)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, -8.87022e-10, 0.015)
 
 [node name="9MilMesh18" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, -1.27938e-11, 0.000292689)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, 1.45519e-11, 0.005)
 
 [node name="9MilMesh19" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, 8.61434e-10, -0.0197073)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, 1.45519e-11, -0.005)
 
 [node name="9MilMesh20" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, 1.73566e-09, -0.0397073)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, 1.45519e-11, -0.015)
 
 [node name="9MilMesh21" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.02, 2.60989e-09, -0.0597073)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -0.0088, 1.45519e-11, -0.025)
 
 [node name="9MilMesh8" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, -2.62268e-09, 0.06)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, -2.62268e-09, 0.035)
 
 [node name="9MilMesh9" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, -1.74846e-09, 0.04)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, -1.74846e-09, 0.025)
 
 [node name="9MilMesh10" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, -8.74228e-10, 0.02)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, -8.74228e-10, 0.015)
 
 [node name="9MilMesh11" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, 0, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, 1.45519e-11, 0.005)
 
 [node name="9MilMesh12" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, 8.74228e-10, -0.02)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, 1.45519e-11, -0.005)
 
 [node name="9MilMesh13" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, 1.74846e-09, -0.04)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, 1.45519e-11, -0.015)
 
 [node name="9MilMesh14" parent="." instance=ExtResource("1_okkml")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.02, 2.62268e-09, -0.06)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.0088, 1.45519e-11, -0.025)

@@ -19,6 +19,11 @@ class_name HUD extends Control
 
 @export_group("Preview", "_preview")
 
+@export var _preview_refresh: bool:
+    set(value):
+        _preview_refresh = false
+        update_weapon_hud.call_deferred(_preview_weapon)
+
 @export var _preview_weapon: WeaponResource:
     set(value):
         if not Engine.is_editor_hint():
@@ -27,7 +32,7 @@ class_name HUD extends Control
 
         _preview_weapon = value
         _preview_weapon._mixed_reserve = _preview_weapon_ammo_mix
-        update_weapon_hud.call_deferred(_preview_weapon)
+        _preview_refresh = true
 
 @export var _preview_weapon_ammo_mix: PackedInt32Array:
     set(value):
@@ -39,7 +44,7 @@ class_name HUD extends Control
         _preview_weapon._mixed_reserve = _preview_weapon_ammo_mix
         _preview_weapon._simple_reserve_type = _preview_weapon_ammo_reserve_type
         _preview_weapon._simple_reserve_total = _preview_weapon_ammo_reserve_total
-        update_weapon_hud.call_deferred(_preview_weapon)
+        _preview_refresh = true
 
 @export var _preview_weapon_ammo_reserve_type: int:
     set(value):
@@ -49,7 +54,7 @@ class_name HUD extends Control
 
         _preview_weapon_ammo_reserve_type = value
         _preview_weapon._simple_reserve_type = _preview_weapon_ammo_reserve_type
-        update_weapon_hud.call_deferred(_preview_weapon)
+        _preview_refresh = true
 
 @export var _preview_weapon_ammo_reserve_total: int:
     set(value):
@@ -59,17 +64,27 @@ class_name HUD extends Control
 
         _preview_weapon_ammo_reserve_total = value
         _preview_weapon._simple_reserve_total = _preview_weapon_ammo_reserve_total
-        update_weapon_hud.call_deferred(_preview_weapon)
+        _preview_refresh = true
 
-@export var _preview_stock_ammo: Dictionary:
+@export var _preview_stock_ammo_type: AmmoResource:
     set(value):
+        _preview_stock_ammo_type = value
         if not Engine.is_editor_hint():
-            _preview_stock_ammo = {}
             return
 
-        _preview_stock_ammo = value
-        update_weapon_hud.call_deferred(_preview_weapon)
+        _preview_stock_ammo.ammo = value
+        _preview_refresh = true
 
+@export var _preview_stock_ammo_amount: int:
+    set(value):
+        _preview_stock_ammo_amount = value
+        if not Engine.is_editor_hint():
+            return
+
+        _preview_stock_ammo.amount = value
+        _preview_refresh = true
+
+var _preview_stock_ammo: Dictionary
 
 ## Path of the currently displayed weapon ui
 var _weapon_hud_scene_path: String
@@ -131,12 +146,13 @@ func update_weapon_hud(weapon: WeaponResource) -> void:
 
         if stock:
             stock_texture.texture = stock.ammo.ui_texture
+            stock_texture.custom_minimum_size.y = stock.ammo.stock_height
             stock_amount.text = str(stock.amount)
 
             var mat: ShaderMaterial = stock_texture.material as ShaderMaterial
             if mat:
-                mat.set_shader_parameter('rotation', stock.ammo.ui_texture_rotation)
-                mat.set_shader_parameter('pivot', stock.ammo.ui_texture_pivot)
+                mat.set_shader_parameter('rotation', stock.ammo.stock_rotation)
+                mat.set_shader_parameter('pivot', stock.ammo.stock_pivot)
 
         else:
             stock_texture.texture = null

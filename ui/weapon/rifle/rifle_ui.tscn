@@ -1,30 +1,38 @@
 [gd_scene load_steps=3 format=3 uid="uid://d0mjlugwe22r0"]
 
-[ext_resource type="Script" uid="uid://dl5vv5jna688f" path="res://ui/weapon/rifle/rifle_ui.gd" id="1_geo0y"]
+[ext_resource type="Script" uid="uid://n24dm7nfx3mh" path="res://ui/weapon/WeaponUI.gd" id="1_geo0y"]
 [ext_resource type="Texture2D" uid="uid://bcjupuxn5jsun" path="res://icon/rifle_side.png" id="2_geo0y"]
 
-[node name="rifle_ui" type="MarginContainer"]
+[node name="rifle_ui" type="MarginContainer" node_paths=PackedStringArray("rows")]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -49.0
 offset_right = 93.0
 grow_vertical = 0
-mouse_filter = 0
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 script = ExtResource("1_geo0y")
 ammo_icon_size = 60.0
-reserve_opacity = 0.4
+ammo_rotation = 0.314159
+enable_auto_rows = true
+enable_row_sizing = true
+row_extra_count = 1
+rows = [NodePath("weapon_box/ammo_margin/ammo_flow/ammo_row_1"), NodePath("weapon_box/ammo_margin/ammo_flow/ammo_row_2")]
 metadata/_custom_type_script = "uid://n24dm7nfx3mh"
 
 [node name="weapon_box" type="VBoxContainer" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 0
 
-[node name="weapon_texture" type="TextureRect" parent="weapon_box"]
+[node name="texture_margin" type="MarginContainer" parent="weapon_box"]
+layout_mode = 2
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_bottom = 4
+
+[node name="weapon_texture" type="TextureRect" parent="weapon_box/texture_margin"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(400, 1.45519e-11)
 layout_mode = 2
@@ -33,17 +41,21 @@ size_flags_vertical = 0
 texture = ExtResource("2_geo0y")
 expand_mode = 5
 
-[node name="ammo_flow" type="VBoxContainer" parent="weapon_box"]
+[node name="ammo_margin" type="MarginContainer" parent="weapon_box"]
+layout_mode = 2
+theme_override_constants/margin_left = 9
+
+[node name="ammo_flow" type="VBoxContainer" parent="weapon_box/ammo_margin"]
 layout_mode = 2
 
-[node name="ammo_row_1" type="HBoxContainer" parent="weapon_box/ammo_flow"]
+[node name="ammo_row_1" type="HBoxContainer" parent="weapon_box/ammo_margin/ammo_flow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 theme_override_constants/separation = 10
 
-[node name="ammo_row_2" type="HBoxContainer" parent="weapon_box/ammo_flow"]
+[node name="ammo_row_2" type="HBoxContainer" parent="weapon_box/ammo_margin/ammo_flow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0

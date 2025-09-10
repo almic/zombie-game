@@ -1,9 +1,58 @@
 @tool
 class_name WeaponUI extends MarginContainer
 
-@onready var weapon_texture: TextureRect = %weapon_texture
 
 const ROTATE_UI = preload('res://ui/rotate_ui.gdshader')
+
+
+@onready var weapon_texture: TextureRect = %weapon_texture
+
+
+@export_range(0.0, 100.0, 1.0, 'or_greater')
+var ammo_icon_size: float = 32.0:
+    set(value):
+        ammo_icon_size = value
+        if not is_node_ready():
+            return
+
+        for row in rows:
+            for child in row.get_children():
+                var rect: TextureRect = child as TextureRect
+                if not rect:
+                    continue
+                rect.custom_minimum_size.y = ammo_icon_size
+
+@export_range(-180.0, 180.0, 0.001, 'radians_as_degrees')
+var ammo_rotation: float = 0
+
+@export var ammo_rotation_pivot: Vector2 = Vector2(0.5, 0.5)
+
+@export_range(0.0, 1.0, 0.001)
+var reserve_opacity: float = 0.4
+
+## If the weapon uses default reserve row behavior
+@export var enable_auto_rows: bool = false
+
+## If the weapon uses default row sizing behavior
+@export var enable_row_sizing: bool = false
+
+## Extra reserve rounds per row, can use negative values to reduce the length
+## of the first rows.
+@export_range(-2.0, 2.0, 1.0, 'or_greater', 'or_less')
+var row_extra_count: int = 0
+
+## Rows used for reserve, in order
+@export var rows: Array[HBoxContainer]
+
+
+var reserve_type: int = 0
+
+
+func _process(_delta: float) -> void:
+    if enable_row_sizing:
+        # Set shader parameters
+        apply_rect_sizes(rows)
+
 
 ## Extend per weapon, update the UI to match the weapon state
 func update(weapon: WeaponResource) -> void:
@@ -13,6 +62,8 @@ func update(weapon: WeaponResource) -> void:
 
     weapon_texture.texture = weapon.ui_texture
 
+    if enable_auto_rows:
+        update_reserve_rows(weapon)
 
 static func apply_rect_sizes(parents: Array[Variant]) -> void:
     for parent in parents:
@@ -57,19 +108,7 @@ static func update_texture_rect(
     mat.set_shader_parameter('rotation', tex_rotation)
     mat.set_shader_parameter('pivot', tex_pivot)
 
-## Helper for slamming out rows of bullets, provide a function to be called when
-## a bullet should be added, the signature is:
-## func add_func(ammo: AmmoResource, parent: HBoxContainer) -> TextureRect
-## Returns the reserve type of the added bullets, which can be passed to future
-## calls to avoid recreating the UI each update.
-static func update_reserve_rows(
-        weapon: WeaponResource,
-        rows: Array[HBoxContainer],
-        row_extra_count: int,
-        opacity: float,
-        reserve_type: int,
-        add_func: Callable
-) -> int:
+func update_reserve_rows(weapon: WeaponResource) -> void:
     var ammo: AmmoResource = weapon.get_supported_ammunition().get(weapon.get_reserve_type()) as AmmoResource
 
     if not ammo:
@@ -99,12 +138,12 @@ static func update_reserve_rows(
 
         var rect: TextureRect
         if adding:
-            rect = add_func.call(ammo, row)
+            rect = _add_ammo_reserve(ammo, row)
         else:
             rect = row.get_child(i)
 
         if k + 1 > ammo_count:
-            rect.self_modulate.a = opacity
+            rect.self_modulate.a = reserve_opacity
         else:
             rect.self_modulate.a = 1.0
 
@@ -115,17 +154,33 @@ static func update_reserve_rows(
 
     var chamber: TextureRect
     if adding:
-        chamber = add_func.call(chamber_ammo, rows.back())
+        chamber = _add_ammo_reserve(chamber_ammo, rows.back())
     else:
         chamber = rows.back().get_child(-1)
 
         update_texture_rect(
                 chamber,
                 chamber_ammo.ui_texture,
-                chamber_ammo.ui_texture_rotation,
-                chamber_ammo.ui_texture_pivot
+                ammo_rotation,
+                ammo_rotation_pivot
         )
 
     chamber.visible = ammo_count > weapon.ammo_reserve_size
 
-    return ammo.type
+    reserve_type = ammo.type
+
+func _add_ammo_reserve(ammo: AmmoResource, parent: HBoxContainer) -> TextureRect:
+    var round_texture: TextureRect = create_texture_rect(
+            ammo.ui_texture,
+            ammo_rotation,
+            ammo_rotation_pivot
+    )
+
+    parent.add_child(round_texture, Engine.is_editor_hint())
+
+    round_texture.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+    round_texture.custom_minimum_size.y = ammo_icon_size
+    round_texture.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+    round_texture.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+    return round_texture

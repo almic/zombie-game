@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://duylaogq2cjd6"]
 
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
-[ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="2_1v5rv"]
+[ext_resource type="Resource" uid="uid://sqiv2fcjag2k" path="res://data/weapon/type/rifle/rifle.tres" id="2_1v5rv"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
 [ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="3_1v5rv"]
 [ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="5_1v5rv"]
@@ -17,7 +17,7 @@ bg_color = Color(1, 0.258138, 0.322135, 1)
 shader = ExtResource("5_1v5rv")
 shader_parameter/rotation = 0.314159
 shader_parameter/pivot = Vector2(0.5, 0.5)
-shader_parameter/size = Vector2(18, 108.857)
+shader_parameter/size = Vector2(11.5748, 70)
 
 [sub_resource type="LabelSettings" id="LabelSettings_7ihmi"]
 font_size = 40
@@ -41,10 +41,8 @@ _preview_weapon = ExtResource("2_1v5rv")
 _preview_weapon_ammo_mix = PackedInt32Array(2, 2, 3, 3)
 _preview_weapon_ammo_reserve_type = 1
 _preview_weapon_ammo_reserve_total = 7
-_preview_stock_ammo = {
-"ammo": ExtResource("3_1v5rv"),
-"amount": 13
-}
+_preview_stock_ammo_type = ExtResource("3_1v5rv")
+_preview_stock_ammo_amount = 13
 
 [node name="crosshair_root" type="CenterContainer" parent="."]
 layout_mode = 2
@@ -111,12 +109,12 @@ theme_override_constants/separation = 16
 [node name="stock_texture" type="TextureRect" parent="weapon_hud/stock_box_container/stock_box"]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_q43x7")
-custom_minimum_size = Vector2(18, 1.45519e-11)
+custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 texture = ExtResource("6_q43x7")
-expand_mode = 5
+expand_mode = 3
 
 [node name="stock_amount" type="Label" parent="weapon_hud/stock_box_container/stock_box"]
 unique_name_in_owner = true

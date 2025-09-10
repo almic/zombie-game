@@ -1,23 +1,26 @@
 [gd_scene load_steps=3 format=3 uid="uid://cu1aswulumms5"]
 
-[ext_resource type="Script" uid="uid://dkdttkwdaf8ga" path="res://ui/weapon/pistol/pistol_ui.gd" id="1_u73cx"]
+[ext_resource type="Script" uid="uid://n24dm7nfx3mh" path="res://ui/weapon/WeaponUI.gd" id="1_u73cx"]
 [ext_resource type="Texture2D" uid="uid://buhlyxv70vjtb" path="res://icon/pistol_side_DEV_ONLY.png" id="2_u73cx"]
 
-[node name="pistol_ui" type="MarginContainer"]
+[node name="pistol_ui" type="MarginContainer" node_paths=PackedStringArray("rows")]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_top = -49.0
 offset_right = 93.0
 grow_vertical = 0
-mouse_filter = 0
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 script = ExtResource("1_u73cx")
 ammo_icon_size = 43.0
-reserve_opacity = 0.4
+ammo_rotation = 0.523599
+enable_auto_rows = true
+enable_row_sizing = true
+row_extra_count = -2
+rows = [NodePath("ammo_margin/ammo_flow/row_1_margin/ammo_row_1"), NodePath("ammo_margin/ammo_flow/ammo_row_2")]
 metadata/_custom_type_script = "uid://n24dm7nfx3mh"
 
 [node name="weapon_texture" type="TextureRect" parent="."]

@@ -30,12 +30,22 @@ var projectile_clustering: float = 0.5
 
 @export_group("Display", "")
 
+## Texture displayed for stock selection and in weapon reserves
 @export var ui_texture: Texture2D
 
-@export_range(-180.0, 180.0, 0.001, 'radians_as_degrees')
-var ui_texture_rotation: float = 0.0
+## Height of the icon in stock selection.
+## Weapons manage their own icon sizes.
+@export_range(1.0, 100.0, 1.0, 'or_greater')
+var stock_height: int = 50.0
 
-@export var ui_texture_pivot: Vector2 = Vector2.ZERO
+## Rotation of texture in stock selection.
+## Weapons manage their own reserve icon sizes.
+@export_range(-180.0, 180.0, 0.001, 'radians_as_degrees')
+var stock_rotation: float = 0.0
+
+## Pivot location for rotation in stock selection.
+## Weapons manage their own reserve icon rotation.
+@export var stock_pivot: Vector2 = Vector2(0.5, 0.5)
 
 ## Scene used for a fresh round
 @export var scene_round: PackedScene

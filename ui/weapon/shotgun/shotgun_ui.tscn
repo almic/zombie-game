@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://basife1pfjwnu" path="res://ui/weapon/shotgun/shotgun_ui.gd" id="1_sv0l5"]
 [ext_resource type="Texture2D" uid="uid://c6phuye0aowrm" path="res://icon/shell_empty_side.png" id="2_hmhgm"]
 
-[node name="shotgun_ui" type="MarginContainer"]
+[node name="shotgun_ui" type="MarginContainer" node_paths=PackedStringArray("rows")]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -14,28 +14,39 @@ grow_vertical = 0
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 8
 script = ExtResource("1_sv0l5")
-ammo_icon_size = 115.0
 empty_slot_texture = ExtResource("2_hmhgm")
+ammo_icon_size = 95.0
 ammo_rotation = 0.349066
-ammo_rotation_pivot = Vector2(0.5, 0.5)
+enable_row_sizing = true
+rows = [NodePath("weapon_box/ammo_margin/ammo_row")]
 
 [node name="weapon_box" type="VBoxContainer" parent="."]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
+theme_override_constants/separation = 0
 
-[node name="weapon_texture" type="TextureRect" parent="weapon_box"]
+[node name="texture_margin" type="MarginContainer" parent="weapon_box"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_bottom = 29
+
+[node name="weapon_texture" type="TextureRect" parent="weapon_box/texture_margin"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(430, 1.45519e-11)
+custom_minimum_size = Vector2(400, 1.45519e-11)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 texture = ExtResource("1_dlceg")
 expand_mode = 5
 
-[node name="ammo_row" type="HBoxContainer" parent="weapon_box"]
+[node name="ammo_margin" type="MarginContainer" parent="weapon_box"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+
+[node name="ammo_row" type="HBoxContainer" parent="weapon_box/ammo_margin"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12

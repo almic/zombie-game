@@ -27,7 +27,7 @@ msaa_3d = 3
 screen_space_aa = 1
 size = Vector2i(256, 256)
 script = ExtResource("1_nf7f5")
-filename = "fmj_side"
+filename = "slug_side"
 metadata/_custom_type_script = "uid://dph67clkgrjv8"
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -49,11 +49,11 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.095
 visible = false
 
 [node name="SlugMesh" parent="." instance=ExtResource("3_bhagj")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 0.0032, 1.45519e-11, 1.45519e-11)
 visible = false
 
 [node name="BuckshotMesh" parent="." instance=ExtResource("4_jwu63")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(-0.707107, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.707107, 0.0032, 1.45519e-11, 1.45519e-11)
 visible = false
 
 [node name="Shovel" parent="." instance=ExtResource("5_jwu63")]

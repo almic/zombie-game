@@ -45,7 +45,7 @@ func set_ammo_reserve_size(value: int) -> void:
     _cylinder_ammo_state.resize(ammo_reserve_size)
 
 ## For the revolver, ejects the current cylinder round only.
-## Returns true if it was live and recovered to ammo bank
+## Returns true if a chambered round was ejected
 func eject_round() -> bool:
     # NOTE: For the revolver, all spent rounds are ejected before removing
     #       live rounds, so this should always replenish stock on a non-empty port
@@ -68,7 +68,7 @@ func eject_round() -> bool:
 
     # NOTE: For debugging, should be removed
     push_error("Revolver tried to eject a dead round! This is a mistake! Investigate!")
-    return false
+    return true
 
 ## For the revolver, we can eject if the cylinder is on a round
 func can_eject() -> bool:

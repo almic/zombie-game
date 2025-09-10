@@ -1,0 +1,6 @@
+*.*
+
+!.gitignore
+!magnum_mesh.res
+!magnum_case_mesh.res
+

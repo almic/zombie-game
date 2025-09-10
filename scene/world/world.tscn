@@ -98,7 +98,6 @@ process_mode = 3
 script = ExtResource("1_fj7yv")
 first_person = ExtResource("2_tlwt5")
 pause = ExtResource("3_036b0")
-enable_spawning = false
 enable_targetting = false
 target_spawn_count = 20
 spawn_count_extra = 5
@@ -114,7 +113,7 @@ compositor = ExtResource("9_ic0uy")
 script = ExtResource("19_g0i7g")
 Sun = NodePath("SunLight")
 Moon = NodePath("MoonLight")
-initial_time = 0.65
+initial_time = 0.55
 time_scale = 20.0
 north = -2.04204
 latitude = 0.715585
@@ -128,7 +127,7 @@ moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.0788216, -0.699094, 0.710672, 0.820919, 0.358935, 0.444137, -0.565578, 0.618412, 0.545608, 0, 0, 0)
+transform = Transform3D(-0.498042, -0.517203, 0.696028, 0.474805, 0.508998, 0.71797, -0.725613, 0.688057, -0.00793185, 0, 0, 0)
 rotation_edit_mode = 2
 top_level = true
 light_temperature = 5750.0
@@ -143,8 +142,9 @@ directional_shadow_fade_start = 0.975
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.589415, -0.655854, -0.471641, -0.805956, 0.437666, 0.398602, -0.055004, 0.615064, -0.786556, 0, 0, 0)
+transform = Transform3D(-0.323239, -0.497085, -0.805247, -0.811767, 0.582989, -0.0340276, 0.486365, 0.642674, -0.591962, 0, 0, 0)
 top_level = true
+visible = false
 light_intensity_lux = 0.5
 light_temperature = 7100.0
 light_energy = 0.0

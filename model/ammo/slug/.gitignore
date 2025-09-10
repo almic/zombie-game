@@ -1,0 +1,6 @@
+*.*
+
+!.gitignore
+!slug_mesh.res
+!slug_case_mesh.res
+

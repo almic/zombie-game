@@ -1,0 +1,6 @@
+*.*
+
+!.gitignore
+!buckshot_mesh.res
+!buckshot_case_mesh.res
+

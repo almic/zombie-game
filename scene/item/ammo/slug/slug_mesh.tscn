@@ -1,52 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://bbo086srtmsay"]
+[gd_scene load_steps=2 format=3 uid="uid://bbo086srtmsay"]
 
-[ext_resource type="Material" uid="uid://c2wbqqh50nomx" path="res://material/level/flat_green.tres" id="1_hckw3"]
-[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_hckw3"]
-[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_y7ha5"]
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_hckw3"]
-material = ExtResource("1_hckw3")
-top_radius = 0.009
-bottom_radius = 0.009
-height = 0.057
-cap_top = false
-cap_bottom = false
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_y7ha5"]
-material = ExtResource("1_hckw3")
-flip_faces = true
-top_radius = 0.009
-bottom_radius = 0.008
-height = 0.057
-cap_top = false
-cap_bottom = false
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_7fahr"]
-material = ExtResource("2_hckw3")
-top_radius = 0.009
-bottom_radius = 0.009
-height = 0.013
-cap_top = false
-
-[sub_resource type="SphereMesh" id="SphereMesh_o5hfw"]
-material = ExtResource("3_y7ha5")
-radius = 0.008
-height = 0.022
+[ext_resource type="ArrayMesh" uid="uid://bxek4ggd1a87r" path="res://model/ammo/slug/slug_mesh.res" id="1_korly"]
 
 [node name="SlugMesh" type="Node3D"]
 
-[node name="shell" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0065)
-mesh = SubResource("CylinderMesh_hckw3")
-
-[node name="shell_inside" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0065)
-mesh = SubResource("CylinderMesh_y7ha5")
-
-[node name="primer" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0285)
-mesh = SubResource("CylinderMesh_7fahr")
-
-[node name="slug" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 1.45519e-11, 1.45519e-11, -0.024)
-mesh = SubResource("SphereMesh_o5hfw")
+[node name="mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+mesh = ExtResource("1_korly")

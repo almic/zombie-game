@@ -1,45 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://br7uyyg4w2kbw"]
+[gd_scene load_steps=2 format=3 uid="uid://br7uyyg4w2kbw"]
 
-[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="1_whx2y"]
-[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_n57q4"]
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_0b428"]
-material = ExtResource("1_whx2y")
-top_radius = 0.007
-bottom_radius = 0.007
-height = 0.057
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_ahp6g"]
-material = ExtResource("1_whx2y")
-top_radius = 0.004
-bottom_radius = 0.007
-height = 0.003
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_006i2"]
-material = ExtResource("1_whx2y")
-top_radius = 0.004
-bottom_radius = 0.004
-height = 0.007
-
-[sub_resource type="SphereMesh" id="SphereMesh_myvi6"]
-material = ExtResource("2_n57q4")
-radius = 0.004
-height = 0.036
+[ext_resource type="ArrayMesh" uid="uid://b2a4fjmw5m48o" path="res://model/ammo/magnum/magnum_mesh.res" id="1_4bm73"]
 
 [node name="magnum_mesh" type="Node3D"]
 
-[node name="case" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.015)
-mesh = SubResource("CylinderMesh_0b428")
-
-[node name="taper" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.015)
-mesh = SubResource("CylinderMesh_ahp6g")
-
-[node name="neck" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.02)
-mesh = SubResource("CylinderMesh_006i2")
-
-[node name="bullet" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0255)
-mesh = SubResource("SphereMesh_myvi6")
+[node name="mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+mesh = ExtResource("1_4bm73")

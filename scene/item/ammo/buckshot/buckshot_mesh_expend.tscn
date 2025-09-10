@@ -1,68 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://xb6bfi75fie0"]
+[gd_scene load_steps=2 format=3 uid="uid://xb6bfi75fie0"]
 
-[ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="1_61aq3"]
-[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_5voik"]
-[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="3_5voik"]
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_egdve"]
-material = ExtResource("1_61aq3")
-top_radius = 0.009
-bottom_radius = 0.009
-height = 0.057
-cap_top = false
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_l5qih"]
-material = ExtResource("2_5voik")
-top_radius = 0.009
-bottom_radius = 0.009
-height = 0.013
-cap_bottom = false
-
-[sub_resource type="SphereMesh" id="SphereMesh_5voik"]
-material = ExtResource("3_5voik")
-radius = 0.009
-height = 0.001
-is_hemisphere = true
-
-[sub_resource type="SphereMesh" id="SphereMesh_e3vt6"]
-material = ExtResource("2_5voik")
-flip_faces = true
-radius = 0.002
-height = 0.001
-is_hemisphere = true
+[ext_resource type="ArrayMesh" uid="uid://36flhhq2tlig" path="res://model/ammo/buckshot/buckshot_case_mesh.res" id="1_yha54"]
 
 [node name="BuckshotMesh" type="Node3D"]
 
-[node name="shell" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.0065)
-mesh = SubResource("CylinderMesh_egdve")
-
-[node name="primer" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0285)
-mesh = SubResource("CylinderMesh_l5qih")
-
-[node name="opening" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.035)
-mesh = SubResource("SphereMesh_5voik")
-
-[node name="primer_divet" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1.31134e-07, 1, 0, -1, 1.31134e-07, 1.45519e-11, 1.45519e-11, 0.035)
-mesh = SubResource("SphereMesh_e3vt6")
-
-[node name="primer_back" type="CSGCombiner3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 0.0345)
-
-[node name="face" type="CSGCylinder3D" parent="primer_back"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
-radius = 0.009
-height = 0.001
-sides = 18
-material = ExtResource("2_5voik")
-
-[node name="divet_cut" type="CSGCylinder3D" parent="primer_back"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 1.45519e-11)
-operation = 2
-radius = 0.002
-height = 0.002
-sides = 18
-material = ExtResource("2_5voik")
+[node name="mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+mesh = ExtResource("1_yha54")

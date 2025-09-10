@@ -249,20 +249,20 @@ func switch_ammo() -> bool:
     ammo_stock = next_ammo_stock
     return true
 
-## Eject the chambered round. Returns true if it was live and recovered to ammo bank
+## Eject the chambered round. Returns true if a chambered round was ejected.
 func eject_round() -> bool:
-    var recovered: bool = false
     if _chambered_round_live:
         # Recover round to ammo stock
         var stock: Dictionary = ammo_bank.get(_chambered_round_type)
         if stock:
             stock.amount += 1
-            recovered = true
+
+    var ejected: bool = _chambered_round_type > 0
 
     _chambered_round_type = 0
     _chambered_round_live = false
 
-    return recovered
+    return ejected
 
 func get_next_ammo() -> Dictionary:
     var supported: Dictionary = get_supported_ammunition()

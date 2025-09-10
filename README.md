@@ -17,6 +17,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] Pack weapon images and round icons into two textures, one for all weapons,
       one for all round types. WeaponResource and AmmoResource will need to have
       icon indexes added to support this.
+- [ ] FIX THE SLUG MODEL, metal cap should be longer than the shot shell
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
 - [X] Investigate weird snapping bug

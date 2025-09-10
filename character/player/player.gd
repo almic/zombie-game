@@ -201,7 +201,7 @@ func _ready() -> void:
     aim_target.add_exception(self)
 
     weapon_node.ammo_bank = ammo_bank
-    weapon_node.ammo_updated.connect(update_weapon_hud)
+    weapon_node.weapon_updated.connect(update_weapon_hud)
     weapon_node.reload_complete.connect(on_reload_complete)
 
     connect_hurtboxes()

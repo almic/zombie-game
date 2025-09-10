@@ -1,35 +1,9 @@
-[gd_scene load_steps=5 format=3 uid="uid://cr5fjmg73txto"]
+[gd_scene load_steps=2 format=3 uid="uid://cr5fjmg73txto"]
 
-[ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="1_r5jj6"]
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_0b428"]
-material = ExtResource("1_r5jj6")
-top_radius = 0.007
-bottom_radius = 0.007
-height = 0.057
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_ahp6g"]
-material = ExtResource("1_r5jj6")
-top_radius = 0.004
-bottom_radius = 0.007
-height = 0.003
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_006i2"]
-material = ExtResource("1_r5jj6")
-top_radius = 0.004
-bottom_radius = 0.004
-height = 0.007
+[ext_resource type="ArrayMesh" uid="uid://btawwt5tfgj0r" path="res://model/ammo/magnum/magnum_case_mesh.res" id="1_l57bn"]
 
 [node name="magnum_mesh_expend" type="Node3D"]
 
-[node name="case" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.005)
-mesh = SubResource("CylinderMesh_0b428")
-
-[node name="taper" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.025)
-mesh = SubResource("CylinderMesh_ahp6g")
-
-[node name="neck" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.03)
-mesh = SubResource("CylinderMesh_006i2")
+[node name="mesh" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+mesh = ExtResource("1_l57bn")

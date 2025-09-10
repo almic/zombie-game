@@ -3,7 +3,7 @@
 [sub_resource type="Gradient" id="Gradient_3wujd"]
 interpolation_mode = 2
 offsets = PackedFloat32Array(0, 0.88, 0.9, 1)
-colors = PackedColorArray(1, 1, 1, 1, 1, 0.937838, 0.937838, 1, 0.862745, 0, 0, 1, 0.862745, 0, 0, 1)
+colors = PackedColorArray(0.752941, 0.407843, 0.203922, 1, 0.752941, 0.407843, 0.203922, 1, 0.862745, 0, 0, 1, 0.862745, 0, 0, 1)
 
 [sub_resource type="GradientTexture1D" id="GradientTexture1D_y6tma"]
 gradient = SubResource("Gradient_3wujd")
@@ -26,7 +26,6 @@ gradient = SubResource("Gradient_lmpki")
 width = 50
 
 [resource]
-albedo_color = Color(0.752941, 0.521569, 0.305882, 1)
 albedo_texture = SubResource("GradientTexture1D_y6tma")
 metallic = 1.0
 metallic_texture = SubResource("GradientTexture1D_6nnpk")

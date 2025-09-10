@@ -14,7 +14,8 @@ enum Action {
 }
 
 
-signal ammo_updated()
+## When the weapon state is updated, such as shooting, reloading, unloading, etc.
+signal weapon_updated()
 
 signal reload_complete()
 
@@ -285,7 +286,7 @@ func switch_ammo() -> bool:
     if not weapon_type.switch_ammo():
         return false
 
-    ammo_updated.emit()
+    weapon_updated.emit()
 
     if not _weapon_scene:
         return true
@@ -525,7 +526,7 @@ func on_weapon_fire() -> void:
 
     # NOTE: This can signal an empty weapon, which turns off recoil rise
     if weapon_type.fire(self):
-        ammo_updated.emit()
+        weapon_updated.emit()
 
     # NOTE: Always apply recoil kick
     if weapon_type.recoil_enabled:
@@ -595,6 +596,7 @@ func on_weapon_charged() -> void:
         return
 
     weapon_type.charge_weapon()
+    weapon_updated.emit()
 
 func on_weapon_reload_loop() -> void:
     if not continue_reload:
@@ -614,7 +616,7 @@ func on_weapon_round_loaded() -> void:
         return
 
     weapon_type.load_rounds()
-    ammo_updated.emit()
+    weapon_updated.emit()
 
 func on_weapon_round_ejected() -> void:
     if not weapon_type or not weapon_type.can_eject():
@@ -625,7 +627,7 @@ func on_weapon_round_ejected() -> void:
         round_dict = weapon_type.get_chamber_round()
 
     if weapon_type.eject_round():
-        ammo_updated.emit()
+        weapon_updated.emit()
 
     if not round_dict:
         return
@@ -660,4 +662,4 @@ func on_weapon_magazine_unloaded() -> void:
         return
 
     weapon_type.unload_rounds()
-    ammo_updated.emit()
+    weapon_updated.emit()

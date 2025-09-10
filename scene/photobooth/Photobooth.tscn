@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://bf1k5ehfxhlct"]
+[gd_scene load_steps=15 format=3 uid="uid://bf1k5ehfxhlct"]
 
 [ext_resource type="Script" uid="uid://dph67clkgrjv8" path="res://scene/photobooth/photobooth.gd" id="1_nf7f5"]
 [ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="2_vd35b"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://dpw3tt0t5w2c4" path="res://scene/weapon/rifle/rifle.tscn" id="9_6v3wl"]
 [ext_resource type="PackedScene" uid="uid://2ub41p5mtrf1" path="res://scene/weapon/bolt/bolt_rifle.tscn" id="10_klyui"]
 [ext_resource type="PackedScene" uid="uid://br7uyyg4w2kbw" path="res://scene/item/ammo/magnum/magnum_mesh.tscn" id="11_uhgnh"]
+[ext_resource type="PackedScene" uid="uid://c8nmtmax1l5vn" path="res://scene/weapon/revolver/revolver.tscn" id="12_uhgnh"]
 
 [sub_resource type="Environment" id="Environment_bhagj"]
 background_mode = 1
@@ -27,7 +28,7 @@ msaa_3d = 3
 screen_space_aa = 1
 size = Vector2i(256, 256)
 script = ExtResource("1_nf7f5")
-filename = "slug_side"
+filename = "revolver_cylinder"
 metadata/_custom_type_script = "uid://dph67clkgrjv8"
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -38,7 +39,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1)
 projection = 1
 current = true
-size = 0.058
+size = 0.064
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_bhagj")
@@ -70,6 +71,7 @@ visible = false
 
 [node name="fmj_mesh" parent="." instance=ExtResource("8_efp2y")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+visible = false
 
 [node name="WeaponScene" parent="." instance=ExtResource("9_6v3wl")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
@@ -82,5 +84,8 @@ visible = false
 [node name="magnum_mesh" parent="." instance=ExtResource("11_uhgnh")]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 visible = false
+
+[node name="revolver_mesh" parent="." instance=ExtResource("12_uhgnh")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.02, 1.45519e-11)
 
 [editable path="Shovel"]

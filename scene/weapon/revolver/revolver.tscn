@@ -76,7 +76,7 @@ _data = {
 &"RESET": ExtResource("6_6ngox")
 }
 
-[node name="RevolverNew" type="Node3D" node_paths=PackedStringArray("unload_marker", "projectile_marker", "particle_marker", "reload_marker")]
+[node name="Revolver" type="Node3D" node_paths=PackedStringArray("unload_marker", "projectile_marker", "particle_marker", "reload_marker")]
 script = ExtResource("1_0b5uw")
 unload_marker = NodePath("UnloadMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")

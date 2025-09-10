@@ -1,0 +1,89 @@
+[gd_scene load_steps=9 format=3 uid="uid://cvryaecomxuny"]
+
+[ext_resource type="Script" uid="uid://n24dm7nfx3mh" path="res://ui/weapon/WeaponUI.gd" id="1_itb5l"]
+[ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="2_13c1h"]
+[ext_resource type="Texture2D" uid="uid://cobrkeyc5x2ut" path="res://icon/revolver_side.png" id="2_cetoc"]
+[ext_resource type="Texture2D" uid="uid://bcblupxv1ab7u" path="res://ui/weapon/revolver/cylinder.png" id="4_6okdm"]
+[ext_resource type="Texture2D" uid="uid://b6wcyk10gacuj" path="res://icon/slug_front.png" id="5_u1q8u"]
+[ext_resource type="Texture2D" uid="uid://1cw0v5wpqgij" path="res://icon/revolver_marker.png" id="6_umrly"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_u1q8u"]
+shader = ExtResource("2_13c1h")
+shader_parameter/rotation = -0.2618
+shader_parameter/pivot = Vector2(0.5, 0.5)
+shader_parameter/size = Vector2(401.786, 180)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r1d65"]
+
+[node name="revolver_ui" type="MarginContainer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+grow_vertical = 0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 8
+script = ExtResource("1_itb5l")
+metadata/_custom_type_script = "uid://n24dm7nfx3mh"
+
+[node name="weapon_texture" type="TextureRect" parent="."]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_u1q8u")
+custom_minimum_size = Vector2(1.45519e-11, 180)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("2_cetoc")
+expand_mode = 3
+
+[node name="cylinder_margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 191
+theme_override_constants/margin_top = 38
+
+[node name="cylinder_size" type="MarginContainer" parent="cylinder_margin"]
+layout_mode = 2
+theme_override_constants/margin_left = 112
+theme_override_constants/margin_top = 112
+theme_override_constants/margin_right = 112
+theme_override_constants/margin_bottom = 112
+
+[node name="Control" type="Control" parent="cylinder_margin/cylinder_size"]
+layout_mode = 2
+
+[node name="cylinder" type="TextureRect" parent="cylinder_margin/cylinder_size/Control"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_r1d65")
+custom_minimum_size = Vector2(1.45519e-11, 224)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(112, 112)
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("4_6okdm")
+expand_mode = 3
+
+[node name="TextureRect" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+custom_minimum_size = Vector2(1.45519e-11, 64)
+layout_mode = 0
+offset_left = 80.0
+offset_top = 9.0
+offset_right = 144.0
+offset_bottom = 73.0
+texture = ExtResource("5_u1q8u")
+expand_mode = 3
+
+[node name="marker" type="TextureRect" parent="cylinder_margin/cylinder_size/Control"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = -9.0
+offset_top = -36.0
+offset_right = 31.0
+offset_bottom = 4.0
+texture = ExtResource("6_umrly")
+stretch_mode = 2

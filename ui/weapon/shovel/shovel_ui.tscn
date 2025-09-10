@@ -1,0 +1,35 @@
+[gd_scene load_steps=5 format=3 uid="uid://b0v8ucjne12wc"]
+
+[ext_resource type="Script" uid="uid://n24dm7nfx3mh" path="res://ui/weapon/WeaponUI.gd" id="1_3s6nw"]
+[ext_resource type="Texture2D" uid="uid://c3iy0wun6awan" path="res://icon/shovel_flat.png" id="2_0bkpa"]
+[ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="2_4wlsx"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g2ml2"]
+shader = ExtResource("2_4wlsx")
+shader_parameter/rotation = -0.34907
+shader_parameter/pivot = Vector2(0.5, 0.5)
+shader_parameter/size = Vector2(400, 70.5882)
+
+[node name="shovel_ui" type="MarginContainer"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -49.0
+offset_right = 93.0
+grow_vertical = 0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 69
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 80
+script = ExtResource("1_3s6nw")
+metadata/_custom_type_script = "uid://n24dm7nfx3mh"
+
+[node name="weapon_texture" type="TextureRect" parent="."]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_g2ml2")
+custom_minimum_size = Vector2(400, 1.45519e-11)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("2_0bkpa")
+expand_mode = 5

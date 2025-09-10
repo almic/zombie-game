@@ -1,0 +1,52 @@
+[gd_scene load_steps=3 format=3 uid="uid://deaoshnuxy430"]
+
+[ext_resource type="Script" uid="uid://n24dm7nfx3mh" path="res://ui/weapon/WeaponUI.gd" id="1_6qyir"]
+[ext_resource type="Texture2D" uid="uid://bugb34a3mkfe8" path="res://icon/bolt_side.png" id="2_yo1sp"]
+
+[node name="bolt_ui" type="MarginContainer" node_paths=PackedStringArray("rows")]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -49.0
+offset_right = 93.0
+grow_vertical = 0
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+script = ExtResource("1_6qyir")
+ammo_icon_size = 95.0
+ammo_rotation = 0.523599
+enable_auto_rows = true
+enable_row_sizing = true
+rows = [NodePath("weapon_box/ammo_margin/ammo_row_1")]
+metadata/_custom_type_script = "uid://n24dm7nfx3mh"
+
+[node name="weapon_box" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="texture_margin" type="MarginContainer" parent="weapon_box"]
+layout_mode = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_bottom = 32
+
+[node name="weapon_texture" type="TextureRect" parent="weapon_box/texture_margin"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(400, 1.45519e-11)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+texture = ExtResource("2_yo1sp")
+expand_mode = 5
+
+[node name="ammo_margin" type="MarginContainer" parent="weapon_box"]
+layout_mode = 2
+theme_override_constants/margin_left = 23
+
+[node name="ammo_row_1" type="HBoxContainer" parent="weapon_box/ammo_margin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 20

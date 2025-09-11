@@ -783,10 +783,9 @@ func pickup_item(item: Pickup) -> void:
             update_weapon_hud()
 
         # For the revolver, rotate to one after the highest live round index
-        if weapon is RevolverWeapon:
-            var revolver: RevolverWeapon = weapon as RevolverWeapon
-            var highest: int = revolver._cylinder_ammo_state.rfind(1)
-            revolver.rotate_cylinder((highest - 1) - revolver._cylinder_position)
+        var revolver: RevolverWeapon = weapon as RevolverWeapon
+        if revolver:
+            revolver_spin_to_next(revolver)
 
     elif item.item_type is AmmoResource:
         var ammo: AmmoResource = item.item_type as AmmoResource
@@ -810,6 +809,61 @@ func add_ammo(ammo: AmmoResource, amount: int) -> void:
             'ammo': ammo
         })
     ammo_bank.get(ammo.type).amount += amount
+
+func revolver_spin_to_next(revolver: RevolverWeapon) -> void:
+    # Pick the shortest rotation, either in the negative direction or
+    # positive direction.
+    var pos: int = revolver._cylinder_position
+    var found_forward: bool = false
+    var found_backward: bool = false
+    var forward: int = 0
+    var backward: int = 0
+
+    var i: int = 0
+    # Clockwise, this position is empty and the next is live
+    while i < 3:
+        var current: int = posmod(pos + i, revolver.ammo_reserve_size)
+        current = revolver._cylinder_ammo_state[current]
+        var next: int = posmod(pos + i + 1, revolver.ammo_reserve_size)
+        next = revolver._cylinder_ammo_state[next]
+        if current == 0 and next > 0:
+            # Already on a good spot, do not spin
+            if i == 0:
+                return
+            found_forward = true
+            forward = i
+            break
+        i += 1
+
+    # Counter-clockwise, this position is live and the next is empty
+    i = 0
+    while i < 3:
+        var current: int = posmod(pos - i, revolver.ammo_reserve_size)
+        current = revolver._cylinder_ammo_state[current]
+        var next: int = posmod(pos - i - 1, revolver.ammo_reserve_size)
+        next = revolver._cylinder_ammo_state[next]
+        if next == 0 and current > 0:
+            found_backward = true
+            backward = i + 1
+            break
+        i += 1
+
+    # NOTE: either an empty or full revolver, no need to spin
+    if not found_forward and not found_backward:
+        return
+
+    var spin: int
+    if found_forward and found_backward:
+        if forward < backward:
+            spin = forward
+        else:
+            spin = -backward
+    elif found_forward:
+        spin = forward
+    else:
+        spin = -backward
+
+    revolver.rotate_cylinder(spin)
 
 func connect_hurtboxes() -> void:
     hurtbox.enable()

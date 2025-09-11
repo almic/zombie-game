@@ -284,7 +284,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -323.726, 2.1, -514.532)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("25_pb8w5")
-item_count = 2
+item_count = 5
 item_scene = ExtResource("26_f0qux")
 metadata/_custom_type_script = "uid://bd4h6hrne4un5"
 

@@ -16,8 +16,13 @@ signal state_updated()
 var _cylinder_ammo_state: PackedByteArray = []
 
 ## Position of the cylinder, from 0 to reserve size.
-## Initially 1 ahead of the first port.
-var _cylinder_position: int = -1
+var _cylinder_position: int = 0
+
+
+## Updated by the animated weapon scene, used by the revolver UI to synchronize
+## with the visual rotation
+@warning_ignore('unused_private_class_variable')
+var _animated_cylinder_rotation: float = 0
 
 ## If the hammer is cocked
 var _hammer_cocked: bool = false
@@ -124,7 +129,8 @@ func load_rounds(count: int = 1, type: int = 0) -> void:
 
     var pos: int
     for i in range(count):
-        pos = wrapi(_cylinder_position + i, 0, ammo_reserve_size)
+        # NOTE: load in the same direction as reloads, which is negative
+        pos = wrapi(_cylinder_position - i, 0, ammo_reserve_size)
         _mixed_reserve.set(pos, type)
         _cylinder_ammo_state.set(pos, 1)
     state_updated.emit()

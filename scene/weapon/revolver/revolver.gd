@@ -83,7 +83,6 @@ var cylinder_interp: Interpolation = Interpolation.new()
 var _unload_one_spin: bool = false
 
 
-
 func _ready() -> void:
     super._ready()
     cylinder_anim = animation_tree.get_animation(CYLINDER_ROTATE)
@@ -105,10 +104,13 @@ func _process(delta: float) -> void:
         current_value += PORT_ANGLE
 
     # NOTE: Clockwise is a NEGATIVE spin
-    cylinder_spin.rotation.z = (
+    var angle: float = (
             -PORT_ANGLE * revolver._cylinder_position
             + (-PORT_ANGLE * int(current_time) + current_value)
     )
+    cylinder_spin.rotation.z = angle
+    if revolver:
+        revolver._animated_cylinder_rotation = angle
 
 func _reload_loop_start() -> void:
     apply_rotate_cylinder()
@@ -453,6 +455,8 @@ func update_cylinder_spin() -> void:
         cylinder_interp.reset(0.0)
 
     cylinder_spin.rotation.z = rotation_z
+    if revolver:
+        revolver._animated_cylinder_rotation = rotation_z
 
 func on_revolver_updated() -> void:
     update_ports()

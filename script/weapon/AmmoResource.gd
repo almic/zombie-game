@@ -39,7 +39,7 @@ var projectile_clustering: float = 0.5
 ## Height of the icon in stock selection.
 ## Weapons manage their own icon sizes.
 @export_range(1.0, 100.0, 1.0, 'or_greater')
-var stock_height: int = 50.0
+var stock_height: int = 50
 
 ## Rotation of texture in stock selection.
 ## Weapons manage their own reserve icon sizes.

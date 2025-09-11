@@ -33,6 +33,9 @@ var projectile_clustering: float = 0.5
 ## Texture displayed for stock selection and in weapon reserves
 @export var ui_texture: Texture2D
 
+## Alternate texture for UI. Only used for revolver weapon.
+@export var alt_ui_texture: Texture2D
+
 ## Height of the icon in stock selection.
 ## Weapons manage their own icon sizes.
 @export_range(1.0, 100.0, 1.0, 'or_greater')

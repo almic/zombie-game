@@ -44,7 +44,13 @@ void fragment() {
 
     car = trunc(car / TEXTURE_PIXEL_SIZE) * TEXTURE_PIXEL_SIZE;
 
-    float alpha = 1.0 - step(port_radius * 0.5, sqrt(car.x * car.x + car.y * car.y));
-    COLOR.a -= alpha;
+    float radius = port_radius * 0.5;
+    float alpha = smoothstep(
+        radius * 0.94,
+        radius,
+        sqrt(car.x * car.x + car.y * car.y)
+    );
+    alpha = step(radius, sqrt(car.x * car.x + car.y * car.y));
+    COLOR.a -= 1.0 - alpha;
 
 }

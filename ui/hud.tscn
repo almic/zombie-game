@@ -3,9 +3,9 @@
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
 [ext_resource type="Resource" uid="uid://dvpvjiyiktmp6" path="res://data/weapon/type/bolt/bolt.tres" id="2_1v5rv"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
-[ext_resource type="Resource" uid="uid://cq4n43oieipem" path="res://data/weapon/ammo/magnum.tres" id="3_q43x7"]
+[ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="3_1v5rv"]
 [ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="5_1v5rv"]
-[ext_resource type="Texture2D" uid="uid://1j5anmd7ryi8" path="res://icon/magnum_side.png" id="6_srpbi"]
+[ext_resource type="Texture2D" uid="uid://bpmt8s8xbbk32" path="res://icon/buckshot_side.png" id="6_q43x7"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hr31g"]
 bg_color = Color(0.117647, 0.117647, 0.180392, 0.2)
@@ -15,9 +15,9 @@ bg_color = Color(1, 0.258138, 0.322135, 1)
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_q43x7"]
 shader = ExtResource("5_1v5rv")
-shader_parameter/rotation = 0.523599
+shader_parameter/rotation = 0.349066
 shader_parameter/pivot = Vector2(0.5, 0.5)
-shader_parameter/size = Vector2(11.2903, 70)
+shader_parameter/size = Vector2(24.2742, 70)
 
 [sub_resource type="LabelSettings" id="LabelSettings_7ihmi"]
 font_size = 40
@@ -41,7 +41,7 @@ _preview_weapon = ExtResource("2_1v5rv")
 _preview_weapon_ammo_mix = PackedInt32Array(2, 2, 3, 3)
 _preview_weapon_ammo_reserve_type = 5
 _preview_weapon_ammo_reserve_total = 11
-_preview_stock_ammo_type = ExtResource("3_q43x7")
+_preview_stock_ammo_type = ExtResource("3_1v5rv")
 _preview_stock_ammo_amount = 13
 
 [node name="crosshair_root" type="CenterContainer" parent="."]
@@ -113,7 +113,7 @@ custom_minimum_size = Vector2(0, 70)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
-texture = ExtResource("6_srpbi")
+texture = ExtResource("6_q43x7")
 expand_mode = 3
 
 [node name="stock_amount" type="Label" parent="weapon_hud/stock_box_container/stock_box"]

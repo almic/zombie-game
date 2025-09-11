@@ -186,6 +186,7 @@ func _emit_fired() -> void:
     if not is_round_live:
         revolver._hammer_cocked = false
         revolver.trigger_mechanism.start_cycle()
+        super._emit_uncharged()
         return
     super._emit_fired()
 

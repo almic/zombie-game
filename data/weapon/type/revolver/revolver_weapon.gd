@@ -162,6 +162,7 @@ func fire_projectiles(base: WeaponNode) -> bool:
     _do_projectile_raycast(node, ammo, base.weapon_projectile_transform())
 
     _cylinder_ammo_state[_cylinder_position] = 0
+    updated_ammo = true
     _hammer_cocked = false
     state_updated.emit()
 

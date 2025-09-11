@@ -50,6 +50,9 @@ signal unload_loop()
 ## For animations that charge the gun (to put one in the chamber)
 signal charged()
 
+## For animations that un-charge the gun (only the Revolver right now)
+signal uncharged()
+
 
 ## Location of round ejection
 @export var eject_marker: Marker3D
@@ -136,6 +139,9 @@ func _emit_magazine_unloaded() -> void:
 
 func _emit_charged() -> void:
     charged.emit()
+
+func _emit_uncharged() -> void:
+    uncharged.emit()
 
 
 func _on_anim_start(_anim: StringName) -> void:

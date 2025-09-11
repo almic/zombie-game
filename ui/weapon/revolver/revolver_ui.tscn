@@ -1,11 +1,10 @@
-[gd_scene load_steps=10 format=3 uid="uid://cvryaecomxuny"]
+[gd_scene load_steps=8 format=3 uid="uid://cvryaecomxuny"]
 
 [ext_resource type="Script" uid="uid://bb3ce8qxdd1cn" path="res://ui/weapon/revolver/revolver_ui.gd" id="1_u1q8u"]
 [ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="2_13c1h"]
 [ext_resource type="Texture2D" uid="uid://cobrkeyc5x2ut" path="res://icon/revolver_side.png" id="2_cetoc"]
 [ext_resource type="Texture2D" uid="uid://bcblupxv1ab7u" path="res://ui/weapon/revolver/cylinder.png" id="4_6okdm"]
-[ext_resource type="Shader" uid="uid://31ki5pyb8m3j" path="res://ui/weapon/revolver/revolver_ports.gdshader" id="4_umrly"]
-[ext_resource type="Texture2D" uid="uid://b6wcyk10gacuj" path="res://icon/slug_front.png" id="5_u1q8u"]
+[ext_resource type="Texture2D" uid="uid://cfh2bqdqan380" path="res://icon/buckshot_front.png" id="5_u1q8u"]
 [ext_resource type="Texture2D" uid="uid://1cw0v5wpqgij" path="res://icon/revolver_marker.png" id="6_umrly"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_u1q8u"]
@@ -13,12 +12,6 @@ shader = ExtResource("2_13c1h")
 shader_parameter/rotation = -0.2618
 shader_parameter/pivot = Vector2(0.5, 0.5)
 shader_parameter/size = Vector2(401.786, 180)
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_r1d65"]
-shader = ExtResource("4_umrly")
-shader_parameter/rotation = 0.00523599
-shader_parameter/port_radius = 0.28125
-shader_parameter/port_distance = 0.625
 
 [node name="revolver_ui" type="MarginContainer"]
 anchors_preset = 2
@@ -59,7 +52,6 @@ layout_mode = 2
 
 [node name="cylinder" type="TextureRect" parent="cylinder_margin/cylinder_size/Control"]
 unique_name_in_owner = true
-material = SubResource("ShaderMaterial_r1d65")
 custom_minimum_size = Vector2(1.45519e-11, 224)
 layout_mode = 1
 anchors_preset = 15
@@ -67,7 +59,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-rotation = 0.00523599
 pivot_offset = Vector2(112, 112)
 size_flags_horizontal = 0
 size_flags_vertical = 0
@@ -75,31 +66,90 @@ texture = ExtResource("4_6okdm")
 expand_mode = 3
 
 [node name="port1" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
-custom_minimum_size = Vector2(1.45519e-11, 64)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
 offset_left = 80.0
-offset_top = 9.0
+offset_top = 8.0
 offset_right = 144.0
-offset_bottom = 73.0
+offset_bottom = 72.0
+pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
-expand_mode = 3
-stretch_mode = 4
+expand_mode = 1
+stretch_mode = 5
 
 [node name="port2" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
-visible = false
-custom_minimum_size = Vector2(1.45519e-11, 64)
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
-offset_left = 18.45
-offset_top = 44.25
-offset_right = 82.45
-offset_bottom = 108.25
+offset_left = 17.0
+offset_top = 44.0
+offset_right = 81.0
+offset_bottom = 108.0
+rotation = -1.0472
+pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
-expand_mode = 3
-stretch_mode = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="port3" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_left = 17.0
+offset_top = 116.0
+offset_right = 81.0
+offset_bottom = 180.0
+rotation = -2.0944
+pivot_offset = Vector2(32, 32)
+texture = ExtResource("5_u1q8u")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="port4" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_left = 80.0
+offset_top = 152.0
+offset_right = 144.0
+offset_bottom = 216.0
+rotation = -3.14159
+pivot_offset = Vector2(32, 32)
+texture = ExtResource("5_u1q8u")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="port5" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_left = 143.0
+offset_top = 116.0
+offset_right = 207.0
+offset_bottom = 180.0
+rotation = -4.18879
+pivot_offset = Vector2(32, 32)
+texture = ExtResource("5_u1q8u")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="port6" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 0
+offset_left = 143.0
+offset_top = 44.0
+offset_right = 207.0
+offset_bottom = 108.0
+rotation = -5.23599
+pivot_offset = Vector2(32, 32)
+texture = ExtResource("5_u1q8u")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="marker" type="TextureRect" parent="cylinder_margin/cylinder_size/Control"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 0
 offset_left = -9.0
 offset_top = -36.0

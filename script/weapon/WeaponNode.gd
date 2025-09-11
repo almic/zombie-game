@@ -433,6 +433,7 @@ func _load_weapon_scene() -> void:
         _weapon_scene.fired.disconnect(on_weapon_fire)
         _weapon_scene.melee.disconnect(on_weapon_melee)
         _weapon_scene.charged.disconnect(on_weapon_charged)
+        _weapon_scene.uncharged.disconnect(on_weapon_uncharged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
         _weapon_scene.unload_loop.disconnect(on_weapon_unload_loop)
         _weapon_scene.round_ejected.disconnect(on_weapon_round_ejected)
@@ -471,6 +472,7 @@ func _load_weapon_scene() -> void:
     _weapon_scene.fired.connect(on_weapon_fire)
     _weapon_scene.melee.connect(on_weapon_melee)
     _weapon_scene.charged.connect(on_weapon_charged)
+    _weapon_scene.uncharged.connect(on_weapon_uncharged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
     _weapon_scene.unload_loop.connect(on_weapon_unload_loop)
     _weapon_scene.round_ejected.connect(on_weapon_round_ejected)
@@ -596,6 +598,15 @@ func on_weapon_charged() -> void:
         return
 
     weapon_type.charge_weapon()
+    weapon_updated.emit()
+
+func on_weapon_uncharged() -> void:
+    if not weapon_type:
+        return
+
+    # NOTE: method does not exist, this is ONLY called by RevolverScene after it
+    #       has set the revolver hammer to the uncocked state.
+    # weapon_type.uncharge_weapon()
     weapon_updated.emit()
 
 func on_weapon_reload_loop() -> void:

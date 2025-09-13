@@ -87,6 +87,14 @@ func _notification(what: int) -> void:
     # NOTE: prevent saving the marker 3d
     # NOTE: however, do not search children to delete them!
     if what == NOTIFICATION_EDITOR_PRE_SAVE:
+        if path_node:
+            path_node = NodePath()
+        if end_marker:
+            end_marker.owner = null
+            use_end_marker = false
+    elif what == NOTIFICATION_EDITOR_POST_SAVE:
+        if path:
+            path_node = get_path_to(path)
         if end_marker:
             end_marker.owner = null
             use_end_marker = false
@@ -131,6 +139,7 @@ func _setup() -> void:
     path_node = get_path_to(path)
     path_local = true
     path_continuous_u = true
+    path_rotation = CSGPolygon3D.PATH_ROTATION_PATH
 
 func update_shape() -> void:
     if not is_node_ready():
@@ -155,10 +164,10 @@ func update_points() -> void:
     curve.clear_points()
 
     # First point at self position
-    curve.add_point(Vector3.ZERO)
+    var angle: Vector3 = Vector3(cos(start_angle - HALF_PI), 0.0, sin(start_angle - HALF_PI))
+    curve.add_point(Vector3.ZERO, Vector3.ZERO, angle * start_straight_length * 0.5)
 
     # Second point at the angle and distance set
-    var angle: Vector3 = Vector3(cos(start_angle - HALF_PI), 0.0, sin(start_angle - HALF_PI))
     curve.add_point(
             angle * start_straight_length,
             Vector3.ZERO,
@@ -173,7 +182,7 @@ func update_points() -> void:
     )
 
     # Fourth point at the exit position
-    curve.add_point(end_point)
+    curve.add_point(end_point, angle * end_straight_length * 0.5)
 
 func set_use_end_marker(use: bool) -> void:
     use_end_marker = use
@@ -181,7 +190,6 @@ func set_use_end_marker(use: bool) -> void:
     if end_marker:
         end_point = end_marker.position
         end_angle = -end_marker.rotation.y
-        remove_child(end_marker)
         end_marker.queue_free()
         end_marker = null
 

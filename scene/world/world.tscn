@@ -1,4 +1,4 @@
-[gd_scene load_steps=72 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=76 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
@@ -55,11 +55,15 @@
 [ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="49_il2y7"]
 [ext_resource type="PackedScene" uid="uid://bvgviih6lyk0p" path="res://scene/item/ammo/fmj/fmj_pile.tscn" id="50_il2y7"]
 [ext_resource type="Curve3D" uid="uid://ct5uvari7rsbv" path="res://scene/world/sidewalk_curves/grass_1.tres" id="52_f0qux"]
+[ext_resource type="Curve3D" uid="uid://2amktbdrr737" path="res://scene/world/sidewalk_curves/grass_3.tres" id="52_k8or8"]
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="53_64map"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="53_f0qux"]
+[ext_resource type="Curve3D" uid="uid://ck6qb8odvdntv" path="res://scene/world/sidewalk_curves/concrete_3.tres" id="53_i2hso"]
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="53_pb8w5"]
 [ext_resource type="Curve3D" uid="uid://do21dix0e1ust" path="res://scene/world/sidewalk_curves/concrete_1.tres" id="53_r4xj5"]
+[ext_resource type="Curve3D" uid="uid://bwb0rsxr03k86" path="res://scene/world/sidewalk_curves/grass_4.tres" id="54_i2hso"]
 [ext_resource type="Curve3D" uid="uid://cieygthdm7k56" path="res://scene/world/sidewalk_curves/concrete_2.tres" id="54_r4xj5"]
+[ext_resource type="Curve3D" uid="uid://bydk1poavf8nr" path="res://scene/world/sidewalk_curves/concrete_4.tres" id="55_wy4ne"]
 [ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
 
 [sub_resource type="Resource" id="Resource_a331h"]
@@ -511,7 +515,6 @@ data_directory = "res://terrain_data/world"
 material = ExtResource("4_2u3nc")
 assets = ExtResource("14_5enf7")
 save_16_bit = true
-label_distance = 1221.0
 collision_mode = 3
 collision_layer = 16
 collision_mask = 0
@@ -2894,6 +2897,214 @@ height = 0.68
 sides = 24
 material = ExtResource("27_4tdq6")
 
+[node name="BlockH" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 2, -384)
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+
+[node name="Concrete" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 1.45519e-11, -35.15)
+size = Vector3(145, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete2" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -71.15, 1.45519e-11, -10.95)
+size = Vector3(55.9, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete3" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 66.35, 1.45519e-11, -5)
+size = Vector3(67.8, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete4" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 68.6, 1.45519e-11, 21.85)
+size = Vector3(3, 0.7, 2.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete5" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.8, 1.45519e-11, 25.15)
+size = Vector3(35.6, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete6" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -26.75, 1.45519e-11, 68.29)
+size = Vector3(18.4, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete7" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(-0.642788, 0, 0.766044, 0, 1, 0, -0.766044, 0, -0.642788, -45.23, 1.45519e-11, 60.21)
+size = Vector3(51.3, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete8" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -32.1, 1.45519e-11, 79.32)
+size = Vector3(3.1, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="ConcreteCutout" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(0.5, 0, 0.866025, 0, 1, 0, -0.866025, 0, 0.5, -28.5, 1.45519e-11, 79.83)
+operation = 2
+size = Vector3(2, 0.7, 1)
+material = ExtResource("23_6lidv")
+
+[node name="ConcreteCutout2" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -33.55, 1.45519e-11, 80.75)
+operation = 2
+size = Vector3(1, 0.7, 2)
+material = ExtResource("23_6lidv")
+
+[node name="Grass" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, -1.45519e-11, -37.4)
+size = Vector3(136, 0.68, 3)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass2" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -73.4, -1.45519e-11, -8.69999)
+size = Vector3(51.4, 0.68, 3)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass3" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 68.6, -1.45519e-11, -6.89999)
+size = Vector3(55, 0.68, 3)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass4" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 68.6, -1.45519e-11, 25)
+size = Vector3(3, 0.68, 3.8)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass5" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 67.6, -1.45519e-11, 27.9)
+size = Vector3(1, 0.68, 2)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass6" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.8, -1.45519e-11, 27.4)
+size = Vector3(35.6, 0.68, 3)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass7" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(0.642788, 0, -0.766044, 0, 1, 0, 0.766044, 0, 0.642788, -47.5, 1.45519e-11, 61)
+size = Vector3(49.6, 0.68, 3)
+material = ExtResource("27_4tdq6")
+
+[node name="Grass8" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, -25.55, 1.45519e-11, 70.7)
+size = Vector3(21.4, 0.68, 3)
+material = ExtResource("27_4tdq6")
+
+[node name="RoundGrass" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -71.9, -1.45519e-11, -35.9)
+radius = 3.0
+height = 0.68
+sides = 24
+material = ExtResource("27_4tdq6")
+
+[node name="RoundGrass4" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -31.25, 1.45519e-11, 79.6)
+radius = 2.0
+height = 0.68
+sides = 24
+material = ExtResource("27_4tdq6")
+
+[node name="RoundGrass2" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 67.1, -1.45519e-11, -35.9)
+radius = 3.0
+height = 0.68
+sides = 24
+material = ExtResource("27_4tdq6")
+
+[node name="RoundGrass3" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, 68.1, -1.45519e-11, 26.9)
+radius = 2.0
+height = 0.68
+sides = 24
+material = ExtResource("27_4tdq6")
+
+[node name="GrassCurve3" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -63.4, 0, 42)
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+mode = 2
+path_node = NodePath("grass_3")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = ExtResource("27_4tdq6")
+
+[node name="grass_3" type="Path3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+curve = ExtResource("52_k8or8")
+metadata/_edit_lock_ = true
+
+[node name="ConcreteCurve3" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -61.7, 0, 40.5)
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+mode = 2
+path_node = NodePath("concrete_3")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = ExtResource("23_6lidv")
+
+[node name="concrete_3" type="Path3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+curve = ExtResource("53_i2hso")
+metadata/_edit_lock_ = true
+
+[node name="GrassCurve4" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 0, 27.4)
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+mode = 2
+path_node = NodePath("grass_4")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = ExtResource("27_4tdq6")
+
+[node name="grass_4" type="Path3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve4"]
+curve = ExtResource("54_i2hso")
+
+[node name="ConcreteCurve4" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30, 1.45519e-11, 25.15)
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+mode = 2
+path_node = NodePath("concrete_4")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = ExtResource("23_6lidv")
+
+[node name="concrete_4" type="Path3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
+curve = ExtResource("55_wy4ne")
+metadata/_edit_lock_ = true
+
 [node name="BlockJ" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -261.6, 2, -426.6)
 use_collision = true
@@ -2970,6 +3181,14 @@ metadata/_edit_lock_ = true
 
 [node name="RoundGrass" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockJ"]
 transform = Transform3D(6.12323e-17, 0, -1, 0, 1, 0, 1, 0, 6.12323e-17, -27.5, 1.45519e-11, 65.7)
+radius = 2.0
+height = 0.68
+sides = 24
+material = ExtResource("27_4tdq6")
+metadata/_edit_lock_ = true
+
+[node name="RoundGrass4" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockJ"]
+transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, -27.5, 1.45519e-11, -70.5)
 radius = 2.0
 height = 0.68
 sides = 24
@@ -3079,14 +3298,6 @@ material = ExtResource("27_4tdq6")
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -32.6, 0, 9.25)
 size = Vector3(116.7, 0.7, 2)
 material = ExtResource("27_4tdq6")
-
-[node name="RoundGrass4" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
-transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, -31.6, 1.45519e-11, -209.1)
-radius = 2.0
-height = 0.68
-sides = 24
-material = ExtResource("27_4tdq6")
-metadata/_edit_lock_ = true
 
 [node name="RoundGrass5" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
 transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, -31.6, 1.45519e-11, -51.1)
@@ -3673,6 +3884,11 @@ material = ExtResource("23_6lidv")
 [node name="Concrete5" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
 transform = Transform3D(-1, 0, 1.22465e-16, 0, 1, 0, -1.22465e-16, 0, -1, 56, 0, 107.35)
 size = Vector3(40.6, 0.7, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="Concrete9" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, 19.24, 1.45519e-11, -22.01)
+size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 
 [node name="Grass" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]

@@ -1,0 +1,107 @@
+[gd_scene load_steps=9 format=3 uid="uid://dcwdq2tolxn0a"]
+
+[ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="1_ftrpg"]
+[ext_resource type="Script" uid="uid://ckp8pe5mm4eyc" path="res://vehicle/VehicleBase.gd" id="1_xwacg"]
+[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_aife1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wyv1k"]
+size = Vector3(1.872, 1.016, 6.01)
+
+[sub_resource type="BoxMesh" id="BoxMesh_0nvtn"]
+material = ExtResource("1_ftrpg")
+size = Vector3(1.872, 1.016, 6.01)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0nvtn"]
+size = Vector3(1.63, 0.7, 1.7374)
+
+[sub_resource type="BoxMesh" id="BoxMesh_w05jp"]
+material = ExtResource("1_ftrpg")
+size = Vector3(1.63, 0.7, 1.7374)
+
+[sub_resource type="TorusMesh" id="TorusMesh_xwacg"]
+material = ExtResource("2_aife1")
+inner_radius = 0.15
+outer_radius = 0.41
+
+[node name="TruckVehicle" type="VehicleBody3D"]
+collision_layer = 64
+collision_mask = 112
+script = ExtResource("1_xwacg")
+metadata/_custom_type_script = "uid://ckp8pe5mm4eyc"
+
+[node name="body_shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.9144, 1.45519e-11)
+shape = SubResource("BoxShape3D_wyv1k")
+
+[node name="body" type="MeshInstance3D" parent="body_shape"]
+mesh = SubResource("BoxMesh_0nvtn")
+skeleton = NodePath("../..")
+
+[node name="cab_shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.7644, 0.87)
+shape = SubResource("BoxShape3D_0nvtn")
+
+[node name="cab" type="MeshInstance3D" parent="cab_shape"]
+mesh = SubResource("BoxMesh_w05jp")
+skeleton = NodePath("../..")
+
+[node name="front_left" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.41, 2.1717)
+use_as_traction = true
+use_as_steering = true
+wheel_roll_influence = 0.6
+wheel_radius = 0.41
+wheel_friction_slip = 2.2
+suspension_stiffness = 40.0
+damping_compression = 0.5
+damping_relaxation = 0.55
+
+[node name="tire" type="MeshInstance3D" parent="front_left"]
+transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_xwacg")
+
+[node name="front_right" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.41, 2.1717)
+use_as_traction = true
+use_as_steering = true
+wheel_roll_influence = 0.6
+wheel_radius = 0.41
+wheel_friction_slip = 2.2
+suspension_stiffness = 40.0
+damping_compression = 0.5
+damping_relaxation = 0.55
+
+[node name="tire" type="MeshInstance3D" parent="front_right"]
+transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_xwacg")
+skeleton = NodePath("../../front_left")
+
+[node name="back_left" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.8, 0.41, -1.5189)
+use_as_traction = true
+wheel_roll_influence = 0.6
+wheel_radius = 0.41
+wheel_friction_slip = 2.0
+suspension_stiffness = 40.0
+damping_compression = 0.5
+damping_relaxation = 0.55
+
+[node name="tire" type="MeshInstance3D" parent="back_left"]
+transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_xwacg")
+skeleton = NodePath("../../front_left")
+
+[node name="back_right" type="VehicleWheel3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.41, -1.5189)
+use_as_traction = true
+wheel_roll_influence = 0.6
+wheel_radius = 0.41
+wheel_friction_slip = 2.0
+suspension_stiffness = 40.0
+damping_compression = 0.5
+damping_relaxation = 0.55
+
+[node name="tire" type="MeshInstance3D" parent="back_right"]
+transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, 0, 0, 0)
+mesh = SubResource("TorusMesh_xwacg")
+skeleton = NodePath("../../front_left")

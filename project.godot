@@ -59,7 +59,8 @@ folder_colors={
 "res://scene/": "green",
 "res://script/": "purple",
 "res://shader/": "pink",
-"res://ui/": "orange"
+"res://ui/": "orange",
+"res://vehicle/": "purple"
 }
 
 [global_group]

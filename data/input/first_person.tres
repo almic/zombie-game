@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=100 format=3 uid="uid://7qgp0c8ytmj1"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=104 format=3 uid="uid://7qgp0c8ytmj1"]
 
 [ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_5kk23"]
-[ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/move.tres" id="2_fwd1p"]
+[ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_fwd1p"]
 [ext_resource type="Script" uid="uid://cwoj8ckmjacgf" path="res://addons/guide/guide_mapping_context.gd" id="2_pme3w"]
 [ext_resource type="Script" uid="uid://d2uxdm701dkpi" path="res://addons/guide/guide_input_mapping.gd" id="3_nvbr2"]
 [ext_resource type="Script" uid="uid://1v1tg76dtp0o" path="res://addons/guide/inputs/guide_input_key.gd" id="4_ha628"]
@@ -9,27 +9,28 @@
 [ext_resource type="Script" uid="uid://cfjjp6w13v8uc" path="res://addons/guide/modifiers/guide_modifier_negate.gd" id="6_5lxdk"]
 [ext_resource type="Script" uid="uid://3c2xktkhlfrp" path="res://addons/guide/modifiers/guide_modifier_input_swizzle.gd" id="7_jostj"]
 [ext_resource type="Script" uid="uid://b2wjmqwobesm6" path="res://addons/guide/triggers/guide_trigger.gd" id="8_46ss4"]
-[ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/look.tres" id="9_ha628"]
+[ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/first_person/look.tres" id="9_ha628"]
 [ext_resource type="Script" uid="uid://13sgtsrifv2g" path="res://addons/guide/inputs/guide_input_mouse_axis_2d.gd" id="10_5lxdk"]
 [ext_resource type="Script" uid="uid://dpda6gktkxikn" path="res://addons/guide/modifiers/guide_modifier_window_relative.gd" id="11_jostj"]
 [ext_resource type="Script" uid="uid://ct8vqs3j21bv5" path="res://addons/guide/modifiers/guide_modifier_scale.gd" id="12_46ss4"]
-[ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/jump.tres" id="13_2myea"]
-[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/pause.tres" id="13_jostj"]
+[ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/first_person/jump.tres" id="13_2myea"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/first_person/pause.tres" id="13_jostj"]
 [ext_resource type="Script" uid="uid://dyw2obmpaoakj" path="res://addons/guide/triggers/guide_trigger_pressed.gd" id="14_46ss4"]
 [ext_resource type="Script" uid="uid://bnshv5uxb5gtb" path="res://addons/guide/triggers/guide_trigger_window.gd" id="14_iijhd"]
-[ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/fire_primary.tres" id="17_fce2m"]
+[ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/first_person/fire_primary.tres" id="17_fce2m"]
 [ext_resource type="Script" uid="uid://ckvm70nxyk4g" path="res://addons/guide/inputs/guide_input_mouse_button.gd" id="18_k0qy5"]
 [ext_resource type="Script" uid="uid://bliwp6irr0l6v" path="res://addons/guide/triggers/guide_trigger_down.gd" id="19_q68ji"]
-[ext_resource type="Resource" uid="uid://cj0mmtnxy5wct" path="res://data/input/actions/aim.tres" id="20_2txww"]
-[ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/weapon_next.tres" id="20_q68ji"]
-[ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/weapon_prev.tres" id="21_srcnp"]
-[ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/reload.tres" id="22_srcnp"]
-[ext_resource type="Resource" uid="uid://bt316ku33273" path="res://data/input/actions/flashlight.tres" id="23_6y23l"]
-[ext_resource type="Resource" uid="uid://bc4fyxn7gu6kv" path="res://data/input/actions/weapon_ammo_switch.tres" id="23_cvmv4"]
-[ext_resource type="Resource" uid="uid://upe5t1x0l8xr" path="res://data/input/actions/unload.tres" id="23_m8yck"]
-[ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/melee.tres" id="24_j51jp"]
-[ext_resource type="Resource" uid="uid://dheiirlyouuld" path="res://data/input/actions/weapon_charge.tres" id="28_1dtex"]
-[ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/fan_hammer.tres" id="29_750xq"]
+[ext_resource type="Resource" uid="uid://cj0mmtnxy5wct" path="res://data/input/actions/first_person/aim.tres" id="20_2txww"]
+[ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/first_person/weapon_next.tres" id="20_q68ji"]
+[ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/first_person/weapon_prev.tres" id="21_srcnp"]
+[ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/first_person/reload.tres" id="22_srcnp"]
+[ext_resource type="Resource" uid="uid://bt316ku33273" path="res://data/input/actions/first_person/flashlight.tres" id="23_6y23l"]
+[ext_resource type="Resource" uid="uid://bc4fyxn7gu6kv" path="res://data/input/actions/first_person/weapon_ammo_switch.tres" id="23_cvmv4"]
+[ext_resource type="Resource" uid="uid://upe5t1x0l8xr" path="res://data/input/actions/first_person/unload.tres" id="23_m8yck"]
+[ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/first_person/melee.tres" id="24_j51jp"]
+[ext_resource type="Resource" uid="uid://dheiirlyouuld" path="res://data/input/actions/first_person/weapon_charge.tres" id="28_1dtex"]
+[ext_resource type="Resource" uid="uid://c8ipmag2tt3b7" path="res://data/input/actions/first_person/interact.tres" id="28_6wxkn"]
+[ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/first_person/fan_hammer.tres" id="29_750xq"]
 [ext_resource type="Script" uid="uid://4oycuh0lr0i" path="res://addons/guide/triggers/guide_trigger_combo_cancel_action.gd" id="30_6wxkn"]
 [ext_resource type="Script" uid="uid://bbeymasvwpgql" path="res://addons/guide/triggers/guide_trigger_combo.gd" id="31_nja5n"]
 [ext_resource type="Script" uid="uid://0wtlaaqmn457" path="res://addons/guide/triggers/guide_trigger_combo_step.gd" id="32_r204x"]
@@ -429,6 +430,30 @@ script = ExtResource("1_5kk23")
 action = ExtResource("24_j51jp")
 input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_yu3q0")])
 
+[sub_resource type="Resource" id="Resource_rf1rf"]
+script = ExtResource("4_ha628")
+key = 69
+shift = false
+control = false
+alt = false
+meta = false
+allow_additional_modifiers = true
+
+[sub_resource type="Resource" id="Resource_stmsw"]
+script = ExtResource("3_nvbr2")
+override_action_settings = false
+is_remappable = false
+display_name = ""
+display_category = ""
+input = SubResource("Resource_rf1rf")
+modifiers = Array[ExtResource("5_0jx6m")]([])
+triggers = Array[ExtResource("8_46ss4")]([])
+
+[sub_resource type="Resource" id="Resource_pmmte"]
+script = ExtResource("1_5kk23")
+action = ExtResource("28_6wxkn")
+input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_stmsw")])
+
 [sub_resource type="Resource" id="Resource_2hf47"]
 script = ExtResource("4_ha628")
 key = 69
@@ -505,5 +530,5 @@ input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_5juv8")])
 [resource]
 script = ExtResource("2_pme3w")
 display_name = ""
-mappings = Array[ExtResource("1_5kk23")]([SubResource("Resource_kfofi"), SubResource("Resource_46ss4"), SubResource("Resource_hwbnv"), SubResource("Resource_6wxkn"), SubResource("Resource_5blti"), SubResource("Resource_3a0jo"), SubResource("Resource_mul2j"), SubResource("Resource_3krds"), SubResource("Resource_qnh3i"), SubResource("Resource_e4g2w"), SubResource("Resource_10dph"), SubResource("Resource_sfbg0"), SubResource("Resource_icp33"), SubResource("Resource_wuy35"), SubResource("Resource_50vkl")])
+mappings = Array[ExtResource("1_5kk23")]([SubResource("Resource_kfofi"), SubResource("Resource_46ss4"), SubResource("Resource_hwbnv"), SubResource("Resource_6wxkn"), SubResource("Resource_5blti"), SubResource("Resource_3a0jo"), SubResource("Resource_mul2j"), SubResource("Resource_3krds"), SubResource("Resource_qnh3i"), SubResource("Resource_e4g2w"), SubResource("Resource_10dph"), SubResource("Resource_sfbg0"), SubResource("Resource_icp33"), SubResource("Resource_pmmte"), SubResource("Resource_wuy35"), SubResource("Resource_50vkl")])
 metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

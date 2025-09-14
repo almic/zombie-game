@@ -71,6 +71,8 @@ var look_aim_return_time: float = 0.22
 
 @export_group("Controls")
 
+@export_subgroup("First Person")
+
 @export var jump: GUIDEAction
 @export var look: GUIDEAction
 @export var move: GUIDEAction
@@ -78,6 +80,7 @@ var look_aim_return_time: float = 0.22
 @export var aim: GUIDEAction
 @export var fan_hammer: GUIDEAction
 @export var flashlight_action: GUIDEAction
+@export var interact: GUIDEAction
 @export var charge: GUIDEAction
 @export var melee: GUIDEAction
 @export var weapon_next: GUIDEAction
@@ -85,6 +88,15 @@ var look_aim_return_time: float = 0.22
 @export var reload: GUIDEAction
 @export var unload: GUIDEAction
 @export var switch_ammo: GUIDEAction
+
+@export_subgroup("Vehicle")
+
+@export var accelerate: GUIDEAction
+@export var brake_reverse: GUIDEAction
+@export var drive: GUIDEAction
+@export var headlights: GUIDEAction
+@export var horn: GUIDEAction
+@export var steer: GUIDEAction
 
 
 var score: int = 0:

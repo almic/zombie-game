@@ -1,8 +1,8 @@
-[gd_scene load_steps=63 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=64 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
-[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/pause.tres" id="3_036b0"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/first_person/pause.tres" id="3_036b0"]
 [ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="4_2u3nc"]
 [ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="4_036b0"]
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
@@ -51,6 +51,7 @@
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="53_64map"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="53_f0qux"]
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="53_pb8w5"]
+[ext_resource type="PackedScene" uid="uid://dcwdq2tolxn0a" path="res://vehicle/truck/truck_vehicle.tscn" id="54_x6gsb"]
 [ext_resource type="Script" uid="uid://cmoqd7hfbfppm" path="res://script/csg/csg_curve/csg_curve.gd" id="58_oslxn"]
 [ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
 
@@ -5637,3 +5638,6 @@ fov = 25.3494
 
 [node name="ColorSquares" parent="." instance=ExtResource("58_pb8w5")]
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
+
+[node name="TruckVehicle" parent="." instance=ExtResource("54_x6gsb")]
+transform = Transform3D(0.0871557, 0, -0.996195, 0, 1, 0, 0.996195, 0, 0.0871557, -336, 2.2, -508.3)

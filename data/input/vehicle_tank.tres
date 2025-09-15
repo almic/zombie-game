@@ -51,12 +51,6 @@ alt = false
 meta = false
 allow_additional_modifiers = true
 
-[sub_resource type="Resource" id="Resource_mbcv2"]
-script = ExtResource("6_c7wy3")
-x = true
-y = true
-z = true
-
 [sub_resource type="Resource" id="Resource_blrgm"]
 script = ExtResource("3_xju7w")
 override_action_settings = false
@@ -64,7 +58,7 @@ is_remappable = false
 display_name = ""
 display_category = ""
 input = SubResource("Resource_in2f1")
-modifiers = Array[ExtResource("5_jyqyf")]([SubResource("Resource_mbcv2")])
+modifiers = Array[ExtResource("5_jyqyf")]([])
 triggers = Array[ExtResource("8_up85b")]([])
 
 [sub_resource type="Resource" id="Resource_ccf8f"]
@@ -99,6 +93,12 @@ alt = false
 meta = false
 allow_additional_modifiers = true
 
+[sub_resource type="Resource" id="Resource_7x5n8"]
+script = ExtResource("6_c7wy3")
+x = true
+y = true
+z = true
+
 [sub_resource type="Resource" id="Resource_ochjw"]
 script = ExtResource("3_xju7w")
 override_action_settings = false
@@ -106,7 +106,7 @@ is_remappable = false
 display_name = ""
 display_category = ""
 input = SubResource("Resource_l31uh")
-modifiers = Array[ExtResource("5_jyqyf")]([])
+modifiers = Array[ExtResource("5_jyqyf")]([SubResource("Resource_7x5n8")])
 triggers = Array[ExtResource("8_up85b")]([])
 
 [sub_resource type="Resource" id="Resource_2vlyu"]

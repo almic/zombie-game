@@ -1,8 +1,11 @@
-[gd_scene load_steps=64 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=67 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
+[ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
 [ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="2_tlwt5"]
-[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/first_person/pause.tres" id="3_036b0"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/global/pause.tres" id="3_036b0"]
+[ext_resource type="Resource" uid="uid://b1tmnuu4av4go" path="res://data/input/camera.tres" id="3_fur4y"]
+[ext_resource type="Resource" uid="uid://codpo6l5xn1m8" path="res://data/input/vehicle_realistic.tres" id="3_wuj0p"]
 [ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="4_2u3nc"]
 [ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="4_036b0"]
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
@@ -86,7 +89,10 @@ size = Vector2(4096, 4096)
 [node name="world" type="Node3D" groups=["world"]]
 process_mode = 3
 script = ExtResource("1_fj7yv")
+global_context = ExtResource("2_rf70f")
+camera_context = ExtResource("3_fur4y")
 first_person = ExtResource("2_tlwt5")
+vehicle_context = ExtResource("3_wuj0p")
 pause = ExtResource("3_036b0")
 enable_targetting = false
 target_spawn_count = 20
@@ -5640,4 +5646,4 @@ fov = 25.3494
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." instance=ExtResource("54_x6gsb")]
-transform = Transform3D(0.0871557, 0, -0.996195, 0, 1, 0, 0.996195, 0, 0.0871557, -336, 2.2, -508.3)
+transform = Transform3D(0.0871558, 0, 0.996195, 0, 1, 0, -0.996195, 0, 0.0871558, -336, 2.2, -508.3)

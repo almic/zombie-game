@@ -1,0 +1,43 @@
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=15 format=3 uid="uid://b1tmnuu4av4go"]
+
+[ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_hjeco"]
+[ext_resource type="Script" uid="uid://cwoj8ckmjacgf" path="res://addons/guide/guide_mapping_context.gd" id="2_7b3hd"]
+[ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/camera/look.tres" id="2_8x1dr"]
+[ext_resource type="Script" uid="uid://d2uxdm701dkpi" path="res://addons/guide/guide_input_mapping.gd" id="3_yeo5j"]
+[ext_resource type="Script" uid="uid://13sgtsrifv2g" path="res://addons/guide/inputs/guide_input_mouse_axis_2d.gd" id="4_jmbwu"]
+[ext_resource type="Script" uid="uid://qhehcstl4kq8" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_50rtm"]
+[ext_resource type="Script" uid="uid://dpda6gktkxikn" path="res://addons/guide/modifiers/guide_modifier_window_relative.gd" id="6_ei5i2"]
+[ext_resource type="Script" uid="uid://ct8vqs3j21bv5" path="res://addons/guide/modifiers/guide_modifier_scale.gd" id="7_fqs44"]
+[ext_resource type="Script" uid="uid://b2wjmqwobesm6" path="res://addons/guide/triggers/guide_trigger.gd" id="8_sg1ci"]
+
+[sub_resource type="Resource" id="Resource_4mcap"]
+script = ExtResource("4_jmbwu")
+
+[sub_resource type="Resource" id="Resource_x5jfb"]
+script = ExtResource("6_ei5i2")
+
+[sub_resource type="Resource" id="Resource_r7kty"]
+script = ExtResource("7_fqs44")
+scale = Vector3(360, 360, 1)
+apply_delta_time = false
+
+[sub_resource type="Resource" id="Resource_mkl8k"]
+script = ExtResource("3_yeo5j")
+override_action_settings = false
+is_remappable = false
+display_name = ""
+display_category = ""
+input = SubResource("Resource_4mcap")
+modifiers = Array[ExtResource("5_50rtm")]([SubResource("Resource_x5jfb"), SubResource("Resource_r7kty")])
+triggers = Array[ExtResource("8_sg1ci")]([])
+
+[sub_resource type="Resource" id="Resource_64ngj"]
+script = ExtResource("1_hjeco")
+action = ExtResource("2_8x1dr")
+input_mappings = Array[ExtResource("3_yeo5j")]([SubResource("Resource_mkl8k")])
+
+[resource]
+script = ExtResource("2_7b3hd")
+display_name = ""
+mappings = Array[ExtResource("1_hjeco")]([SubResource("Resource_64ngj")])
+metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

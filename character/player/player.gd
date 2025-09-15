@@ -97,6 +97,7 @@ var look_aim_return_time: float = 0.22
 @export var headlights: GUIDEAction
 @export var horn: GUIDEAction
 @export var steer: GUIDEAction
+@export var exit_vehicle: GUIDEAction
 
 
 var score: int = 0:
@@ -113,6 +114,12 @@ var weapon_aim_fov: float = fov
 var weapon_aim_look_speed: float = 1.0
 
 var ammo_bank: Dictionary = {}
+
+## The vehicle currently controlled by the player
+var current_vehicle: VehicleBase = null
+## Delay for exiting a vehicle after entering it
+var _vehicle_exit_delay: float = 0.0
+
 
 ## If we are aiming
 var _aim_is_aiming: bool = false
@@ -165,6 +172,7 @@ var _fire_can_buffer: bool = true
 ## Timer for doing a full reload.
 ## Tap to full reload, hold for controlled reload.
 var _weapon_reload_time: int
+
 
 ## Buffered input
 var _last_input: GUIDEAction
@@ -227,8 +235,19 @@ func _process(delta: float) -> void:
         weapon_node.position = weapon_position
         return
 
-    update_aiming(delta)
+    # Test interactions before everything else, so they appear to occur with
+    # the frame the player sees right now
+    if interact.is_triggered():
+        var collider = aim_target.get_collider()
+        if collider:
+            interact_with(collider)
 
+    if current_vehicle:
+        update_vehicle(delta)
+    else:
+        update_first_person(delta)
+
+func update_first_person_camera(delta: float) -> void:
     if not _look_roll.is_done:
         _look_roll.update(delta)
 
@@ -237,9 +256,6 @@ func _process(delta: float) -> void:
 
     if not _fov.is_done:
         _fov.update(delta)
-
-    if not _top_speed.is_done:
-        _top_speed.update(delta)
 
     camera_3d.fov = _fov.current
 
@@ -258,6 +274,7 @@ func _process(delta: float) -> void:
     look_euler.y = rotation.y
     _look_transform.basis = Basis.from_euler(look_euler)
 
+
     interpolate_camera_smooth(delta)
     _look_transform.origin = _camera_smooth_position
 
@@ -266,12 +283,20 @@ func _process(delta: float) -> void:
     camera_3d.transform = _look_transform
     camera_3d.transform *= _recoil_transform
 
+func update_first_person(delta: float) -> void:
+
+    if not _top_speed.is_done:
+        _top_speed.update(delta)
+
+    update_aiming(aim.is_triggered(), delta)
+
     var was_fanning: bool
     var revolver: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
     if revolver:
         was_fanning = revolver.is_fanning
 
-    # NOTE: Must be after rotations, otherwise weapon would fire at old rotations
+    # NOTE: Must be before camera update, so the weapon fires where it appears
+    #       to point right now
     update_weapon_node(delta)
 
     if revolver:
@@ -320,6 +345,69 @@ func _process(delta: float) -> void:
                 _last_input = null
                 _last_input_timer = 0.0
 
+    update_first_person_camera(delta)
+
+func update_vehicle(delta: float) -> void:
+    if _vehicle_exit_delay > 0.0:
+        _vehicle_exit_delay -= delta
+
+    if not _vehicle_exit_delay > 0.0 and exit_vehicle.is_triggered():
+        global_position = current_vehicle.get_exit_position()
+        show_self(true)
+
+        current_vehicle = null
+
+        get_tree().call_group('world', 'on_exit_vehicle')
+        return
+
+    # Keep player body attached to the vehicle
+    global_position = current_vehicle.global_position
+
+    if accelerate.is_triggered():
+        if (
+                current_vehicle.linear_velocity.dot(current_vehicle.global_basis.z) < 0.0
+                and current_vehicle.linear_velocity.length_squared() > 0.04
+        ):
+            current_vehicle.do_brake()
+        else:
+            current_vehicle.do_accelerate()
+
+    if brake_reverse.is_triggered():
+        if (
+                current_vehicle.linear_velocity.dot(current_vehicle.global_basis.z) > 0.08
+                and current_vehicle.linear_velocity.length_squared() > 0.04
+        ):
+            current_vehicle.do_brake()
+        else:
+            current_vehicle.do_reverse()
+
+    if steer.is_triggered():
+        current_vehicle.do_steer(current_vehicle.steering_maximum * steer.value_axis_1d)
+
+    update_vehicle_camera(delta)
+
+func update_vehicle_camera(_delta: float) -> void:
+    const follow_distance: float = 5.0
+
+    # TODO: Create an arm to track distance and lock vertical look
+    _look_transform.origin = Vector3.ZERO
+    _look_transform = _look_transform.rotated(
+            Vector3.UP,
+            -look.value_axis_2d.x * _look_speed.current
+    )
+    _look_transform = _look_transform.rotated_local(
+            Vector3.RIGHT,
+            -look.value_axis_2d.y * _look_speed.current
+    )
+
+    camera_3d.transform = _look_transform
+
+    # Track backwards from forward to follow distance
+    camera_3d.transform = camera_3d.transform.translated_local(Vector3.BACK * follow_distance)
+
+    camera_3d.global_transform = current_vehicle.camera_target.global_transform * camera_3d.transform
+
+
 func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
@@ -362,10 +450,10 @@ func get_camera() -> Camera3D:
 func set_recoil_transform(recoil_transform: Transform3D) -> void:
     _recoil_transform = recoil_transform
 
-func update_aiming(delta: float) -> void:
+func update_aiming(should_aim: bool, delta: float = 0.0) -> void:
     var aim_starting: bool = false
     var aim_ending: bool = false
-    if aim.is_triggered() and weapon_node.can_aim():
+    if should_aim and weapon_node.can_aim():
         if not _aim_is_aiming:
             # NOTE: Special revolver input, aiming is delayed, charges if not
             #       charged, and cancels fan hammer state.
@@ -750,6 +838,22 @@ func select_weapon(slot: int) -> void:
             cam_attributes = get_world_3d().camera_attributes
         scoped_rifle.apply_camera_attributes(cam_attributes)
 
+func interact_with(object: Object) -> void:
+    if object is VehicleBase:
+        current_vehicle = object
+        _vehicle_exit_delay = 1.0
+
+        # Disable and hide self
+        show_self(false)
+
+        # Input house-keeping
+        update_aiming(false)
+        _top_speed.reset(top_speed)
+        _fov.reset(fov)
+        _look_roll.reset(0.0)
+        _look_speed.reset(look_speed)
+
+        get_tree().call_group('world', 'on_enter_vehicle')
 
 func set_score(value: int) -> void:
     if score == value:
@@ -882,3 +986,16 @@ func connect_hurtboxes() -> void:
     life.connect_hurtbox(hurtbox)
 
     weapon_node.set_melee_excluded_hurboxes([hurtbox])
+
+func show_self(show: bool = true) -> void:
+    if show:
+        collider.disabled = false
+        collider.visible = true
+        weapon_node.process_mode = Node.PROCESS_MODE_INHERIT
+        flashlight.visible = true
+        return
+
+    collider.disabled = true
+    collider.visible = false
+    weapon_node.process_mode = Node.PROCESS_MODE_DISABLED
+    flashlight.visible = false

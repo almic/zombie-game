@@ -1,10 +1,10 @@
-[gd_scene load_steps=35 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=36 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_otwb2"]
 [ext_resource type="Resource" uid="uid://3vclogxthwtf" path="res://data/player/player_health.tres" id="3_lqp71"]
-[ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/first_person/look.tres" id="3_otwb2"]
+[ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/camera/look.tres" id="3_otwb2"]
 [ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/first_person/jump.tres" id="4_wfnr8"]
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/first_person/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
@@ -29,6 +29,7 @@
 [ext_resource type="Resource" uid="uid://1oc4rk1h4uql" path="res://data/input/actions/vehicle/headlights.tres" id="22_r212m"]
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="23_8bmvw"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="24_7gte1"]
+[ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="25_k6mlu"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
 radius = 0.34
@@ -85,6 +86,7 @@ drive = ExtResource("19_4u7af")
 headlights = ExtResource("22_r212m")
 horn = ExtResource("23_8bmvw")
 steer = ExtResource("24_7gte1")
+exit_vehicle = ExtResource("25_k6mlu")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
 
 [node name="collider" parent="." index="0"]
@@ -125,6 +127,7 @@ script = ExtResource("7_qh58e")
 controller = NodePath("../../../..")
 hitbox = NodePath("../../../../Hitbox")
 aim_target = NodePath("../AimTarget")
+aim_target_reduced_rate = false
 aim_duration = 0.25
 metadata/_custom_type_script = "uid://n578e74oit7v"
 metadata/_edit_lock_ = true
@@ -135,10 +138,9 @@ metadata/_edit_lock_ = true
 [node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D" index="2"]
 unique_name_in_owner = true
 editor_description = "Weapon targetting raycast so weapons aim correctly"
-enabled = false
 exclude_parent = false
 target_position = Vector3(1.45519e-11, 1.45519e-11, -50)
-collision_mask = 24
+collision_mask = 248
 hit_back_faces = false
 collide_with_areas = true
 metadata/_edit_lock_ = true

@@ -36,6 +36,8 @@ signal reload_complete()
 @export var aim_enabled: bool = true
 ## Aim target for weapon
 @export var aim_target: RayCast3D
+## If this aim target ticks at a reduced rate
+@export var aim_target_reduced_rate: bool = true
 ## Time to aim weapons in seconds
 @export_range(0.001, 2.0, 0.0001, 'or_greater', 'suffix:seconds')
 var aim_duration: float = 0.2
@@ -95,7 +97,7 @@ var melee_excluded_hurtboxes: Array[RID]
 func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
 
-    if aim_target:
+    if aim_target and aim_target_reduced_rate:
         aim_target.enabled = false
 
     _weapon_aim.current = Vector2.ZERO
@@ -222,7 +224,8 @@ func update_aim_target() -> void:
         return
     _weapon_aim_ticks = 0
 
-    aim_target.force_raycast_update()
+    if aim_target_reduced_rate:
+        aim_target.force_raycast_update()
 
     if not aim_target.is_colliding():
         if not _weapon_aim_target.is_zero_approx():

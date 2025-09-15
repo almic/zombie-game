@@ -6,7 +6,7 @@
 [ext_resource type="Terrain3DMaterial" uid="uid://cim2ehhkpiofr" path="res://environment/terrain_material.tres" id="2_bp75k"]
 [ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="2_xf1lx"]
 [ext_resource type="Material" uid="uid://vmytjr2shhek" path="res://material/level/grid_white.tres" id="3_1wv3i"]
-[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/first_person/pause.tres" id="3_ccclf"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/global/pause.tres" id="3_ccclf"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="3_k1437"]
 [ext_resource type="Material" uid="uid://c3gjgfni46e62" path="res://material/level/grid_orange.tres" id="4_1wv3i"]
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="4_ccclf"]

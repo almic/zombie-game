@@ -5,7 +5,10 @@ class_name World extends Node3D
 
 
 @export_category("Input Mapping")
+@export var global_context: GUIDEMappingContext
+@export var camera_context: GUIDEMappingContext
 @export var first_person: GUIDEMappingContext
+@export var vehicle_context: GUIDEMappingContext
 
 @export_group("Global Actions")
 @export var pause : GUIDEAction
@@ -77,7 +80,9 @@ var _zombies_alive: int = 0
 var _spawn_points: Array[SpawnPoint] = []
 
 func _ready() -> void:
+    GUIDE.enable_mapping_context(global_context)
     GUIDE.enable_mapping_context(first_person)
+    GUIDE.enable_mapping_context(camera_context)
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
     # Engine.time_scale = 0.25
@@ -225,3 +230,11 @@ func select_zombie_spawn() -> Vector3:
 
 func on_player_death() -> void:
     handle_gameover()
+
+func on_enter_vehicle() -> void:
+    GUIDE.disable_mapping_context(first_person)
+    GUIDE.enable_mapping_context(vehicle_context)
+
+func on_exit_vehicle() -> void:
+    GUIDE.disable_mapping_context(vehicle_context)
+    GUIDE.enable_mapping_context(first_person)

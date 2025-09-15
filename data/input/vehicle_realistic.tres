@@ -14,9 +14,9 @@
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="11_a8syp"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="12_s3plq"]
 
-[sub_resource type="Resource" id="Resource_hry5x"]
+[sub_resource type="Resource" id="Resource_1f07l"]
 script = ExtResource("4_y6uqt")
-key = 69
+key = 87
 shift = false
 control = false
 alt = false
@@ -29,7 +29,7 @@ override_action_settings = false
 is_remappable = false
 display_name = ""
 display_category = ""
-input = SubResource("Resource_hry5x")
+input = SubResource("Resource_1f07l")
 modifiers = Array[ExtResource("5_fdcy7")]([])
 triggers = Array[ExtResource("6_qh32l")]([])
 
@@ -71,12 +71,6 @@ alt = false
 meta = false
 allow_additional_modifiers = true
 
-[sub_resource type="Resource" id="Resource_u7img"]
-script = ExtResource("9_e6vif")
-x = true
-y = true
-z = true
-
 [sub_resource type="Resource" id="Resource_w6bd8"]
 script = ExtResource("3_obwup")
 override_action_settings = false
@@ -84,7 +78,7 @@ is_remappable = false
 display_name = ""
 display_category = ""
 input = SubResource("Resource_sgqp6")
-modifiers = Array[ExtResource("5_fdcy7")]([SubResource("Resource_u7img")])
+modifiers = Array[ExtResource("5_fdcy7")]([])
 triggers = Array[ExtResource("6_qh32l")]([])
 
 [sub_resource type="Resource" id="Resource_qtnxs"]
@@ -96,6 +90,12 @@ alt = false
 meta = false
 allow_additional_modifiers = true
 
+[sub_resource type="Resource" id="Resource_obwup"]
+script = ExtResource("9_e6vif")
+x = true
+y = true
+z = true
+
 [sub_resource type="Resource" id="Resource_apw35"]
 script = ExtResource("3_obwup")
 override_action_settings = false
@@ -103,7 +103,7 @@ is_remappable = false
 display_name = ""
 display_category = ""
 input = SubResource("Resource_qtnxs")
-modifiers = Array[ExtResource("5_fdcy7")]([])
+modifiers = Array[ExtResource("5_fdcy7")]([SubResource("Resource_obwup")])
 triggers = Array[ExtResource("6_qh32l")]([])
 
 [sub_resource type="Resource" id="Resource_8t08j"]

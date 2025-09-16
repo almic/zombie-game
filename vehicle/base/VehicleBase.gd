@@ -358,3 +358,22 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 
     # Increment step counter
     mCurrentStep += 1
+
+func GetWheelLocalBasis(wheel: Wheel, out: Dictionary) -> void:
+    # const WheelSettings *settings = inWheel->mSettings;
+    var settings = wheel.mSettings
+
+    # Quat steer_rotation = Quat::sRotation(settings->mSteeringAxis, inWheel->mSteerAngle);
+    var steer_rotation = Quaternion(settings.steering_axis, wheel.angle)
+
+    # outUp = steer_rotation * settings->mWheelUp;
+    out.up = steer_rotation * settings.up_local
+
+    # outForward = steer_rotation * settings->mWheelForward;
+    out.forward = steer_rotation * settings.forward_local
+
+    # outRight = outForward.Cross(outUp).Normalized();
+    out.right = out.forward.cross(out.up).normalized()
+
+    # outForward = outUp.Cross(outRight).Normalized();
+    out.forward = out.up.cross(out.right).normalized()

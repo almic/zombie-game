@@ -8,6 +8,15 @@
 class_name VehicleCollisionTester
 
 
+var body_excludes: Array[RID]
+var collision_mask: int
+
+
+func _init(exclude: Array[RID], layer: int) -> void:
+    body_excludes = exclude.duplicate()
+    collision_mask = layer
+
+
 ## Do a collision test with the world
 ##
 ## vehicle         - The vehicle constraint
@@ -54,7 +63,75 @@ func PredictContactProperties(
     pass
 
 
-
+## Collision tester that tests collision using a raycast
 class CastRay extends VehicleCollisionTester:
-    func _init() -> void:
-        pass
+    var up: Vector3
+    var cos_max_slope_angle: float
+
+    ## Constructor
+    ##
+    ## exclude   - list of RIDs to ignore collision with
+    ## layer     - layer to test collision with
+    ## up        - World space up vector, used to avoid colliding with vertical walls.
+    ## max_slope - Max angle (rad) that is considered for colliding wheels. This
+    ##             is to avoid colliding with vertical walls.
+    @warning_ignore('shadowed_variable')
+    func _init(
+            exclude: Array[RID],
+            layer: int,
+            up: Vector3 = Vector3.UP,
+            max_slope: float = deg_to_rad(80.0)
+    ) -> void:
+        super._init(exclude, layer)
+
+        self.up = up
+        cos_max_slope_angle = cos(max_slope)
+
+
+## Collision tester that tests collision using a sphere cast
+class CastSphere extends VehicleCollisionTester:
+    var radius: float
+    var up: Vector3
+    var cos_max_slope_angle: float
+
+    ## Constructor
+    ##
+    ## exclude   - list of RIDs to ignore collision with
+    ## layer     - layer to test collision with
+    ## radius    - Radius of sphere
+    ## up        - World space up vector, used to avoid colliding with vertical walls.
+    ## max_slope - Max angle (rad) that is considered for colliding wheels. This
+    ##             is to avoid colliding with vertical walls.
+    @warning_ignore('shadowed_variable')
+    func _init(
+            exclude: Array[RID],
+            layer: int,
+            radius: float,
+            up: Vector3 = Vector3.UP,
+            max_slope: float = deg_to_rad(80.0)
+    ) -> void:
+        super._init(exclude, layer)
+
+        self.radius = radius
+        self.up = up
+        cos_max_slope_angle = cos(max_slope)
+
+
+## Collision tester that tests collision using a cylinder shape
+class CastCylinder extends VehicleCollisionTester:
+    var convex_radius_fraction: float
+
+    ## Constructor
+    ##
+    ## exclude  - list of RIDs to ignore collision with
+    ## layer    - layer to test collision with
+    ## fraction - Fraction of half the wheel width (or wheel radius if it is
+    ##            smaller) that is used as the convex radius
+    func _init(
+            exclude: Array[RID],
+            layer: int,
+            fraction: float = 0.1
+    ) -> void:
+        super._init(exclude, layer)
+
+        convex_radius_fraction = fraction

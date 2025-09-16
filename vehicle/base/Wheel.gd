@@ -32,9 +32,9 @@ var mSettings: WheelSettings
 ## Body for ground
 var _contact_body: Object
 
-## Body ID for ground
+## Body ID for ground, from Object.get_instance_id()
 @warning_ignore('unused_private_class_variable')
-var _contact_body_id: RID
+var _contact_body_id: int
 
 ## Shape index for ground
 @warning_ignore('unused_private_class_variable')

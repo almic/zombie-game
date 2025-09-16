@@ -1,110 +1,110 @@
+# Ported from Jolt by almic
+
+# Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
+# SPDX-FileCopyrightText: 2021 Jorrit Rouwe
+# SPDX-License-Identifier: MIT
+
+## Constraint that simulates a vehicle
+##
+## When the vehicle drives over very light objects (rubble) you may see the car body dip down. This is a known issue and is an artifact of the iterative solver that Jolt is using.
+## Basically if a light object is sandwiched between two heavy objects (the static floor and the car body), the light object is not able to transfer enough force from the ground to
+## the car body to keep the car body up. You can see this effect in the HeavyOnLightTest sample, the boxes on the right have a lot of penetration because they're on top of light objects.
+##
+## There are a couple of ways to improve this:
+##
+## 1. You can increase the number of velocity steps (global settings PhysicsSettings::mNumVelocitySteps or if you only want to increase it on
+##    the vehicle you can use VehicleConstraintSettings::mNumVelocityStepsOverride). E.g. going from 10 to 30 steps in the HeavyOnLightTest sample makes the penetration a lot less.
+##    The number of position steps can also be increased (the first prevents the body from going down, the second corrects it if the problem did
+##    occur which inevitably happens due to numerical drift). This solution costs CPU cycles.
+##
+## 2. You can reduce the mass difference between the vehicle body and the rubble on the floor (by making the rubble heavier or the car lighter).
+##
+## 3. You could filter out collisions between the vehicle collision test and the rubble completely. This would make the wheels ignore the rubble but would cause the vehicle to drive
+## through it as if nothing happened. You could create fake wheels (keyframed bodies) that move along with the vehicle and that only collide with rubble (and not the vehicle or the ground).
+## This would cause the vehicle to push away the rubble without the rubble being able to affect the vehicle (unless it hits the main body of course).
+##
+## Note that when driving over rubble, you may see the wheel jump up and down quite quickly because one frame a collision is found and the next frame not.
+## To alleviate this, it may be needed to smooth the motion of the visual mesh for the wheel.
 @tool
 class_name VehicleBase extends RigidBody3D
 
 
-@onready var camera_target: Marker3D = %CameraTarget
-@onready var exit_point: Marker3D = %ExitPoint
+## If the gravity is currently overridden
+var mIsGravityOverridden: bool = false
+
+## Gravity override value, replaces PhysicsSystem::GetGravity() when mIsGravityOverridden is true
+var mGravityOverride: Vector3 = Vector3.ZERO
+
+## Local space forward vector for the vehicle
+var mForward: Vector3
+
+## Local space up vector for the vehicle
+var mUp: Vector3
+
+## Vector indicating the world space up direction (used to limit vehicle pitch/roll)
+var mWorldUp: Vector3
+
+## Wheel states of the vehicle
+var mWheels: Array[Wheel]
+
+## Anti rollbars of the vehicle
+var mAntiRollBars: Array[AntiRollBar]
+
+## Controls the acceleration / deceleration of the vehicle
+var mController: VehicleController
+
+## If this constraint is active
+var mIsActive: bool = false
+
+## Number of simulation steps between wheel collision tests when the vehicle is active
+var mNumStepsBetweenCollisionTestActive: int = 1
+
+## Number of simulation steps between wheel collision tests when the vehicle is inactive
+var mNumStepsBetweenCollisionTestInactive: int = 1
+
+## Current step number, used to determine when to test a wheel
+var mCurrentStep: int = 0
 
 
-## Acceleration in centimeters per second squared.
-@export_range(10.0, 500.0, 0.1, 'or_greater', 'or_less', 'suffix:cm/s²')
-var acceleration: float = 100.0
+# Prevent vehicle from toppling over
 
-## Deceleration applied by braking in millimeters per second squared.
-@export_range(10.0, 200.0, 0.1, 'or_greater', 'or_less', 'suffix:mm/s²')
-var braking: float = 100.0
+## Cos of the max pitch/roll angle
+var mCosMaxPitchRollAngle: float
 
-## Acceleration when reversing in centimeters per second squared.
-@export_range(10.0, 200.0, 0.1, 'or_greater', 'or_less', 'suffix:cm/s²')
-var reversing: float = 70.0
+## Cos of the current pitch/roll angle
+var mCosPitchRollAngle: float
 
+## Current axis along which to apply torque to prevent the car from toppling over
+var mPitchRollRotationAxis: Vector3 = Vector3.UP
 
-@export_group("Steering", "steering")
-
-## Steer turn rate, in degrees per second
-@export_range(1.0, 45.0, 0.1, 'or_less', 'or_greater', 'radians_as_degrees', 'suffix:°/s')
-var steering_speed: float = deg_to_rad(90.0)
-
-## Maximum steer of the wheels
-@export_range(0.0, 90.0, 0.001, 'or_greater', 'radians_as_degrees')
-var steering_maximum: float = deg_to_rad(40.0)
-
-## Steering limit at high speed
-@export_range(0.0, 90.0, 0.001, 'or_greater', 'radians_as_degrees')
-var steering_high_speed_limit: float = deg_to_rad(5.0)
-
-## The lower and upper boundaries for the steering curve, in meters per second
-@export_custom(PROPERTY_HINT_RANGE, '0.0,100.0,0.01,or_greater,suffix:m/s')
-var steering_curve_boundry: Vector2 = Vector2(0.0, 100.0):
-    set(value):
-        if not is_equal_approx(steering_curve_boundry.x, value.x):
-            steering_curve_boundry = value
-            if steering_curve_boundry.x > steering_curve_boundry.y:
-                steering_curve_boundry.y = steering_curve_boundry.x
-        elif not is_equal_approx(steering_curve_boundry.y, value.y):
-            steering_curve_boundry = value
-            if steering_curve_boundry.y < steering_curve_boundry.x:
-                steering_curve_boundry.x = steering_curve_boundry.y
-
-## Curve for steering as vehicle speed increases
-@export_exp_easing('attenuation')
-var steering_falloff_curve: float = 1.0
+ ## Constraint part that prevents the car from toppling over
+var mPitchRollPart: AngleConstraintPart
 
 
-# Flags for vehicle actions
-var _flag_accelerate: bool = false
-var _flag_brake: bool = false
-var _flag_reverse: bool = false
-var _steer_target: float = 0.0
+# Callbacks
 
+@warning_ignore('unused_parameter')
+func _combine_friction(
+        inWheelIndex: int,
+        ioLongitudinalFriction: float,
+        ioLateralFriction: float,
+        inBody2: PhysicsBody3D,
+        inSubShapeID2: int
+) -> Vector2:
+    var body_friction: float = PhysicsServer3D.body_get_param(inBody2.get_rid(), PhysicsServer3D.BODY_PARAM_FRICTION)
 
-func _physics_process(delta: float) -> void:
-    engine_force = 0.0
-    brake = 0.0
+    ioLongitudinalFriction = sqrt(ioLongitudinalFriction * body_friction);
+    ioLateralFriction = sqrt(ioLateralFriction * body_friction);
+    return Vector2(ioLongitudinalFriction, ioLateralFriction)
 
-    if _flag_accelerate:
-        engine_force = acceleration * 0.01 * mass
-        _flag_accelerate = false
+@warning_ignore('unused_parameter')
+func _pre_step_callback(vehicle: VehicleBase) -> void:
+    pass
 
-    if _flag_brake:
-        brake = braking * 0.001 * mass
-        _flag_brake = false
+@warning_ignore('unused_parameter')
+func _post_collide_callback(vehicle: VehicleBase) -> void:
+    pass
 
-    if _flag_reverse:
-        engine_force -= reversing * 0.01 * mass
-        _flag_reverse = false
-
-    var steer_range: float = steering_curve_boundry.y - steering_curve_boundry.x
-    var steer_reduction: float = 0.0
-    if steer_range > 0.01:
-        var speed: float = linear_velocity.length()
-        steer_reduction = clampf((speed - steering_curve_boundry.x) / steer_range, 0.0, 1.0)
-
-    var steer_curve: float = ease(steer_reduction, steering_falloff_curve)
-    var steer_max: float = lerpf(abs(_steer_target), steering_high_speed_limit, steer_curve)
-
-    _steer_target = minf(abs(_steer_target), steer_max) * signf(_steer_target)
-
-    steering = move_toward(steering, _steer_target, delta * steering_speed)
-    _steer_target = 0.0
-
-
-## Apply positive acceleration
-func do_accelerate() -> void:
-    _flag_accelerate = true
-
-## Apply braking force
-func do_brake() -> void:
-    _flag_brake = true
-
-## Apply negative acceleration
-func do_reverse() -> void:
-    _flag_reverse = true
-
-## Steer wheels to target angle
-func do_steer(target: float) -> void:
-    _steer_target = target
-
-## Get the exit position
-func get_exit_position() -> Vector3:
-    return exit_point.global_position + Vector3.UP
+@warning_ignore('unused_parameter')
+func _post_step_callback(vehicle: VehicleBase) -> void:
+    pass

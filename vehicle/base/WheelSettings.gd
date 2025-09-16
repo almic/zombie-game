@@ -1,11 +1,12 @@
-## Wheel which is attached to a vehicle body.
-## Ported from Jolt physics engine.
+# Ported from Jolt by almic
 
-class_name Wheel extends Resource
+# Jolt Physics Library (https://github.com/jrouwe/JoltPhysics)
+# SPDX-FileCopyrightText: 2021 Jorrit Rouwe
+# SPDX-License-Identifier: MIT
 
-# ##########################
-#      Public exports
-# ##########################
+## Base class for wheel settings, each VehicleController can implement a derived
+## class of this
+class_name WheelSettings extends Resource
 
 ## Radius of the wheel (m)
 @export var radius: float = 0.3
@@ -75,96 +76,9 @@ class_name Wheel extends Resource
 @export var steering_axis: Vector3 = Vector3.UP
 
 
-# ##########################
-#        Public Vars
-# ##########################
-
-## Rotation around the suspension direction, positive is to the left.
-var steering_angle: float = 0.0
-
-## Rotation speed of wheel, positive when the wheels cause the vehicle to move forwards (rad/s)
-var angular_speed: float = 0.0
-
-## Current rotation of the wheel (rad, [0, 2 pi])
-var angle: float = 0.0
-
-
-# ##########################
-#      Internal Vars
-# ##########################
-
-## Body for ground
-var _contact_body: Object
-
-## Body ID for ground
-var _contact_body_id: RID
-
-## Shape index for ground
-var _contact_shape_idx: int
-
-## Current length of the suspension
-var _suspension_length: float
-
-## Position of the contact point between wheel and ground
-var _contact_point: Vector3
-
-## Velocity of the contact point, in world m/s
-var _contact_point_velocity: Vector3
-
-## Normal of the contact point between wheel and ground
-var _contact_normal: Vector3
-
-## Vector perpendicular to normal in the forward direction
-var _contact_longitudinal: Vector3
-
-## Vector perpendicular to normal and longitudinal direction in the right direction
-var _contact_lateral: Vector3
-
-## Constant for the contact plane of the axle, defined as ContactNormal.
-## (WorldSpaceSuspensionPoint + SuspensionLength * WorldSpaceSuspensionDirection)
-var _axle_plane_constant: float
-
-## Amount of impulse applied to the suspension from the anti-rollbars
-var _anti_roll_bar_impulse: float
-
-## Controls movement up/down along the contact normal
-var _suspension_part: AxisConstraintPart
-
-## Adds a hard limit when reaching the minimal suspension length
-var _suspension_max_up_part: AxisConstraintPart
-
-## Controls movement forward/backward
-var _longitudinal_part: AxisConstraintPart
-
-## Controls movement sideways (slip)
-var _lateral_part: AxisConstraintPart
-
-
 func _validate_property(property: Dictionary) -> void:
     if property.name == 'suspension_force_point':
         if suspension_enable_force_point:
             property.usage = PROPERTY_USAGE_DEFAULT
         else:
             property.usage = PROPERTY_USAGE_NO_EDITOR
-
-## Internal function that should only be called by the controller.
-## Used to apply impulses in the forward direction of the vehicle.
-func SolveLongitudinalConstraintPart(vehicle: VehicleBase, impulse_min: float, impulse_max: float) -> bool:
-    return _longitudinal_part.SolveVelocityConstraint(
-            vehicle,
-            _contact_body,
-            -_contact_longitudinal,
-            impulse_min,
-            impulse_max
-    )
-
-## Internal function that should only be called by the controller.
-## Used to apply impulses in the sideways direction of the vehicle.
-func SolveLateralConstraintPart(vehicle: VehicleBase, impulse_min: float, impulse_max: float) -> bool:
-    return _lateral_part.SolveVelocityConstraint(
-            vehicle,
-            _contact_body,
-            -_contact_lateral,
-            impulse_min,
-            impulse_max
-    )

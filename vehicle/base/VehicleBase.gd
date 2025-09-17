@@ -118,6 +118,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
     if pre_step_callback:
         pre_step_callback.call(self)
 
+    var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+
     if mIsGravityOverridden:
         # If gravity is overridden, we replace the normal gravity calculations
         # if (mBody->IsActive())
@@ -143,7 +145,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 
     # Callback on our controller
     # mController->PreCollide(inContext.mDeltaTime, *inContext.mPhysicsSystem);
-    mController.PreCollide(state.step)
+    mController.PreCollide(state.step, space)
 
     # Calculate if this constraint is active by checking if our main vehicle body is active or any of the bodies we touch are active
     # mIsActive = mBody->IsActive();
@@ -193,6 +195,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
                     # Extrapolate the wheel contact properties
                     # mVehicleCollisionTester->PredictContactProperties(*inContext.mPhysicsSystem, *this, wheel_index, ws_origin, ws_direction, mBody->GetID(), w->mContactBody, w->mContactSubShapeID, w->mContactPosition, w->mContactNormal, w->mSuspensionLength);
                     mVehicleCollisionTester.PredictContactProperties(
+                            space,
                             self,
                             wheel_index,
                             ws_origin,
@@ -217,6 +220,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
             # Test collision to find the floor
             # if (mVehicleCollisionTester->Collide(*inContext.mPhysicsSystem, *this, wheel_index, ws_origin, ws_direction, mBody->GetID(), w->mContactBody, w->mContactSubShapeID, w->mContactPosition, w->mContactNormal, w->mSuspensionLength))
             if mVehicleCollisionTester.Collide(
+                    space,
                     self,
                     wheel_index,
                     ws_origin,
@@ -333,7 +337,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 
     # Callback on our controller
     # mController->PostCollide(inContext.mDeltaTime, *inContext.mPhysicsSystem);
-    mController.PostCollide(state.step)
+    mController.PostCollide(state.step, space)
 
     # Callback to higher-level systems. We do it before the sleep section, in case velocities change.
     if post_step_callback:
@@ -377,3 +381,48 @@ func GetWheelLocalBasis(wheel: Wheel, out: Dictionary) -> void:
 
     # outForward = outUp.Cross(outRight).Normalized();
     out.forward = out.up.cross(out.right).normalized()
+
+# TODO: Investigate if we can use only the Transform3D to do this.
+#       pretty sure you can but I don't feel like checking to make sure the
+#       results are equivalent, especially with the transpose in the middle
+func GetWheelLocalTransform(inWheelIndex: int, inWheelRight: Vector3, inWheelUp: Vector3) -> Transform3D:
+    assert(inWheelIndex < mWheels.size())
+
+    # const Wheel *wheel = mWheels[inWheelIndex];
+    var wheel: Wheel = mWheels[inWheelIndex]
+
+    # const WheelSettings *settings = wheel->mSettings;
+    var settings: WheelSettings = wheel.mSettings
+
+    # Use the two vectors provided to calculate a matrix that takes us from wheel model space to X = right, Y = up, Z = forward (the space where we will rotate the wheel)
+    # Mat44 wheel_to_rotational = Mat44(Vec4(inWheelRight, 0), Vec4(inWheelUp, 0), Vec4(inWheelUp.Cross(inWheelRight), 0), Vec4(0, 0, 0, 1)).Transposed();
+    var forward: Vector3 = inWheelUp.cross(inWheelRight)
+    var wheel_to_rotational: Mat44 = Mat44.create(
+            Vector4(inWheelRight.x, inWheelRight.y, inWheelRight.z, 0),
+            Vector4(inWheelUp.x, inWheelUp.y, inWheelUp.z, 0),
+            Vector4(forward.x, forward.y, forward.z, 0),
+            Vector4(0, 0, 0, 1)
+    ).transposed()
+
+    # Calculate the matrix that takes us from the rotational space to vehicle local space
+    # Vec3 local_forward, local_up, local_right;
+    var local: Dictionary
+
+    # GetWheelLocalBasis(wheel, local_forward, local_up, local_right);
+    GetWheelLocalBasis(wheel, local)
+
+    # Vec3 local_wheel_pos = settings->mPosition + settings->mSuspensionDirection * wheel->mSuspensionLength;
+    var pos: Vector3 = settings.position + settings.suspension_direction * wheel._suspension_length
+
+    # Mat44 rotational_to_local(Vec4(local_right, 0), Vec4(local_up, 0), Vec4(local_forward, 0), Vec4(local_wheel_pos, 1));
+    var rotational_to_local: Mat44 = Mat44.from_transform(
+            Transform3D(local.right, local.up, local.forward, pos)
+    )
+
+    # Calculate transform of rotated wheel
+    # return rotational_to_local * Mat44::sRotationX(wheel->mAngle) * wheel_to_rotational;
+    return rotational_to_local.mult(Mat44.rotation_x(wheel.angle)).mult(wheel_to_rotational).to_transform()
+
+func GetWheelWorldTransform(inWheelIndex: int, inWheelRight: Vector3, inWheelUp: Vector3) -> Transform3D:
+    # return mBody->GetWorldTransform() * GetWheelLocalTransform(inWheelIndex, inWheelRight, inWheelUp);
+    return global_transform * GetWheelLocalTransform(inWheelIndex, inWheelRight, inWheelUp)

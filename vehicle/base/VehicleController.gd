@@ -27,12 +27,12 @@ func AllowSleep() -> bool:
 
 ## Called before the wheel probes have been done
 @warning_ignore('unused_parameter')
-func PreCollide(inDeltaTime: float) -> void:
+func PreCollide(inDeltaTime: float, space: PhysicsDirectSpaceState3D) -> void:
     pass
 
 ## Called after the wheel probes have been done
 @warning_ignore('unused_parameter')
-func PostCollide(inDeltaTime: float) -> void:
+func PostCollide(inDeltaTime: float, space: PhysicsDirectSpaceState3D) -> void:
     pass
 
 ## Solve longitudinal and lateral constraint parts for all of the wheels

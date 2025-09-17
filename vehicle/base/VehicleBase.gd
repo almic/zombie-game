@@ -29,6 +29,9 @@
 class_name VehicleBase extends RigidBody3D
 
 
+@export var settings: VehicleBaseSettings
+
+
 ## If the gravity is currently overridden
 var mIsGravityOverridden: bool = false
 
@@ -99,6 +102,51 @@ var post_collide_callback: Callable
 var post_step_callback: Callable
 
 
+func _ready() -> void:
+    # mForward(inSettings.mForward),
+    mForward = settings.mForward
+
+    # mUp(inSettings.mUp),
+    mUp = settings.mUp
+
+    # mWorldUp(inSettings.mUp),
+    mWorldUp = settings.mUp
+
+    # mAntiRollBars(inSettings.mAntiRollBars)
+    mAntiRollBars = settings.mAntiRollBars
+
+    # Check sanity of incoming settings
+    # JPH_ASSERT(inSettings.mUp.IsNormalized());
+    assert(settings.mUp.is_normalized())
+
+    # JPH_ASSERT(inSettings.mForward.IsNormalized());
+    assert(settings.mForward.is_normalized())
+
+    # JPH_ASSERT(!inSettings.mWheels.empty());
+    assert(!settings.mWheels.is_empty())
+
+    # Store max pitch/roll angle
+    # SetMaxPitchRollAngle(inSettings.mMaxPitchRollAngle);
+    mCosMaxPitchRollAngle = cos(settings.mMaxPitchRollAngle)
+
+    # Construct our controller class
+    # mController = inSettings.mController->ConstructController(*this);
+    mController = settings.mController.ConstructController(self)
+
+    # Create wheels
+    # mWheels.resize(inSettings.mWheels.size());
+    mWheels.resize(settings.mWheels.size())
+
+    # for (uint i = 0; i < mWheels.size(); ++i)
+    for i in range(mWheels.size()):
+        # mWheels[i] = mController->ConstructWheel(*inSettings.mWheels[i]);
+        mWheels[i] = mController.ConstructWheel(settings.mWheels[i])
+
+    # Use the body ID as a seed for the step counter so that not all vehicles will update at the same time
+    # mCurrentStep = uint32(Hash64(inVehicleBody.GetID().GetIndex()));
+    mCurrentStep = hash(get_rid())
+
+
 @warning_ignore('unused_parameter')
 func _default_combine_friction(
         inWheelIndex: int,
@@ -114,6 +162,15 @@ func _default_combine_friction(
     return Vector2(ioLongitudinalFriction, ioLateralFriction)
 
 func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
+    setup(state)
+    on_step(state)
+    solve_velocity(state)
+    solve_position(state)
+
+func setup(state: PhysicsDirectBodyState3D) -> void:
+    pass
+
+func on_step(state: PhysicsDirectBodyState3D) -> void:
     # Callback to higher-level systems. We do it before PreCollide, in case steering changes.
     if pre_step_callback:
         pre_step_callback.call(self)
@@ -362,6 +419,12 @@ func _integrate_forces(state: PhysicsDirectBodyState3D) -> void:
 
     # Increment step counter
     mCurrentStep += 1
+
+func solve_velocity(state: PhysicsDirectBodyState3D) -> void:
+    pass
+
+func solve_position(state: PhysicsDirectBodyState3D) -> void:
+    pass
 
 func GetWheelLocalBasis(wheel: Wheel, out: Dictionary) -> void:
     # const WheelSettings *settings = inWheel->mSettings;

@@ -61,8 +61,6 @@
 [sub_resource type="Resource" id="Resource_a331h"]
 resource_local_to_scene = true
 script = ExtResource("12_a331h")
-max_health = 100.0
-health = 100.0
 metadata/_custom_type_script = "uid://cugishrosnaex"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d2i0j"]
@@ -123,7 +121,7 @@ moon_renderer = ExtResource("19_t6jhs")
 metadata/_custom_type_script = "uid://nn8y8fwywgtd"
 
 [node name="SunLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.374323, -0.570871, 0.730745, 0.594378, 0.457155, 0.661607, -0.711756, 0.681994, 0.168189, 0, 0, 0)
+transform = Transform3D(-0.3743234117027879, -0.5708713470291851, 0.7307447492745118, 0.5943777823400034, 0.45715493216514597, 0.6616074514828716, -0.7117563033171993, 0.6819936019774412, 0.16818945136384333, 0, 0, 0)
 rotation_edit_mode = 2
 top_level = true
 light_temperature = 5750.0
@@ -138,7 +136,7 @@ directional_shadow_fade_start = 0.975
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay"]
-transform = Transform3D(-0.422745, -0.544684, -0.724297, -0.840272, 0.534952, 0.088142, 0.339455, 0.645868, -0.683831, 0, 0, 0)
+transform = Transform3D(-0.4227449310349478, -0.5446835082048095, -0.7242973140734118, -0.8402719820895455, 0.5349523190006116, 0.08814200196940336, 0.3394550329565962, 0.6458683242624375, -0.6838306722536417, 0, 0, 0)
 top_level = true
 light_intensity_lux = 0.5
 light_temperature = 7100.0

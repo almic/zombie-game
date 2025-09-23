@@ -15,7 +15,6 @@ needs_normal_roughness = false
 script = ExtResource("3_vss2t")
 dark_time = 25.0
 light_curve = -4.5
-night_vision_sensitivity = Color(0.011223, 0.390058, 0.598719, 1)
 metadata/_custom_type_script = "uid://kot5fg2d3vpw"
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_vss2t"]
@@ -26,10 +25,7 @@ effect_callback_type = 4
 needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("2_mgpe3")
-white = 6.0
 light_curve = -3.9727
-night_vision_sensitivity = Color(0.011223, 0.390058, 0.598719, 1)
-night_vision_color = Color(1.05, 0.97, 1.27, 1)
 metadata/_custom_type_script = "uid://cke0kq5c5l0ai"
 
 [sub_resource type="CompositorEffect" id="CompositorEffect_lqsra"]
@@ -41,7 +37,6 @@ needs_motion_vectors = false
 needs_normal_roughness = false
 script = ExtResource("5_p7n54")
 passes = PackedFloat32Array(0.5, 1.5, 2.5, 2.5, 3.5)
-offset_multiplier = 1.0
 metadata/_custom_type_script = "uid://bbvr8t4osor6u"
 
 [resource]

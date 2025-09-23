@@ -12,24 +12,13 @@
 [sub_resource type="Resource" id="Resource_bco5q"]
 script = ExtResource("4_b1xgh")
 key = 4194305
-shift = false
-control = false
-alt = false
-meta = false
-allow_additional_modifiers = true
 
 [sub_resource type="Resource" id="Resource_6rmlv"]
 script = ExtResource("7_82x6x")
-actuation_threshold = 0.5
 
 [sub_resource type="Resource" id="Resource_t31np"]
 script = ExtResource("2_487i1")
-override_action_settings = false
-is_remappable = false
-display_name = ""
-display_category = ""
 input = SubResource("Resource_bco5q")
-modifiers = Array[ExtResource("5_ybrqv")]([])
 triggers = Array[ExtResource("6_ib8fc")]([SubResource("Resource_6rmlv")])
 
 [sub_resource type="Resource" id="Resource_wy4bc"]
@@ -39,6 +28,5 @@ input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_t31np")])
 
 [resource]
 script = ExtResource("2_k6484")
-display_name = ""
 mappings = Array[ExtResource("1_0j75c")]([SubResource("Resource_wy4bc")])
 metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

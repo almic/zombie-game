@@ -14,6 +14,5 @@ needs_normal_roughness = false
 script = ExtResource("1_1iqvp")
 lut_size = 1024
 lut_steps = 128
-sky_size = 256
 sky_steps = 64
 metadata/_custom_type_script = "uid://b30sia5gpcc2f"

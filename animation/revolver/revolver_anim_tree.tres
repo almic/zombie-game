@@ -460,9 +460,9 @@ graph_offset = Vector2(-236, 575)
 
 [resource]
 graph_offset = Vector2(-215, 80)
+nodes/output/position = Vector2(520, 140)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_aal8d")
 nodes/StateMachine/position = Vector2(0, 140)
 nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_0b5uw")
 nodes/TimeSeek/position = Vector2(300, 120)
-nodes/output/position = Vector2(520, 140)
-node_connections = [&"TimeSeek", 0, &"StateMachine", &"output", 0, &"TimeSeek"]
+node_connections = [&"output", 0, &"TimeSeek", &"TimeSeek", 0, &"StateMachine"]

@@ -13,7 +13,7 @@ config_version=5
 config/name="Zombie Game"
 run/main_scene="uid://b28fs2sgvdicd"
 run/print_header=false
-config/features=PackedStringArray("4.4", "Double Precision", "Forward Plus")
+config/features=PackedStringArray("4.5", "Double Precision", "Forward Plus")
 config/icon="res://icon.svg"
 
 [audio]
@@ -74,9 +74,9 @@ world="ZA WARUDO"
 
 [gui]
 
+theme/default_font_hinting=2
 theme/custom="uid://bgdmd3jv5h7md"
 theme/custom_font="uid://bybftiog3uc0n"
-theme/default_font_hinting=2
 
 [layer_names]
 

@@ -116,7 +116,7 @@ var weapon_aim_look_speed: float = 1.0
 var ammo_bank: Dictionary = {}
 
 ## The vehicle currently controlled by the player
-var current_vehicle: VehicleBase = null
+var current_vehicle: JoltVehicle = null
 ## Delay for exiting a vehicle after entering it
 var _vehicle_exit_delay: float = 0.0
 
@@ -368,21 +368,26 @@ func update_vehicle(delta: float) -> void:
                 current_vehicle.linear_velocity.dot(current_vehicle.global_basis.z) < 0.0
                 and current_vehicle.linear_velocity.length_squared() > 0.04
         ):
-            current_vehicle.do_brake()
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.brake(1)
         else:
-            current_vehicle.do_accelerate()
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.forward(1)
 
     if brake_reverse.is_triggered():
         if (
                 current_vehicle.linear_velocity.dot(current_vehicle.global_basis.z) > 0.08
                 and current_vehicle.linear_velocity.length_squared() > 0.04
         ):
-            current_vehicle.do_brake()
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.brake(1)
         else:
-            current_vehicle.do_reverse()
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.forward(-1)
 
     if steer.is_triggered():
-        current_vehicle.do_steer(current_vehicle.steering_maximum * steer.value_axis_1d)
+        if current_vehicle is WheeledJoltVehicle:
+            current_vehicle.steer(steer.value_axis_1d)
 
     update_vehicle_camera(delta)
 
@@ -839,7 +844,7 @@ func select_weapon(slot: int) -> void:
         scoped_rifle.apply_camera_attributes(cam_attributes)
 
 func interact_with(object: Object) -> void:
-    if object is VehicleBase:
+    if object is JoltVehicle:
         current_vehicle = object
         _vehicle_exit_delay = 1.0
 

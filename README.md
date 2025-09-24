@@ -5,7 +5,13 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
+- [ ] Debug front differential / front wheels not recieving any engine torque
 - [ ] Level blocking
+- [ ] Add brake and handbrake inputs
+- [ ] Align vehicle camera to world UP
+- [ ] Apply interpolation to steer, forward, and brake target on WheeledJoltVehicle.
+      Add interpolation to handbrake, but much faster (under 0.5 seconds)
+- [ ] Add limit to steering angle based on speed curve.
 - [ ] Add more zombie types
 - [ ] For magazine weapons, allow keeping live round chambered during reload.
       Perhaps keep chambered if reload input is held when it would normally

@@ -1,8 +1,7 @@
-[gd_scene load_steps=8 format=3 uid="uid://dcwdq2tolxn0a"]
+[gd_scene load_steps=10 format=3 uid="uid://dcwdq2tolxn0a"]
 
 [ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="1_ftrpg"]
 [ext_resource type="JoltVehicleSettings" uid="uid://dlnf4w43oiscr" path="res://vehicle/truck/truck_vehicle_settings.tres" id="1_xwacg"]
-[ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_aife1"]
 [ext_resource type="Script" uid="uid://dl2cax557cbov" path="res://vehicle/base/wheeled_jolt_vehicle.gd" id="2_bupvu"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wyv1k"]
@@ -11,8 +10,18 @@ size = Vector3(1.872, 1.016, 6.01)
 [sub_resource type="BoxShape3D" id="BoxShape3D_0nvtn"]
 size = Vector3(1.63, 0.7, 1.7374)
 
+[sub_resource type="Gradient" id="Gradient_xwacg"]
+interpolation_color_space = 2
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_bupvu"]
+gradient = SubResource("Gradient_xwacg")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_84iuc"]
+specular_mode = 2
+albedo_texture = SubResource("GradientTexture1D_bupvu")
+
 [sub_resource type="TorusMesh" id="TorusMesh_xwacg"]
-material = ExtResource("2_aife1")
+material = SubResource("StandardMaterial3D_84iuc")
 inner_radius = 0.13
 outer_radius = 0.44
 
@@ -23,6 +32,7 @@ mass = 2250.0
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.5, 0.29)
 continuous_cd = true
+wheel_paths = Array[NodePath]([NodePath("tire"), NodePath("tire2"), NodePath("tire3"), NodePath("tire4")])
 settings = ExtResource("1_xwacg")
 script = ExtResource("2_bupvu")
 exit_position = NodePath("ExitPoint")

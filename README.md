@@ -5,7 +5,6 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
-- [ ] Debug front differential / front wheels not recieving any engine torque
 - [ ] Level blocking
 - [ ] Add brake and handbrake inputs
 - [ ] Align vehicle camera to world UP
@@ -25,6 +24,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] FIX THE SLUG MODEL, metal cap should be longer than the shot shell
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [X] Debug front differential / front wheels not recieving any engine torque
 - [X] Make each weapon have its own UI scene for displaying the weapon and ammo
 - [X] Investigate weird snapping bug
 - [X] Set up day / night settings for transitions

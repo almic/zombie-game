@@ -24,7 +24,7 @@ _data = [Vector2(0, 0.8), 0.0, 0.30303, 1, 1, Vector2(0.66, 1), 0.30303, -0.5882
 point_count = 3
 
 [sub_resource type="VehicleEngineSettings" id="VehicleEngineSettings_02ecf"]
-max_torque = 1000.0
+max_torque = 800.0
 torque_curve = SubResource("Curve_dsghi")
 
 [sub_resource type="VehicleTransmissionSettings" id="VehicleTransmissionSettings_qxn04"]
@@ -40,7 +40,7 @@ differentials = Array[VehicleDifferentialSettings]([SubResource("VehicleDifferen
 position = Vector3(0.800000011920929, 0.6399999856948853, 2.171999931335449)
 radius = 0.44
 width = 0.3
-suspension_max_length = 0.4
+suspension_max_length = 0.3
 suspension_min_length = 0.0
 max_steer_angle = 0.6981317
 inertia = 1.936
@@ -51,7 +51,7 @@ longitudinal_friction = ExtResource("2_jdhhr")
 position = Vector3(-0.800000011920929, 0.6399999856948853, 2.171999931335449)
 radius = 0.44
 width = 0.3
-suspension_max_length = 0.4
+suspension_max_length = 0.3
 suspension_min_length = 0.0
 max_steer_angle = 0.6981317
 inertia = 1.936
@@ -62,7 +62,7 @@ longitudinal_friction = ExtResource("2_jdhhr")
 position = Vector3(0.800000011920929, 0.6399999856948853, -1.5190000534057617)
 radius = 0.44
 width = 0.3
-suspension_max_length = 0.4
+suspension_max_length = 0.3
 suspension_min_length = 0.0
 max_steer_angle = 0.0
 inertia = 1.936
@@ -73,7 +73,7 @@ longitudinal_friction = ExtResource("2_jdhhr")
 position = Vector3(-0.800000011920929, 0.6399999856948853, -1.5190000534057617)
 radius = 0.44
 width = 0.3
-suspension_max_length = 0.4
+suspension_max_length = 0.3
 suspension_min_length = 0.0
 max_steer_angle = 0.0
 inertia = 1.936

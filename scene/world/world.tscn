@@ -2673,6 +2673,7 @@ metadata/_edit_lock_ = true
 
 [node name="Grass19" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -32.39999999999998, 1.4551915228366852e-11, 0.9500030980834708)
+visible = false
 size = Vector3(65.3, 0.68, 3)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
@@ -2729,6 +2730,19 @@ material = ExtResource("23_6lidv")
 transform = Transform3D(0.9945219506975028, 0.10452846908298984, 0, -0.10452846908298984, 0.9945219506975028, 0, 0, 0, 1, 35.059999999999945, 0.5, 33.64999999999998)
 operation = 2
 size = Vector3(3, 0.42, 1.5)
+material = ExtResource("23_6lidv")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.90000000000225, 0.19999999999708962, 31.590000000000032)
+polygon = PackedVector2Array(0, 0, 0, 0.04, 0.02, 0.052, 0.07, 0.064, 0.1, 0.08, 0.14, 0.13, 0.16, 0.145, 0.19, 0.145, 0.21, 0.13, 0.21, 0)
+depth = 63.0
+smooth_faces = true
+material = ExtResource("23_6lidv")
+
+[node name="CSGPolygon3D2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.90000000000225, 0.19999999999708962, 31.590000000000032)
+visible = false
+polygon = PackedVector2Array(0, 0, 0, 0.04, 0.02, 0.052, 0.07, 0.064, 0.1, 0.08, 0.14, 0.13, 0.16, 0.145, 0.19, 0.145, 0.21, 0.13, 0.21, 0)
 material = ExtResource("23_6lidv")
 
 [node name="BlockB" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]

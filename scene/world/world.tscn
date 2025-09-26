@@ -167,7 +167,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(-0.15127, 0, 0.988493, 0, 1, 0, -0.988493, 0, -0.15127, -223.4026483, 2.17585, -415.9318257)
+transform = Transform3D(-0.15127, 0, 0.988493, 0, 1, 0, -0.988493, 0, -0.15127, -380.10284502, 2.17585, -642.39393998)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -2633,10 +2633,15 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete28" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 1.05, 1.45519e-11, 1.75)
-size = Vector3(66.9, 0.7, 1.5)
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 1.0500000000000114, 1.4551915228366852e-11, 1.2899971008300781)
+size = Vector3(65.98, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
+
+[node name="Concrete30" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
+transform = Transform3D(1, 0, 3.99573676568532e-23, 0, 1, 0, -3.99573676568532e-23, 0, 1, 1.2550018310546989, 1.4551915228366852e-11, 34.74000000000001)
+size = Vector3(62.99, 0.7, 0.92)
+material = ExtResource("23_6lidv")
 
 [node name="Concrete29" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -30.15, 1.45519e-11, -2.25)
@@ -2658,25 +2663,25 @@ metadata/_edit_lock_ = true
 
 [node name="Grass17" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 34.4, 1.45519e-11, -0.300003)
-size = Vector3(62.8, 0.7, 3)
+size = Vector3(62.8, 0.68, 3)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass18" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 2.7, 1.45519e-11, 1.75)
-size = Vector3(66.9, 0.7, 1.8)
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 2.6999999999999886, 1.4551915228366852e-11, 1.289999008178711)
+size = Vector3(65.98, 0.68, 1.8)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass19" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
 transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -32.4, 1.45519e-11, -0.349999)
-size = Vector3(62.7, 0.7, 3)
+size = Vector3(62.7, 0.68, 3)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass20" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -0.6, 1.45519e-11, 1.75)
-size = Vector3(66.9, 0.7, 1.8)
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -0.6000000000000227, 1.4551915228366852e-11, 1.2899971008300781)
+size = Vector3(65.98, 0.68, 1.8)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
@@ -5667,81 +5672,237 @@ metadata/_edit_lock_ = true
 [node name="HouseBlocks" type="Node" parent="LevelBlocking/Town/Buildings"]
 
 [node name="HouseBlock1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 2, -617.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1000000000058, 2.3500000000058208, -617.3999999999942)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 metadata/_edit_lock_ = true
 
-[node name="House15" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
+[node name="House1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
 transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 16.5, -1.45519e-11, -31)
-metadata/_edit_lock_ = true
+metadata/_edit_group_ = true
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House15"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
+[node name="building" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.7799998283381683, 2.7400000000052387, 2.0000006866458486)
+size = Vector3(9.14, 5.48, 15.24)
 material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
 
-[node name="House16" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
-transform = Transform3D(-1.31134e-07, 0, -1, 0, 1, 0, 1, 0, -1.31134e-07, -20.3, -1.45519e-11, -31)
-metadata/_edit_lock_ = true
+[node name="lot" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.800002365108412, -0.35000000000582077, -1.899999647138543)
+size = Vector3(21.6, 0.68, 27.8)
+material = ExtResource("27_4tdq6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House16"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
+[node name="Fence" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1"]
+
+[node name="Fence1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1/Fence"]
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, -2.399999380111012, 0.7599999999947613, -15.59999999999593)
+size = Vector3(20.400000000000002, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence2" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1/Fence"]
+transform = Transform3D(6.123233995736766e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736766e-17, 7.779999999998836, 0.9100000000034925, -3.9799999999959255)
+size = Vector3(23.2, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence3" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, 5.775000207425478, 0.9100000000034925, 7.600000095372366)
+size = Vector3(3.97, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, -8.974999659060131, 0.9100000000034925, 3.8700000953724043)
+size = Vector3(7.25, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence5" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House1/Fence"]
+transform = Transform3D(3.0616167344162256e-16, 0, -1, 0, 1, 0, 1, 0, 3.0616167344162256e-16, -12.580000000001746, 0.7599999999947613, -5.865000195510106)
+size = Vector3(19.43, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="House2" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
+transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 16.49999711242932, -1.45519e-11, -8.98)
+metadata/_edit_group_ = true
+
+[node name="building" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6199998283381682, 2.7400000000052387, 2.0000006866458486)
+size = Vector3(9.14, 5.48, 15.24)
 material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
 
-[node name="House17" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
-transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 16.5, -1.45519e-11, 19.7)
-metadata/_edit_lock_ = true
+[node name="lot" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.7800019073447402, -0.35000000000582077, -1.8999996471383156)
+size = Vector3(22.400000000000002, 0.68, 27.8)
+material = ExtResource("27_4tdq6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House17"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
+[node name="Fence" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2"]
+
+[node name="Fence1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2/Fence"]
+transform = Transform3D(-1, 0, 1.2246468525851679e-16, 0, 1, 0, -1.2246468525851679e-16, 0, -1, -1.779998540878296, 0.7599999999947613, -15.599999999995646)
+size = Vector3(22.400000000000002, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence3" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, 6.1850002503404085, 0.9100000000034925, 3.8700000953726885)
+size = Vector3(6.47, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, -9.164999597071755, 0.9100000000034925, 3.870000095372575)
+size = Vector3(7.63, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence5" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House2/Fence"]
+transform = Transform3D(3.0616167344162256e-16, 0, -1, 0, 1, 0, 1, 0, 3.0616167344162256e-16, -12.960000000002083, 0.7599999999947613, -5.865000195509651)
+size = Vector3(19.43, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="House3" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
+transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 16.49999415404628, -1.45519e-11, 13.579999999999998)
+metadata/_edit_group_ = true
+
+[node name="building" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.6199998283381682, 2.7400000000052387, 2.0000006866458486)
+size = Vector3(9.14, 5.48, 15.24)
 material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
 
-[node name="House18" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
-transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 16.5, -1.45519e-11, 2.3)
-metadata/_edit_lock_ = true
+[node name="lot" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.4100020217856581, -0.35000000000582077, -1.899999647137804)
+size = Vector3(21.98, 0.68, 27.8)
+material = ExtResource("27_4tdq6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House18"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
+[node name="Fence" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3"]
+
+[node name="Fence1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3/Fence"]
+transform = Transform3D(-1, 0, 1.2246468525851679e-16, 0, 1, 0, -1.2246468525851679e-16, 0, -1, -1.2999985218041274, 0.7599999999947613, -15.59999999999576)
+size = Vector3(21.76, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence2" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3/Fence"]
+transform = Transform3D(6.123233995736766e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736766e-17, -12.160000000001165, 0.9100000000034925, -3.979999999995927)
+size = Vector3(23.2, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence3" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, -9.164999761579224, 0.9100000000034925, 7.600000095372536)
+size = Vector3(5.95, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House3/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, 6.26500032186641, 0.9100000000034925, 3.870000095372518)
+size = Vector3(6.63, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="House4" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
+transform = Transform3D(-1.3113400012246467e-07, 0, -1, 0, 1, 0, 1, 0, -1.3113400012246467e-07, -20.240006037409366, -1.45519e-11, 15.039995182136835)
+metadata/_edit_group_ = true
+
+[node name="building" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1300001716618318, 2.7400000000052387, 2.0000006866458486)
+size = Vector3(9.14, 5.48, 15.24)
 material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
 
-[node name="House19" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
-transform = Transform3D(1.31134e-07, 0, 1, 0, 1, 0, -1, 0, 1.31134e-07, 16.5, -1.45519e-11, -15.2)
-metadata/_edit_lock_ = true
+[node name="lot" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4500029373131156, -0.35000000000582077, -1.8899989414188099)
+size = Vector3(22.78, 0.68, 27.900000000000002)
+material = ExtResource("27_4tdq6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House19"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
+[node name="Fence" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4"]
+
+[node name="Fence1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4/Fence"]
+transform = Transform3D(-1, 0, 1.2246468525851679e-16, 0, 1, 0, -1.2246468525851679e-16, 0, -1, -0.5899999141686294, 0.7599999999947613, -15.599999999995873)
+size = Vector3(22.5, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence2" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4/Fence"]
+transform = Transform3D(6.123232939436859e-17, 0, 1, 0, 1, 0, -1, 0, 6.123232939436859e-17, 10.639999999998508, 0.9100000000034925, -4.000001411433573)
+size = Vector3(23.16, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence3" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, 7.225000016690615, 0.9100000000034925, 7.6000000953724225)
+size = Vector3(6.87, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, -8.139999859331738, 0.9100000000034925, 3.870000095372461)
+size = Vector3(7.4, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence5" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House4/Fence"]
+transform = Transform3D(3.0616167344162256e-16, 0, -1, 0, 1, 0, 1, 0, 3.0616167344162256e-16, -11.820000000002437, 0.7599999999947613, -5.8650011491844225)
+size = Vector3(19.43, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="House5" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
+transform = Transform3D(-1.3113400012246467e-07, 0, -1, 0, 1, 0, 1, 0, -1.3113400012246467e-07, -20.24000306722426, -1.45519e-11, -7.610004817863167)
+metadata/_edit_group_ = true
+
+[node name="building" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1300001716618318, 2.7400000000052387, 2.0000006866458486)
+size = Vector3(9.14, 5.48, 15.24)
 material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
 
-[node name="House20" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
-transform = Transform3D(-1.31134e-07, 0, -1, 0, 1, 0, 1, 0, -1.31134e-07, -20.3, -1.45519e-11, -11.1)
-metadata/_edit_lock_ = true
+[node name="lot" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.30999681473088003, -0.35000000000582077, -1.8899989414188667)
+size = Vector3(21, 0.68, 27.900000000000002)
+material = ExtResource("27_4tdq6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House20"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
+[node name="Fence" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5"]
+
+[node name="Fence1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5/Fence"]
+transform = Transform3D(-1, 0, 1.2246468525851679e-16, 0, 1, 0, -1.2246468525851679e-16, 0, -1, 0.30999970436141666, 0.7599999999947613, -15.599999999995873)
+size = Vector3(21, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence3" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, 7.754999943376447, 0.9100000000034925, 3.8700000953724043)
+size = Vector3(6.11, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, -7.3149998712531215, 0.9100000000034925, 3.870000095372461)
+size = Vector3(5.75, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence5" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House5/Fence"]
+transform = Transform3D(3.0616167344162256e-16, 0, -1, 0, 1, 0, 1, 0, 3.0616167344162256e-16, -10.170000000002574, 0.7599999999947613, -5.865000910765843)
+size = Vector3(19.43, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="House6" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
+transform = Transform3D(-1.3113400012246467e-07, 0, -1, 0, 1, 0, 1, 0, -1.3113400012246467e-07, -20.24000006950102, -1.45519e-11, -30.470004817863167)
+metadata/_edit_group_ = true
+
+[node name="building" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1300001716618318, 2.7400000000052387, 2.0000006866458486)
+size = Vector3(9.14, 5.48, 15.24)
 material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
 
-[node name="House21" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1"]
-transform = Transform3D(-1.31134e-07, 0, -1, 0, 1, 0, 1, 0, -1.31134e-07, -20.3, -1.45519e-11, 10)
-metadata/_edit_lock_ = true
+[node name="lot" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5700001144432463, -0.35000000000582077, -1.88999999999902)
+size = Vector3(22.2, 0.68, 27.900000000000002)
+material = ExtResource("27_4tdq6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House21"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
-size = Vector3(8, 6, 18)
-material = ExtResource("21_t6jhs")
-metadata/_edit_lock_ = true
+[node name="Fence" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6"]
+
+[node name="Fence1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6/Fence"]
+transform = Transform3D(-1, 0, 1.2246468525851679e-16, 0, 1, 0, -1.2246468525851679e-16, 0, -1, 2.1750004291541245, 0.7599999999947613, -15.599999999995873)
+size = Vector3(20.990000000000002, 1.52, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence2" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6/Fence"]
+transform = Transform3D(-1.8369701465288538e-16, 0, -1, 0, 1, 0, 1, 0, -1.8369701465288538e-16, -8.340000000000828, 0.9100000000034925, -4.020001898999226)
+size = Vector3(23.2, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence3" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, -6.399999957083423, 0.9100000000034925, 7.600000095372479)
+size = Vector3(3.92, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
+
+[node name="Fence4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/HouseBlocks/HouseBlock1/House6/Fence"]
+transform = Transform3D(1, 0, 2.4492934404725397e-16, 0, 1, 0, -2.4492934404725397e-16, 0, 1, 8.685000259877597, 0.9100000000034925, 3.870000095372461)
+size = Vector3(7.97, 1.8199999999999998, 0.04)
+material = ExtResource("23_6lidv")
 
 [node name="HouseBlock2" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -343, 2, -625)
@@ -7610,4 +7771,4 @@ fov = 25.3494
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." instance=ExtResource("54_x6gsb")]
-transform = Transform3D(-0.08715580000000012, 0, -0.9961950000000002, 0, 1, 0, 0.9961950000000002, 0, -0.08715580000000012, -223.1117355434456, 2.2, -426.1212699915296)
+transform = Transform3D(-0.08715580000000012, 0, -0.9961950000000002, 0, 1, 0, 0.9961950000000002, 0, -0.08715580000000012, -380.8037987074456, 2.2, -650.6394680195297)

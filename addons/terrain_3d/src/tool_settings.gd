@@ -72,7 +72,7 @@ func _ready() -> void:
 								"unit":"%", "range":Vector3(1, 100, 1), "flags":ALLOW_LARGER })
 
 	add_setting({ "name":"height", "type":SettingType.SLIDER, "list":main_list, "default":20, 
-								"unit":"m", "range":Vector3(-500, 500, 0.1), "flags":ALLOW_OUT_OF_BOUNDS })
+								"unit":"m", "range":Vector3(-500, 500, 0.01), "flags":ALLOW_OUT_OF_BOUNDS })
 	add_setting({ "name":"height_picker", "type":SettingType.PICKER, "list":main_list, 
 								"default":Terrain3DEditor.HEIGHT, "flags":NO_LABEL })
 	

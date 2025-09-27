@@ -326,6 +326,8 @@ func _read_input(p_event: InputEvent = null) -> AfterGUIInput:
 
 # Returns true if hotkey matches and operation triggered
 func consume_hotkey(keycode: int) -> bool:
+	# NO!!!
+	return false
 	match keycode:
 		KEY_1:
 			terrain.material.set_show_region_grid(!terrain.material.get_show_region_grid())

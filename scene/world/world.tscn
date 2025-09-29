@@ -1,4 +1,4 @@
-[gd_scene load_steps=70 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=101 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
@@ -48,17 +48,23 @@
 [ext_resource type="Resource" uid="uid://nqh0w26v06v4" path="res://data/weapon/ammo/slug.tres" id="45_3wrw6"]
 [ext_resource type="Resource" uid="uid://dbg6mglqc5jqu" path="res://data/weapon/ammo/9mm.tres" id="45_51258"]
 [ext_resource type="PackedScene" uid="uid://qvqv51oiedra" path="res://scene/item/ammo/slug/slug_pile.tscn" id="46_my0pb"]
+[ext_resource type="Script" uid="uid://bhilt3o6lupmy" path="res://addons/csg_extra/csg_curve/csg_curve.gd" id="48_dayhp"]
 [ext_resource type="PackedScene" uid="uid://mvy2qv3hknqg" path="res://scene/item/ammo/9mm/9mm_pile.tscn" id="48_x3qer"]
+[ext_resource type="Resource" uid="uid://l13u3tumyr04" path="res://scene/world/polygon2d/road_10.tres" id="49_hyeqt"]
 [ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="49_il2y7"]
+[ext_resource type="Resource" uid="uid://dwa7t74j4im87" path="res://scene/world/polygon2d/road_18.tres" id="50_hyeqt"]
 [ext_resource type="PackedScene" uid="uid://bvgviih6lyk0p" path="res://scene/item/ammo/fmj/fmj_pile.tscn" id="50_il2y7"]
 [ext_resource type="Material" uid="uid://dn12nyapa4cp8" path="res://material/level/flat_white.tres" id="52_f0qux"]
 [ext_resource type="Material" uid="uid://bw4sj1kv018lx" path="res://material/level/grid_red.tres" id="52_pb8w5"]
+[ext_resource type="Script" uid="uid://cqs4rjvcjvx3p" path="res://addons/csg_extra/csg_polygon_res.gd" id="53_6susw"]
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="53_64map"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="53_f0qux"]
 [ext_resource type="Material" uid="uid://cddvd3pcjn56u" path="res://material/level/flat_red.tres" id="53_pb8w5"]
 [ext_resource type="Material" uid="uid://cvhepqprrnttl" path="res://material/terrain/grass.tres" id="53_r4xj5"]
+[ext_resource type="Script" uid="uid://hutnddwuoerd" path="res://addons/csg_extra/poly_resource.gd" id="54_k8or8"]
 [ext_resource type="PackedScene" uid="uid://dcwdq2tolxn0a" path="res://vehicle/truck/truck_vehicle.tscn" id="54_x6gsb"]
-[ext_resource type="Script" uid="uid://cmoqd7hfbfppm" path="res://script/csg/csg_curve/csg_curve.gd" id="58_oslxn"]
+[ext_resource type="Script" uid="uid://qkkbt3u5nb0o" path="res://addons/csg_extra/csg_curve/csg_curve_box.gd" id="56_k8or8"]
+[ext_resource type="Script" uid="uid://behs32dwn6xbp" path="res://addons/csg_extra/csg_curve/csg_curve_point.gd" id="57_i2hso"]
 [ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
 
 [sub_resource type="Resource" id="Resource_a331h"]
@@ -82,6 +88,110 @@ radius = 0.6
 [sub_resource type="BoxShape3D" id="BoxShape3D_pb8w5"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dprur"]
+
+[sub_resource type="Resource" id="Resource_dayhp"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, 8.9, 0.1, 8.9, -0.1)
+
+[sub_resource type="Resource" id="Resource_hyeqt"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
+
+[sub_resource type="Curve3D" id="Curve3D_64map"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 263.1637629024788, -104.53958975944808, -89.75071938162341, 0, 0, 0, 0, 0, 0, 230.33923489539416, -99.84286544448872, -255.4409388271524),
+"tilts": PackedFloat64Array(0, 0)
+}
+point_count = 2
+
+[sub_resource type="Resource" id="Resource_i2hso"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(0, 0, 0, 0.2, 1, 0)
+metadata/_custom_type_script = "uid://hutnddwuoerd"
+
+[sub_resource type="Resource" id="Resource_oslxn"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.25, -0.35, -1.25, 0.35, 1.25, 0.35, 1.25, -0.35)
+
+[sub_resource type="Resource" id="Resource_ubgmn"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_cvfj6"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.25, -0.35, -1.25, 0.35, 1.25, 0.35, 1.25, -0.35)
+
+[sub_resource type="Resource" id="Resource_mcrc3"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_1yx4f"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+
+[sub_resource type="Resource" id="Resource_6ywls"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_76ay1"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+
+[sub_resource type="Resource" id="Resource_4dcww"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_11pln"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+
+[sub_resource type="Resource" id="Resource_utqjd"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_85d2q"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+
+[sub_resource type="Resource" id="Resource_xkl0u"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5)
+
+[sub_resource type="Resource" id="Resource_4d3y0"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_xxc2j"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+
+[sub_resource type="Resource" id="Resource_c4lkr"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_cqpt1"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
+
+[sub_resource type="Resource" id="Resource_fktp8"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_fs5wv"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_akpx5"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_uxmrl"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
+
+[sub_resource type="Resource" id="Resource_yidmw"]
+script = ExtResource("54_k8or8")
+polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
 material = ExtResource("31_i8b61")
@@ -553,52 +663,66 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="AbleStreetCurve1" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.1, -49)
+transform = Transform3D(-1, 0, -1.2246467991473532e-16, 0, 1, 0, 1.2246467991473532e-16, 0, -1, 1.45519e-11, 0.1, -49)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(10.2, 0.2)
-start_handle_length = 9.0
-end_point = Vector3(-7.74, 0, -22.55)
-end_angle = -0.698132
-end_handle_length = 9.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("49_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve1"]
+transform = Transform3D(1, 0, 2.449293598294706e-16, 0, 1, 0, -2.449293598294706e-16, 0, 1, 1.4551915228366852e-11, 0, 0)
+script = ExtResource("57_i2hso")
+handle_length = 9.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve1"]
+transform = Transform3D(0.7660444431189778, 0, 0.6427876096865396, 0, 1, 0, -0.6427876096865396, 0, 0.7660444431189778, 7.740000000019734, 0, 22.55000000000291)
+script = ExtResource("57_i2hso")
+handle_length = 9.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="AbleStreetCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet"]
-transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, -100, 0.1, -198)
+transform = Transform3D(1, 0, 3.2008526468823276e-22, 0, 1, 0, -3.2008526468823276e-22, 0, 1, -100, 0.1, -198)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(10.2, 0.2)
-start_handle_length = 13.0
-end_point = Vector3(-11.46, 0, -30.17)
-end_angle = -0.698132
-end_handle_length = 14.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("49_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve2"]
+transform = Transform3D(1, 0, -3.2008526468823276e-22, 0, 1, 0, 3.2008526468823276e-22, 0, 1, 0, 0, 0)
+script = ExtResource("57_i2hso")
+handle_length = 13.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve2"]
+transform = Transform3D(0.766044443118978, 0, 0.6427876096865393, 0, 1, 0, -0.6427876096865393, 0, 0.766044443118978, 11.460000000006405, 0, 30.169999999998257)
+script = ExtResource("57_i2hso")
+handle_length = 14.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BriskStreet" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -359)
@@ -632,54 +756,69 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="CherryStreetCurve1" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -69, -0.8, 237)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.10000000000582077, 164)
 polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, 8.9, 0.1, 8.9, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
+path_rotation = 2
 path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(17.8, 0.2)
-start_angle = 0.785398
-start_straight_length = 6.0
-start_handle_length = 20.0
-end_point = Vector3(69, 0.9, -73)
-end_straight_length = 7.0
-end_handle_length = 30.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_dayhp")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve1"]
+script = ExtResource("57_i2hso")
+straight_length = 7.0
+handle_length = 30.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve1"]
+transform = Transform3D(0.7071067811865476, 0, -0.7071067811865475, 0, 1, 0, 0.7071067811865475, 0, 0.7071067811865476, -69, -0.8999999999941792, 72.97999999999593)
+script = ExtResource("57_i2hso")
+straight_length = 6.0
+handle_length = 20.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CherryStreetCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.1, -198.8)
+transform = Transform3D(-1, 0, -1.2246467991473532e-16, 0, 1, 0, 1.2246467991473532e-16, 0, -1, 1.45519e-11, 0.1, -198.8)
 polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, 8.9, 0.1, 8.9, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
+path_rotation = 2
 path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(17.8, 0.2)
-start_straight_length = 1.5
-start_handle_length = 66.7
-end_point = Vector3(-109.2, 1.45519e-11, -109.2)
-end_angle = -1.5708
-end_straight_length = 1.5
-end_handle_length = 66.7
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("50_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4551915228366852e-11, 0, 0)
+script = ExtResource("57_i2hso")
+straight_length = 1.5
+handle_length = 66.7
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve2"]
+transform = Transform3D(6.123233995736766e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736766e-17, 109.2000000000116, 0, 109.19999999999708)
+script = ExtResource("57_i2hso")
+straight_length = 1.5
+handle_length = 66.7
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="DeltaRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -508)
@@ -878,27 +1017,35 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="ElderDriveCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.1, -64)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, 1.45519e-11, 0.1, -64)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(10.2, 0.2)
-start_handle_length = 8.667
-end_point = Vector3(-15, 0, -15)
-end_angle = -1.5708
-end_handle_length = 8.667
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("49_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive/ElderDriveCurve"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.4551915228366852e-11, 0, 0)
+script = ExtResource("57_i2hso")
+handle_length = 8.667
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive/ElderDriveCurve"]
+transform = Transform3D(6.123233995736765e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736765e-17, 15.00000000001458, 0, 15)
+script = ExtResource("57_i2hso")
+handle_length = 8.667
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="FoxRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -250, 2, -207)
@@ -1117,29 +1264,37 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="IrisRoadCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -49, 0, 0)
+transform = Transform3D(6.123237991473532e-17, 0, -1, 0, 1, 0, 1, 0, 6.123237991473532e-17, -49, 0.10000000000582077, 0)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(10.2, 0.2)
-start_straight_length = 3.0
-start_handle_length = 19.0
-end_point = Vector3(-30.75, 0, -44.51)
-end_angle = -1.0472
-end_straight_length = 4.0
-end_handle_length = 20.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("49_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/IrisRoadCurve"]
+transform = Transform3D(1, 0, -3.995736765685319e-23, 0, 1, 0, 3.995736765685319e-23, 0, 1, 0, 0, 0)
+script = ExtResource("57_i2hso")
+straight_length = 3.0
+handle_length = 19.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/IrisRoadCurve"]
+transform = Transform3D(0.5000000000000001, 0, 0.8660254037844386, 0, 1, 0, -0.8660254037844386, 0, 0.5000000000000001, 30.75, 0, 44.50999999999476)
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_length = 20.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="IrisRoad3" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad"]
 transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -100, 0.1, 42)
@@ -1285,29 +1440,36 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="KeplerStreetCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 77, -0.8, 36)
+transform = Transform3D(1.1102230246251563e-16, 0, 1, 0, 1, 0, -1, 0, 1.1102230246251563e-16, 10, 0.09999999999999998, -8.373510218540048e-15)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("53_f0qux")
-script = ExtResource("58_oslxn")
-size = Vector2(10.2, 0.2)
-start_angle = -0.785398
-start_straight_length = 12.0
-start_handle_length = 27.0
-end_point = Vector3(-67, 0.9, -36)
-end_angle = -1.5708
-end_handle_length = 27.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet/KeplerStreetCurve"]
+transform = Transform3D(1, 0, 4.978996250514799e-17, 0, 1, 0, -4.978996250514799e-17, 0, 1, 0, 0, 0)
+script = ExtResource("57_i2hso")
+handle_length = 27.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet/KeplerStreetCurve"]
+transform = Transform3D(0.7071067811865477, 0, -0.7071067811865474, 0, 1, 0, 0.7071067811865474, 0, 0.7071067811865477, -36, -0.8999999999999999, 67)
+script = ExtResource("57_i2hso")
+straight_length = 12.0
+handle_length = 27.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="OatesRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 2, -587)
@@ -2606,13 +2768,12 @@ material = ExtResource("52_f0qux")
 [node name="Sidewalks" type="Node" parent="LevelBlocking/Town"]
 
 [node name="Path" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -224.8, 2, -278.5)
+transform = Transform3D(-4.3711399993869674e-08, 0, -1, 0, 1, 0, 1, 0, -4.3711399993869674e-08, -224.8, 2, -278.5)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 size = Vector3(125.2, 0.7, 7.8)
 material = ExtResource("23_6lidv")
-metadata/_edit_lock_ = true
 
 [node name="BlockA" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420, 2, -625.7)
@@ -2634,14 +2795,14 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete3" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -30.149999999999977, 1.4551915228366852e-11, -0.9599990844726563)
+transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -30.149999999999977, 1.4551915228366852e-11, -0.9599990844726564)
 size = Vector3(70.48, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete4" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
 transform = Transform3D(1, 0, 3.995736765685319e-23, 0, 1, 0, -3.995736765685319e-23, 0, 1, 1.0000026702880973, 1.4551915228366852e-11, 34.74000000000001)
-size = Vector3(63.800000000000004, 0.7, 0.92)
+size = Vector3(63.8, 0.7, 0.92)
 material = ExtResource("23_6lidv")
 
 [node name="Concrete5" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
@@ -2651,14 +2812,14 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="CrossingRamp" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -32.39999996424012, 0, 33.650000000005775)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -32.39999996424012, 0, 33.650000000005775)
 
 [node name="concrete" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CrossingRamp"]
 size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 
 [node name="cut" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CrossingRamp"]
-transform = Transform3D(0.9945219506975028, -0.10452846908298984, -3.99574e-23, 0.10452846908298984, 0.9945219506975028, 0, 3.9738511392800397e-23, -4.176685850536659e-24, 1, -0.6700000357599265, 0.5, -5.7980287238024175e-12)
+transform = Transform3D(0.9945219506975028, -0.10452846908298984, -3.9957400000000004e-23, 0.10452846908298984, 0.9945219506975028, 0, 3.9738511392800397e-23, -4.176685850536659e-24, 1, -0.6700000357599265, 0.5, -5.7980287238024175e-12)
 operation = 2
 size = Vector3(3, 0.42, 2)
 material = ExtResource("23_6lidv")
@@ -2671,7 +2832,7 @@ size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 
 [node name="cut" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CrossingRamp2"]
-transform = Transform3D(0.9945219506975028, -0.10452846908298984, -3.99574e-23, 0.10452846908298984, 0.9945219506975028, 0, 3.9738511392800397e-23, -4.176685850536659e-24, 1, -0.6700000357599265, 0.5, -5.7980287238024175e-12)
+transform = Transform3D(0.9945219506975028, -0.10452846908298984, -3.9957400000000004e-23, 0.10452846908298984, 0.9945219506975028, 0, 3.9738511392800397e-23, -4.176685850536659e-24, 1, -0.6700000357599265, 0.5, -5.7980287238024175e-12)
 operation = 2
 size = Vector3(3, 0.42, 2)
 material = ExtResource("23_6lidv")
@@ -2764,6 +2925,30 @@ polygon = PackedVector2Array(0, 0, 0, 0.04, 0.02, 0.052, 0.07, 0.064, 0.1, 0.08,
 depth = 63.0
 smooth_faces = true
 material = ExtResource("23_6lidv")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -39.05000000000001, 1.54, 36.08000000000004)
+mode = 2
+path_node = NodePath("Path3D")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = false
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+
+[node name="Path3D" type="Path3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CSGPolygon3D"]
+curve = SubResource("Curve3D_64map")
+
+[node name="CSGPolygonResource3D" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -38.4, 0.65, 43.78)
+polygon = PackedVector2Array(0, 0, 0, 0.2, 1, 0)
+script = ExtResource("53_6susw")
+polygon_resource = SubResource("Resource_i2hso")
+metadata/_custom_type_script = "uid://cqs4rjvcjvx3p"
 
 [node name="BlockB" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -343.1, 2, -622.2)
@@ -2877,12 +3062,12 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete3" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockC"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -32.34500001669221, 0, -30.55000000000291)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -32.34500001669221, 0, -30.55000000000291)
 size = Vector3(1.69, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 
 [node name="Concrete4" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockC"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 33.13999997496313, 0, -30.55000000000291)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 33.13999997496313, 0, -30.55000000000291)
 size = Vector3(1.68, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 
@@ -3144,54 +3329,60 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.65, 1.45519e-11, 42)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, -20.65, 1.45519e-11, 42)
 polygon = PackedVector2Array(-1.25, -0.35, -1.25, 0.35, 1.25, 0.35, 1.25, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 0.5
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(2.5, 0.7)
-start_handle_length = 12.0
-end_point = Vector3(-21.35, 0, -21.35)
-end_angle = -1.5708
-end_handle_length = 12.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_oslxn")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve"]
+script = ExtResource("57_i2hso")
+handle_length = 12.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve"]
+transform = Transform3D(-3.673205103346574e-06, 0, 0.9999999999932536, 0, 1, 0, -0.9999999999932536, 0, -3.673205103346574e-06, 21.35, 0, 21.35)
+script = ExtResource("57_i2hso")
+handle_length = 12.0
 
 [node name="ConcreteCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockE"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 47.35, 1.45519e-11, 56.2)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, 47.35, 1.45519e-11, 56.2)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 0.5
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_straight_length = 1.5
-start_handle_length = 61.4
-end_point = Vector3(-99.55, 0, -99.55)
-end_angle = -1.5708
-end_straight_length = 1.5
-end_handle_length = 61.4
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_ubgmn")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve2"]
+script = ExtResource("57_i2hso")
+straight_length = 1.5
+handle_length = 61.4
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve2"]
+transform = Transform3D(-3.673205103346574e-06, 0, 0.9999999999932536, 0, 1, 0, -0.9999999999932536, 0, -3.673205103346574e-06, 99.55, 0, 99.55)
+script = ExtResource("57_i2hso")
+straight_length = 1.5
+handle_length = 61.4
 
 [node name="BlockF" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -260, 2, -548)
@@ -3273,30 +3464,33 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockF"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 28.65, 1.45519e-11, -24)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, 28.65, 1.45519e-11, -24)
 polygon = PackedVector2Array(-1.25, -0.35, -1.25, 0.35, 1.25, 0.35, 1.25, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 0.5
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(2.5, 0.7)
-start_straight_length = 1.67
-start_handle_length = 4.5
-end_point = Vector3(-8.65, 0, -8.65)
-end_angle = -1.5708
-end_straight_length = 1.67
-end_handle_length = 4.5
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_cvfj6")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockF/ConcreteCurve"]
+script = ExtResource("57_i2hso")
+straight_length = 1.67
+handle_length = 4.5
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockF/ConcreteCurve"]
+transform = Transform3D(-3.673205103346574e-06, 0, 0.9999999999932536, 0, 1, 0, -0.9999999999932536, 0, -3.673205103346574e-06, 8.65, 0, 8.65)
+script = ExtResource("57_i2hso")
+straight_length = 1.67
+handle_length = 4.5
 
 [node name="BlockG" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379.6, 2, -468.1)
@@ -3354,7 +3548,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete15" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockG"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -73, 2.91038e-11, -31.45)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -73, 2.91038e-11, -31.45)
 size = Vector3(2.6, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
@@ -3885,106 +4079,118 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve7" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 30, 1.45519e-11, 25.15)
+transform = Transform3D(-1.8369697991473536e-16, 0, -1, 0, 1, 0, 1, 0, -1.8369697991473536e-16, 30, 1.45519e-11, 25.15)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_straight_length = 3.0
-start_handle_length = 19.25
-end_point = Vector3(-35.18, 1.45519e-11, -52.15)
-end_angle = -1.0472
-end_straight_length = 5.0
-end_handle_length = 25.25
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_mcrc3")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve7"]
+script = ExtResource("57_i2hso")
+straight_length = 3.0
+handle_length = 19.25
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve7"]
+transform = Transform3D(0.4999978792725457, 0, 0.8660266281835431, 0, 1, 0, -0.8660266281835431, 0, 0.4999978792725457, 35.18, 1.45519e-11, 52.15)
+script = ExtResource("57_i2hso")
+straight_length = 5.0
+handle_length = 25.25
 
 [node name="GrassCurve9" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 30, 0, 27.4)
+transform = Transform3D(-1.8369697991473536e-16, 0, -1, 0, 1, 0, 1, 0, -1.8369697991473536e-16, 30, 0, 27.4)
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("27_4tdq6")
-script = ExtResource("58_oslxn")
-size = Vector2(3, 0.68)
-start_straight_length = 3.0
-start_handle_length = 19.0
-end_point = Vector3(-34.04, 1.45519e-11, -50.2)
-end_angle = -1.0472
-end_straight_length = 5.0
-end_handle_length = 24.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_1yx4f")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve9"]
+script = ExtResource("57_i2hso")
+straight_length = 3.0
+handle_length = 19.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve9"]
+transform = Transform3D(0.4999978792725457, 0, 0.8660266281835431, 0, 1, 0, -0.8660266281835431, 0, 0.4999978792725457, 34.04, 1.45519e-11, 50.2)
+script = ExtResource("57_i2hso")
+straight_length = 5.0
+handle_length = 24.0
 
 [node name="ConcreteCurve8" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
-transform = Transform3D(-1, 0, 1.22465e-16, 0, 1, 0, -1.22465e-16, 0, -1, -71.15, 1.45519e-11, 17)
+transform = Transform3D(1, 0, -2.4492967991473535e-16, 0, 1, 0, 2.4492967991473535e-16, 0, 1, -71.15, 1.45519e-11, 17)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_handle_length = 10.25
-end_point = Vector3(-9.44, 1.45519e-11, -23.57)
-end_angle = -0.698134
-end_straight_length = 2.0
-end_handle_length = 10.5
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_6ywls")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve8"]
+script = ExtResource("57_i2hso")
+handle_length = 10.25
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve8"]
+transform = Transform3D(0.7660429652182231, 0, 0.6427893709759614, 0, 1, 0, -0.6427893709759614, 0, 0.7660429652182231, 9.44, 1.45519e-11, 23.57)
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+handle_length = 10.5
 
 [node name="GrassCurve10" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH"]
-transform = Transform3D(-1, 0, 1.22465e-16, 0, 1, 0, -1.22465e-16, 0, -1, -73.4, 0, 17)
+transform = Transform3D(1, 0, -2.4492967991473535e-16, 0, 1, 0, 2.4492967991473535e-16, 0, 1, -73.4, 0, 17)
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("27_4tdq6")
-script = ExtResource("58_oslxn")
-size = Vector2(3, 0.68)
-start_handle_length = 10.5
-end_point = Vector3(-9.97, 1.45519e-11, -25.01)
-end_angle = -0.698134
-end_straight_length = 2.0
-end_handle_length = 11.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_76ay1")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve10"]
+script = ExtResource("57_i2hso")
+handle_length = 10.5
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve10"]
+transform = Transform3D(0.7660429652182231, 0, 0.6427893709759614, 0, 1, 0, -0.6427893709759614, 0, 0.7660429652182231, 9.97, 1.45519e-11, 25.01)
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+handle_length = 11.0
 
 [node name="BlockI" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -347, 2, -285)
@@ -4160,104 +4366,116 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve5" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -2, 0, -56.15)
+transform = Transform3D(-1.8369697991473536e-16, 0, -1, 0, 1, 0, 1, 0, -1.8369697991473536e-16, -2, 0, -56.15)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.0
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_straight_length = 4.0
-start_handle_length = 12.0
-end_point = Vector3(-26.32, 1.45519e-11, -36.84)
-end_angle = -1.0472
-end_straight_length = 8.0
-end_handle_length = 16.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_4dcww")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve5"]
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_length = 12.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve5"]
+transform = Transform3D(0.4999978792725457, 0, 0.8660266281835431, 0, 1, 0, -0.8660266281835431, 0, 0.4999978792725457, 26.32, 1.45519e-11, 36.84)
+script = ExtResource("57_i2hso")
+straight_length = 8.0
+handle_length = 16.0
 
 [node name="GrassCurve8" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, -2, 0, -58.4)
+transform = Transform3D(-1.8369697991473536e-16, 0, -1, 0, 1, 0, 1, 0, -1.8369697991473536e-16, -2, 0, -58.4)
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.0
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("27_4tdq6")
-script = ExtResource("58_oslxn")
-size = Vector2(3, 0.68)
-start_straight_length = 4.0
-start_handle_length = 13.227
-end_point = Vector3(-27.45, 1.45519e-11, -38.79)
-end_angle = -1.0472
-end_straight_length = 8.0
-end_handle_length = 16.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_11pln")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve8"]
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_length = 13.227
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve8"]
+transform = Transform3D(0.4999978792725457, 0, 0.8660266281835431, 0, 1, 0, -0.8660266281835431, 0, 0.4999978792725457, 27.45, 1.45519e-11, 38.79)
+script = ExtResource("57_i2hso")
+straight_length = 8.0
+handle_length = 16.0
 
 [node name="ConcreteCurve6" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.15, 0, 64.6)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, -3.15, 0, 64.6)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.0
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_handle_length = 11.0
-end_point = Vector3(-9.72, 1.45519e-11, -26.69)
-end_angle = -0.698132
-end_handle_length = 7.5
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_utqjd")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve6"]
+script = ExtResource("57_i2hso")
+handle_length = 11.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve6"]
+transform = Transform3D(0.766044250795433, 0, 0.6427878388887455, 0, 1, 0, -0.6427878388887455, 0, 0.766044250795433, 9.72, 1.45519e-11, 26.69)
+script = ExtResource("57_i2hso")
+handle_length = 7.5
 
 [node name="GrassCurve7" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.4, 0, 64.6)
+transform = Transform3D(-1, 0, 1.2246467991473532e-16, 0, 1, 0, -1.2246467991473532e-16, 0, -1, -5.4, 0, 64.6)
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.0
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("27_4tdq6")
-script = ExtResource("58_oslxn")
-size = Vector2(3, 0.68)
-start_handle_length = 6.5
-end_point = Vector3(-9.19, 1.45519e-11, -25.24)
-end_angle = -0.698132
-end_handle_length = 11.5
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_85d2q")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve7"]
+script = ExtResource("57_i2hso")
+handle_length = 6.5
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve7"]
+transform = Transform3D(0.766044250795433, 0, 0.6427878388887455, 0, 1, 0, -0.6427878388887455, 0, 0.766044250795433, 9.19, 1.45519e-11, 25.24)
+script = ExtResource("57_i2hso")
+handle_length = 11.5
 
 [node name="BlockJ" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -261.6, 2, -426.6)
@@ -4519,24 +4737,6 @@ size = Vector3(57.9, 0.7, 2)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
-[node name="Grass8" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 0, 90.9)
-size = Vector3(132.2, 0.68, 2)
-material = ExtResource("27_4tdq6")
-metadata/_edit_lock_ = true
-
-[node name="Grass10" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43, 0, 90.9)
-size = Vector3(22.8, 0.7, 2)
-material = ExtResource("27_4tdq6")
-metadata/_edit_lock_ = true
-
-[node name="Grass9" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -73.9, 0, 90.9)
-size = Vector3(36, 0.7, 2)
-material = ExtResource("27_4tdq6")
-metadata/_edit_lock_ = true
-
 [node name="Grass7" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -32.6, 0, 9.5)
 size = Vector3(116.2, 0.7, 2)
@@ -4558,6 +4758,42 @@ height = 0.68
 sides = 24
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
+
+[node name="CSGCurveBox3D" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.990000000000009, 0, -0.99)
+polygon = PackedVector2Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5)
+mode = 2
+path_node = NodePath("")
+path_interval_type = 0
+path_interval = 0.5
+path_simplify_angle = 0.0
+path_rotation = 2
+path_rotation_accurate = true
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+script = ExtResource("56_k8or8")
+polygon_resource = SubResource("Resource_xkl0u")
+metadata/_custom_type_script = "uid://qkkbt3u5nb0o"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockL/CSGCurveBox3D"]
+transform = Transform3D(0.9810602621904064, 0.1729873939250896, -0.08715574274765853, -0.17364817766693025, 0.9848077530122088, 0, 0.08583165117743158, 0.01513443590133869, 0.9961946980917452, 2.1826667265432307, 1.2803391212595572, -1.4222696489085285)
+script = ExtResource("57_i2hso")
+straight_length = 1.843
+handle_length = 1.001
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockL/CSGCurveBox3D"]
+transform = Transform3D(0.6644630243886747, 0.6644630243886748, -0.3420201433256688, -0.7071067811865476, 0.7071067811865476, -1.1102230246251563e-16, 0.2418447626479753, 0.2418447626479752, 0.9396926207859088, 4.28, 2.01, 5.16)
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D3" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockL/CSGCurveBox3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.23, 1.09, 9.8)
+script = ExtResource("57_i2hso")
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BlockM" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -188.3, 2, -279.9)
@@ -4632,13 +4868,13 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete2" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockN"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 17.2, 1.45519e-11, -70.85)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 17.2, 1.45519e-11, -70.85)
 size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete3" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockN"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 16.6, 1.45519e-11, -4.75)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 16.6, 1.45519e-11, -4.75)
 size = Vector3(1.8, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
@@ -4650,7 +4886,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete5" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockN"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 16.6, 1.45519e-11, 5.35)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 16.6, 1.45519e-11, 5.35)
 size = Vector3(1.8, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
@@ -4716,13 +4952,13 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass12" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockN"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 8, 1.45519e-11, 68.9)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 8, 1.45519e-11, 68.9)
 size = Vector3(9.2, 0.7, 1.6)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass13" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockN"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 8, 1.45519e-11, -89.7)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 8, 1.45519e-11, -89.7)
 size = Vector3(9.2, 0.7, 1.6)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
@@ -4781,7 +5017,7 @@ collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="Concrete" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 10.4, 1.45519e-11, -7.55)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 10.4, 1.45519e-11, -7.55)
 size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
@@ -4793,13 +5029,13 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete3" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -11.4, 1.45519e-11, -24.85)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -11.4, 1.45519e-11, -24.85)
 size = Vector3(46.6, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete4" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 10.4, 1.45519e-11, 55.15)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 10.4, 1.45519e-11, 55.15)
 size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
@@ -4847,31 +5083,31 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass4" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -24.4, 1.45519e-11, -14.7)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -24.4, 1.45519e-11, -14.7)
 size = Vector3(60.4, 0.7, 1)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass11" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -55.1, 1.45519e-11, -11.95)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -55.1, 1.45519e-11, -11.95)
 size = Vector3(1, 0.7, 6.5)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass12" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -62.5, 1.45519e-11, -9.2)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -62.5, 1.45519e-11, -9.2)
 size = Vector3(13.8, 0.7, 1)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass13" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -69.9, 1.45519e-11, 29.1)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -69.9, 1.45519e-11, 29.1)
 size = Vector3(1, 0.7, 77.6)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass19" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -63.95, 1.45519e-11, 68.4)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -63.95, 1.45519e-11, 68.4)
 size = Vector3(12.9, 0.7, 1)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
@@ -4911,19 +5147,19 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.55, 1.45519e-11, 69.3)
 metadata/_edit_lock_ = true
 
 [node name="Concrete9" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO/DropoffBarrier"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 1.45519e-11, 1.45519e-11, 1.575)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 1.45519e-11, 1.45519e-11, 1.575)
 size = Vector3(9.2, 0.7, 7.15)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Grass14" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO/DropoffBarrier"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 0, 0, 0.5)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 0, 0, 0.5)
 size = Vector3(31.9, 0.68, 5)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass15" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO/DropoffBarrier"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -16.45, 0, 0.499995)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -16.45, 0, 0.499995)
 size = Vector3(1, 0.68, 3)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
@@ -4941,19 +5177,19 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass18" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO/DropoffBarrier"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 16.45, 0, 0.499995)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 16.45, 0, 0.499995)
 size = Vector3(1, 0.68, 3)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass19" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO/DropoffBarrier"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -4.76837e-07, 0, 3.5)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -4.76837e-07, 0, 3.5)
 size = Vector3(28.5, 0.68, 1)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="Grass20" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockO/DropoffBarrier"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, 1.45519e-11, 1.45519e-11, 4.575)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, 1.45519e-11, 1.45519e-11, 4.575)
 size = Vector3(24.5, 0.68, 1.15)
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
@@ -5198,7 +5434,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Concrete2" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
-transform = Transform3D(1, 0, 3.99574e-23, 0, 1, 0, -3.99574e-23, 0, 1, -25.2, 0, -144.95)
+transform = Transform3D(1, 0, 3.9957400000000004e-23, 0, 1, 0, -3.9957400000000004e-23, 0, 1, -25.2, 0, -144.95)
 size = Vector3(3, 0.7, 1.5)
 material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
@@ -5278,104 +5514,116 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve9" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
-transform = Transform3D(-1, 0, 1.22465e-16, 0, 1, 0, -1.22465e-16, 0, -1, -27.45, 1.45519e-11, -93.8)
+transform = Transform3D(1, 0, -2.4492967991473535e-16, 0, 1, 0, 2.4492967991473535e-16, 0, 1, -27.45, 1.45519e-11, -93.8)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_straight_length = 2.0
-start_handle_length = 14.25
-end_point = Vector3(-13.57, 1.45519e-11, -35.82)
-end_angle = -0.698134
-end_straight_length = 2.0
-end_handle_length = 13.25
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_4d3y0")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve9"]
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+handle_length = 14.25
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve9"]
+transform = Transform3D(0.7660429652182231, 0, 0.6427893709759614, 0, 1, 0, -0.6427893709759614, 0, 0.7660429652182231, 13.57, 1.45519e-11, 35.82)
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+handle_length = 13.25
 
 [node name="GrassCurve11" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
-transform = Transform3D(-1, 0, 1.22465e-16, 0, 1, 0, -1.22465e-16, 0, -1, -25.2, 0, -93.8)
+transform = Transform3D(1, 0, -2.4492967991473535e-16, 0, 1, 0, 2.4492967991473535e-16, 0, 1, -25.2, 0, -93.8)
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("27_4tdq6")
-script = ExtResource("58_oslxn")
-size = Vector2(3, 0.68)
-start_straight_length = 2.0
-start_handle_length = 14.0
-end_point = Vector3(-13.04, 1.45519e-11, -34.4)
-end_angle = -0.698134
-end_straight_length = 2.0
-end_handle_length = 13.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_xxc2j")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve11"]
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+handle_length = 14.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve11"]
+transform = Transform3D(0.7660429652182231, 0, 0.6427893709759614, 0, 1, 0, -0.6427893709759614, 0, 0.7660429652182231, 13.04, 1.45519e-11, 34.4)
+script = ExtResource("57_i2hso")
+straight_length = 2.0
+handle_length = 13.0
 
 [node name="ConcreteCurve10" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
-transform = Transform3D(1, 0, -2.44929e-16, 0, 1, 0, 2.44929e-16, 0, 1, 72.55, 1.45519e-11, 53)
+transform = Transform3D(-1, 0, 3.6739367991473535e-16, 0, 1, 0, -3.6739367991473535e-16, 0, -1, 72.55, 1.45519e-11, 53)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_handle_length = 6.5
-end_point = Vector3(-5.57, 1.45519e-11, -14.62)
-end_angle = -0.698134
-end_handle_length = 4.5
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_c4lkr")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve10"]
+script = ExtResource("57_i2hso")
+handle_length = 6.5
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve10"]
+transform = Transform3D(0.7660429652182231, 0, 0.6427893709759614, 0, 1, 0, -0.6427893709759614, 0, 0.7660429652182231, 5.57, 1.45519e-11, 14.62)
+script = ExtResource("57_i2hso")
+handle_length = 4.5
 
 [node name="GrassCurve12" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP"]
-transform = Transform3D(1, 0, -2.44929e-16, 0, 1, 0, 2.44929e-16, 0, 1, 74.8, 0, 53.8)
+transform = Transform3D(-1, 0, 3.6739367991473535e-16, 0, 1, 0, -3.6739367991473535e-16, 0, -1, 74.8, 0, 53.8)
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("27_4tdq6")
-script = ExtResource("58_oslxn")
-size = Vector2(3, 0.68)
-start_handle_length = 7.0
-end_point = Vector3(-6.24, 1.45519e-11, -17)
-end_angle = -0.698134
-end_handle_length = 6.25
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_cqpt1")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve12"]
+script = ExtResource("57_i2hso")
+handle_length = 7.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve12"]
+transform = Transform3D(0.7660429652182231, 0, 0.6427893709759614, 0, 1, 0, -0.6427893709759614, 0, 0.7660429652182231, 6.24, 1.45519e-11, 17)
+script = ExtResource("57_i2hso")
+handle_length = 6.25
 
 [node name="BlockQ" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -314, 2, -180)
@@ -5491,103 +5739,135 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
-transform = Transform3D(-1.83697e-16, 0, -1, 0, 1, 0, 1, 0, -1.83697e-16, 1.3, 0, 13.15)
+transform = Transform3D(3.061616799147353e-16, 0, 1, 0, 1, 0, -1, 0, 3.061616799147353e-16, 1.3, 0, 13.15)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_handle_length = 5.0
-end_point = Vector3(3, 1.45519e-11, -22.7)
-end_handle_length = 5.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_fktp8")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve"]
+script = ExtResource("57_i2hso")
+handle_length = 5.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.45519e-11, 22.7)
+script = ExtResource("57_i2hso")
+handle_length = 5.0
 
 [node name="ConcreteCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
-transform = Transform3D(-1.83697e-16, 0, -1, 0, 1, 0, 1, 0, -1.83697e-16, -8.7, 0, -15.35)
+transform = Transform3D(3.061616799147353e-16, 0, 1, 0, 1, 0, -1, 0, 3.061616799147353e-16, -8.7, 0, -15.35)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 0.5
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_straight_length = 0.5
-start_handle_length = 2.0
-end_point = Vector3(1, 1.45519e-11, -6)
-end_straight_length = 0.5
-end_handle_length = 2.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_fs5wv")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve2"]
+script = ExtResource("57_i2hso")
+straight_length = 0.5
+handle_length = 2.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.45519e-11, 6)
+script = ExtResource("57_i2hso")
+straight_length = 0.5
+handle_length = 2.0
 
 [node name="ConcreteCurve3" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
-transform = Transform3D(-1.83697e-16, 0, -1, 0, 1, 0, 1, 0, -1.83697e-16, 24, 0, 16.15)
+transform = Transform3D(3.061616799147353e-16, 0, 1, 0, 1, 0, -1, 0, 3.061616799147353e-16, 24, 0, 16.15)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_handle_length = 27.5
-end_point = Vector3(36.53, -0.9, -69.91)
-end_angle = 0.785396
-end_straight_length = 12.0
-end_handle_length = 28.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_akpx5")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve3"]
+script = ExtResource("57_i2hso")
+handle_length = 27.5
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve3"]
+transform = Transform3D(0.7071083109378989, 0, -0.7071052514318866, 0, 1, 0, 0.7071052514318866, 0, 0.7071083109378989, -36.53, -0.9, 69.91)
+script = ExtResource("57_i2hso")
+straight_length = 12.0
+handle_length = 28.0
 
 [node name="ConcreteCurve4" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
-transform = Transform3D(-1.83697e-16, 0, -1, 0, 1, 0, 1, 0, -1.83697e-16, 95.68, -0.9, 52.68)
+transform = Transform3D(3.061616799147353e-16, 0, 1, 0, 1, 0, -1, 0, 3.061616799147353e-16, 95.68, -0.9, 52.68)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
 path_simplify_angle = 0.5
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_angle = -0.785398
-start_straight_length = 8.0
-start_handle_length = 19.0
-end_point = Vector3(-67.78, 0.9, -67.67)
-end_angle = -1.5708
-end_straight_length = 7.5
-end_handle_length = 22.2
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_uxmrl")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve4"]
+transform = Transform3D(0.7071068967259818, 0, 0.7071066656470943, 0, 1, 0, -0.7071066656470943, 0, 0.7071068967259818, 0, 0, 0)
+script = ExtResource("57_i2hso")
+straight_length = 8.0
+handle_length = 19.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve4"]
+transform = Transform3D(-3.673205103346574e-06, 0, 0.9999999999932536, 0, 1, 0, -0.9999999999932536, 0, -3.673205103346574e-06, 67.78, 0.9, 67.67)
+script = ExtResource("57_i2hso")
+straight_length = 7.5
+handle_length = 22.2
+
+[node name="Grass8" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 93.5, 0, -17.099999999999994)
+size = Vector3(132.2, 0.68, 2)
+material = ExtResource("27_4tdq6")
+metadata/_edit_lock_ = true
+
+[node name="Grass10" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.5, 0, -17.099999999999994)
+size = Vector3(22.8, 0.7, 2)
+material = ExtResource("27_4tdq6")
+metadata/_edit_lock_ = true
+
+[node name="Grass9" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockQ"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.399999999999977, 0, -17.099999999999994)
+size = Vector3(36, 0.7, 2)
+material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="BlockR" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
@@ -5652,27 +5932,31 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="ConcreteCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockT"]
-transform = Transform3D(6.12323e-17, 0, 1, 0, 1, 0, -1, 0, 6.12323e-17, 17, 0, 1.35)
+transform = Transform3D(-1.8369697991473536e-16, 0, -1, 0, 1, 0, 1, 0, -1.8369697991473536e-16, 17, 0, 1.35)
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 0.5
 path_simplify_angle = 0.0
-path_rotation = 1
-path_rotation_accurate = false
+path_rotation = 2
+path_rotation_accurate = true
 path_local = true
 path_continuous_u = true
 path_u_distance = 1.0
 path_joined = false
 material = ExtResource("23_6lidv")
-script = ExtResource("58_oslxn")
-size = Vector2(1.5, 0.7)
-start_handle_length = 3.0
-end_point = Vector3(-3.8, 0, -8.4)
-end_handle_length = 3.0
-metadata/_custom_type_script = "uid://cmoqd7hfbfppm"
-metadata/_edit_lock_ = true
+script = ExtResource("48_dayhp")
+polygon_resource = SubResource("Resource_yidmw")
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockT/ConcreteCurve"]
+script = ExtResource("57_i2hso")
+handle_length = 3.0
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockT/ConcreteCurve"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 8.4)
+script = ExtResource("57_i2hso")
+handle_length = 3.0
 
 [node name="RoundGrass11" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockT"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.4, 0, 3.4)

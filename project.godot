@@ -44,7 +44,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/guide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/csg_extra/csg_curve/plugin.cfg", "res://addons/csg_extra/plugin.cfg", "res://addons/guide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [file_customization]
 

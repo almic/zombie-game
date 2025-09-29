@@ -1,87 +1,35 @@
 @tool
-class_name CSGCurve3D extends CSGPolygon3D
-
-
-const HALF_PI = PI * 0.5
+class_name CSGCurve3D extends CSGPolygonResource3D
 
 
 ## Trigger the node to refresh internal tree
 @export var refresh: bool = false:
     set(value):
         refresh = false
-        if value:
-            _setup()
-            use_end_marker = use_end_marker
-
-## Enable to place a marker in the scene for the end point. Turn off after you
-## have the end where you like it. The marker is automatically deleted when the
-## scene saves.
-@export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_EDITOR)
-var use_end_marker: bool = false:
-    set = set_use_end_marker
-
-## Width and height of the mesh to curve
-@export var size: Vector2 = Vector2(1.0, 1.0):
-    set(value):
-        size = value
-        update_shape()
-
-## Angle of the first node in the curve
-@export_range(-90.0, 90.0, 0.001, 'radians_as_degrees')
-var start_angle: float = 0.0:
-    set(value):
-        start_angle = value
-        update_points()
-
-## Length of the "straight" section from the starting point
-@export_range(0.001, 4.0, 0.001, 'or_greater')
-var start_straight_length: float = 1.0:
-    set(value):
-        start_straight_length = value
-        update_points()
-
-## Length of the first handle in the curve
-@export_range(0.0, 10.0, 0.001, 'or_greater')
-var start_handle_length: float = 1.0:
-    set(value):
-        start_handle_length = value
-        update_points()
-
-## End offset from the starting point
-@export var end_point: Vector3 = Vector3(0.0, 0.0, -4.0):
-    set(value):
-        end_point = value
-        update_points()
-
-## Angle of the last node in the curve
-@export_range(-180.0, 180.0, 0.001, 'radians_as_degrees')
-var end_angle: float = 0.0:
-    set(value):
-        end_angle = value
-        update_points()
-
-## Length of the "straight" section from the ending point
-@export_range(0.001, 4.0, 0.001, 'or_greater')
-var end_straight_length: float = 1.0:
-    set(value):
-        end_straight_length = value
-        update_points()
-
-## Length of the last handle in the curve
-@export_range(0.0, 10.0, 0.001, 'or_greater')
-var end_handle_length: float = 1.0:
-    set(value):
-        end_handle_length = value
-        update_points()
+        if value and is_node_ready():
+            _refresh()
 
 
-var end_marker: Marker3D
 var path: Path3D
 var curve: Curve3D = Curve3D.new()
+var points: Array[CSGCurvePoint3D]
 
+
+func _init() -> void:
+    mode = CSGPolygon3D.MODE_PATH
+    path_local = true
+    path_continuous_u = true
+    path_rotation = CSGPolygon3D.PATH_ROTATION_PATH_FOLLOW
+    path_rotation_accurate = true
 
 func _ready() -> void:
-    _setup.call_deferred()
+    super._ready()
+
+    child_entered_tree.connect(_child_added)
+    child_exiting_tree.connect(_child_removed)
+    child_order_changed.connect(_children_reordered)
+
+    _refresh.call_deferred()
 
 func _notification(what: int) -> void:
     # NOTE: prevent saving the marker 3d
@@ -89,40 +37,46 @@ func _notification(what: int) -> void:
     if what == NOTIFICATION_EDITOR_PRE_SAVE:
         if path_node:
             path_node = NodePath()
-        if end_marker:
-            end_marker.owner = null
-            use_end_marker = false
     elif what == NOTIFICATION_EDITOR_POST_SAVE:
         if path:
             path_node = get_path_to(path)
-        if end_marker:
-            end_marker.owner = null
-            use_end_marker = false
 
-func _process(_delta: float) -> void:
-    if not use_end_marker:
+
+func _child_added(node: Node) -> void:
+    var point: CSGCurvePoint3D = node as CSGCurvePoint3D
+    if not point:
         return
 
-    if not end_marker:
-        use_end_marker = false
+    point.modified.connect(update_points)
+
+func _child_removed(node: Node) -> void:
+    var point: CSGCurvePoint3D = node as CSGCurvePoint3D
+    if not point:
         return
 
-    if not Engine.is_editor_hint():
-        return
+    point.modified.disconnect(update_points)
 
-    if not end_point.is_equal_approx(end_marker.position):
-        end_point = end_marker.position
-
-    if not is_equal_approx(end_angle, -end_marker.rotation.y):
-        end_angle = -end_marker.rotation.y
-
-
-func _setup() -> void:
-    update_shape()
+func _children_reordered() -> void:
+    update_children()
     update_points()
 
-    # Delete end marker
-    use_end_marker = false
+func update_children() -> void:
+    points.clear()
+    var last: CSGCurvePoint3D = null
+    for node in get_children():
+        if node is CSGCurvePoint3D:
+            if last == null:
+                node._is_first = true
+            last = node
+            points.append(node)
+            if not node.modified.is_connected(update_points):
+                node.modified.connect(update_points)
+    if last:
+        last._is_last = true
+
+func _refresh() -> void:
+    update_children()
+    update_points()
 
     # Clean up the old path node
     if path:
@@ -132,76 +86,92 @@ func _setup() -> void:
         path.queue_free()
 
     path = Path3D.new()
-    add_child(path)
+    add_child(path, false, Node.INTERNAL_MODE_BACK)
     path.curve = curve
+    curve.up_vector_enabled = false
 
-    mode = CSGPolygon3D.MODE_PATH
     path_node = get_path_to(path)
-    path_local = true
-    path_continuous_u = true
-    path_rotation = CSGPolygon3D.PATH_ROTATION_PATH
-
-func update_shape() -> void:
-    if not is_node_ready():
-        return
-
-    var w: float = size.x * 0.5
-    var h: float = size.y * 0.5
-
-    if polygon.size() != 4:
-        polygon.clear()
-        polygon.resize(4)
-
-    polygon[0] = Vector2(-w, -h)
-    polygon[1] = Vector2(-w,  h)
-    polygon[2] = Vector2( w,  h)
-    polygon[3] = Vector2( w, -h)
 
 func update_points() -> void:
     if not is_node_ready():
         return
 
-    curve.clear_points()
+    # Compute number of needed points
+    var point: CSGCurvePoint3D
+    var total: int = 0
+    var size: int = points.size()
+    for i in range(size):
+        point = points[i]
+        total += 1
+        if point.straight_length > 0:
+            total += 1
+            if i > 0 and i < size - 1:
+                total += 1
 
-    # First point at self position
-    var angle: Vector3 = Vector3(cos(start_angle - HALF_PI), 0.0, sin(start_angle - HALF_PI))
-    curve.add_point(Vector3.ZERO, Vector3.ZERO, angle * start_straight_length * 0.5)
+    # Update curve point count
+    if curve.point_count != total:
+        curve.clear_points()
+        for i in range(total):
+            curve.add_point(Vector3.ZERO)
 
-    # Second point at the angle and distance set
-    curve.add_point(
-            angle * start_straight_length,
-            Vector3.ZERO,
-            angle * start_handle_length
-    )
+    # Add points
+    var skip: int = 0
+    for i in range(size):
+        point = points[i]
 
-    # Third point at the end straight length
-    angle = Vector3(cos(end_angle + HALF_PI), 0.0, sin(end_angle + HALF_PI))
-    curve.add_point(
-            end_point + (angle * end_straight_length),
-            angle * end_handle_length
-    )
+        var is_first: bool = i == 0
+        var is_last: bool = i == size - 1
+        var tilt: float = point.rotation.z
 
-    # Fourth point at the exit position
-    curve.add_point(end_point, angle * end_straight_length * 0.5)
+        # Add entering straight point
+        if point.straight_length > 0 and not is_first:
+            var offset: Vector3 = -point.basis.z * point.straight_length
+            if not is_last:
+                offset *= 0.5
 
-func set_use_end_marker(use: bool) -> void:
-    use_end_marker = use
+            curve.set_point_position(i + skip, point.position + offset)
+            curve.set_point_tilt(i + skip, tilt)
 
-    if end_marker:
-        end_point = end_marker.position
-        end_angle = -end_marker.rotation.y
-        end_marker.queue_free()
-        end_marker = null
+            curve.set_point_out(i + skip, Vector3.ZERO)
 
-    if not use:
-        return
+            if point.handle_length > 0:
+                curve.set_point_in(i + skip, -point.basis.z * point.handle_length)
+            else:
+                curve.set_point_in(i + skip, Vector3.ZERO)
 
-    end_marker = Marker3D.new()
-    end_marker.gizmo_extents = 1.0
+            skip += 1
 
-    add_child(end_marker)
-    end_marker.owner = owner
-    end_marker.name = &"TempCurveEndMarker"
+        # Add central point
+        curve.set_point_position(i + skip, point.position)
+        curve.set_point_tilt(i + skip, tilt)
 
-    end_marker.position = end_point
-    end_marker.rotation.y = -end_angle
+        if not point.straight_length > 0 and point.handle_length > 0:
+            if is_first:
+                curve.set_point_in(i + skip, Vector3.ZERO)
+            else:
+                curve.set_point_in(i + skip, -point.basis.z * point.handle_length)
+            if is_last:
+                curve.set_point_out(i + skip, Vector3.ZERO)
+            else:
+                curve.set_point_out(i + skip, point.basis.z * point.handle_length)
+        else:
+            curve.set_point_in(i + skip, Vector3.ZERO)
+            curve.set_point_out(i + skip, Vector3.ZERO)
+
+        # Add exiting straight point
+        if point.straight_length > 0 and (not is_last or size == 1):
+            var offset: Vector3 = point.basis.z * point.straight_length
+            if not is_first:
+                offset *= 0.5
+
+            curve.set_point_position(i + skip + 1, point.position + offset)
+            curve.set_point_tilt(i + skip + 1, tilt)
+
+            curve.set_point_in(i + skip + 1, Vector3.ZERO)
+
+            if point.handle_length > 0:
+                curve.set_point_out(i + skip + 1, point.basis.z * point.handle_length)
+            else:
+                curve.set_point_out(i + skip + 1, Vector3.ZERO)
+
+            skip += 1

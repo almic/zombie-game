@@ -7,7 +7,7 @@
 [ext_resource type="Material" uid="uid://bw4sj1kv018lx" path="res://material/level/grid_red.tres" id="5_l2lt6"]
 [ext_resource type="Material" uid="uid://dr1kmd2sitku1" path="res://material/level/grid_blue.tres" id="6_mgg8e"]
 [ext_resource type="Material" uid="uid://dw056en0eb3vg" path="res://material/level/grid_green.tres" id="7_c1dd1"]
-[ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://script/csg/csg_steps/csg_steps.gd" id="8_mvl14"]
+[ext_resource type="Script" uid="uid://xajyhp2m1sdg" path="res://addons/csg_extra/csg_steps.gd" id="8_mvl14"]
 [ext_resource type="PackedScene" uid="uid://byx787kh4uila" path="res://scene/ramp_collider/ramp_collider.tscn" id="9_04kiw"]
 [ext_resource type="Texture2D" uid="uid://c0g81pao0uo2b" path="res://model/cabin/textures/cabin_ambient.png" id="11_tpj8s"]
 

@@ -3,7 +3,8 @@ class_name CSGCurve3D extends CSGPolygonResource3D
 
 
 ## Trigger the node to refresh internal tree
-@export var refresh: bool = false:
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR)
+var refresh: bool = false:
     set(value):
         refresh = false
         if value and is_node_ready():

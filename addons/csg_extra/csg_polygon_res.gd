@@ -13,6 +13,20 @@ class_name CSGPolygonResource3D extends CSGPolygon3D
                 polygon_resource.changed.connect(apply_polygon)
             apply_polygon()
 
+@export_subgroup("Copy To Resource")
+
+## Click this button to copy the polygon data from the CSGPolygon3D into the
+## current resource data. Useful when the resource and polygon have deviated.
+@export_custom(PROPERTY_HINT_NONE, "", PROPERTY_USAGE_EDITOR)
+var copy_polygon_to_resource: bool = false:
+    set(value):
+        copy_polygon_to_resource = false
+        if value:
+            var temp_data: PackedVector2Array = polygon.duplicate()
+            polygon_resource = Polygon2DResource.new()
+            polygon_resource.polygon = temp_data
+
+
 func _ready() -> void:
     # AGAGAHHHHHH
     polygon_resource = polygon_resource

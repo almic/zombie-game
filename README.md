@@ -56,6 +56,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # ANGRY TODOS
 
+- [ ] Set up vehicle suspensions to get random impulses at low speeds when on
+      terrain
 - [ ] Match moon's mie power to moon illuminance.
 - [ ] Fog at dawn and dusk, set with a curve. This looks bad right now.
 - [ ] Apply Kawase Blur during night vision, depth based (further = more blurry)

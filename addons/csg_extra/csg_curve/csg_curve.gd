@@ -17,11 +17,16 @@ var points: Array[CSGCurvePoint3D]
 
 
 func _init() -> void:
+    # Always set
     mode = CSGPolygon3D.MODE_PATH
     path_local = true
     path_continuous_u = true
-    path_rotation = CSGPolygon3D.PATH_ROTATION_PATH_FOLLOW
-    path_rotation_accurate = true
+
+    # Change defaults (and avoid them)
+    if path_rotation == CSGPolygon3D.PATH_ROTATION_POLYGON:
+        path_rotation = CSGPolygon3D.PATH_ROTATION_PATH_FOLLOW
+    if path_simplify_angle == 0.0:
+        path_simplify_angle = 1.0
 
 func _ready() -> void:
     super._ready()

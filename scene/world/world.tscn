@@ -1,4 +1,4 @@
-[gd_scene load_steps=104 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=102 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
@@ -64,7 +64,6 @@
 [ext_resource type="Material" uid="uid://cvhepqprrnttl" path="res://material/terrain/grass.tres" id="53_r4xj5"]
 [ext_resource type="Script" uid="uid://hutnddwuoerd" path="res://addons/csg_extra/poly_resource.gd" id="54_k8or8"]
 [ext_resource type="PackedScene" uid="uid://dcwdq2tolxn0a" path="res://vehicle/truck/truck_vehicle.tscn" id="54_x6gsb"]
-[ext_resource type="Script" uid="uid://qkkbt3u5nb0o" path="res://addons/csg_extra/csg_curve/csg_curve_box.gd" id="56_k8or8"]
 [ext_resource type="Texture2D" uid="uid://dxcbxv68vekkj" path="res://textures/road/crosswalk_decal.tres" id="56_ubgmn"]
 [ext_resource type="Script" uid="uid://behs32dwn6xbp" path="res://addons/csg_extra/csg_curve/csg_curve_point.gd" id="57_i2hso"]
 [ext_resource type="Resource" uid="uid://dc4dm4qwu046j" path="res://scene/world/polygon2d/curb_71_sharp.tres" id="58_hyeqt"]
@@ -145,10 +144,6 @@ polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 [sub_resource type="Resource" id="Resource_85d2q"]
 script = ExtResource("54_k8or8")
 polygon = PackedVector2Array(-1.5, -0.34, -1.5, 0.34, 1.5, 0.34, 1.5, -0.34)
-
-[sub_resource type="Resource" id="Resource_xkl0u"]
-script = ExtResource("54_k8or8")
-polygon = PackedVector2Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5)
 
 [sub_resource type="Resource" id="Resource_4d3y0"]
 script = ExtResource("54_k8or8")
@@ -4598,7 +4593,7 @@ mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
-path_simplify_angle = 0.0
+path_simplify_angle = 0.5
 path_rotation = 2
 path_rotation_accurate = true
 path_local = true
@@ -4627,7 +4622,7 @@ mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
-path_simplify_angle = 0.0
+path_simplify_angle = 0.5
 path_rotation = 2
 path_rotation_accurate = true
 path_local = true
@@ -4656,7 +4651,7 @@ mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
-path_simplify_angle = 0.0
+path_simplify_angle = 0.5
 path_rotation = 2
 path_rotation_accurate = true
 path_local = true
@@ -4683,7 +4678,7 @@ mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 1.0
-path_simplify_angle = 0.0
+path_simplify_angle = 0.5
 path_rotation = 2
 path_rotation_accurate = true
 path_local = true
@@ -4984,42 +4979,6 @@ height = 0.68
 sides = 24
 material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
-
-[node name="CSGCurveBox3D" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockL"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.990000000000009, 0, -0.99)
-polygon = PackedVector2Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5)
-mode = 2
-path_node = NodePath("")
-path_interval_type = 0
-path_interval = 0.5
-path_simplify_angle = 0.0
-path_rotation = 2
-path_rotation_accurate = true
-path_local = true
-path_continuous_u = true
-path_u_distance = 1.0
-path_joined = false
-script = ExtResource("56_k8or8")
-polygon_resource = SubResource("Resource_xkl0u")
-metadata/_custom_type_script = "uid://qkkbt3u5nb0o"
-
-[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockL/CSGCurveBox3D"]
-transform = Transform3D(0.9810602621904064, 0.1729873939250896, -0.08715574274765853, -0.17364817766693025, 0.9848077530122088, 0, 0.08583165117743158, 0.01513443590133869, 0.9961946980917452, 2.1826667265432307, 1.2803391212595572, -1.4222696489085285)
-script = ExtResource("57_i2hso")
-straight_length = 1.843
-handle_length = 1.001
-metadata/_custom_type_script = "uid://behs32dwn6xbp"
-
-[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockL/CSGCurveBox3D"]
-transform = Transform3D(0.6644630243886747, 0.6644630243886748, -0.3420201433256688, -0.7071067811865476, 0.7071067811865476, -1.1102230246251563e-16, 0.2418447626479753, 0.2418447626479752, 0.9396926207859088, 4.28, 2.01, 5.16)
-script = ExtResource("57_i2hso")
-straight_length = 2.0
-metadata/_custom_type_script = "uid://behs32dwn6xbp"
-
-[node name="CSGCurvePoint3D3" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockL/CSGCurveBox3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.23, 1.09, 9.8)
-script = ExtResource("57_i2hso")
-metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BlockM" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -188.3, 2, -279.9)
@@ -6168,7 +6127,7 @@ mode = 2
 path_node = NodePath("")
 path_interval_type = 0
 path_interval = 0.5
-path_simplify_angle = 0.0
+path_simplify_angle = 0.5
 path_rotation = 2
 path_rotation_accurate = true
 path_local = true

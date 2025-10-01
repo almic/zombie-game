@@ -56,6 +56,9 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # ANGRY TODOS
 
+- [ ] IDEA for fixing terrain nav meshing: Compare close polygons for XZ overlap,
+      and if they overlap then push the lower polygon vertices back so from above
+      they do not appear to overlap (easier said than done).
 - [ ] Set up vehicle suspensions to get random impulses at low speeds when on
       terrain
 - [ ] Match moon's mie power to moon illuminance.

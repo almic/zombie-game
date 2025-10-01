@@ -180,6 +180,10 @@ func bake_nav_mesh() -> void:
 		print("Terrain3DNavigation: Finished baking 1 NavigationMesh.")
 		print("Terrain3DNavigation: Process took " + str(snappedf(timer, 0.001)) + " seconds.")
 
+		print("Terrain3DNavigation: Checking for possible duplicate edges...")
+		check_for_errors([plugin.nav_region])
+		print("Terrain3DNavigation: Done.")
+
 	elif plugin.terrain:
 		if plugin.terrain.data.get_region_count() == 0:
 			push_error("Terrain3D has no active regions to bake")
@@ -211,6 +215,10 @@ func bake_nav_mesh() -> void:
 
 		print("Terrain3DNavigation: Process took " + str(snappedf(timer, 0.001)) + " seconds.")
 
+		print("Terrain3DNavigation: Checking for possible duplicate edges...")
+		check_for_errors(nav_regions)
+		print("Terrain3DNavigation: Done.")
+
 
 func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
 	var scene_root: Node3D = p_nav_region.get_tree().edited_scene_root
@@ -224,7 +232,11 @@ func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
 	var source_geometry_data := NavigationMeshSourceGeometryData3D.new()
 
 	var timer: float = Time.get_unix_time_from_system()
-	NavigationServer3D.parse_source_geometry_data(nav_mesh, source_geometry_data, scene_root)
+	NavigationServer3D.parse_source_geometry_data(nav_mesh, source_geometry_data, p_nav_region)
+	timer = Time.get_unix_time_from_system() - timer
+	print('Terrain3DNavigation: Parsed world geometry in ' + str(snappedf(timer, 0.001)) + ' seconds.')
+
+	timer = Time.get_unix_time_from_system()
 	for terrain in find_nav_region_terrains(p_nav_region):
 		var aabb: AABB = nav_mesh.filter_baking_aabb
 		aabb.position += nav_mesh.filter_baking_aabb_offset
@@ -232,7 +244,10 @@ func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
 		var faces: PackedVector3Array = terrain.generate_nav_mesh_source_geometry(aabb)
 		if not faces.is_empty():
 			source_geometry_data.add_faces(faces, Transform3D.IDENTITY)
-	
+	timer = Time.get_unix_time_from_system() - timer
+	print('Terrain3DNavigation: Parsed terrain geometry in ' + str(snappedf(timer, 0.001)) + ' seconds.')
+
+	timer = Time.get_unix_time_from_system()
 	NavigationServer3D.bake_from_source_geometry_data(nav_mesh, source_geometry_data)
 	timer = Time.get_unix_time_from_system() - timer
 	print('Terrain3DNavigation: Baked NavigationRegion "' + region_path + '" in ' + str(snappedf(timer, 0.001)) + ' seconds.')
@@ -244,8 +259,9 @@ func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
 	print('Terrain3DNavigation: Post-Processed nav mesh for "' + region_path + '" in ' + str(snappedf(timer, 0.001)) + ' seconds.')
 
 	# Assign null first to force the debug display to actually update:
-	p_nav_region.set_navigation_mesh(null)
-	p_nav_region.set_navigation_mesh(nav_mesh)
+	# p_nav_region.set_navigation_mesh(null)
+	# p_nav_region.set_navigation_mesh(nav_mesh)
+	p_nav_region.navigation_mesh = nav_mesh
 	
 	# Trigger save to disk if it is saved as an external file
 	var save_path: String = nav_mesh.get_path()
@@ -262,18 +278,19 @@ func _bake_nav_region_nav_mesh(p_nav_region: NavigationRegion3D) -> void:
 
 func _postprocess_nav_mesh(p_nav_mesh: NavigationMesh) -> void:
 	# Post-process the nav mesh to work around Godot issue #85548
-	
+
 	# Round all the vertices in the nav_mesh to the nearest cell_size/cell_height so that it doesn't
 	# contain any edges shorter than cell_size/cell_height (one cause of #85548).
 	var vertices: PackedVector3Array = _postprocess_nav_mesh_round_vertices(p_nav_mesh)
-	
+
 	# Rounding vertices can collapse some edges to 0 length. We remove these edges, and any polygons
 	# that have been reduced to 0 area.
 	var polygons: Array[PackedInt32Array] = _postprocess_nav_mesh_remove_empty_polygons(p_nav_mesh, vertices)
 	
 	# Another cause of #85548 is baking producing overlapping polygons. We remove these.
 	_postprocess_nav_mesh_remove_overlapping_polygons(p_nav_mesh, vertices, polygons)
-	
+
+
 	p_nav_mesh.clear_polygons()
 	p_nav_mesh.set_vertices(vertices)
 	for polygon in polygons:
@@ -284,16 +301,14 @@ func _postprocess_nav_mesh_round_vertices(p_nav_mesh: NavigationMesh) -> PackedV
 	assert(p_nav_mesh != null)
 	assert(p_nav_mesh.cell_size > 0.0)
 	assert(p_nav_mesh.cell_height > 0.0)
-	
-	var cell_size: Vector3 = Vector3(p_nav_mesh.cell_size, p_nav_mesh.cell_height, p_nav_mesh.cell_size)
-	
-	# Round a little harder to avoid rounding errors with non-power-of-two cell_size/cell_height
-	# causing the navigation map to put two non-matching edges in the same cell:
-	var round_factor := cell_size * 1.001
-	
+
 	var vertices: PackedVector3Array = p_nav_mesh.get_vertices()
 	for i in range(vertices.size()):
-		vertices[i] = (vertices[i] / round_factor).ceil() * round_factor
+		vertices[i] = Vector3(
+				snappedf(vertices[i].x, p_nav_mesh.cell_size),
+				snappedf(vertices[i].y, p_nav_mesh.cell_height),
+				snappedf(vertices[i].z, p_nav_mesh.cell_size)
+		)
 	return vertices
 
 
@@ -434,3 +449,105 @@ func _undo_set_up_navigation(p_nav_region: NavigationRegion3D, p_terrain: Terrai
 	parent.move_child(p_terrain, index)
 	
 	p_terrain.owner = t_owner
+
+
+const CONFLICT_COLORS = [
+	Color.RED,
+	Color.YELLOW,
+	Color.GREEN,
+	Color.CYAN,
+	Color.BLUE,
+	Color.MAGENTA
+]
+
+var polygon_meshes: Array
+
+
+func check_for_errors(nav_regions: Array[NavigationRegion3D]) -> void:
+	for poly in polygon_meshes:
+		poly.queue_free()
+	polygon_meshes.clear()
+
+	for nav_region in nav_regions:
+		var meshes := _check_for_errors(nav_region.navigation_mesh)
+		if meshes.is_empty():
+			continue
+		for mesh in meshes:
+			nav_region.add_child(mesh, true)
+			mesh.owner = nav_region.owner
+		polygon_meshes.append_array(meshes)
+
+
+func _check_for_errors(nav_mesh: NavigationMesh) -> Array[MeshInstance3D]:
+	assert(nav_mesh != null)
+	assert(nav_mesh.cell_size > 0.0)
+	assert(nav_mesh.cell_height > 0.0)
+
+	var cell_size: Vector3 = Vector3(nav_mesh.cell_size, nav_mesh.cell_height, nav_mesh.cell_size)
+	var vertices: PackedVector3Array = nav_mesh.get_vertices()
+
+	var edges := {} # edge key -> Array of { polygon_index: int, point_index: int, vertex1: Vector3, vertex2: Vector3 }
+
+	for i in range(nav_mesh.get_polygon_count()):
+		var polygon := nav_mesh.get_polygon(i)
+
+		for j in range(polygon.size()):
+			var vertex := vertices[polygon[j]]
+			var next_vertex := vertices[polygon[(j + 1) % polygon.size()]]
+			var edge_key := _get_edge_key(vertex, next_vertex, cell_size)
+			if !edges.has(edge_key):
+				edges[edge_key] = []
+			edges[edge_key].push_back({
+				polygon_index = i,
+				point_index = j,
+				vertex1 = vertex,
+				vertex2 = next_vertex
+			})
+
+	var color_index := 0
+	var polygons := []
+	for connections in edges.values():
+		if connections.size() <= 2:
+			continue
+
+		print("Edge shared by more than 2 polygons:")
+		for edge_data in connections:
+			print("\tPolygon ", edge_data.polygon_index, " Edge: ", edge_data.vertex1, " -> ", edge_data.vertex2)
+			if !polygons.has(edge_data.polygon_index):
+				polygons.push_back(edge_data.polygon_index)
+
+	var meshes: Array[MeshInstance3D] = []
+	for polygon_index in polygons:
+		var mi := MeshInstance3D.new()
+		mi.name = "Poly" + str(polygon_index)
+		var polygon := nav_mesh.get_polygon(polygon_index)
+		var st := SurfaceTool.new()
+		st.begin(Mesh.PRIMITIVE_TRIANGLE_STRIP)
+		st.set_uv(Vector2.ZERO)
+		for index in polygon:
+			st.add_vertex(vertices[index])
+		st.add_vertex(vertices[polygon[0]])
+		mi.mesh = st.commit()
+		mi.material_override = StandardMaterial3D.new()
+		mi.material_override.albedo_color = CONFLICT_COLORS[color_index]
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		color_index = (color_index + 1) % CONFLICT_COLORS.size()
+		meshes.push_back(mi)
+	return meshes
+
+func _get_point_key(vertex: Vector3, cell_size: Vector3) -> int:
+	# Creates an int64 key for a vertex using the same logic as modules/navigation/nav_map.cpp.
+	# See NavMap::get_point_key.
+	var x: int = int(floor(vertex.x / cell_size.x)) & ((1 << 22) - 1)
+	var y: int = int(floor(vertex.y / cell_size.y)) & ((1 << 23) - 1)
+	var z: int = int(floor(vertex.z / cell_size.z)) & ((1 << 22) - 1)
+	return x | (y << 21) | (z << 43)
+
+func _get_edge_key(vertex1: Vector3, vertex2: Vector3, cell_size: Vector3) -> Array:
+	# Similar to _get_point_key, this creates a 128 bit key for an edge using the same logic as
+	# Godot's navigation module.
+	var a: int = _get_point_key(vertex1, cell_size)
+	var b: int = _get_point_key(vertex2, cell_size)
+	if a < b:
+		return [a, b]
+	return [b, a]

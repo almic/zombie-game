@@ -65,12 +65,12 @@ folder_colors={
 
 [global_group]
 
-terrain_nav_group="Used in terrain nav baking"
 zombie_target="something a zombie will chase"
 zombie="Counts as a zombie for spawning"
 zombie_spawn="Zombie spawn locations"
 hud="A HUD node"
 world="ZA WARUDO"
+nav_group="Used in terrain nav baking"
 
 [gui]
 
@@ -96,10 +96,10 @@ theme/custom_font="uid://bybftiog3uc0n"
 
 [navigation]
 
-3d/default_cell_size=0.05
+baking/use_crash_prevention_checks=false
+3d/default_cell_size=0.1
 3d/default_cell_height=0.05
-3d/merge_rasterizer_cell_scale=0.05
-3d/default_edge_connection_margin=0.2
+3d/use_edge_connections=false
 
 [physics]
 

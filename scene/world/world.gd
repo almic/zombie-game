@@ -1,9 +1,6 @@
 class_name World extends Node3D
 
 
-@onready var terrain_nav_region: NavigationRegion3D = %TerrainNavRegion
-
-
 @export_category("Input Mapping")
 @export var global_context: GUIDEMappingContext
 @export var camera_context: GUIDEMappingContext

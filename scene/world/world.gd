@@ -103,7 +103,7 @@ func handle_pause() -> void:
     if is_gameover or not pause.is_triggered():
         return
 
-    if Input.mouse_mode != Input.MOUSE_MODE_CAPTURED:
+    if get_tree().paused:
         Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
         get_tree().paused = false
         pause_menu.visible = false

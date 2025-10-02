@@ -164,7 +164,7 @@ func spawn_zombie(delta: float) -> void:
     if zombie is Zombie:
         zombie.attack_damage = 20
         zombie.target_enabled = enable_targetting
-        zombie.target_search_groups.append('zombie_target')
+        zombie.target_groups.append('zombie_target')
 
 func update_spawn_points() -> void:
     _spawn_points.assign(get_tree().get_nodes_in_group('zombie_spawn'))

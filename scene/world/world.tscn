@@ -309,13 +309,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(-0.15127, 0, 0.988493, 0, 1, 0, -0.988493, 0, -0.15127, -380.10284502, 2.17585, -642.39393998)
+transform = Transform3D(-0.15127, 0, 0.988493, 0, 1, 0, -0.988493, 0, -0.15127, -344.52284502000003, 2.46585, -468.82393998)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(6.123233995736766e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736766e-17, -228.07899999999788, 2.4099999999970896, -497.31900000000434)
 velocity = Vector3(0, -938.906, 0)
-target_search_groups = Array[String](["zombie_target"])
+target_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
 
 [node name="WeaponPickups" type="Node" parent="."]

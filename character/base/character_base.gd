@@ -123,6 +123,69 @@ var step_snap_down_max_angle: float = deg_to_rad(5.0):
 var step_snap_down_max_cos_theta: float = -1
 
 
+@export_group("Vision")
+
+## Eyes available for seeing other characters, eyes will be cycled so that more
+## eyes do not increase the number of raycasts on targets. Ensure the given node's
+## forward (-Z) faces the direction of vision.
+@export var eyes: Array[Node3D] = []
+
+## Visible points on this character which are detected by other characters.
+@export var sight_points: Array[Node3D] = []
+
+## If the sight points have no depth, meaning they will be oriented towards the
+## viewer for detection. Best for players who cannot see their body.
+@export var sight_points_no_depth: bool = false
+
+## Range of vision, cannot see anything beyond this distance.
+@export_range(0.0, 100.0, 0.01, "or_greater")
+var vision_range: float = 50.0:
+    set(value):
+        vision_range = value
+        _vision_range_squared = vision_range * vision_range
+var _vision_range_squared: float = vision_range * vision_range
+
+## Vision angle, can only see things within this angle.
+@export_range(1.0, 180.0, 1.0, "radians_as_degrees")
+var vision_fov: float = deg_to_rad(100.0):
+    set(value):
+        vision_fov = value
+        _vision_fov_cos = cos(vision_fov * 0.5)
+var _vision_fov_cos: float = cos(vision_fov * 0.5)
+
+@export_flags_3d_physics var vision_mask: int = 16
+
+
+@export_subgroup("Debug", "vision_debug")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var vision_debug_enabled: bool = false
+
+## Show vision cones on the character
+@export var vision_debug_show_cone: bool = false
+
+## Show raycasts when testing vision
+@export var vision_debug_show_raycast: bool = false
+
+## Show only raycasts that reach the target being tested
+@export var vision_debug_show_raycast_sight_only: bool = false
+
+## Show sight points on the target being tested
+@export var vision_debug_show_sight_points: bool = false
+
+## Color of vision cones
+@export var vision_debug_cone_color: Color = Color(0.95, 0.9, 0.9, 0.02)
+
+## Color of raycasts that reach target sight points
+@export var vision_debug_raycast_sight_color: Color = Color(0.1, 0.7, 0.9, 0.7)
+
+## Color of raycasts that are blocked
+@export var vision_debug_raycast_block_color: Color = Color(0.5, 0.1, 0.12, 0.6)
+
+## Color of target sight points
+@export var vision_debug_sight_point_color: Color = Color(0.5, 0.1, 0.2, 0.4)
+
+
 @onready var collider: CollisionShape3D = %collider
 
 
@@ -152,8 +215,50 @@ var fluid_state: FluidState = FluidState.AIR
 var fluid_details: FluidDetails = FluidDetails.new()
 
 
+# Vision stuff
+var next_eye: int = 0
+var debug_vision_cone: DebugCone = null
+
+
 func _ready() -> void:
     collider.shape = collider_shape
+
+func _physics_process(_delta: float) -> void:
+
+    _update_debug_vision_cone()
+
+func _update_debug_vision_cone() -> void:
+    if not vision_debug_enabled:
+        if debug_vision_cone:
+            debug_vision_cone.queue_free()
+            debug_vision_cone = null
+        return
+
+    if not vision_debug_show_cone:
+        if debug_vision_cone:
+            debug_vision_cone.queue_free()
+            debug_vision_cone = null
+        return
+
+    if eyes.is_empty():
+        if debug_vision_cone:
+            debug_vision_cone.queue_free()
+            debug_vision_cone = null
+        return
+
+    if not debug_vision_cone:
+        debug_vision_cone = DebugCone.new(0.0, 0.0)
+
+    debug_vision_cone.set_color(vision_debug_cone_color)
+    debug_vision_cone.set_fov(vision_range, vision_fov)
+
+    var eye: Node3D = eyes[next_eye]
+    var parent: Node = debug_vision_cone.get_parent()
+    if not parent:
+        eye.add_child(debug_vision_cone)
+    elif parent != eye:
+        debug_vision_cone.reparent(eye, false)
+
 
 func set_collider_shape(shape: Shape3D) -> void:
     collider_shape = shape
@@ -811,6 +916,96 @@ func snap_down(do_forward_test: bool, forward: Vector3) -> bool:
     global_transform = global_transform.translated(drop)
 
     return true
+
+
+## Raycasts from this character's eyes to the given character's vision points.
+## Returns an array of distances to each vision point that hit, or negative value
+## if the point is not visible.
+func test_vision(other: CharacterBase) -> PackedFloat32Array:
+    # NOTE: For development only, should be removed
+    if not other:
+        push_error("Cannot see a null character in test_vision! Investigate!")
+        return []
+
+    var size: int = other.sight_points.size()
+    if size < 1:
+        return []
+
+    var results: PackedFloat32Array
+    results.resize(size)
+    results.fill(-1.0)
+
+    if eyes.is_empty():
+        return results
+
+    var eye_idx: int = next_eye
+    next_eye = (next_eye + 1) % eyes.size()
+
+    if vision_fov < 0.001 or vision_range < 0.001:
+        return results
+
+    var eye_xform: Transform3D = eyes[eye_idx].global_transform
+    var eye_pos: Vector3 = eye_xform.origin
+    var eye_dir: Vector3 = -eye_xform.basis.z
+
+    var targets: PackedVector3Array = []
+    targets.resize(size)
+    if other.sight_points_no_depth:
+        var view_t: Transform3D = other.global_transform.looking_at(self.global_position, other.global_basis.y, true)
+        var i: int = 0
+        for point in other.sight_points:
+            targets[i] = (view_t * point.transform).origin
+            i += 1
+    else:
+        var i: int = 0
+        for point in other.sight_points:
+            targets[i] = point.global_position
+            i += 1
+
+    var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
+    var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
+    query.from = eye_pos
+    query.collision_mask = collision_mask
+    query.exclude = [get_rid(), other.get_rid()]
+
+    for i in range(size):
+        var target: Vector3 = targets[i]
+        var direction: Vector3 = target - eye_pos
+        var distance: float = direction.length_squared()
+
+        if vision_debug_enabled and vision_debug_show_sight_points and not vision_debug_show_raycast_sight_only:
+            DebugSphere.create_color(self, target, 0.5, 0.05, vision_debug_sight_point_color)
+
+        # Out of range
+        if distance > _vision_range_squared:
+            continue
+
+        # Check FOV angle
+        var target_cos_theta: float = direction.normalized().dot(eye_dir)
+        if target_cos_theta < _vision_fov_cos:
+            continue
+
+        query.to = target
+        var hit: Dictionary = space.intersect_ray(query)
+
+        # No hit means there is line of sight!
+        if not hit:
+            results[i] = sqrt(distance)
+
+            if vision_debug_enabled:
+                if vision_debug_show_raycast:
+                    DrawLine3d.DrawLine(query.from, query.to, vision_debug_raycast_sight_color, 0.5)
+                if vision_debug_show_sight_points:
+                    DebugSphere.create_color(self, query.to, 0.5, 0.08, vision_debug_raycast_sight_color)
+        elif vision_debug_enabled and vision_debug_show_raycast and not vision_debug_show_raycast_sight_only:
+            DrawLine3d.DrawLine(query.from, hit.position, vision_debug_raycast_block_color, 0.5)
+            DebugSphere.create_color(self, hit.position, 0.5, 0.05, vision_debug_raycast_block_color)
+
+    if results.count(-1.0) == size:
+        pass
+
+    return results
+
 
 @warning_ignore('shadowed_variable')
 static func apply_ground_details(ground_details: GroundDetails, normal: Vector3, contact_point: Vector3, body: Object) -> void:

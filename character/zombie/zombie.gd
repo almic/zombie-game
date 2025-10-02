@@ -45,38 +45,41 @@ var _rotation_velocity: float = 0
 @export_group("Target Detection", "target")
 
 ## If this zombie seeks out new targets
-@export var target_enabled: bool = true
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
+var target_enabled: bool = true
 
-## How far to be aware of potential targets
-@export var target_search_radius: float = 50
+## Target groups
+@export var target_groups: Array[String] = []
+var _active_target: CharacterBase = null
 
-## Target groups to search for
-@export var target_search_groups: Array[String]
-var _active_target: Node3D = null
+## How often to update target location, influences rotation
+@export var target_position_update_rate: float = 1
+var _target_position_update_timer: float = 0.0
 
 ## Deviation for randomized target updates, important for performance of many agents
 ## Randomization is always clamped to the relevant update rate
-@export var target_update_deviation: float = 0.2
-
-## How long it takes to search for a new target
-@export var target_search_rate: float = 3
-var _target_search_accumulator: float = randfn(0.0, 0.2)
-
-## How often to update target location, influences rotation
-@export var target_update_rate: float = 1
-var _target_update_accumulator: float = randfn(0.0, 0.2)
+@export var target_position_update_random: float = 0.2
 
 ## If a target's updated position deviates this far, recalculate pathing
-@export var target_update_distance: float = 0.5
+@export var target_position_update_deviation: float = 0.5
+
+
+@export_subgroup("Vision", "vision")
+
+@export var vision_update_rate: float = 0.5
+var _vision_update_timer: float = 0
+
 
 ## Switch for simple chase while waiting for pathing update
 var _simple_move: bool = false
+
 
 @export_group("Animation", "anim")
 
 @export var anim_idle: String = "idle"
 @export var anim_attack: String = "attack"
 @export var anim_run: String = "run"
+
 
 @export_group("Combat")
 
@@ -124,6 +127,10 @@ var sleep_wakeup: float = 1.0
 var _sleep_timeout_time: float = 0.0
 var _sleep_wakeup_time: float = 0.0
 
+## Set if targets have been cached on this frame
+var _is_targets_cached: bool = false
+var _target_cache: Array[CharacterBase] = []
+
 
 func _ready() -> void:
     # Animate in editor
@@ -136,7 +143,7 @@ func _ready() -> void:
 
     attack_hitbox.damage = attack_damage
 
-    target_search_groups = target_search_groups.duplicate()
+    target_groups = target_groups.duplicate()
     last_hits = last_hits.duplicate()
 
     connect_hurtboxes()
@@ -152,11 +159,29 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
+    super._physics_process(delta)
+
+    if _is_targets_cached:
+        _target_cache.clear()
+        _is_targets_cached = false
+
     if Engine.is_editor_hint():
         return
 
     if not life.is_alive:
         return
+
+    # Sense
+    do_vision(delta)
+
+    # Selection
+    # do_target_selection(delta)
+
+    # Path
+    do_pathing(delta)
+
+
+func do_pathing(delta: float) -> void:
 
     if NavigationServer3D.map_get_iteration_id(navigation.get_navigation_map()) == 0:
         return
@@ -218,6 +243,28 @@ func _physics_process(delta: float) -> void:
         else:
             # Return to idle when too slow
             anim_goto(locomotion, anim_idle)
+
+
+func do_vision(delta: float) -> void:
+    if not target_enabled:
+        _active_target = null
+        return
+
+    _vision_update_timer -= delta
+    if _vision_update_timer > 0.0:
+        return
+
+    _vision_update_timer = vision_update_rate
+
+    var targets: Array[CharacterBase] = get_potential_targets()
+
+    _active_target = null
+    for target in targets:
+        var visual: PackedFloat32Array = test_vision(target)
+        for dist in visual:
+            if dist >= 0.0:
+                _active_target = target
+                return
 
 
 func on_attack_start() -> void:
@@ -312,72 +359,51 @@ func get_simple_move_direction() -> Vector3:
         return global_position.direction_to(_active_target.global_position)
     return Vector3.ZERO
 
+func get_potential_targets() -> Array[CharacterBase]:
+    if _is_targets_cached:
+        return _target_cache
+
+    _is_targets_cached = true
+
+    # we assume there are few enough potential targets that iterating
+    # them all is okay
+    var targets: Array[CharacterBase] = []
+    var scene_tree: SceneTree = get_tree()
+    for group in target_groups:
+        for node in scene_tree.get_nodes_in_group(group):
+            if not is_instance_of(node, CharacterBase):
+                continue
+
+            if node not in targets:
+                targets.append(node)
+
+    return targets
+
 func update_target_position(delta: float) -> void:
-    if not target_enabled:
+    _target_position_update_timer -= delta
+
+    if _target_position_update_timer > 0.0:
         return
 
-    if _active_target != null:
-        # check to update target position
-        if _target_update_accumulator < target_update_rate:
-            _target_update_accumulator += delta
-            return
+    _target_position_update_timer = \
+            randomize_timer(target_position_update_rate, target_position_update_random)
 
-        var deviation: float = _active_target.global_position.distance_squared_to(
-            navigation.target_position
-        )
-
-        if deviation > target_update_distance:
-            navigation.target_position = _active_target.global_position
-            _simple_move = false
-
-        _target_update_accumulator = randomize_accumulator(
-            target_update_rate
-        ) + delta
-
+    if not _active_target:
         return
 
-    if _target_search_accumulator > target_search_rate:
-        # reset accumulator
-        _target_search_accumulator = randomize_accumulator(target_search_rate)
-
-        # we assume there are few enough potential targets that iterating
-        # them all is okay
-        var targets: Array[Node3D] = []
-        var scene_tree: SceneTree = get_tree()
-        for group in target_search_groups:
-            var nodes: Array[Node] = scene_tree.get_nodes_in_group(group)
-            for node in nodes:
-                if node is not Node3D:
-                    continue
-
-                if node not in targets:
-                    targets.append(node)
-
-        # make closest option the target
-        var closest: Node3D = null
-        var closest_dist: float = INF
-        for target in targets:
-            var dist: float = global_position.distance_squared_to(
-                target.global_position
-            )
-
-            if dist < closest_dist:
-                closest = target
-                closest_dist = dist
-
-        if closest != null:
-            _active_target = closest
-            navigation.target_position = _active_target.global_position
-            _simple_move = false
-            return
-
-    _target_search_accumulator += delta
-
-func randomize_accumulator(range_max: float) -> float:
-    return clamp(
-        randfn(0.0, target_update_deviation),
-        -range_max, range_max
+    # If the target moves too far from our navigation target, update navigation
+    var deviation: float = _active_target.global_position.distance_squared_to(
+        navigation.target_position
     )
+
+    if deviation > target_position_update_deviation:
+        navigation.target_position = _active_target.global_position
+        _simple_move = false
+
+
+func randomize_timer(base_time: float, deviation: float) -> float:
+    return maxf(randfn(base_time, deviation), 0.0)
+
 
 func anim_goto(
         state_machine: AnimationNodeStateMachinePlayback,

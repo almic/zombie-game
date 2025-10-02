@@ -4,8 +4,6 @@
 ## Defines a weapon type that can be used in the world
 class_name WeaponResource extends PickupResource
 
-const DEBUG_SPHERE = preload('res://scene/debug/sphere/sphere.tscn')
-
 
 ## When the gun fires the last bullet in reserve
 signal out_of_ammo()
@@ -195,6 +193,24 @@ var _recoil_aim_control: float = 0.0
 @export var scene_offset: Vector3
 @export var scene_magazine: PackedScene
 @export var scene_ui: PackedScene
+
+@export_subgroup("Debug", "debug")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var debug_enabled: bool = false
+
+@export_range(0.01, 1.0, 0.01, "or_greater")
+var debug_sphere_radius: float = 0.05
+
+@export_range(0.01, 10.0, 0.01, "or_greater")
+var debug_time_to_live: float = 5.0
+
+@export var debug_use_color: bool = false
+const DEBUG_HIT_COLOR = Color(0.2, 0.8, 0.2, 0.6)
+const DEBUG_MISS_COLOR = Color(0.8, 0.12, 0.2, 0.5)
+@export var debug_sphere_color: Color = Color(0.0, 0.646, 0.752, 0.45)
+@export var debug_hit_color: Color = DEBUG_HIT_COLOR
+@export var debug_miss_color: Color = DEBUG_MISS_COLOR
 
 
 @export_group("Particle System", "particle")
@@ -617,19 +633,25 @@ func _do_projectile_raycast(node: Node3D, ammo: AmmoResource, transform: Transfo
         if hit:
             to = hit.position
 
-        DrawLine3d.DrawLine(from, to, Color(0.9, 0.15, 0.15, 0.2), 5)
+            if debug_enabled:
+                var color: Color = DEBUG_HIT_COLOR
+                if debug_use_color:
+                    color = debug_hit_color
+                DrawLine3d.DrawLine(from, to, color, debug_time_to_live)
 
         if not hit:
+            if debug_enabled:
+                var color: Color = DEBUG_MISS_COLOR
+                if debug_use_color:
+                    color = debug_miss_color
+                DrawLine3d.DrawLine(from, to, color, debug_time_to_live)
             continue
 
-        if DEBUG_SPHERE:
-            var sphere: DebugSphere = DEBUG_SPHERE.instantiate()
-            sphere.set_radius(0.04)
-            sphere.set_color(Color(0.0, 0.646, 0.752, 0.45))
-            var tree: SceneTree = node.get_tree()
-            tree.current_scene.add_child(sphere)
-            sphere.global_position = hit.position
-            tree.create_timer(60.0, false, true).timeout.connect(sphere.queue_free)
+        if debug_enabled:
+            if debug_use_color:
+                DebugSphere.create(node, hit.position, debug_time_to_live, debug_sphere_radius)
+            else:
+                DebugSphere.create_color(node, hit.position, debug_time_to_live, debug_sphere_radius, debug_sphere_color)
 
         if hit.collider is HurtBox:
             hit.power = ammo.impulse_power

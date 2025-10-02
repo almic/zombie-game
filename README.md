@@ -6,6 +6,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 # TODO
 
 - [ ] Add more zombie types
+- [ ] Support controller movement, can move slower/ faster
+- [ ] Investigate top_speed / speed value in update_movement
 - [ ] Level blocking
 - [ ] Charge input broke
 - [ ] Add brake and handbrake inputs

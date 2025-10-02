@@ -55,6 +55,14 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [X] Connect weapon charging animation to system
 - [X] Connect reload animation to reload system
 
+# Building Count
+
+Family homes: 36  (36)
+Business:     26  (62)
+Special:      14  (76)
+
+Total:        76
+
 
 # ANGRY TODOS
 

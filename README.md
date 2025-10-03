@@ -3,6 +3,16 @@
 My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and blast zombies.
 
 
+# Zombie AI TODOs
+
+- [ ] Split AI into:
+        - sensing, setting important details by reading senses
+        - goal selection, process important details and pick a goal
+        - action, process goals and act on them
+- [ ]
+- [ ]
+
+
 # TODO
 
 - [ ] Add more zombie types

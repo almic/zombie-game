@@ -159,7 +159,6 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
-    super._physics_process(delta)
 
     if _is_targets_cached:
         _target_cache.clear()
@@ -172,7 +171,6 @@ func _physics_process(delta: float) -> void:
         return
 
     # Sense
-    do_vision(delta)
 
     # Selection
     # do_target_selection(delta)
@@ -243,29 +241,6 @@ func do_pathing(delta: float) -> void:
         else:
             # Return to idle when too slow
             anim_goto(locomotion, anim_idle)
-
-
-func do_vision(delta: float) -> void:
-    if not target_enabled:
-        _active_target = null
-        return
-
-    _vision_update_timer -= delta
-    if _vision_update_timer > 0.0:
-        return
-
-    _vision_update_timer = vision_update_rate
-
-    var targets: Array[CharacterBase] = get_potential_targets()
-
-    _active_target = null
-    for target in targets:
-        var visual: PackedFloat32Array = test_vision(target)
-        for dist in visual:
-            if dist >= 0.0:
-                _active_target = target
-                return
-
 
 func on_attack_start() -> void:
     attack_hitbox.enable()

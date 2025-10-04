@@ -1,0 +1,27 @@
+[gd_resource type="Resource" script_class="BehaviorMind" load_steps=8 format=3 uid="uid://cb57wji4codsc"]
+
+[ext_resource type="Script" uid="uid://d2sl5aie3kmae" path="res://script/behavior/goal.gd" id="1_b41gs"]
+[ext_resource type="Script" uid="uid://trwc8h08pont" path="res://script/behavior/goal/attack_target.gd" id="2_j7cw6"]
+[ext_resource type="Script" uid="uid://ctlftw6w3ws7s" path="res://script/behavior/mind.gd" id="2_wnfdo"]
+[ext_resource type="Script" uid="uid://bgv53nvmr2huy" path="res://script/behavior/sense.gd" id="3_j7cw6"]
+[ext_resource type="Script" uid="uid://dk102hcra0ikj" path="res://script/behavior/sense/vision.gd" id="4_wnfdo"]
+
+[sub_resource type="Resource" id="Resource_f6rrc"]
+script = ExtResource("2_j7cw6")
+target_groups = Array[StringName]([&"zombie_target"])
+metadata/_custom_type_script = "uid://trwc8h08pont"
+
+[sub_resource type="Resource" id="Resource_j7cw6"]
+script = ExtResource("4_wnfdo")
+target_groups = Array[StringName]([&"zombie_target"])
+debug_enabled = true
+debug_show_cone = true
+debug_show_raycast = true
+debug_show_sight_points = true
+metadata/_custom_type_script = "uid://dk102hcra0ikj"
+
+[resource]
+script = ExtResource("2_wnfdo")
+senses = Array[ExtResource("3_j7cw6")]([SubResource("Resource_j7cw6")])
+goals = Array[ExtResource("1_b41gs")]([SubResource("Resource_f6rrc")])
+metadata/_custom_type_script = "uid://ctlftw6w3ws7s"

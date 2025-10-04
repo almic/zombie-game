@@ -3,6 +3,25 @@
 My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and blast zombies.
 
 
+# Zombie AI TODOs
+
+- [X] Split AI into:
+        - sensing, setting important details by reading senses
+        - goal selection, process important details and pick a goal
+        - action, process goals and act on them
+- [ ] Make senses and goals retrieve target groups from BehaviorMind
+- [ ] (UNSURE) Make BehaviorActions plain Objects, they don't need serialization
+- [ ] Solve problem with senses creating a lot of memories. It really only needs
+      two memories, one for the initial event and one for "active" data. Create
+      an initial memory, then make an "active" memory that updates in-place for
+      some amount of time (10 seconds?) before creating more memories. This can
+      produce a "trail" that could potentially be recreated later. Can probably
+      use hashes of node paths for tracking ONLY a memory ID. Sensory memory should
+      check tracking ids when saving and update existing memory if present.
+- [ ] Add facing when navigation received, while navigation takes time to compute
+- [ ]
+
+
 # TODO
 
 - [ ] Add more zombie types

@@ -315,7 +315,6 @@ camera_smooth_enabled = true
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(6.123233995736766e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736766e-17, -228.07899999999788, 2.4099999999970896, -497.31900000000434)
 velocity = Vector3(0, -938.906, 0)
-target_groups = Array[String](["zombie_target"])
 life = SubResource("Resource_a331h")
 
 [node name="WeaponPickups" type="Node" parent="."]

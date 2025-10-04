@@ -42,37 +42,6 @@ class_name Zombie extends CharacterBase
 ## The sign encodes the direction, - is clockwise, + is counter-clockwise
 var _rotation_velocity: float = 0
 
-@export_group("Target Detection", "target")
-
-## If this zombie seeks out new targets
-@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
-var target_enabled: bool = true
-
-## Target groups
-@export var target_groups: Array[String] = []
-var _active_target: CharacterBase = null
-
-## How often to update target location, influences rotation
-@export var target_position_update_rate: float = 1
-var _target_position_update_timer: float = 0.0
-
-## Deviation for randomized target updates, important for performance of many agents
-## Randomization is always clamped to the relevant update rate
-@export var target_position_update_random: float = 0.2
-
-## If a target's updated position deviates this far, recalculate pathing
-@export var target_position_update_deviation: float = 0.5
-
-
-@export_subgroup("Vision", "vision")
-
-@export var vision_update_rate: float = 0.5
-var _vision_update_timer: float = 0
-
-
-## Switch for simple chase while waiting for pathing update
-var _simple_move: bool = false
-
 
 @export_group("Animation", "anim")
 
@@ -119,6 +88,18 @@ var last_player_damage: Player
 ## Most recent impacts from damage
 var last_hits: Array[Dictionary] = []
 
+## What groups this zombie targets
+var target_groups: Array[StringName] = []:
+    set(value):
+        # TODO: this feels kinda spaghetti, maybe could be retrieved by each
+        #       sense and goal? Maybe stored on CharacterBase? This is kinda bad.
+        target_groups = value
+        for sense in mind.senses:
+            if sense is BehaviorSenseVision:
+                sense.target_groups = target_groups
+        for goal in mind.goals:
+            if goal is BehaviorGoalAttackTarget:
+                goal.target_groups = target_groups
 
 var sleep_min_travel: float = 0.001
 var sleep_timeout: float = 0.5
@@ -127,12 +108,10 @@ var sleep_wakeup: float = 1.0
 var _sleep_timeout_time: float = 0.0
 var _sleep_wakeup_time: float = 0.0
 
-## Set if targets have been cached on this frame
-var _is_targets_cached: bool = false
-var _target_cache: Array[CharacterBase] = []
-
 
 func _ready() -> void:
+    super._ready()
+
     # Animate in editor
     anim_state_machine = animation_tree.tree_root
     locomotion = animation_tree["parameters/playback"]
@@ -151,6 +130,11 @@ func _ready() -> void:
     life.hurt.connect(on_hurt)
     life.check_health()
 
+    var vision: BehaviorSenseVision = mind.get_sense(BehaviorSenseVision.NAME)
+    if vision:
+        vision.on_sense.connect(func(_s): update_eyes())
+
+
 func _process(_delta: float) -> void:
     if Engine.is_editor_hint():
         return
@@ -159,11 +143,6 @@ func _process(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
-    super._physics_process(delta)
-
-    if _is_targets_cached:
-        _target_cache.clear()
-        _is_targets_cached = false
 
     if Engine.is_editor_hint():
         return
@@ -171,11 +150,7 @@ func _physics_process(delta: float) -> void:
     if not life.is_alive:
         return
 
-    # Sense
-    do_vision(delta)
-
-    # Selection
-    # do_target_selection(delta)
+    mind.update(delta)
 
     # Path
     do_pathing(delta)
@@ -195,24 +170,12 @@ func do_pathing(delta: float) -> void:
         update_movement(delta)
         return
 
-    update_target_position(delta)
-
-    if _active_target == null:
-        anim_goto(locomotion, anim_idle)
-        update_movement(delta)
-        return
-
     # dont move if attacking
     if locomotion.get_current_node() == anim_attack:
         movement_direction = Vector3.ZERO
-    elif _simple_move:
-        movement_direction = get_simple_move_direction()
     elif not navigation.is_navigation_finished():
         var next_pos: Vector3 = navigation.get_next_path_position()
         movement_direction = global_position.direction_to(next_pos)
-    else:
-        _simple_move = true
-        movement_direction = get_simple_move_direction()
 
     update_movement(delta)
 
@@ -220,15 +183,7 @@ func do_pathing(delta: float) -> void:
         # If attacking, dont rotate and queue back to idle
         if locomotion.get_current_node() == anim_attack:
             anim_goto(locomotion, anim_idle)
-        else:
-            # Check if me are close enough to attack and facing the right way
-            var target_dist_sqr: float = global_position.distance_squared_to(_active_target.global_position)
-            var target_facing: float = basis.z.dot(global_position.direction_to(_active_target.global_position))
-            if target_dist_sqr <= attack_range ** 2 and target_facing >= attack_facing:
-                anim_goto(locomotion, anim_attack)
-            else:
-                update_rotation(delta)
-        return
+            return
 
     update_rotation(delta)
 
@@ -244,28 +199,12 @@ func do_pathing(delta: float) -> void:
             # Return to idle when too slow
             anim_goto(locomotion, anim_idle)
 
+func _handle_action(action: BehaviorAction) -> bool:
+    if action is BehaviorActionNavigate:
+        navigation.target_position = action.get_global_position(self)
+        return true
 
-func do_vision(delta: float) -> void:
-    if not target_enabled:
-        _active_target = null
-        return
-
-    _vision_update_timer -= delta
-    if _vision_update_timer > 0.0:
-        return
-
-    _vision_update_timer = vision_update_rate
-
-    var targets: Array[CharacterBase] = get_potential_targets()
-
-    _active_target = null
-    for target in targets:
-        var visual: PackedFloat32Array = test_vision(target)
-        for dist in visual:
-            if dist >= 0.0:
-                _active_target = target
-                return
-
+    return false
 
 func on_attack_start() -> void:
     attack_hitbox.enable()
@@ -294,23 +233,26 @@ func update_rotation(delta: float) -> void:
     var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)
     var stationary: float = direction.length_squared() < 0.5
 
+    if stationary:
+        # TODO: use the last navigation action direction to turn in place
+        return
     # When (nearly) stationary, or close to target, try to face the target
-    if stationary or (_active_target and \
-         global_position.distance_squared_to(
-        _active_target.global_position) <= rotate_face_target_distance ** 2
-    ):
-        if not _active_target:
-            return
-
-        direction = Vector3(
-                global_position.x,
-                0,
-                global_position.z
-            ).direction_to(Vector3(
-                _active_target.global_position.x,
-                0,
-                _active_target.global_position.z
-            ))
+    # if stationary or (_active_target and \
+    #      global_position.distance_squared_to(
+    #     _active_target.global_position) <= rotate_face_target_distance ** 2
+    # ):
+    #     if not _active_target:
+    #         return
+    #
+    #     direction = Vector3(
+    #             global_position.x,
+    #             0,
+    #             global_position.z
+    #         ).direction_to(Vector3(
+    #             _active_target.global_position.x,
+    #             0,
+    #             _active_target.global_position.z
+    #         ))
     else:
         direction = direction.normalized()
 
@@ -351,58 +293,6 @@ func update_rotation(delta: float) -> void:
     )
 
     rotate_y(_rotation_velocity)
-
-func get_simple_move_direction() -> Vector3:
-    var dist: float = global_position.distance_squared_to(_active_target.global_position)
-    var desired_squared: float = navigation.target_desired_distance ** 2
-    if dist > desired_squared:
-        return global_position.direction_to(_active_target.global_position)
-    return Vector3.ZERO
-
-func get_potential_targets() -> Array[CharacterBase]:
-    if _is_targets_cached:
-        return _target_cache
-
-    _is_targets_cached = true
-
-    # we assume there are few enough potential targets that iterating
-    # them all is okay
-    var targets: Array[CharacterBase] = []
-    var scene_tree: SceneTree = get_tree()
-    for group in target_groups:
-        for node in scene_tree.get_nodes_in_group(group):
-            if not is_instance_of(node, CharacterBase):
-                continue
-
-            if node not in targets:
-                targets.append(node)
-
-    return targets
-
-func update_target_position(delta: float) -> void:
-    _target_position_update_timer -= delta
-
-    if _target_position_update_timer > 0.0:
-        return
-
-    _target_position_update_timer = \
-            randomize_timer(target_position_update_rate, target_position_update_random)
-
-    if not _active_target:
-        return
-
-    # If the target moves too far from our navigation target, update navigation
-    var deviation: float = _active_target.global_position.distance_squared_to(
-        navigation.target_position
-    )
-
-    if deviation > target_position_update_deviation:
-        navigation.target_position = _active_target.global_position
-        _simple_move = false
-
-
-func randomize_timer(base_time: float, deviation: float) -> float:
-    return maxf(randfn(base_time, deviation), 0.0)
 
 
 func anim_goto(

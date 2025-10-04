@@ -163,8 +163,11 @@ func spawn_zombie(delta: float) -> void:
 
     if zombie is Zombie:
         zombie.attack_damage = 20
-        zombie.target_enabled = enable_targetting
-        zombie.target_groups.append('zombie_target')
+        # TODO: SERIOUSLY give BehaviorMind direct access to target groups
+        #       so that senses and goals can just retrieve it when they run
+        # original line (change back to this later):
+        # zombie.target_groups.append('zombie_target')
+        zombie.target_groups = zombie.target_groups.append('zombie_target')
 
 func update_spawn_points() -> void:
     _spawn_points.assign(get_tree().get_nodes_in_group('zombie_spawn'))

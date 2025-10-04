@@ -414,7 +414,6 @@ func update_vehicle_camera(_delta: float) -> void:
 
 
 func _physics_process(delta: float) -> void:
-    super._physics_process(delta)
 
     if Engine.is_editor_hint():
         return

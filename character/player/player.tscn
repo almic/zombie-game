@@ -53,17 +53,9 @@ transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 0, 
 collision_layer = 1
 script = ExtResource("1_y482n")
 life = ExtResource("3_lqp71")
-right_hand = true
 weapon_position = Vector3(0.225, -0.195, -0.605)
-look_speed = 0.00872665
-fov = 75.0
 camera_smooth_enabled = false
 camera_smooth_target_node = NodePath("Neck/CameraTarget")
-camera_smooth_max_distance = 0.45
-aim_move_speed = 0.6
-look_aim_speed = 0.00436332
-look_aim_time = 0.28
-look_aim_return_time = 0.22
 weapon_aim_position = Vector3(1.45519e-11, -0.1, -0.5)
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
@@ -195,7 +187,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1, 1.45519e-11)
 shape = SubResource("CylinderShape3D_i6sc0")
 debug_color = Color(1, 0, 0.145, 1)
 
-[node name="SightNodes" type="Node" parent="." index="4"]
+[node name="SightNodes" type="Node3D" parent="." index="4"]
+visible = false
 
 [node name="eyes" type="Marker3D" parent="SightNodes" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.54, 0)

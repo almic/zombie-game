@@ -88,18 +88,6 @@ var last_player_damage: Player
 ## Most recent impacts from damage
 var last_hits: Array[Dictionary] = []
 
-## What groups this zombie targets
-var target_groups: Array[StringName] = []:
-    set(value):
-        # TODO: this feels kinda spaghetti, maybe could be retrieved by each
-        #       sense and goal? Maybe stored on CharacterBase? This is kinda bad.
-        target_groups = value
-        for sense in mind.senses:
-            if sense is BehaviorSenseVision:
-                sense.target_groups = target_groups
-        for goal in mind.goals:
-            if goal is BehaviorGoalAttackTarget:
-                goal.target_groups = target_groups
 
 var sleep_min_travel: float = 0.001
 var sleep_timeout: float = 0.5
@@ -122,7 +110,6 @@ func _ready() -> void:
 
     attack_hitbox.damage = attack_damage
 
-    target_groups = target_groups.duplicate()
     last_hits = last_hits.duplicate()
 
     connect_hurtboxes()

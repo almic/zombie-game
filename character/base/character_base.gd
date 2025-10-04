@@ -177,6 +177,7 @@ func _ready() -> void:
     collider.shape = collider_shape
 
     if mind:
+        mind = mind.duplicate(true)
         mind.parent = self
 
 func set_collider_shape(shape: Shape3D) -> void:

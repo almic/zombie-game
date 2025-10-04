@@ -9,7 +9,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
         - sensing, setting important details by reading senses
         - goal selection, process important details and pick a goal
         - action, process goals and act on them
-- [ ] (UNSURE) Make BehaviorActions plain Objects, they don't need serialization
+- [X] Make BehaviorActions plain Objects, they don't need serialization
 - [ ] Solve problem with senses creating a lot of memories. It really only needs
       two memories, one for the initial event and one for "active" data. Create
       an initial memory, then make an "active" memory that updates in-place for

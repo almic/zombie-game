@@ -1,8 +1,6 @@
 ## Represents an action,
 @abstract
-class_name BehaviorAction extends Resource
+class_name BehaviorAction
 
 
-@export_group("Debug", "debug")
-## Name for debugging
-@export var debug_name: StringName = &"ACTION"
+var debug_name: StringName = &"ACTION"

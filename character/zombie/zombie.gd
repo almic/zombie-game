@@ -113,6 +113,7 @@ func _ready() -> void:
     last_hits = last_hits.duplicate()
 
     connect_hurtboxes()
+    life = life.duplicate(true)
     life.died.connect(on_death)
     life.hurt.connect(on_hurt)
     life.check_health()

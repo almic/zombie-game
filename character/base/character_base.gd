@@ -176,9 +176,9 @@ var next_eye: int = 0
 func _ready() -> void:
     collider.shape = collider_shape
 
-    if mind:
+    if mind and not Engine.is_editor_hint():
         mind = mind.duplicate(true)
-        mind.parent = self
+        mind.parent = self as CharacterBase
 
 func set_collider_shape(shape: Shape3D) -> void:
     collider_shape = shape

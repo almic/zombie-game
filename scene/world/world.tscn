@@ -1,4 +1,4 @@
-[gd_scene load_steps=110 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=108 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
@@ -13,7 +13,6 @@
 [ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="PackedScene" uid="uid://bb3wt0w01eidc" path="res://ui/gameover.tscn" id="11_18ff0"]
-[ext_resource type="Script" uid="uid://cugishrosnaex" path="res://script/combat/LifeResource.gd" id="12_a331h"]
 [ext_resource type="PackedScene" uid="uid://dtnbm25ngrmtq" path="res://scene/debug/light_spheres/light_spheres.tscn" id="12_f0qux"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
 [ext_resource type="Script" uid="uid://cdt3hagm54l67" path="res://scene/world/nav_testing_camera.gd" id="15_4dcww"]
@@ -78,11 +77,6 @@
 [ext_resource type="Resource" uid="uid://da3rj8kluvsn8" path="res://scene/world/polygon2d/curb_52_sharp.tres" id="62_mcrc3"]
 [ext_resource type="Resource" uid="uid://cu1woxx6vcyr6" path="res://scene/world/polygon2d/sidewalk_220.tres" id="64_1yx4f"]
 [ext_resource type="Resource" uid="uid://c2wtc3kd0rcpc" path="res://scene/world/polygon2d/street_gutter_76.tres" id="65_6ywls"]
-
-[sub_resource type="Resource" id="Resource_a331h"]
-resource_local_to_scene = true
-script = ExtResource("12_a331h")
-metadata/_custom_type_script = "uid://cugishrosnaex"
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d2i0j"]
 radius = 0.6
@@ -315,7 +309,6 @@ camera_smooth_enabled = true
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
 transform = Transform3D(6.123233995736766e-17, 0, 1, 0, 1, 0, -1, 0, 6.123233995736766e-17, -228.07899999999788, 2.4099999999970896, -497.31900000000434)
 velocity = Vector3(0, -938.906, 0)
-life = SubResource("Resource_a331h")
 
 [node name="WeaponPickups" type="Node" parent="."]
 

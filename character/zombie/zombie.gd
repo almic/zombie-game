@@ -108,12 +108,12 @@ func _ready() -> void:
     if Engine.is_editor_hint():
         return
 
+    last_hits = last_hits.duplicate()
+    life = life.duplicate(true)
+
     attack_hitbox.damage = attack_damage
 
-    last_hits = last_hits.duplicate()
-
     connect_hurtboxes()
-    life = life.duplicate(true)
     life.died.connect(on_death)
     life.hurt.connect(on_hurt)
     life.check_health()

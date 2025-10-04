@@ -3,8 +3,10 @@ class_name DebugSphere extends MeshInstance3D
 
 func _init(radius: float, color: Color = Color(0.1, 0.9, 0.1, 0.5), draw_inside: bool = false) -> void:
     mesh = SphereMesh.new()
+    cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
     var mat: StandardMaterial3D = StandardMaterial3D.new()
     mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+    mat.disable_receive_shadows = true
     if draw_inside:
         mat.cull_mode = BaseMaterial3D.CULL_DISABLED
     mesh.material = mat

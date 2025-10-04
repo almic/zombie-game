@@ -238,9 +238,9 @@ func _process(delta: float) -> void:
     # Test interactions before everything else, so they appear to occur with
     # the frame the player sees right now
     if interact.is_triggered():
-        var collider = aim_target.get_collider()
-        if collider:
-            interact_with(collider)
+        var a_collider = aim_target.get_collider()
+        if a_collider:
+            interact_with(a_collider)
 
     if current_vehicle:
         update_vehicle(delta)
@@ -993,8 +993,8 @@ func connect_hurtboxes() -> void:
 
     weapon_node.set_melee_excluded_hurboxes([hurtbox])
 
-func show_self(show: bool = true) -> void:
-    if show:
+func show_self(yes: bool = true) -> void:
+    if yes:
         collider.disabled = false
         collider.visible = true
         weapon_node.process_mode = Node.PROCESS_MODE_INHERIT

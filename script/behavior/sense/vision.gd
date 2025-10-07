@@ -119,15 +119,22 @@ func sense(mind: BehaviorMind) -> void:
             var event: PackedByteArray = memory.start_event(BehaviorMemorySensory.Type.SIGHT)
 
             memory.event_set_expire(event, 100)
-            memory.event_add_game_time(event)
+            memory.event_set_tracking_node(event, target)
+            memory.event_set_flag(event, BehaviorMemorySensory.Flag.TRACKING_TIMED)
+
+            # NOTE: Write two timers, the second one is updated for goals
+            memory.event_add_game_time(event); memory.event_add_game_time(event)
+
             memory.event_add_time_of_day(event)
             memory.event_add_location(event, me.global_position, me.global_basis.z)
             memory.event_add_travel(event, direction, distance)
             memory.event_add_forward(event, chara.global_basis.z)
+            memory.event_add_node_path(event, chara.get_path())
 
             memory.finish_event(event)
 
             mind.memory_bank.save_memory_reference(memory)
+            activated = true
 
 
 func _update_debug_vision_cone() -> void:
@@ -188,11 +195,10 @@ func test_vision_character(me: CharacterBase, other: CharacterBase) -> PackedVec
     query.exclude = [me.get_rid(), other.get_rid()]
 
     test_vision_targets(
-            me.get_world_3d().direct_space_state,
+            me,
             query,
             targets,
             results,
-            me if debug_enabled else null
     )
 
     return results
@@ -208,29 +214,29 @@ func test_vision_node(me: CharacterBase, other: Node3D) -> PackedVector4Array:
     results.fill(Vector4(0, 0, 0, -1))
 
     test_vision_targets(
-            me.get_world_3d().direct_space_state,
+            me,
             query,
             [other.global_position],
             results,
-            me if debug_enabled else null
     )
 
     return results
 
 func test_vision_targets(
-        space: PhysicsDirectSpaceState3D,
+        me: CharacterBase,
         query: PhysicsRayQueryParameters3D,
         targets: PackedVector3Array,
         results: PackedVector4Array,
-        debug_owner: Node = null
 ) -> void:
+    var space := me.get_world_3d().direct_space_state
+
     for i in range(targets.size()):
         var target: Vector3 = targets[i]
         var direction: Vector3 = target - eye_pos
         var distance: float = direction.length_squared()
 
-        if debug_owner and debug_show_sight_points and not debug_show_raycast_sight_only:
-            DebugSphere.create_color(debug_owner, target, 0.5, 0.05, debug_sight_point_color)
+        if debug_enabled and debug_show_sight_points and not debug_show_raycast_sight_only:
+            DebugSphere.create_color(me, target, 0.5, 0.05, debug_sight_point_color)
 
         # Out of range
         if distance > _range_squared:
@@ -239,10 +245,11 @@ func test_vision_targets(
         # Check FOV angle
         distance = sqrt(distance)
         if not is_zero_approx(distance):
-            direction = direction / distance
+            direction /= distance
             var target_cos_theta: float = direction.dot(eye_dir)
             if target_cos_theta < _fov_cos:
                 continue
+            direction = target - me.global_position
         else:
             distance = 0.0
             direction = eye_dir
@@ -252,13 +259,14 @@ func test_vision_targets(
 
         # No hit means there is line of sight!
         if not hit:
+            direction = direction.normalized()
             results[i] = Vector4(direction.x, direction.y, direction.z, distance)
 
-            if debug_owner:
+            if debug_enabled:
                 if debug_show_raycast:
                     DrawLine3d.DrawLine(query.from, query.to, debug_raycast_sight_color, 0.5)
                 if debug_show_sight_points:
-                    DebugSphere.create_color(debug_owner, query.to, 0.5, 0.08, debug_raycast_sight_color)
-        elif debug_owner and debug_show_raycast and not debug_show_raycast_sight_only:
+                    DebugSphere.create_color(me, query.to, 0.5, 0.08, debug_raycast_sight_color)
+        elif debug_enabled and debug_show_raycast and not debug_show_raycast_sight_only:
             DrawLine3d.DrawLine(query.from, hit.position, debug_raycast_block_color, 0.5)
-            DebugSphere.create_color(debug_owner, hit.position, 0.5, 0.05, debug_raycast_block_color)
+            DebugSphere.create_color(me, hit.position, 0.5, 0.05, debug_raycast_block_color)

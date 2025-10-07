@@ -16,6 +16,21 @@ enum Priority {
 @export var code_name: StringName = &"GOAL"
 
 
+@export_group("Sense Activated")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var sense_activated: bool = false
+
+## Which senses this goal is responsive to
+@export var sense_code_names: Array[StringName]
+
+## If the goal should be checked regardless of senses every X seconds, set this
+## to a value greater than zero. Leave at zero to only respond when senses are
+## activated.
+@export_range(0, 10, 1, 'or_greater', 'hide_slider', 'suffix:sec')
+var minimum_period: int = 0
+
+
 ## Unique name of this goal type.
 ## Classes should also have a constant NAME member, and this method should
 ## simply return that constant.

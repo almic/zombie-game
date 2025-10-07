@@ -18,9 +18,19 @@ enum Type {
     MAX
 }
 
-enum Response {
-    STARTED = 1,
-    COMPLETE = 2
+enum Flag {
+    ## A response to this event has been started
+    RESPONSE_STARTED  = 1 << 0,
+    ## A response to this event has completed
+    RESPONSE_COMPLETE = 1 << 1,
+
+    ## Flags will be overwritten when calling 'overwrite_event' or using tracking
+    OVERWRITE_FLAGS   = 1 << 5,
+
+    ## This event uses game_time tracking
+    TRACKING_TIMED    = 1 << 6,
+    ## This event is an original for a given tracking ID
+    TRACKING_ORIGINAL = 1 << 7    # MAX
 }
 
 
@@ -53,14 +63,21 @@ func decay(delta: int) -> void:
         for event in event_idxs[type]:
             event_decay(type, event, delta)
 
+## AGGAOGEHAOEDATHOTDEIT>FHUIGI
+func _get_events_reference(type: Type) -> PackedByteArray:
+    # NOTE: DO NOT WRITE "as PackedByteArray" OR IT WILL MAKE A COPY!!!!!!!
+    return sensory_logs.get_or_add(type, PackedByteArray())
+
 
 const e_SIZE = 0
 const e_SIZE_LEN = 2
 const e_TYPE = e_SIZE + e_SIZE_LEN
 const e_TYPE_LEN = 1
-const e_RESPONSE = e_TYPE + e_TYPE_LEN
-const e_RESPONSE_LEN = 1
-const e_EXPIRE = e_RESPONSE + e_RESPONSE_LEN
+const e_TRACKINGID = e_TYPE + e_TYPE_LEN
+const e_TRACKINGID_LEN = 8
+const e_FLAG = e_TRACKINGID + e_TRACKINGID_LEN
+const e_FLAG_LEN = 1
+const e_EXPIRE = e_FLAG + e_FLAG_LEN
 const e_EXPIRE_LEN = 2
 const e_DATA = e_EXPIRE + e_EXPIRE_LEN
 const e_DATA_LEN = 1
@@ -73,27 +90,97 @@ func start_event(type: Type) -> PackedByteArray:
 
     var header_size: int = (
               e_TYPE_LEN
-            + e_RESPONSE_LEN
+            + e_TRACKINGID_LEN
+            + e_FLAG_LEN
             + e_EXPIRE_LEN
             + e_DATA_LEN
     )
 
     bytes.resize(e_SIZE_LEN + header_size)
 
-    bytes.encode_u16(e_SIZE, bytes.size())
-    bytes.encode_u8(e_TYPE, type)
-    bytes.encode_u8(e_RESPONSE, 0)
-    bytes.encode_u16(e_EXPIRE, 1)
-    bytes.encode_u8(e_DATA, 0)
+    event_set_size(bytes, bytes.size())
+    event_set_type(bytes, type)
+    event_set_tracking(bytes, 0)
+    event_set_flag(bytes, 0)
+    event_set_expire(bytes, 1)
+    event_set_data_count(bytes, 0)
 
     return bytes
 
 ## Write the event to memory
 func finish_event(event: PackedByteArray) -> void:
+    var size: int = event_get_size(event)
+    var type: Type = event_get_type(event)
+
+    # TODO: check tracking IDs
+    var tracking: int = event_get_tracking(event)
+    if tracking:
+        const TRACKING_TIME = 10
+
+        var track_time: bool = event_get_flag(event) & Flag.TRACKING_TIMED
+        var game_time: int = GlobalWorld.game_time
+        var events: PackedInt32Array = get_events(type)
+        var found: int = -1
+        var mark_original: bool = true
+
+        for ev in events:
+            var other_id: int = get_event_tracking(type, ev)
+            if tracking != other_id:
+                continue
+
+            # If we find a matching ID, this probably won't be original
+            mark_original = false
+
+            var flags: int = get_event_flag(type, ev)
+            var other_tracks_time: bool = flags & Flag.TRACKING_TIMED
+            if other_tracks_time != track_time:
+                # Mismatched time tracking flag, must insert
+                push_warning('Saving event with time tracking, found other without time tracking. This is a mistake!')
+                if track_time:
+                    mark_original = true
+                break
+
+            if not track_time:
+                # Matched ID, no time or original stuff, just write here
+                found = ev
+                break
+
+            if flags & Flag.TRACKING_ORIGINAL:
+                # Found an original, we MUST insert this new event
+                break
+
+            var other_time: float = get_event_game_time(type, ev)
+            if other_time == -1:
+                # No timing data, this is likely a mistake and we should insert instead
+                push_warning('Saving event with time tracking, found other missing time data. This is a mistake!')
+                mark_original = true
+                break
+
+            var delta_time: float = game_time - other_time
+            if delta_time < TRACKING_TIME:
+                # Within tracking time, write here
+                found = ev
+                break
+
+            # Also, this SHOULD be marked original if the next event is too old
+            if delta_time > TRACKING_TIME * 2:
+                mark_original = true
+
+            # Found an old event with same ID, we should insert now
+            break
+
+        # We found an event to overwrite, however we can only change same data
+        # elements, so iterate and check types
+        if found != -1:
+            overwrite_event(type, found, event)
+            return
+
+        if mark_original:
+            event_set_flag(event, event_get_flag(event) | Flag.TRACKING_ORIGINAL)
+
+
     # add event to front of log
-    var size: int = event.decode_u16(e_SIZE)
-    var type: Type = event.decode_u8(e_TYPE) as Type
-    var old_log: PackedByteArray = sensory_logs.get(type, PackedByteArray())
+    var old_log: PackedByteArray = _get_events_reference(type)
     event.append_array(old_log)
     old_log.clear() # can clear this now
 
@@ -101,17 +188,86 @@ func finish_event(event: PackedByteArray) -> void:
     var indexes: PackedInt32Array = event_idxs.get_or_add(type, PackedInt32Array())
     var idx_len: int = indexes.size()
     indexes.resize(idx_len + 1)
-    for i in range(idx_len - 1, 0, -1): # NOTE: up to the second element only
+    for i in range(idx_len, 0, -1): # NOTE: up to the second element only
         indexes[i] = indexes[i - 1] + size
     indexes[0] = 0
 
     sensory_logs.set(type, event)
     event_count += 1
 
+## Overwrites data from 'src' into 'dest'. Data elements must be the same size
+## and in the same order, otherwise the write will be partial and undefined
+## behavior may happen.
+func overwrite_event(type: Type, dest: int, src: PackedByteArray) -> void:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return
+
+    var src_size: int = event_get_size(src)
+    var dest_size: int = get_event_size(type, dest)
+
+    # Check sizes
+    # NOTE: for development, should be removed.
+    if src_size != dest_size:
+        push_error('Cannot overwrite sensory event with mismatched sizes! Investigate!')
+        return
+
+    var src_data_count: int = event_get_data_count(src)
+    var dest_data_count: int = get_event_data_count(type, dest)
+
+    # Check data count
+    # NOTE: for development, should be removed.
+    if src_data_count != dest_data_count:
+        push_error('Cannot overwrite sensory event with mismatched data counts! Investigate!')
+        return
+
+    # Check for flag overwrite
+    var src_flags: int = event_get_flag(src)
+    if not (src_flags & Flag.OVERWRITE_FLAGS):
+        event_set_flag(src, get_event_flag(type, dest))
+
+    # Copy header
+    for i in range(e_DATA_ARRAY):
+        events[dest + i] = src[i]
+
+    # Copy data elements
+    var i: int = 0
+    var data_index: int = 0
+    var data_size: int
+    var time_tracking: bool = src_flags & Flag.TRACKING_TIMED
+    var skipped_first_gametime: bool = false
+    while i < src_size and data_index < src_data_count:
+        var src_type: int = src.decode_u8(e_DATA_ARRAY + i)
+        var dest_type: int = events.decode_u8(dest + e_DATA_ARRAY + i)
+
+        # Check data type
+        if src_type != dest_type:
+            push_error('Failed to overwrite sensory event, mismatching data types! Investigate!')
+            break
+
+        if src_type == d_NODEPATH:
+            data_size = src.decode_u16(e_DATA_ARRAY + i + 1) + 2
+        else:
+            data_size = d_STRIDES.get(src_type)
+
+        # Time tracking will NOT overwrite the FIRST 'gametime' data
+        if time_tracking and src_type == d_GAMETIME and not skipped_first_gametime:
+            skipped_first_gametime = true
+        else:
+            # Copy data
+            for k in range(1, data_size + 1):
+                events[dest + e_DATA_ARRAY + i + k] = src[e_DATA_ARRAY + i + k]
+
+        i += data_size + 1
+        data_index += 1
+
+    pass
+
+
 # Decay the timer of an event by some number of seconds. If the event timer reaches
 # zero, it is removed from the event log.
 func event_decay(type: Type, event: int, seconds: int) -> void:
-    var event_log: PackedByteArray = sensory_logs.get(type)
+    var event_log: PackedByteArray = _get_events_reference(type)
     var time: int = event_log.decode_u16(event + e_EXPIRE)
     time -= seconds
 
@@ -136,35 +292,122 @@ func event_decay(type: Type, event: int, seconds: int) -> void:
 
     event_count -= 1
 
-## Set the expire delay of this event
+
+## Get the data count of this event
+func event_get_data_count(event: PackedByteArray) -> int:
+    return event.decode_u8(e_DATA)
+
+## Set the data count of this event. DO NOT USE! You WILL break something!
+func event_set_data_count(event: PackedByteArray, data_count: int) -> void:
+    event.encode_u8(e_DATA, data_count)
+
+## Get the expire delay of this event
+func event_get_expire(event: PackedByteArray) -> int:
+    return event.decode_u16(e_EXPIRE)
+
+## Set the expire delay of this event. The event will be removed after this many
+## seconds. Can be incremented later to increase the life of the event.
 func event_set_expire(event: PackedByteArray, seconds: int) -> void:
     event.encode_u16(e_EXPIRE, seconds)
 
-## Get an event's response value. Returns -1 if the event is not found
-func get_event_response(type: Type, event: int) -> int:
-    var events: PackedByteArray = sensory_logs.get(type)
+## Get the flags of this event
+func event_get_flag(event: PackedByteArray) -> int:
+    return event.decode_u8(e_FLAG)
+
+## Set the flags of this event
+func event_set_flag(event: PackedByteArray, flag: int) -> void:
+    event.encode_u8(e_FLAG, flag)
+
+## Get the size of this event. Events store their size manually, improving processing large lists
+## of events without having to parse the event itself.
+func event_get_size(event: PackedByteArray) -> int:
+    return event.decode_u16(e_SIZE)
+
+## Set the size value of this event. DO NOT USE! You WILL break something!
+func event_set_size(event: PackedByteArray, size: int) -> void:
+    event.encode_u16(e_SIZE, size)
+
+## Get the tracking ID of this event
+func event_get_tracking(event: PackedByteArray) -> int:
+    return event.decode_s64(e_TRACKINGID)
+
+## Set the tracking ID of this event
+func event_set_tracking(event: PackedByteArray, id: int) -> void:
+    event.encode_s64(e_TRACKINGID, id)
+
+## Set the tracking ID of this event from a node. Uses a SHA1 hash of the node path.
+func event_set_tracking_node(event: PackedByteArray, node: Node) -> void:
+    var id: int = node.get_path().get_concatenated_names().sha1_buffer().decode_u64(0)
+    event_set_tracking(event, id)
+
+## Get the type of this event.
+func event_get_type(event: PackedByteArray) -> Type:
+    return event.decode_u8(e_TYPE) as Type
+
+## Set the type of this event. DO NOT USE! You WILL break something!
+func event_set_type(event: PackedByteArray, type: Type) -> void:
+    event.encode_u8(e_TYPE, type)
+
+
+# ########################################
+#            Event Log Methods           #
+# ########################################
+
+
+## Get an event's data count value. Returns -1 if the event is not found
+func get_event_data_count(type: Type, event: int) -> int:
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return -1
 
-    return events.decode_u8(event + e_RESPONSE)
+    return events.decode_u8(event + e_DATA)
 
-## Set an event's response value.
-func set_event_response(type: Type, event: int, response: int) -> bool:
-    var events: PackedByteArray = sensory_logs.get(type)
+## Get an event's flag value. Returns -1 if the event is not found
+func get_event_flag(type: Type, event: int) -> int:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return -1
+
+    return events.decode_u8(event + e_FLAG)
+
+## Set an event's flag value.
+func set_event_flag(type: Type, event: int, flag: int) -> bool:
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return false
 
-    events.encode_u8(event + e_RESPONSE, response)
+    events.encode_u8(event + e_FLAG, flag)
     return true
 
+## Get an event's size value. Returns -1 if the event is not found
+func get_event_size(type: Type, event: int) -> int:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return -1
 
-## Unsigned int 32
+    return events.decode_u16(event + e_SIZE)
+
+## Get an event's tracking value. Returns 0 if the event is not found.
+## NOTE: The reason to return zero is because that is the 'no tracking' value,
+## and -1 is a possible valid tracking ID.
+func get_event_tracking(type: Type, event: int) -> int:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return 0
+
+    return events.decode_s64(event + e_TRACKINGID)
+
+
+## Unsigned int 32 + uint8 for fractional seconds
 const d_GAMETIME = 1
-const d_GAMETIME_SIZE = 4
+const d_GAMETIME_SIZE = 5
 
 ## Half precision float for in-game time of day
 const d_TIMEOFDAY = 2
 const d_TIMEOFDAY_SIZE = 2
+
+## String containing a node path, dynamic size
+const d_NODEPATH = 3
 
 ## Two vector 3s, first is a position, second is a direction
 const d_LOCATION = 16
@@ -198,24 +441,29 @@ func _get_event_data_offset(events: PackedByteArray, event: int, search: int, wh
 
     var size: int = events.decode_u16(event + e_SIZE)
 
-    var i: int = event + e_DATA_ARRAY
+    var offset: int = event + e_DATA_ARRAY
+    var i: int = 0
     var data_index: int = 0
     var data_type: int
     while i < size and data_index < data_count:
-        data_type = events.decode_u8(i)
+        data_type = events.decode_u8(offset + i)
         if data_type == search:
             which -= 1
             if which == 0:
-                return i + 1
-        i += d_STRIDES[data_type] + 1
+                return offset + i + 1
+        if data_type == d_NODEPATH:
+            i += 2 + events.decode_u16(offset + i + 1)
+        else:
+            i += d_STRIDES[data_type]
+        i += 1
         data_index += 1
 
     return -1
 
 ## Get game time data from an event. Returns -1 if event lacks game time data,
 ## or `which` is greater than the number of game time data stored.
-func get_event_game_time(type: Type, event: int, which: int = 1) -> int:
-    var events: PackedByteArray = sensory_logs.get(type)
+func get_event_game_time(type: Type, event: int, which: int = 1) -> float:
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return -1
 
@@ -223,12 +471,15 @@ func get_event_game_time(type: Type, event: int, which: int = 1) -> int:
     if offset < 0:
         return -1
 
-    return events.decode_u32(offset)
+    var seconds: int = events.decode_u32(offset); offset += 4
+    var frac: int = events.decode_u8(offset)
+
+    return float(seconds) + (float(frac) / 256.0)
 
 ## Get time of day data from an event. Returns -1 if event lacks time of day data,
 ## or `which` is greater than the number of time of day data stored.
 func get_event_time_of_day(type: Type, event: int, which: int = 1) -> float:
-    var events: PackedByteArray = sensory_logs.get(type)
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return -1
 
@@ -238,10 +489,30 @@ func get_event_time_of_day(type: Type, event: int, which: int = 1) -> float:
 
     return events.decode_half(offset)
 
+## Get node path data from an event. Returns the empty node path if event lacks
+## node path data, or `which` is greater than the number of node path data stored.
+func get_event_node_path(type: Type, event: int, which: int = 1) -> NodePath:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return NodePath()
+
+    var offset: int = _get_event_data_offset(events, event, d_NODEPATH, which)
+    if offset < 0:
+        return NodePath()
+
+    var size: int = events.decode_u16(offset); offset += 2
+    var bytes: PackedByteArray
+    bytes.resize(size)
+
+    for i in range(size):
+        bytes[i] = events[offset + i]
+
+    return NodePath(bytes.get_string_from_utf8())
+
 ## Get location data from an event. Returns empty array if event lacks location
 ## data, or `which` is greater than the number of location data stored.
 func get_event_location(type: Type, event: int, which: int = 1) -> PackedVector3Array:
-    var events: PackedByteArray = sensory_logs.get(type)
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return []
 
@@ -266,7 +537,7 @@ func get_event_location(type: Type, event: int, which: int = 1) -> PackedVector3
 ## Get travel data from an event. Returns an empty array if event lacks location
 ## data, or `which` is greater than the number of location data stored.
 func get_event_travel(type: Type, event: int, which: int = 1) -> Array[Variant]:
-    var events: PackedByteArray = sensory_logs.get(type)
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return []
 
@@ -288,7 +559,7 @@ func get_event_travel(type: Type, event: int, which: int = 1) -> Array[Variant]:
 ## Get forward vector data from an event. Returns Vector3.ZERO if event lacks
 ## forward data, or `which` is greater than the number of forward data stored.
 func get_event_forward(type: Type, event: int, which: int = 1) -> Vector3:
-    var events: PackedByteArray = sensory_logs.get(type)
+    var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return Vector3.ZERO
 
@@ -307,12 +578,12 @@ func get_event_forward(type: Type, event: int, which: int = 1) -> Vector3:
 ## Internal. Updates the event to prepare it for a new data element. Returns the
 ## offset to be used for writing the data.
 func _event_add_data(event: PackedByteArray, type: int, size: int) -> int:
-    var old_size: int = event.decode_u16(e_SIZE)
-    var data_count: int = event.decode_u8(e_DATA)
+    var old_size: int = event_get_size(event)
+    var data_count: int = event_get_data_count(event)
     var new_size: int = old_size + size + 1
     event.resize(new_size)
-    event.encode_u16(e_SIZE, new_size)
-    event.encode_u8(e_DATA, data_count + 1)
+    event_set_size(event, new_size)
+    event_set_data_count(event, data_count + 1)
     event.encode_u8(old_size, type)
 
     return old_size + 1
@@ -322,7 +593,16 @@ func _event_add_data(event: PackedByteArray, type: int, size: int) -> int:
 func event_add_game_time(event: PackedByteArray) -> void:
     var offset: int = _event_add_data(event, d_GAMETIME, d_GAMETIME_SIZE)
 
-    event.encode_u32(offset, GlobalWorld.game_time)
+    event.encode_u32(offset, GlobalWorld.game_time); offset += 4
+    event.encode_u8(offset, int(GlobalWorld.game_time_frac * 256.0))
+
+## Calculate the rounded game time data which would be stored if the game time
+## was the given time
+func calc_rounded_game_time(time: float) -> float:
+    var seconds: int = floori(time)
+    var frac: int = int((time - seconds) * 256.0)
+
+    return float(seconds) + (float(frac) / 256.0)
 
 ## Add the current world local hour time
 func event_add_time_of_day(event: PackedByteArray) -> void:
@@ -336,6 +616,22 @@ func event_add_time_of_day(event: PackedByteArray) -> void:
         time = -1
 
     event.encode_half(offset, time)
+
+## Add node path data
+func event_add_node_path(event: PackedByteArray, node_path: NodePath) -> void:
+    var path_str: StringName = node_path.get_concatenated_names()
+    if node_path.is_absolute():
+        path_str = '/' + path_str
+
+    var bytes: PackedByteArray = path_str.to_utf8_buffer()
+    var size: int = bytes.size()
+
+    var offset: int = _event_add_data(event, d_NODEPATH, size + 2)
+
+    event.encode_u16(offset, size); offset += 2
+
+    for i in range(size):
+        event[offset + i] = bytes[i]
 
 ## Add location data. Contains a position and direction
 func event_add_location(event: PackedByteArray, position: Vector3, direction: Vector3) -> void:

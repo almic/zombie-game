@@ -2,7 +2,7 @@
 
 class_name Zombie extends CharacterBase
 
-@onready var navigation: NavigationAgent3D = %NavigationAgent3D
+@onready var nav_agent: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
 @onready var attack_hitbox: HitBox = %AttackHitbox
 @onready var bone_simulator: PhysicalBoneSimulator3D = %BoneSimulator
@@ -39,15 +39,12 @@ class_name Zombie extends CharacterBase
 ## How close to target to face them regardless of velocity
 @export var rotate_face_target_distance: float = 1
 
-## The sign encodes the direction, - is clockwise, + is counter-clockwise
-var _rotation_velocity: float = 0
-
 
 @export_group("Animation", "anim")
 
-@export var anim_idle: String = "idle"
-@export var anim_attack: String = "attack"
-@export var anim_run: String = "run"
+@export var anim_idle: StringName = &"idle"
+@export var anim_attack: StringName = &"attack"
+@export var anim_run: StringName = &"run"
 
 
 @export_group("Combat")
@@ -62,6 +59,7 @@ var _rotation_velocity: float = 0
         if is_node_ready():
             attack_hitbox.damage = attack_damage
 
+
 @export_subgroup("Body Damage Multipliers", "mult")
 
 ## Damage received to head
@@ -70,17 +68,21 @@ var _rotation_velocity: float = 0
 @export var mult_arm: float = 0.35
 @export var mult_leg: float = 0.5
 
+
 @export_subgroup("Attacking", "attack")
 
-## How close must the target be in order to attack
+## How close must the target be in order to attack, in meters
 @export var attack_range: float = 1.24
+
 ## How nearly facing the target in order to attack, use cos() to get your desired value
-@export var attack_facing: float = 0.996
+@export var attack_facing: float = cos(deg_to_rad(7.0))
+
 
 ## Locomotion state machine, needed to check some state information
 var anim_state_machine: AnimationNodeStateMachine
 ## Locomotion state machine playback
 var locomotion: AnimationNodeStateMachinePlayback
+
 
 ## The last player who damaged the zombie
 var last_player_damage: Player
@@ -96,6 +98,21 @@ var sleep_wakeup: float = 1.0
 var _sleep_timeout_time: float = 0.0
 var _sleep_wakeup_time: float = 0.0
 
+## Target direction to face when stationary
+var _target_direction: Vector3 = Vector3.ZERO
+
+## Direction to attack
+var _attack_direction: Vector3 = Vector3.ZERO
+
+## Target to attack, used to check proximity before attacking
+var _attack_target: Node3D = null
+
+## Timer to check if zomie is trying to attack
+var _attack_timer: float = 0
+
+## The sign encodes the direction, - is clockwise, + is counter-clockwise
+var _rotation_velocity: float = 0
+
 
 func _ready() -> void:
     super._ready()
@@ -103,6 +120,8 @@ func _ready() -> void:
     # Animate in editor
     anim_state_machine = animation_tree.tree_root
     locomotion = animation_tree["parameters/playback"]
+    locomotion.state_started.connect(_anim_started)
+    locomotion.state_finished.connect(_anim_finished)
     locomotion.travel(anim_idle)
 
     if Engine.is_editor_hint():
@@ -135,46 +154,44 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
+    if _attack_timer > 0.0:
+        _attack_timer -= delta
+
     if not life.is_alive:
         return
 
     mind.update(delta)
 
-    # Path
     do_pathing(delta)
+    do_turning(delta)
+
+    do_attacking()
 
 
 func do_pathing(delta: float) -> void:
 
-    if NavigationServer3D.map_get_iteration_id(navigation.get_navigation_map()) == 0:
+    if NavigationServer3D.map_get_iteration_id(nav_agent.get_navigation_map()) == 0:
         return
 
     movement_direction = Vector3.ZERO
 
     # Only path on ground
     if not is_grounded():
-        # Do not spin in air
-        # update_rotation()
         update_movement(delta)
         return
 
     # dont move if attacking
-    if locomotion.get_current_node() == anim_attack:
-        movement_direction = Vector3.ZERO
-    elif not navigation.is_navigation_finished():
-        var next_pos: Vector3 = navigation.get_next_path_position()
+    if _is_attacking():
+        update_movement(delta)
+        return
+
+    if not nav_agent.is_navigation_finished():
+        var next_pos: Vector3 = nav_agent.get_next_path_position()
         movement_direction = global_position.direction_to(next_pos)
 
     update_movement(delta)
 
-    if is_zero_approx(movement_direction.length_squared()):
-        # If attacking, dont rotate and queue back to idle
-        if locomotion.get_current_node() == anim_attack:
-            anim_goto(locomotion, anim_idle)
-            return
-
-    update_rotation(delta)
-
+    # Play appropriate animation for current movement
     var speed: float = velocity.length_squared()
     if is_zero_approx(speed):
         anim_goto(locomotion, anim_idle)
@@ -187,12 +204,102 @@ func do_pathing(delta: float) -> void:
             # Return to idle when too slow
             anim_goto(locomotion, anim_idle)
 
+func do_turning(delta: float) -> void:
+    # Do not spin in air
+    if not is_grounded():
+        return
+
+    # If attacking, dont rotate
+    if _is_attacking():
+        return
+
+    var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)
+    var stationary: float = direction.length_squared() < 0.5
+
+    # Prioritize facing the attack direction
+    if not _attack_direction.is_zero_approx():
+        direction = _attack_direction
+    # Face our direction of travel
+    elif not stationary:
+        direction = direction.normalized()
+    # Face in the direction of where we would like to travel
+    elif _target_direction.is_zero_approx() and not nav_agent.is_navigation_finished():
+        # navigation in progress but no direction, set direction to face target position
+        direction = nav_agent.target_position - global_position
+        direction.y = 0
+        direction = direction.normalized()
+    # Maintain target direction
+    else:
+        direction = _target_direction
+
+    update_rotation(delta, direction)
+
+func do_attacking() -> void:
+    if not _attack_target:
+        return
+
+    if _attack_timer > 0.0:
+        return
+
+    # Probably a bad sign if target wasn't null, but whatever i think
+    if _attack_direction.is_zero_approx():
+        _attack_target = null
+
+    var facing: float = _attack_direction.dot(global_basis.z)
+    if facing >= attack_facing:
+        var distance: float = global_position.distance_squared_to(_attack_target.global_position)
+        _attack_direction = Vector3.ZERO
+        _attack_target = null
+        if distance > (attack_range * attack_range):
+            return
+
+        _attack_timer = 1.0
+        anim_goto(locomotion, anim_attack)
+
+
 func _handle_action(action: BehaviorAction) -> bool:
     if action is BehaviorActionNavigate:
-        navigation.target_position = action.get_global_position(self)
+        act_navigate(action)
+        return true
+
+    if action is BehaviorActionAttack:
+        act_attack(action)
         return true
 
     return false
+
+func act_navigate(navigate: BehaviorActionNavigate) -> void:
+    var next_target: Vector3 = navigate.get_global_position(self)
+    var target_distance: float = nav_agent.target_desired_distance
+    if not is_equal_approx(target_distance, navigate.target_distance):
+        nav_agent.target_desired_distance = navigate.target_distance
+
+    target_distance = navigate.target_distance * navigate.target_distance
+
+    if (
+                nav_agent.is_navigation_finished()
+            and global_position.distance_squared_to(next_target) < target_distance
+    ):
+        navigate.completed = true
+    else:
+        nav_agent.target_position = next_target
+        nav_agent.navigation_finished.connect(navigate.on_complete.emit, CONNECT_ONE_SHOT)
+
+func act_attack(attack: BehaviorActionAttack) -> void:
+    # Check if the target is close enough to face
+    var diff: Vector3 = attack.target.global_position - global_position
+    var dist: float = diff.length_squared()
+
+    if dist > attack_range * attack_range:
+        return
+
+    _attack_direction = diff / sqrt(dist)
+    _attack_target = attack.target
+
+
+## Helper to test animation state for attacks
+func _is_attacking() -> bool:
+    return _attack_timer > 0.0
 
 func on_attack_start() -> void:
     attack_hitbox.enable()
@@ -217,32 +324,12 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
         _sleep_timeout_time = 0.0
 
 
-func update_rotation(delta: float) -> void:
-    var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)
-    var stationary: float = direction.length_squared() < 0.5
-
-    if stationary:
-        # TODO: use the last navigation action direction to turn in place
+## Rotates to face a given direction. Returns `true` when reaching the direction.
+func update_rotation(delta: float, direction: Vector3) -> void:
+    # No requested direction, maintain current direction
+    if direction.is_zero_approx():
+        _rotation_velocity = 0
         return
-    # When (nearly) stationary, or close to target, try to face the target
-    # if stationary or (_active_target and \
-    #      global_position.distance_squared_to(
-    #     _active_target.global_position) <= rotate_face_target_distance ** 2
-    # ):
-    #     if not _active_target:
-    #         return
-    #
-    #     direction = Vector3(
-    #             global_position.x,
-    #             0,
-    #             global_position.z
-    #         ).direction_to(Vector3(
-    #             _active_target.global_position.x,
-    #             0,
-    #             _active_target.global_position.z
-    #         ))
-    else:
-        direction = direction.normalized()
 
     # Nearly facing the right direction
     if is_equal_approx(basis.z.dot(direction), 1):
@@ -292,6 +379,19 @@ func anim_goto(
         return
 
     state_machine.travel(state, reset)
+
+func _anim_started(state: StringName) -> void:
+    if state == anim_attack:
+        _attack_timer = 1.0
+    else:
+        var path: Array[StringName] = locomotion.get_travel_path()
+        if not path.is_empty() and path.back() == anim_attack:
+            _attack_timer = 1.0
+
+func _anim_finished(state: StringName) -> void:
+    if state == anim_attack:
+        _attack_timer = 0.0
+
 
 func connect_hurtboxes() -> void:
     life.add_hitbox_exception(attack_hitbox)

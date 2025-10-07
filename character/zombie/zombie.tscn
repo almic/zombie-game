@@ -2069,7 +2069,6 @@ anim_player = NodePath("../AnimationPlayer")
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." index="4"]
 unique_name_in_owner = true
 path_desired_distance = 0.5
-target_desired_distance = 1.2
 path_metadata_flags = 0
 simplify_path = true
 simplify_epsilon = 0.1

@@ -10,14 +10,18 @@ var parent: CharacterBase
 var memory_bank: BehaviorMemoryBank
 var delta_time: float
 
-var is_action_phase: bool = false
+var is_sorting_phase: bool = false
 
 var _priority_list: Dictionary
+var _code_to_sense: Dictionary[StringName, BehaviorSense]
+var _goal_minimum_period: Dictionary[StringName, float]
 
 
 func _init() -> void:
     memory_bank = BehaviorMemoryBank.new()
     _priority_list = {}
+    _code_to_sense = {}
+    _goal_minimum_period = {}
 
 
 ## Retrieve a sense by name. If two senses are the same type, returns the first one.
@@ -49,7 +53,11 @@ func update(delta: float) -> void:
 
     # Get goal call order
     var priority: int
+    is_sorting_phase = false
     for goal in goals:
+        if not _can_goal_process(goal):
+            continue
+
         priority = goal.update_priority(self)
         if priority < 1:
             continue
@@ -64,12 +72,12 @@ func update(delta: float) -> void:
             continue
 
         _priority_list.set(priority, [value, goal])
+    is_sorting_phase = false
 
     # Perform goals
     _priority_list.sort()
     var tasks: Array[Variant] = _priority_list.values()
     var task: Variant
-    is_action_phase = true
     for i in range(tasks.size() - 1, -1, -1):
         task = tasks[i]
         if task is Array:
@@ -77,16 +85,19 @@ func update(delta: float) -> void:
                 (t as BehaviorGoal).perform_actions(self)
         else:
             (task as BehaviorGoal).perform_actions(self)
-    is_action_phase = false
     _priority_list.clear()
 
+    # Clear sense activations
+    for sense in senses:
+        sense.activated = false
 
-## Called by goals during the action phase. Calling from outside of a goal's
-## 'perform_action()' method is an error.
+
+## Called by goals during the action phase.
+## Calling this from a goal's 'update_priority()' method is an error.
 func act(action: BehaviorAction) -> void:
     # NOTE: for development, should be removed
-    if not is_action_phase:
-        push_error('BehaviorMind can only `act()` during the goal action phase! Investigate!')
+    if is_sorting_phase:
+        push_error('BehaviorMind cannot `act()` during the goal sorting phase! Investigate!')
         return
 
     if parent and parent._handle_action(action):
@@ -94,3 +105,47 @@ func act(action: BehaviorAction) -> void:
 
     # Default action behaviors
     # TODO
+
+func _can_goal_process(goal: BehaviorGoal) -> bool:
+    if not goal.sense_activated:
+        return true
+
+    if _any_senses_activated(goal.sense_code_names):
+        return true
+
+    # Goal requires a sense to be processed
+    if goal.minimum_period == 0:
+        return false
+
+    # Otherwise, the goal may be periodically processed anyway
+
+    var timer: float = _goal_minimum_period.get_or_add(goal.code_name, 0)
+    timer += delta_time
+
+    if timer > goal.minimum_period:
+        # NOTE: activate only once per timer, even if a big delta happens
+        _goal_minimum_period.set(goal.code_name, 0)
+        return true
+
+    _goal_minimum_period.set(goal.code_name, timer)
+    return false
+
+## Helper to check iy any senses are currently marked as activated for goal
+## processing.
+func _any_senses_activated(code_names: Array[StringName]) -> bool:
+    for name in code_names:
+        if not _code_to_sense.has(name):
+            for sense in senses:
+                if sense.code_name == name:
+                    _code_to_sense.set(name, sense)
+                    break
+        var sense: BehaviorSense = _code_to_sense.get(name)
+
+        # NOTE: for development, should be removed
+        if not sense:
+            push_warning('missing sense code named "' + name + '" in BehaviorMind! Investigate!')
+            continue
+
+        if sense.activated:
+            return true
+    return false

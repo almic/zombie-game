@@ -27,8 +27,9 @@ xfade_time = 0.15
 xfade_time = 0.2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x4h2d"]
-xfade_time = 0.59
+xfade_time = 0.45
 switch_mode = 2
+advance_mode = 2
 
 [resource]
 resource_local_to_scene = true

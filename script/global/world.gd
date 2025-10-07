@@ -8,7 +8,7 @@ var group_nodes: Dictionary[StringName, Array] = {}
 ## TODO: this is probably not implemented correctly for saving, please revisit
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
 var game_time: int
-var _second_delta: float
+var game_time_frac: float
 
 
 func _physics_process(delta: float) -> void:
@@ -17,10 +17,10 @@ func _physics_process(delta: float) -> void:
         group_nodes.clear()
         group_reset_ticks = 0
 
-    _second_delta += delta
-    while _second_delta >= 1.0:
+    game_time_frac += delta
+    while game_time_frac >= 1.0:
         game_time += 1
-        _second_delta -= 1.0
+        game_time_frac -= 1.0
 
 
 func get_nodes_in_group(group: StringName) -> Array[Node]:

@@ -9,15 +9,17 @@
 [sub_resource type="Resource" id="Resource_f6rrc"]
 script = ExtResource("2_j7cw6")
 target_groups = Array[StringName]([&"zombie_target"])
+sense_activated = true
+sense_code_names = Array[StringName]([&"vision"])
 metadata/_custom_type_script = "uid://trwc8h08pont"
 
 [sub_resource type="Resource" id="Resource_j7cw6"]
 script = ExtResource("4_wnfdo")
 target_groups = Array[StringName]([&"zombie_target"])
-debug_enabled = true
 debug_show_cone = true
 debug_show_raycast = true
 debug_show_sight_points = true
+code_name = &"vision"
 metadata/_custom_type_script = "uid://dk102hcra0ikj"
 
 [resource]

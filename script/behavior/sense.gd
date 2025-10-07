@@ -14,6 +14,10 @@ signal on_sense(sense: BehaviorSense)
 @export var frequency: int = 30
 var _tick_timer: int = 0
 
+## Set by the sense when it has been activated. Used for goals responsive to
+## specific senses. Cleared by the BehaviorMind during the update phase.
+var activated: bool = false
+
 
 ## Updates the tick timer of the sense, returns `true` when the timer resets.
 func tick() -> bool:

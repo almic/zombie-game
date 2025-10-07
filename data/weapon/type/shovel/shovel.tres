@@ -25,6 +25,6 @@ projectile_hit_mask = 0
 crosshair_enabled = false
 ui_texture = ExtResource("5_olet3")
 scene = ExtResource("2_vhskp")
-scene_offset = Vector3(0.03, -0.125, 1.45519e-11)
+scene_offset = Vector3(0.03, -0.125, 0)
 scene_ui = ExtResource("3_mihyk")
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

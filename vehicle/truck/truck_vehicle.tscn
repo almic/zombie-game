@@ -39,7 +39,7 @@ exit_position = NodePath("ExitPoint")
 camera_target = NodePath("CameraTarget")
 
 [node name="body_shape" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.1044, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1044, 0)
 shape = SubResource("BoxShape3D_wyv1k")
 
 [node name="cab_shape" type="CollisionShape3D" parent="body_shape"]
@@ -47,15 +47,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0.87)
 shape = SubResource("BoxShape3D_0nvtn")
 
 [node name="mesh" type="CSGCombiner3D" parent="body_shape"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45519e-11, -0.9144, -1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9144, 0)
 
 [node name="body" type="CSGBox3D" parent="body_shape/mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.9144, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9144, 0)
 size = Vector3(1.872, 1.016, 6.01)
 material = ExtResource("1_ftrpg")
 
 [node name="cab" type="CSGBox3D" parent="body_shape/mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.7644, 0.87)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7644, 0.87)
 size = Vector3(1.63, 0.7, 1.7374)
 material = ExtResource("1_ftrpg")
 
@@ -63,53 +63,53 @@ material = ExtResource("1_ftrpg")
 operation = 2
 
 [node name="front_left" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
-transform = Transform3D(6.12323e-17, 1, 0, -1, 6.12323e-17, 0, 0, 0, 1, 0.8, 0.45, 2.1717)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, 2.1717)
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="front_right" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
-transform = Transform3D(6.12323e-17, 1, 0, -1, 6.12323e-17, 0, 0, 0, 1, -0.8, 0.45, 2.1717)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, 2.1717)
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="back_left" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
-transform = Transform3D(6.12323e-17, 1, 0, -1, 6.12323e-17, 0, 0, 0, 1, 0.8, 0.45, -1.5189)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, -1.5189)
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="back_right" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
-transform = Transform3D(6.12323e-17, 1, 0, -1, 6.12323e-17, 0, 0, 0, 1, -0.8, 0.45, -1.5189)
+transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, -1.5189)
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="tire" type="MeshInstance3D" parent="."]
-transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, 0.8, 0.64, 2.1717)
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.8, 0.64, 2.1717)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="tire2" type="MeshInstance3D" parent="."]
-transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, -0.8, 0.64, 2.1717)
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.8, 0.64, 2.1717)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="tire3" type="MeshInstance3D" parent="."]
-transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, 0.8, 0.64, -1.5189)
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.8, 0.64, -1.5189)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="tire4" type="MeshInstance3D" parent="."]
-transform = Transform3D(6.12323e-17, -1, 0, 1, 6.12323e-17, 0, 0, 0, 1, -0.8, 0.64, -1.5189)
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.8, 0.64, -1.5189)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="CameraTarget" type="Marker3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-1, 0, -1.22465e-16, 0, 1, 0, 1.22465e-16, 0, -1, 0, 2.3, 2.22045e-16)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.3, 0)
 
 [node name="ExitPoint" type="Marker3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 5.55112e-17, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)

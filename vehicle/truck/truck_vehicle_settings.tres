@@ -37,7 +37,7 @@ transmission = SubResource("VehicleTransmissionSettings_qxn04")
 differentials = Array[VehicleDifferentialSettings]([SubResource("VehicleDifferentialSettings_dsghi"), SubResource("VehicleDifferentialSettings_jdhhr")])
 
 [sub_resource type="WheelSettings" id="WheelSettings_xrypp"]
-position = Vector3(0.800000011920929, 0.6399999856948853, 2.171999931335449)
+position = Vector3(0.80000001192093, 0.63999998569489, 2.17199993133545)
 radius = 0.44
 width = 0.3
 suspension_max_length = 0.3
@@ -48,7 +48,7 @@ lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_pe5m6"]
-position = Vector3(-0.800000011920929, 0.6399999856948853, 2.171999931335449)
+position = Vector3(-0.80000001192093, 0.63999998569489, 2.17199993133545)
 radius = 0.44
 width = 0.3
 suspension_max_length = 0.3
@@ -59,7 +59,7 @@ lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_y4srf"]
-position = Vector3(0.800000011920929, 0.6399999856948853, -1.5190000534057617)
+position = Vector3(0.80000001192093, 0.63999998569489, -1.51900005340576)
 radius = 0.44
 width = 0.3
 suspension_max_length = 0.3
@@ -70,7 +70,7 @@ lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_hoh4d"]
-position = Vector3(-0.800000011920929, 0.6399999856948853, -1.5190000534057617)
+position = Vector3(-0.80000001192093, 0.63999998569489, -1.51900005340576)
 radius = 0.44
 width = 0.3
 suspension_max_length = 0.3

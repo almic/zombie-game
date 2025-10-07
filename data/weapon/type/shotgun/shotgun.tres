@@ -13,7 +13,7 @@
 
 [sub_resource type="Resource" id="Resource_6v8yj"]
 script = ExtResource("7_jxl5a")
-cycle_time = 1.45519e-11
+cycle_time = 0.0
 metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]
@@ -38,7 +38,7 @@ ammo_can_mix = true
 ammo_reversed_use = true
 ammo_supported = Array[ExtResource("1_uhuv2")]([ExtResource("2_b3bfv"), ExtResource("3_jxl5a")])
 ammo_expend_enabled = true
-ammo_expend_direction = Vector3(0.9820876847184574, 0.08444977288892319, 0.16843994592539263)
+ammo_expend_direction = Vector3(0.98208768471846, 0.08444977288892, 0.16843994592539)
 ammo_expend_direction_range = 0.261799
 ammo_expend_force = 0.08
 ammo_expend_force_range = 0.015
@@ -54,6 +54,6 @@ ui_texture = ExtResource("9_6v8yj")
 scene = ExtResource("5_1fb0h")
 scene_ui = ExtResource("6_vfjio")
 particle_scene = ExtResource("1_1fb0h")
-particle_offset = Vector3(1.45519e-11, 1.45519e-11, -0.88)
+particle_offset = Vector3(0, 0, -0.88)
 sound_effect = ExtResource("3_1fb0h")
 metadata/_custom_type_script = "uid://bwkctbyfo4j26"

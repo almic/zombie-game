@@ -13,7 +13,7 @@
 
 [sub_resource type="Resource" id="Resource_74sam"]
 script = ExtResource("4_gac0b")
-cycle_time = 1.45519e-11
+cycle_time = 0.0
 metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]

@@ -17,8 +17,9 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       produce a "trail" that could potentially be recreated later. Can probably
       use hashes of node paths for tracking ONLY a memory ID. Sensory memory should
       check tracking ids when saving and update existing memory if present.
-- [ ] Investigate memory decay/ deletion. Seems to be causing out-of-bounds bugs
-- [ ] Add facing when navigation received, while navigation takes time to compute
+- [X] Investigate memory decay/ deletion. Seems to be causing out-of-bounds bugs
+      NOTE: maybe fixed? add a break point on the delete and watch it
+- [X] Add facing when navigation received, while navigation takes time to compute
 - [ ]
 
 
@@ -85,7 +86,6 @@ Total:        76
 
 # ANGRY TODOS
 
-- [ ] Add PackedByteArray method to copy a range from one array to another, with offsets
 - [ ] IDEA for fixing terrain nav meshing: Compare close polygons for XZ overlap,
       and if they overlap then push the lower polygon vertices back so from above
       they do not appear to overlap (easier said than done).
@@ -119,3 +119,5 @@ Total:        76
 - [ ] Increase expended bullet life time, increase damping
 - [ ] Weapon "random spread" and "minimum spread" changed to "kick" and "random range"
       so the values don't look ridiculous
+
+- [X] Add PackedByteArray method to copy a range from one array to another, with offsets

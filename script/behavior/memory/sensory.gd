@@ -60,8 +60,17 @@ func get_events(type: Type) -> PackedInt32Array:
 ## Removes sensory memories that have expired
 func decay(delta: int) -> void:
     for type in event_idxs.keys():
-        for event in event_idxs[type]:
-            event_decay(type, event, delta)
+        var i: int = 0
+        var events: PackedInt32Array = event_idxs.get(type)
+        var size: int = events.size()
+        var event: int
+        while i < size:
+            event = events[i]
+            if event_decay(type, event, delta):
+                size -= 1
+                continue
+            i += 1
+
 
 ## AGGAOGEHAOEDATHOTDEIT>FHUIGI
 func _get_events_reference(type: Type) -> PackedByteArray:
@@ -264,16 +273,17 @@ func overwrite_event(type: Type, dest: int, src: PackedByteArray) -> void:
     pass
 
 
-# Decay the timer of an event by some number of seconds. If the event timer reaches
-# zero, it is removed from the event log.
-func event_decay(type: Type, event: int, seconds: int) -> void:
+## Decay the timer of an event by some number of seconds. If the event timer reaches
+## zero, it is removed from the event log, and `true` is returned. When this removes
+## an event, you should retrieve event ids again.
+func event_decay(type: Type, event: int, seconds: int) -> bool:
     var event_log: PackedByteArray = _get_events_reference(type)
     var time: int = event_log.decode_u16(event + e_EXPIRE)
     time -= seconds
 
     if time > 0:
         event_log.encode_u16(event + e_EXPIRE, time)
-        return
+        return false
 
     var indexes: PackedInt32Array = event_idxs.get(type)
     var event_id: int = indexes.bsearch(event, false) - 1
@@ -281,8 +291,10 @@ func event_decay(type: Type, event: int, seconds: int) -> void:
     var log_size: int = event_log.size()
 
     # Move later events forward
-    for i in range(event + size, log_size - 1):
-        event_log[i - size] = event_log[i]
+    var dest: int = event
+    var src: int = event + size
+    var c: int = log_size - src
+    event_log.move_range(dest, src, c)
 
     # trim log
     event_log.resize(log_size - size)
@@ -290,7 +302,13 @@ func event_decay(type: Type, event: int, seconds: int) -> void:
     # erase index
     indexes.remove_at(event_id)
 
+    # update indexes
+    for i in range(event_id, indexes.size()):
+        indexes[i] -= size
+
     event_count -= 1
+
+    return true
 
 
 ## Get the data count of this event

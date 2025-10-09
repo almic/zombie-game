@@ -2,6 +2,8 @@
 
 class_name Zombie extends CharacterBase
 
+## NOTE: do not call any methods on nav_agent until mind processing is done!
+##       many methods force a path update, which could cause bugs.
 @onready var nav_agent: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
 @onready var attack_hitbox: HitBox = %AttackHitbox
@@ -113,6 +115,9 @@ var _attack_timer: float = 0
 ## The sign encodes the direction, - is clockwise, + is counter-clockwise
 var _rotation_velocity: float = 0
 
+## Track navigation status, without forcing a path update
+var _is_nav_finished: bool = false
+
 
 func _ready() -> void:
     super._ready()
@@ -185,11 +190,16 @@ func do_pathing(delta: float) -> void:
         update_movement(delta)
         return
 
-    if not nav_agent.is_navigation_finished():
+    _is_nav_finished = nav_agent.is_navigation_finished()
+    if not _is_nav_finished:
         var next_pos: Vector3 = nav_agent.get_next_path_position()
         movement_direction = global_position.direction_to(next_pos)
 
     update_movement(delta)
+
+    if not _is_nav_finished:
+        # Could finish on this update
+        _is_nav_finished = nav_agent.is_navigation_finished()
 
     # Play appropriate animation for current movement
     var speed: float = velocity.length_squared()
@@ -223,7 +233,7 @@ func do_turning(delta: float) -> void:
     elif not stationary:
         direction = direction.normalized()
     # Face in the direction of where we would like to travel
-    elif _target_direction.is_zero_approx() and not nav_agent.is_navigation_finished():
+    elif _target_direction.is_zero_approx() and not _is_nav_finished:
         # navigation in progress but no direction, set direction to face target position
         direction = nav_agent.target_position - global_position
         direction.y = 0
@@ -277,12 +287,14 @@ func act_navigate(navigate: BehaviorActionNavigate) -> void:
     target_distance = navigate.target_distance * navigate.target_distance
 
     if (
-                nav_agent.is_navigation_finished()
+                _is_nav_finished
             and global_position.distance_squared_to(next_target) < target_distance
     ):
         navigate.completed = true
     else:
         nav_agent.target_position = next_target
+        # GlobalWorld.print('target nav: ' + str(navigate.direction))
+        _is_nav_finished = false
         nav_agent.navigation_finished.connect(navigate.on_complete.emit, CONNECT_ONE_SHOT)
 
 func act_attack(attack: BehaviorActionAttack) -> void:
@@ -315,7 +327,8 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
 
     super.update_movement(delta, speed)
 
-    if last_velocity.length_squared() < sleep_min_travel:
+    # NOTE: PERFORMANCE CRITICAL! TEST ANY CHANGES!
+    if not movement_direction.is_zero_approx() and last_velocity.length_squared() < sleep_min_travel:
         if _sleep_timeout_time > sleep_timeout:
             _sleep_wakeup_time = sleep_wakeup
         else:

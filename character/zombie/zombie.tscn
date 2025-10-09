@@ -18,8 +18,8 @@ height = 1.67
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_uiaus"]
 lightmap_size_hint = Vector2i(12, 11)
-radius = 0.35
-height = 1.5
+radius = 0.34
+height = 1.67
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_roy8y"]
 albedo_color = Color(0.713726, 0.278431, 0.027451, 1)
@@ -193,7 +193,7 @@ mesh = SubResource("CapsuleMesh_uiaus")
 surface_material_override/0 = SubResource("StandardMaterial3D_roy8y")
 
 [node name="face" type="MeshInstance3D" parent="collider" index="1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0.325)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0.325)
 visible = false
 cast_shadow = 0
 gi_mode = 0

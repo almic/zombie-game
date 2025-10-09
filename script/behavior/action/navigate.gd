@@ -2,6 +2,12 @@
 class_name BehaviorActionNavigate extends BehaviorAction
 
 
+const NAME = &"navigate"
+
+func name() -> StringName:
+    return NAME
+
+
 ## Emitted by the acting CharacterBase when the navigation finishes
 @warning_ignore("unused_signal")
 signal on_complete()
@@ -12,6 +18,9 @@ var direction: Vector3
 
 ## Distance to travel
 var distance: float
+
+## Game time when this event was created
+var time: float
 
 ## Desired target distance from the point specified
 var target_distance: float = 1.0
@@ -24,6 +33,7 @@ var completed: bool = false
 func _init(direction: Vector3, distance: float) -> void:
     self.direction = direction
     self.distance = distance
+    time = GlobalWorld.get_game_time()
 
 func get_global_position(parent: Node3D) -> Vector3:
     return parent.global_position + (direction * distance)

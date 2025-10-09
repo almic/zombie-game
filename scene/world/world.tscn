@@ -51,10 +51,10 @@
 [ext_resource type="Resource" uid="uid://dbg6mglqc5jqu" path="res://data/weapon/ammo/9mm.tres" id="45_51258"]
 [ext_resource type="NavigationMesh" uid="uid://c7quc3hoem8or" path="res://nav/mesh/house_block_4_nav_mesh.res" id="46_85d2q"]
 [ext_resource type="PackedScene" uid="uid://qvqv51oiedra" path="res://scene/item/ammo/slug/slug_pile.tscn" id="46_my0pb"]
-[ext_resource type="NavigationMesh" uid="uid://byx5eg6om3tol" path="res://nav/mesh/park_1_nav_mesh.tres" id="47_4d3y0"]
+[ext_resource type="NavigationMesh" uid="uid://8nwwu5errew2" path="res://nav/mesh/park_1_nav_mesh.res" id="46_utqjd"]
+[ext_resource type="NavigationMesh" uid="uid://4hach7l6pp44" path="res://nav/mesh/park_2_nav_mesh.res" id="47_85d2q"]
 [ext_resource type="Script" uid="uid://bhilt3o6lupmy" path="res://addons/csg_extra/csg_curve/csg_curve.gd" id="48_dayhp"]
 [ext_resource type="PackedScene" uid="uid://mvy2qv3hknqg" path="res://scene/item/ammo/9mm/9mm_pile.tscn" id="48_x3qer"]
-[ext_resource type="NavigationMesh" uid="uid://dwcgj512bv1kq" path="res://nav/mesh/park_2_nav_mesh.tres" id="48_xxc2j"]
 [ext_resource type="Resource" uid="uid://l13u3tumyr04" path="res://scene/world/polygon2d/road_10.tres" id="49_hyeqt"]
 [ext_resource type="Resource" uid="uid://dlrkgbv4k2ayw" path="res://data/weapon/ammo/fmj.tres" id="49_il2y7"]
 [ext_resource type="Resource" uid="uid://dwa7t74j4im87" path="res://scene/world/polygon2d/road_18.tres" id="50_hyeqt"]
@@ -195,6 +195,7 @@ camera_context = ExtResource("3_fur4y")
 first_person = ExtResource("2_tlwt5")
 vehicle_context = ExtResource("3_wuj0p")
 pause = ExtResource("3_036b0")
+enable_spawning = false
 target_spawn_count = 5
 spawn_count_extra = 5
 zomb_basic_zombie = ExtResource("19_ckxcn")
@@ -303,11 +304,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 process_mode = 1
 physics_interpolation_mode = 1
-transform = Transform3D(-0.15127, 0, 0.988493, 0, 1, 0, -0.988493, 0, -0.15127, -344.522845, 2.46585, -468.82394)
+transform = Transform3D(-0.50000025598719, 0, 0.86602584716725, 0, 1, 0, -0.86602584716725, 0, -0.50000025598719, -357.5, 2.466, -463.52)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -228.079, 2.41, -497.319)
+transform = Transform3D(0, 0, 1.0, 0, 1, 0, -1.0, 0, 0, -360.8455355, 2.41, -451.3017421)
 velocity = Vector3(0, -938.906, 0)
 
 [node name="WeaponPickups" type="Node" parent="."]
@@ -660,12 +661,12 @@ use_edge_connections = false
 [node name="Park1" type="NavigationRegion3D" parent="TerrainNavRegions"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -459, 0, -508)
-navigation_mesh = ExtResource("47_4d3y0")
+navigation_mesh = ExtResource("46_utqjd")
 
 [node name="Park2" type="NavigationRegion3D" parent="TerrainNavRegions"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 0, -508)
-navigation_mesh = ExtResource("48_xxc2j")
+navigation_mesh = ExtResource("47_85d2q")
 
 [node name="Terrain3D" type="Terrain3D" parent="." groups=["nav_group"]]
 data_directory = "res://terrain_data/world"
@@ -8539,13 +8540,13 @@ size = Vector3(1.82, 1.38, 1.72)
 material = ExtResource("22_cm2xv")
 
 [node name="Park" type="CSGCombiner3D" parent="LevelBlocking/Town" groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -389.89, 2, -475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -389.89, 2.4, -475)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 
 [node name="halfpipe" type="CSGCombiner3D" parent="LevelBlocking/Town/Park"]
-transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 8.48851, 0.41, 1.93405)
+transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 8.489, 0, 1.934)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Park/halfpipe"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
@@ -8577,6 +8578,11 @@ operation = 2
 size = Vector3(2, 0.2, 9)
 material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
+
+[node name="wall" type="CSGBox3D" parent="LevelBlocking/Town/Park"]
+transform = Transform3D(0, 0, -1.0, 0, 1, 0, 1.0, 0, 0, 31.65, 1.5, 20.15)
+size = Vector3(10, 3, 0.2)
+material = ExtResource("21_t6jhs")
 
 [node name="CarSizeReference" type="Node" parent="LevelBlocking/Town"]
 

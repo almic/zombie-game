@@ -128,8 +128,14 @@ func sense(mind: BehaviorMind) -> void:
             memory.event_add_time_of_day(event)
             memory.event_add_location(event, me.global_position, me.global_basis.z)
             memory.event_add_travel(event, direction, distance)
-            memory.event_add_forward(event, chara.global_basis.z)
             memory.event_add_node_path(event, chara.get_path())
+
+            var char_travel_dir: Vector3 = chara.last_velocity
+            if char_travel_dir.is_zero_approx():
+                char_travel_dir = Vector3.ZERO
+            else:
+                char_travel_dir = char_travel_dir.normalized()
+            memory.event_add_forward(event, char_travel_dir)
 
             memory.finish_event(event)
 

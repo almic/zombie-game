@@ -72,6 +72,20 @@ func decay(delta: int) -> void:
             i += 1
 
 
+## If the provided time is equivalent to the gametime that would be saved to an
+## event right now.
+static func is_event_gametime(time: float) -> float:
+    var seconds: int = floori(time)
+    var frac: int = int((time - seconds) * 256.0)
+    var test_time: float = float(seconds) + (float(frac) / 256.0)
+
+    var game_time: float = GlobalWorld.get_game_time()
+    seconds = floori(game_time)
+    frac = int((game_time - seconds) * 256.0)
+    game_time = float(seconds) + (float(frac) / 256.0)
+
+    return is_equal_approx(game_time, test_time)
+
 ## AGGAOGEHAOEDATHOTDEIT>FHUIGI
 func _get_events_reference(type: Type) -> PackedByteArray:
     # NOTE: DO NOT WRITE "as PackedByteArray" OR IT WILL MAKE A COPY!!!!!!!
@@ -552,8 +566,9 @@ func get_event_location(type: Type, event: int, which: int = 1) -> PackedVector3
 
     return [p, d]
 
-## Get travel data from an event. Returns an empty array if event lacks location
-## data, or `which` is greater than the number of location data stored.
+## Get travel data from an event, an array containing a Vector3 `direction` and
+## a float `distance`. Returns an empty array if event lacks location data, or
+## `which` is greater than the number of location data stored.
 func get_event_travel(type: Type, event: int, which: int = 1) -> Array[Variant]:
     var events: PackedByteArray = _get_events_reference(type)
     if not events:
@@ -614,14 +629,6 @@ func event_add_game_time(event: PackedByteArray) -> void:
     event.encode_u32(offset, GlobalWorld.game_time); offset += 4
     event.encode_u8(offset, int(GlobalWorld.game_time_frac * 256.0))
 
-## Calculate the rounded game time data which would be stored if the game time
-## was the given time
-func calc_rounded_game_time(time: float) -> float:
-    var seconds: int = floori(time)
-    var frac: int = int((time - seconds) * 256.0)
-
-    return float(seconds) + (float(frac) / 256.0)
-
 ## Add the current world local hour time
 func event_add_time_of_day(event: PackedByteArray) -> void:
     var offset: int = _event_add_data(event, d_TIMEOFDAY, d_TIMEOFDAY_SIZE)
@@ -665,7 +672,7 @@ func event_add_location(event: PackedByteArray, position: Vector3, direction: Ve
     event.encode_float(offset, direction.y); offset += 4
     event.encode_float(offset, direction.z)
 
-## Add travel data, containing a direction and
+## Add travel data, containing a Vector3 direction and float distance
 func event_add_travel(event: PackedByteArray, direction: Vector3, distance: float) -> void:
     var offset: int = _event_add_data(event, d_TRAVEL, d_TRAVEL_SIZE)
 

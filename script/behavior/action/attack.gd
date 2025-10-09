@@ -1,6 +1,12 @@
 class_name BehaviorActionAttack extends BehaviorAction
 
 
+const NAME = &"attack"
+
+func name() -> StringName:
+    return NAME
+
+
 ## Node to attack
 var target: Node3D
 

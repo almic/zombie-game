@@ -15,6 +15,7 @@ var is_sorting_phase: bool = false
 var _priority_list: Dictionary
 var _code_to_sense: Dictionary[StringName, BehaviorSense]
 var _goal_minimum_period: Dictionary[StringName, float]
+var _actions_called: Dictionary[StringName, Array]
 
 
 func _init() -> void:
@@ -22,6 +23,7 @@ func _init() -> void:
     _priority_list = {}
     _code_to_sense = {}
     _goal_minimum_period = {}
+    _actions_called = {}
 
 
 ## Retrieve a sense by name. If two senses are the same type, returns the first one.
@@ -41,6 +43,9 @@ func get_goal(name: StringName) -> BehaviorGoal:
 ## Call during the physics frame to do behavior stuff
 func update(delta: float) -> void:
     delta_time = delta
+
+    # Clear actions called
+    _actions_called.clear()
 
     # Process senses to update memories
     memory_bank.locked = false
@@ -100,11 +105,31 @@ func act(action: BehaviorAction) -> void:
         push_error('BehaviorMind cannot `act()` during the goal sorting phase! Investigate!')
         return
 
+    var name: StringName = action.name()
+    if not _actions_called.has(name):
+        var called: Array[BehaviorAction] = [action]
+        _actions_called.set(name, called)
+    else:
+        _actions_called.get(name).append(action)
+
     if parent and parent._handle_action(action):
         return
 
     # Default action behaviors
     # TODO
+
+## If an action of the given type has been called previously this update
+func has_acted(action: StringName) -> bool:
+    return _actions_called.has(action)
+
+## Get the number of times an action has been called previously on this update
+func get_acted_count(action: StringName) -> int:
+    return _actions_called.get(action).size()
+
+## Get the actions of the type that have previously been called on this update
+func get_acted_list(action: StringName) -> Array[BehaviorAction]:
+    return _actions_called.get(action)
+
 
 func _can_goal_process(goal: BehaviorGoal) -> bool:
     if not goal.sense_activated:

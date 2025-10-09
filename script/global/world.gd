@@ -5,6 +5,11 @@ var group_reset_ticks: int = 0
 
 var group_nodes: Dictionary[StringName, Array] = {}
 
+
+class Printer:
+    static func _print(s: String) -> void:
+        print(s)
+
 ## TODO: this is probably not implemented correctly for saving, please revisit
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
 var game_time: int
@@ -31,7 +36,6 @@ func get_nodes_in_group(group: StringName) -> Array[Node]:
 
     return group_nodes.get(group)
 
-
 func get_nodes_in_groups(groups: Array[StringName]) -> Array[Node]:
 
     const PREFIX = "_MULTIGROUP:"
@@ -50,6 +54,10 @@ func get_nodes_in_groups(groups: Array[StringName]) -> Array[Node]:
 
     return group_nodes.get(key)
 
+## Get the current game time with fractional seconds
+func get_game_time() -> float:
+    return game_time + game_time_frac
+
 ## Returns the DynamicDay in the current scene
 func get_day_time() -> DynamicDay:
     var world: World = get_tree().current_scene as World
@@ -57,3 +65,7 @@ func get_day_time() -> DynamicDay:
         return null
 
     return world.find_child("DynamicDay", false) as DynamicDay
+
+## Print a message with the game time prepended
+func print(message: String) -> void:
+    Printer._print(('[%.4f] ' % (game_time + game_time_frac)) + message)

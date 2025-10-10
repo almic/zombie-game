@@ -100,11 +100,20 @@ var sleep_wakeup: float = 1.0
 var _sleep_timeout_time: float = 0.0
 var _sleep_wakeup_time: float = 0.0
 
-## Target direction to face when stationary
-var _target_direction: Vector3 = Vector3.ZERO
+## Navigation direction to face when stationary while a nav is set
+var _nav_direction: Vector3 = Vector3.ZERO
 
 ## Direction to attack
-var _attack_direction: Vector3 = Vector3.ZERO
+var _attack_direction: Vector3 = Vector3.ZERO:
+    set(value):
+        _attack_direction = value
+        _attack_direction_xz = _attack_direction
+        _attack_direction_xz.y = 0
+        if not _attack_direction_xz.is_zero_approx():
+            _attack_direction_xz = _attack_direction_xz.normalized()
+
+## Direction to attack excluding the y component
+var _attack_direction_xz: Vector3
 
 ## Target to attack, used to check proximity before attacking
 var _attack_target: Node3D = null
@@ -116,7 +125,7 @@ var _attack_timer: float = 0
 var _rotation_velocity: float = 0
 
 ## Track navigation status, without forcing a path update
-var _is_nav_finished: bool = false
+var _is_nav_finished: bool = true
 
 
 func _ready() -> void:
@@ -228,19 +237,19 @@ func do_turning(delta: float) -> void:
 
     # Prioritize facing the attack direction
     if not _attack_direction.is_zero_approx():
-        direction = _attack_direction
+        direction = _attack_direction_xz
     # Face our direction of travel
     elif not stationary:
         direction = direction.normalized()
+        # Clear nav direction when we start turing to face movement direction
+        if not _nav_direction.is_zero_approx():
+            _nav_direction = Vector3.ZERO
     # Face in the direction of where we would like to travel
-    elif _target_direction.is_zero_approx() and not _is_nav_finished:
-        # navigation in progress but no direction, set direction to face target position
-        direction = nav_agent.target_position - global_position
-        direction.y = 0
-        direction = direction.normalized()
-    # Maintain target direction
+    elif not _is_nav_finished:
+        direction = _nav_direction
+    # Maintain current direction
     else:
-        direction = _target_direction
+        return
 
     update_rotation(delta, direction)
 
@@ -253,9 +262,11 @@ func do_attacking() -> void:
 
     # Probably a bad sign if target wasn't null, but whatever i think
     if _attack_direction.is_zero_approx():
+        _attack_direction = Vector3.ZERO
         _attack_target = null
 
-    var facing: float = _attack_direction.dot(global_basis.z)
+    var direction: Vector3 = _attack_direction_xz
+    var facing: float = direction.dot(global_basis.z)
     if facing >= attack_facing:
         var distance: float = global_position.distance_squared_to(_attack_target.global_position)
         _attack_direction = Vector3.ZERO
@@ -293,6 +304,12 @@ func act_navigate(navigate: BehaviorActionNavigate) -> void:
         navigate.completed = true
     else:
         nav_agent.target_position = next_target
+
+        _nav_direction = nav_agent.target_position - global_position
+        _nav_direction.y = 0
+        if not _nav_direction.is_zero_approx():
+            _nav_direction = _nav_direction.normalized()
+
         # GlobalWorld.print('target nav: ' + str(navigate.direction))
         _is_nav_finished = false
         nav_agent.navigation_finished.connect(navigate.on_complete.emit, CONNECT_ONE_SHOT)
@@ -342,6 +359,11 @@ func update_rotation(delta: float, direction: Vector3) -> void:
     # No requested direction, maintain current direction
     if direction.is_zero_approx():
         _rotation_velocity = 0
+        return
+
+    # NOTE: for development, should be removed later
+    if not direction.is_normalized() or not is_zero_approx(direction.y):
+        push_warning('Called update_rotation on zombie with a non-normalized direction, or a direction with a y component! Investigate!')
         return
 
     # Nearly facing the right direction

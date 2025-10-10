@@ -13,13 +13,11 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
-- [ ] Zombie rotations are bugged, will get stuck facing a direction and never
-      again until he attacks. Likely attack direction bug.
-- [ ] Fix totally broken wall sliding (really bad)
-- [ ] Fix really bad snap down / wall sticking
 - [ ] Add more zombie types
 - [ ] Support controller movement, can move slower/ faster
 - [ ] Investigate top_speed / speed value in update_movement
+- [ ] Fix jumping into certain height walls allowing sticking to wall and
+      jumping continuously to climb low walls. Possibly only for rigid objects.
 - [ ] Level blocking
 - [ ] Charge input broke
 - [ ] Add brake and handbrake inputs
@@ -39,6 +37,10 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] FIX THE SLUG MODEL, metal cap should be longer than the shot shell
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [X] Zombie rotations are bugged, will get stuck facing a direction and never
+      again until he attacks. Likely attack direction bug.
+- [X] Fix totally broken wall sliding (really bad)
+- [X] Fix really bad snap down / wall sticking
 - [X] Debug front differential / front wheels not recieving any engine torque
 - [X] Make each weapon have its own UI scene for displaying the weapon and ammo
 - [X] Investigate weird snapping bug

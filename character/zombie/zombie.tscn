@@ -2120,10 +2120,12 @@ shape = SubResource("CapsuleShape3D_t0jn8")
 
 [node name="eye_left" type="Marker3D" parent="BodyHurtbox/Head" index="1"]
 transform = Transform3D(-0.99619469809175, 0, -0.08715574274766, 0, 1, 0, 0.08715574274766, 0, -0.99619469809175, 0.03, 0.102, 0.12)
+visible = false
 gizmo_extents = 0.05
 
 [node name="eye_right" type="Marker3D" parent="BodyHurtbox/Head" index="2"]
 transform = Transform3D(-0.99619469809175, 0, 0.08715574274766, 0, 1, 0, -0.08715574274766, 0, -0.99619469809175, -0.03, 0.105, 0.12)
+visible = false
 gizmo_extents = 0.05
 
 [node name="Body" type="BoneAttachment3D" parent="BodyHurtbox" index="1"]

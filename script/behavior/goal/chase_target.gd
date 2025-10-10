@@ -178,6 +178,7 @@ func continue_chase(
 
     # GlobalWorld.print('chase navigating! ' + str(navigate.direction))
     mind.act(navigate)
+    mind.act(BehaviorActionSpeed.new(mind.parent.top_speed))
 
     # Connect back to this same navigation to continue chasing
     if not navigate.completed:

@@ -5,17 +5,21 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # Zombie AI TODOs
 
-- [ ] Chase Goal.
-      - Activates when:
-        1. No previous navigate action called
-        2.
+- [X] Add action to set desired movement speed (probably just set top speed value)
+- [ ] Add investigate goal.
+      Will respond to senses, face directions, increase/ decrease responsiveness
+      value, simple travel actions
+- [ ] Add hearing sense
+      - [ ] Connect to chase target goal, use hearing information if more recent
+            than last seen velocity
+      - [ ] Connect to investigate goal, use hearing information to face and
+            travel towards
 
 
 # TODO
 
 - [ ] Add more zombie types
 - [ ] Support controller movement, can move slower/ faster
-- [ ] Investigate top_speed / speed value in update_movement
 - [ ] Fix jumping into certain height walls allowing sticking to wall and
       jumping continuously to climb low walls. Possibly only for rigid objects.
 - [ ] Level blocking
@@ -37,6 +41,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] FIX THE SLUG MODEL, metal cap should be longer than the shot shell
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [X] Investigate top_speed / speed value in update_movement
 - [X] Zombie rotations are bugged, will get stuck facing a direction and never
       again until he attacks. Likely attack direction bug.
 - [X] Fix totally broken wall sliding (really bad)

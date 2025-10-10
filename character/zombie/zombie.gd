@@ -92,6 +92,8 @@ var last_player_damage: Player
 ## Most recent impacts from damage
 var last_hits: Array[Dictionary] = []
 
+## Movement target speed
+var move_speed: float = top_speed
 
 var sleep_min_travel: float = 0.001
 var sleep_timeout: float = 0.5
@@ -191,12 +193,12 @@ func do_pathing(delta: float) -> void:
 
     # Only path on ground
     if not is_grounded():
-        update_movement(delta)
+        update_movement(delta, move_speed)
         return
 
     # dont move if attacking
     if _is_attacking():
-        update_movement(delta)
+        update_movement(delta, 0)
         return
 
     _is_nav_finished = nav_agent.is_navigation_finished()
@@ -204,7 +206,7 @@ func do_pathing(delta: float) -> void:
         var next_pos: Vector3 = nav_agent.get_next_path_position()
         movement_direction = global_position.direction_to(next_pos)
 
-    update_movement(delta)
+    update_movement(delta, move_speed)
 
     if not _is_nav_finished:
         # Could finish on this update
@@ -285,6 +287,10 @@ func _handle_action(action: BehaviorAction) -> bool:
 
     if action is BehaviorActionAttack:
         act_attack(action)
+        return true
+
+    if action is BehaviorActionSpeed:
+        move_speed = clampf(action.speed, 0.0, top_speed)
         return true
 
     return false

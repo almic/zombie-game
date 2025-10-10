@@ -147,6 +147,7 @@ func perform_actions(mind: BehaviorMind) -> void:
 
     # GlobalWorld.print('attack navigating! ' + str(navigate.direction))
     mind.act(navigate)
+    mind.act(BehaviorActionSpeed.new(mind.parent.top_speed))
 
     if navigate.completed:
         flags |= BehaviorMemorySensory.Flag.RESPONSE_COMPLETE

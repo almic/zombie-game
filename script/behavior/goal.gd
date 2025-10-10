@@ -16,6 +16,16 @@ enum Priority {
 @export var code_name: StringName = &"GOAL"
 
 
+@export_group("Interest Activated")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var interest_activated: bool = false
+
+## Threshold of interest value to process this goal
+@export_range(0, 100, 1)
+var interest_threshold: int = 0
+
+
 @export_group("Sense Activated")
 
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, '')

@@ -25,6 +25,9 @@ func _init() -> void:
     _goal_minimum_period = {}
     _actions_called = {}
 
+    senses = senses.duplicate(true)
+    goals = goals.duplicate(true)
+
 
 ## Retrieve a sense by name. If two senses are the same type, returns the first one.
 func get_sense(name: StringName) -> BehaviorSense:

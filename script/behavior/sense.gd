@@ -7,6 +7,9 @@ class_name BehaviorSense extends Resource
 signal on_sense(sense: BehaviorSense)
 
 
+## If this sense is currently enabled
+@export var enabled: bool = true
+
 ## Name for differentiating senses of the same type
 @export var code_name: StringName = &"SENSE"
 
@@ -21,6 +24,9 @@ var activated: bool = false
 
 ## Updates the tick timer of the sense, returns `true` when the timer resets.
 func tick() -> bool:
+    if not enabled:
+        return false
+
     _tick_timer -= 1
     if _tick_timer < 1:
         _tick_timer = frequency

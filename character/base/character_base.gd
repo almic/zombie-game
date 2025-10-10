@@ -173,8 +173,19 @@ var fluid_details: FluidDetails = FluidDetails.new()
 var next_eye: int = 0
 
 
+# NOTE: for development, delete later
+var _debug_ready_called: bool = false
+var _debug_ready_called_error_printed: bool = false
+
 func _ready() -> void:
+    _debug_ready_called = true
     collider.shape = collider_shape
+
+    # Update cached variables
+    floor_max_slope = floor_max_slope
+    wall_slide_angle = wall_slide_angle
+    step_up_max_contact_angle = step_up_max_contact_angle
+    step_snap_down_max_angle = step_snap_down_max_angle
 
     if mind and not Engine.is_editor_hint():
         mind = mind.duplicate(true)
@@ -215,6 +226,13 @@ func is_grounded() -> bool:
 ## stepping and sliding as needed. This will also compute an acceleration that
 ## can be used with animations.
 func update_movement(delta: float, speed: float = top_speed) -> void:
+    # NOTE: for development only, remove later
+    if not _debug_ready_called:
+        if not _debug_ready_called_error_printed:
+            push_error('Character called update_movement without calling the parent CharacterBase._ready() method! This is a mistake!')
+            _debug_ready_called_error_printed = true
+        return
+
     # Prepare variables
     var stationary: bool = movement_direction.is_zero_approx()
     var grounded: bool = is_grounded()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=37 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
@@ -30,6 +30,7 @@
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="23_8bmvw"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="24_7gte1"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="25_k6mlu"]
+[ext_resource type="Resource" uid="uid://d4ynu0va0f30" path="res://data/input/actions/vehicle/handbrake.tres" id="26_r212m"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
 radius = 0.34
@@ -80,6 +81,7 @@ headlights = ExtResource("22_r212m")
 horn = ExtResource("23_8bmvw")
 steer = ExtResource("24_7gte1")
 exit_vehicle = ExtResource("25_k6mlu")
+handbrake = ExtResource("26_r212m")
 collider_shape = SubResource("CapsuleShape3D_qh58e")
 sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
 sight_points_no_depth = true

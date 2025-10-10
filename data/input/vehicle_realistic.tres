@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=35 format=3 uid="uid://codpo6l5xn1m8"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=39 format=3 uid="uid://codpo6l5xn1m8"]
 
 [ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_si4e3"]
 [ext_resource type="Resource" uid="uid://myiwmguaq6ih" path="res://data/input/actions/vehicle/accelerate.tres" id="2_1f07l"]
@@ -13,6 +13,7 @@
 [ext_resource type="Resource" uid="uid://1oc4rk1h4uql" path="res://data/input/actions/vehicle/headlights.tres" id="10_kcp1l"]
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="11_a8syp"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="12_s3plq"]
+[ext_resource type="Resource" uid="uid://d4ynu0va0f30" path="res://data/input/actions/vehicle/handbrake.tres" id="13_obwup"]
 
 [sub_resource type="Resource" id="Resource_1f07l"]
 script = ExtResource("4_y6uqt")
@@ -78,13 +79,13 @@ script = ExtResource("1_si4e3")
 action = ExtResource("10_kcp1l")
 input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_1ah74")])
 
-[sub_resource type="Resource" id="Resource_xvjru"]
+[sub_resource type="Resource" id="Resource_y6uqt"]
 script = ExtResource("4_y6uqt")
-key = 32
+key = 70
 
 [sub_resource type="Resource" id="Resource_t1pur"]
 script = ExtResource("3_obwup")
-input = SubResource("Resource_xvjru")
+input = SubResource("Resource_y6uqt")
 
 [sub_resource type="Resource" id="Resource_jlhvs"]
 script = ExtResource("1_si4e3")
@@ -104,7 +105,20 @@ script = ExtResource("1_si4e3")
 action = ExtResource("12_s3plq")
 input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_fnjy0")])
 
+[sub_resource type="Resource" id="Resource_fdcy7"]
+script = ExtResource("4_y6uqt")
+key = 32
+
+[sub_resource type="Resource" id="Resource_qh32l"]
+script = ExtResource("3_obwup")
+input = SubResource("Resource_fdcy7")
+
+[sub_resource type="Resource" id="Resource_67ult"]
+script = ExtResource("1_si4e3")
+action = ExtResource("13_obwup")
+input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_qh32l")])
+
 [resource]
 script = ExtResource("2_csvu0")
-mappings = Array[ExtResource("1_si4e3")]([SubResource("Resource_rp63r"), SubResource("Resource_fndri"), SubResource("Resource_8t08j"), SubResource("Resource_766sy"), SubResource("Resource_jlhvs"), SubResource("Resource_53qbf")])
+mappings = Array[ExtResource("1_si4e3")]([SubResource("Resource_rp63r"), SubResource("Resource_fndri"), SubResource("Resource_8t08j"), SubResource("Resource_766sy"), SubResource("Resource_jlhvs"), SubResource("Resource_53qbf"), SubResource("Resource_67ult")])
 metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

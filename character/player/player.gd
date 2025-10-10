@@ -98,6 +98,7 @@ var look_aim_return_time: float = 0.22
 @export var horn: GUIDEAction
 @export var steer: GUIDEAction
 @export var exit_vehicle: GUIDEAction
+@export var handbrake: GUIDEAction
 
 
 var score: int = 0:
@@ -388,6 +389,10 @@ func update_vehicle(delta: float) -> void:
     if steer.is_triggered():
         if current_vehicle is WheeledJoltVehicle:
             current_vehicle.steer(steer.value_axis_1d)
+
+    if handbrake.is_triggered():
+        if current_vehicle is WheeledJoltVehicle:
+            current_vehicle.handbrake(1)
 
     update_vehicle_camera(delta)
 

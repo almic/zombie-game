@@ -68,15 +68,19 @@ class FluidDetails:
 @export_group("Movement")
 
 @export var gravity: float = 9.81
+
 ## Top speed in meters per second
 @export var top_speed: float = 4.8
+
 ## Instant jupm speed in meters per second
 @export var jump_power: float = 5.0
+
 ## Maximum walkable slope, will slide along surfaces steeper than this
 @export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,or_greater,radians_as_degrees')
 var floor_max_slope: float = deg_to_rad(60.0):
     set = set_floor_max_slope
 var floor_max_cos_theta: float = -1
+
 ## Minimum angle to slide along walls when moving
 @export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,radians_as_degrees')
 var wall_slide_angle: float = deg_to_rad(4.0):
@@ -88,27 +92,36 @@ var wall_slide_cos_theta: float = -1
 ## Acceleration in the direction of movement in meters per second^2. Affects
 ## responsiveness of controls.
 @export var move_acceleration: float = 20.0
+
 ## Decceleration in meters per second^2. Affects slideyness of controls.
 @export var move_friction: float = 15
+
 ## Effectiveness of movement in the air, multiplier of acceleration
 @export var move_air_control: float = 0.25
+
 ## Air resistance, affects max fall speed and decceleration in the air
 @export var move_drag: float = 0.5
+
 ## How much speed to keep per 15 degrees of turning
 @export var move_turn_speed_keep: float = 0.67
 
 
 @export_subgroup("Stepping", "step")
+
 ## Maximum vertical step to take, in meters
 @export var step_up_max: float = 0.45
+
 ## Maximum falling step to take, in meters; ground snapping
 @export var step_snap_down_max: float = 0.45
+
 ## Extra forward distance test for stepping up stairs
 @export var step_up_forward_test: float = 0.15
+
 ## Minimum forward distance when testing stair steps, can help walking up stairs
 ## which the character is immediately next to, where initial acceleration may
 ## not be enough.
 @export var step_up_min_forward: float = 0.04
+
 ## The angle between the forward motion and the ground contact in which to step
 ## along the contact normal. Greater angles will test along the direction of
 ## motion. This allows characters to walk tangent to steps and travel up them.
@@ -116,9 +129,11 @@ var wall_slide_cos_theta: float = -1
 var step_up_max_contact_angle: float = deg_to_rad(75.0):
     set = set_up_max_contact_angle
 var step_up_max_contact_cos_theta: float = -1
+
 ## Extra forward distance to test for sticking to the ground when the character
 ## has upward velocity
 @export var step_snap_down_forward_test: float = 0.15
+
 @export_custom(PROPERTY_HINT_RANGE, '0.01,90,0.01,radians_as_degrees')
 var step_snap_down_max_angle: float = deg_to_rad(5.0):
     set = set_snap_down_max_angle
@@ -419,11 +434,10 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
             average_wall_normal = average_wall_normal.normalized()
 
             # Try to step up with remaining motion, if moving
-            if step < 2 and not stationary and grounded:
+            if step < 2 and (not stationary) and grounded:
                 var ray_point: Vector3 = wall_point / walls_hit
                 ray_point = ray_point.slide(up_direction)
                 ray_point += up_direction * up_direction.dot(global_position)
-                #ray_point += up_direction * 0.001
                 remainder = step_up(remainder, movement_direction, average_wall_normal, ray_point)
 
         if remainder.is_zero_approx():

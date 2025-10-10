@@ -302,13 +302,12 @@ debug_path_custom_color = Color(1, 0, 0, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
-process_mode = 1
 physics_interpolation_mode = 1
 transform = Transform3D(-0.50000025598719, 0, 0.86602584716725, 0, 1, 0, -0.86602584716725, 0, -0.50000025598719, -357.5, 2.466, -463.52)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
-transform = Transform3D(0, 0, 1.0, 0, 1, 0, -1.0, 0, 0, -360.8455355, 2.41, -451.3017421)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -360.8455355, 2.41, -451.3017421)
 velocity = Vector3(0, -938.906, 0)
 
 [node name="WeaponPickups" type="Node" parent="."]
@@ -8580,7 +8579,7 @@ material = ExtResource("25_1obi0")
 metadata/_edit_lock_ = true
 
 [node name="wall" type="CSGBox3D" parent="LevelBlocking/Town/Park"]
-transform = Transform3D(0, 0, -1.0, 0, 1, 0, 1.0, 0, 0, 31.65, 1.5, 20.15)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31.65, 1.5, 20.15)
 size = Vector3(10, 3, 0.2)
 material = ExtResource("21_t6jhs")
 

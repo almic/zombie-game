@@ -52,11 +52,11 @@ func update(delta: float) -> void:
 
     # Process senses to update memories
     memory_bank.locked = false
+    memory_bank.decay_memories(delta_time)
     for sense in senses:
         if sense.tick():
             sense.on_sense.emit(sense)
             sense.sense(self)
-    memory_bank.decay_memories(delta_time)
     memory_bank.locked = true
 
     # Get goal call order

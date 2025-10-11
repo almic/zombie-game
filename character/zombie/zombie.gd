@@ -2,12 +2,14 @@
 
 class_name Zombie extends CharacterBase
 
+
 ## NOTE: do not call any methods on nav_agent until mind processing is done!
 ##       many methods force a path update, which could cause bugs.
 @onready var nav_agent: NavigationAgent3D = %NavigationAgent3D
 @onready var animation_tree: AnimationTree = %AnimationTree
 @onready var attack_hitbox: HitBox = %AttackHitbox
 @onready var bone_simulator: PhysicalBoneSimulator3D = %BoneSimulator
+
 
 ## Body Region Hurtboxes
 @onready var head: HurtBox = %head
@@ -111,8 +113,16 @@ var sleep_wakeup: float = 1.0
 var _sleep_timeout_time: float = 0.0
 var _sleep_wakeup_time: float = 0.0
 
+## Track navigation status, without forcing a path update
+var _is_nav_finished: bool = true
+
 ## Navigation direction to face when stationary while a nav is set
 var _nav_direction: Vector3 = Vector3.ZERO
+
+## Target look direction
+## NOTE: when head turning is added, this would be limited when navigating or
+##       attacking, otherwise zombie will at least turn the head to this direction
+var _target_direction: Vector3 = Vector3.ZERO
 
 ## Direction to attack
 var _attack_direction: Vector3 = Vector3.ZERO:
@@ -132,11 +142,9 @@ var _attack_target: Node3D = null
 ## Timer to check if zomie is trying to attack
 var _attack_timer: float = 0
 
+
 ## The sign encodes the direction, - is clockwise, + is counter-clockwise
 var _rotation_velocity: float = 0
-
-## Track navigation status, without forcing a path update
-var _is_nav_finished: bool = true
 
 
 func _ready() -> void:
@@ -270,7 +278,7 @@ func do_turning(delta: float) -> void:
     if _is_attacking():
         return
 
-    var direction: Vector3
+    var direction: Vector3 = Vector3.ZERO
 
     # Prioritize facing the attack direction
     if not _attack_direction.is_zero_approx():
@@ -278,6 +286,11 @@ func do_turning(delta: float) -> void:
     # Face in the direction of where we would like to travel
     elif not _is_nav_finished:
         direction = _nav_direction
+    elif not _target_direction.is_zero_approx():
+        if is_zero_approx(_target_direction.dot(global_basis.z)):
+            _target_direction = Vector3.ZERO
+        else:
+            direction = _target_direction
     # Maintain current direction
     else:
         return
@@ -320,6 +333,10 @@ func _handle_action(action: BehaviorAction) -> bool:
 
     if action is BehaviorActionSpeed:
         move_speed = clampf(action.speed, 0.0, top_speed)
+        return true
+
+    if action is BehaviorActionTurn:
+        _target_direction = global_basis.z.rotated(Vector3.UP, action.turn)
         return true
 
     return false

@@ -28,18 +28,27 @@ class_name Zombie extends CharacterBase
 
 @export_group("Movement")
 
+@export_range(0, 180.0, 0.1, 'radians_as_degrees')
+var movement_direction_angle_max: float = deg_to_rad(20.0)
+
 @export_subgroup("Turning", "rotate")
+
 ## Maximum rotation rate in radians/ second
-@export var rotate_top_speed: float = TAU
+@export_range(1, 180, 1, 'or_greater', 'radians_as_degrees', 'suffix:°/s')
+var rotate_top_speed: float = deg_to_rad(15.0)
+
 ## Rotation acceleration in radians
-@export var rotate_acceleration: float = PI / 8
+@export_range(0.1, 30, 0.1, 'or_greater', 'radians_as_degrees', 'suffix:°/s²')
+var rotate_acceleration: float = deg_to_rad(10.0)
+
 ## Rotation decceleration in radians
-@export var rotate_decceleration: float = PI / 4
+@export_range(0.1, 45, 0.1, 'or_greater', 'radians_as_degrees', 'suffix:°/s²')
+var rotate_decceleration: float = deg_to_rad(20.0)
+
 ## Seconds to stop rotation if reaching top speed, rotation may stop
 ## sooner for shorter turns
-@export var rotate_stop_time: float = 2
-## How close to target to face them regardless of velocity
-@export var rotate_face_target_distance: float = 1
+@export_range(0.01, 2.0, 0.01, 'or_greater', 'suffix:sec')
+var rotate_stop_time: float = 0.25
 
 
 @export_group("Animation", "anim")
@@ -178,6 +187,8 @@ func _physics_process(delta: float) -> void:
 
     mind.update(delta)
 
+    # NOTE: move based on currently seen rotation, otherwise it looks like they
+    #       move at a sharper angle than they should be
     do_pathing(delta)
     do_turning(delta)
 
@@ -205,15 +216,40 @@ func do_pathing(delta: float) -> void:
     if not _is_nav_finished:
         var next_pos: Vector3 = nav_agent.get_next_path_position()
         movement_direction = global_position.direction_to(next_pos)
+        movement_direction.y = 0
+        if not movement_direction.is_zero_approx():
+            movement_direction = movement_direction.normalized()
+        _nav_direction = movement_direction
 
-    update_movement(delta, move_speed)
+    var speed: float = move_speed
+    # Compute real speed and direction
+    if not movement_direction.is_zero_approx():
+        # Modify speed based on desired travel direction and current direction
+        var forward: Vector3 = global_basis.z
+        var cos_theta: float = forward.dot(movement_direction)
+        var speed_mult = (cos_theta + 1) * 0.5
+        speed_mult *= speed_mult
+        speed *= speed_mult
+
+        # Limit travel direction to X degrees from current direction
+        if is_zero_approx(movement_direction_angle_max):
+            movement_direction = forward
+        else:
+            var vec_angle: float = acos(cos_theta)
+            if vec_angle > movement_direction_angle_max:
+                var rot_axis: Vector3 = forward.cross(movement_direction)
+                if not rot_axis.is_zero_approx():
+                    rot_axis = rot_axis.normalized()
+                    movement_direction = forward.rotated(rot_axis, movement_direction_angle_max)
+
+    update_movement(delta, speed)
 
     if not _is_nav_finished:
         # Could finish on this update
         _is_nav_finished = nav_agent.is_navigation_finished()
 
     # Play appropriate animation for current movement
-    var speed: float = velocity.length_squared()
+    speed = velocity.length_squared()
     if is_zero_approx(speed):
         anim_goto(locomotion, anim_idle)
     else:
@@ -234,18 +270,11 @@ func do_turning(delta: float) -> void:
     if _is_attacking():
         return
 
-    var direction: Vector3 = Vector3(velocity.x, 0, velocity.z)
-    var stationary: float = direction.length_squared() < 0.5
+    var direction: Vector3
 
     # Prioritize facing the attack direction
     if not _attack_direction.is_zero_approx():
         direction = _attack_direction_xz
-    # Face our direction of travel
-    elif not stationary:
-        direction = direction.normalized()
-        # Clear nav direction when we start turing to face movement direction
-        if not _nav_direction.is_zero_approx():
-            _nav_direction = Vector3.ZERO
     # Face in the direction of where we would like to travel
     elif not _is_nav_finished:
         direction = _nav_direction
@@ -310,11 +339,6 @@ func act_navigate(navigate: BehaviorActionNavigate) -> void:
         navigate.completed = true
     else:
         nav_agent.target_position = next_target
-
-        _nav_direction = nav_agent.target_position - global_position
-        _nav_direction.y = 0
-        if not _nav_direction.is_zero_approx():
-            _nav_direction = _nav_direction.normalized()
 
         # GlobalWorld.print('target nav: ' + str(navigate.direction))
         _is_nav_finished = false

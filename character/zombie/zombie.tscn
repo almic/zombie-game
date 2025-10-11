@@ -2070,6 +2070,7 @@ anim_player = NodePath("../AnimationPlayer")
 unique_name_in_owner = true
 path_desired_distance = 0.5
 path_metadata_flags = 0
+path_max_distance = 0.5
 simplify_path = true
 simplify_epsilon = 0.1
 avoidance_enabled = true

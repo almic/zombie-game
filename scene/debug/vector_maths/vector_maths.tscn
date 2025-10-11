@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3 uid="uid://1qjgg378dv17"]
+
+[ext_resource type="Script" uid="uid://0s5am4607h0u" path="res://script/debug/debug_vector.gd" id="1_6axg6"]
+[ext_resource type="Script" uid="uid://ve6rtosn668c" path="res://scene/debug/vector_maths/vector_maths.gd" id="1_egy6a"]
+
+[node name="VectorMaths" type="Node3D" node_paths=PackedStringArray("input", "target", "output")]
+script = ExtResource("1_egy6a")
+input = NodePath("InputVector")
+target = NodePath("TargetVector")
+output = NodePath("OutputVector")
+
+[node name="InputVector" type="Node3D" parent="."]
+transform = Transform3D(0.9, 0, 0, 0, 0.9, 0, 0, 0, 0.9, 0, 0, 0)
+script = ExtResource("1_6axg6")
+vector = Vector3(-0.86758847349453, 0.04997629455614, -0.49476531610575)
+color = Color(0, 0.7490196, 1, 0.5882353)
+normalized = true
+metadata/_custom_type_script = "uid://0s5am4607h0u"
+
+[node name="TargetVector" type="Node3D" parent="."]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, 0, 0, 0)
+script = ExtResource("1_6axg6")
+vector = Vector3(-0.8244416869707, 0, -0.5659469062578)
+color = Color(0.87058824, 0.31764707, 0.29411766, 0.74509805)
+normalized = true
+metadata/_custom_type_script = "uid://0s5am4607h0u"
+
+[node name="OutputVector" type="Node3D" parent="."]
+script = ExtResource("1_6axg6")
+vector = Vector3(-0.86758847349453, 0.04997629455614, -0.49476531610575)
+color = Color(0.69411767, 0.62352943, 1, 0.24313726)
+metadata/_custom_type_script = "uid://0s5am4607h0u"

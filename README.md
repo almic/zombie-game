@@ -12,8 +12,11 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
     - [X] Interest threshold on goals
     - [X] Have zombie move forward only, with small angle freedom, and rely on
           turning to travel in the intended direction
-    - [ ] Have zombie turn action rotation, it will save the delta and apply
-          the rotation over time on top of any other current rotations
+    - [X] Have zombie turn action rotation, it will save the direction and rotate
+          when other actions are not overriding turn direction
+    - [ ] Add interest groups to investigate goal and increase interest from senses
+    - [ ] Add turn action to investigate. Set thresholds for turning
+    - [ ] Add navigate action to investigate. Set thresholds for navigating
     - [ ] ...
 - [ ] Add hearing sense
     - [ ] Connect to chase target goal, use hearing information if more recent

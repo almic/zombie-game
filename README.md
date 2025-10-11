@@ -9,17 +9,17 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] Add investigate goal.
       Will respond to senses, face directions, increase/ decrease responsiveness
       value, simple travel actions
-      - [X] Interest threshold on goals
-      - [ ] Have zombie move forward only, with small angle freedom, and rely on
-            turning to travel in the intended direction
-      - [ ] Have zombie turn action rotation, it will save the delta and apply
-            the rotation over time on top of any other current rotations
-      - [ ]
+    - [X] Interest threshold on goals
+    - [X] Have zombie move forward only, with small angle freedom, and rely on
+          turning to travel in the intended direction
+    - [ ] Have zombie turn action rotation, it will save the delta and apply
+          the rotation over time on top of any other current rotations
+    - [ ] ...
 - [ ] Add hearing sense
-      - [ ] Connect to chase target goal, use hearing information if more recent
-            than last seen velocity
-      - [ ] Connect to investigate goal, use hearing information to face and
-            travel towards
+    - [ ] Connect to chase target goal, use hearing information if more recent
+          than last seen velocity
+    - [ ] Connect to investigate goal, use hearing information to face and
+          travel towards
 
 
 # TODO

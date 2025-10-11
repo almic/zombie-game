@@ -9,6 +9,12 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] Add investigate goal.
       Will respond to senses, face directions, increase/ decrease responsiveness
       value, simple travel actions
+      - [X] Interest threshold on goals
+      - [ ] Have zombie move forward only, with small angle freedom, and rely on
+            turning to travel in the intended direction
+      - [ ] Have zombie turn action rotation, it will save the delta and apply
+            the rotation over time on top of any other current rotations
+      - [ ]
 - [ ] Add hearing sense
       - [ ] Connect to chase target goal, use hearing information if more recent
             than last seen velocity
@@ -18,6 +24,9 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
+- [ ] Add zombie head turning as a skeleton modifier (?) so animations still
+      play but with additional head turning on top. Use for turning and facing
+      to lead the body in rotation.
 - [ ] Add more zombie types
 - [ ] Support controller movement, can move slower/ faster
 - [ ] Fix jumping into certain height walls allowing sticking to wall and

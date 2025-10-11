@@ -135,9 +135,17 @@ func get_acted_list(action: StringName) -> Array[BehaviorAction]:
 
 
 func _can_goal_process(goal: BehaviorGoal) -> bool:
-    if not goal.sense_activated:
-        return true
+    if goal.sense_activated:
+        if not _is_goal_sense_activated(goal):
+            return false
 
+    if goal.interest_activated:
+        if not _is_goal_interest_activated(goal):
+            return false
+
+    return true
+
+func _is_goal_sense_activated(goal: BehaviorGoal) -> bool:
     if _any_senses_activated(goal.sense_code_names):
         return true
 
@@ -158,7 +166,16 @@ func _can_goal_process(goal: BehaviorGoal) -> bool:
     _goal_minimum_period.set(goal.code_name, timer)
     return false
 
-## Helper to check iy any senses are currently marked as activated for goal
+func _is_goal_interest_activated(goal: BehaviorGoal) -> bool:
+    var interest_memory: BehaviorMemoryInterest = memory_bank.get_memory_reference(BehaviorMemoryInterest.NAME)
+
+    if not interest_memory:
+        return false
+
+    return interest_memory.interest >= goal.interest_threshold
+
+
+## Helper to check if any senses are currently marked as activated for goal
 ## processing.
 func _any_senses_activated(code_names: Array[StringName]) -> bool:
     for name in code_names:

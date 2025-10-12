@@ -201,7 +201,7 @@ func _is_goal_interest_activated(goal: BehaviorGoal) -> bool:
     if not interest_memory:
         return false
 
-    return interest_memory.interest >= goal.interest_threshold
+    return interest_memory.get_interest() >= goal.interest_threshold
 
 ## Helper to check if any senses are currently marked as activated for goal
 ## processing.

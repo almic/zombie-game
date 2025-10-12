@@ -14,7 +14,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
           turning to travel in the intended direction
     - [X] Have zombie turn action rotation, it will save the direction and rotate
           when other actions are not overriding turn direction
-    - [ ] Create a primary and secondary sense group for Mind
+    - [X] Create a primary and secondary sense group for Mind
     - [ ] Add 'curiosity' secondary sense that increases interest from primary senses
           This should use target groups and falloff curves. Interest memory should
           track nodes, accepting interest up to a threshold. When the threshold

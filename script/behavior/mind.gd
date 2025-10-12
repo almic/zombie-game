@@ -3,6 +3,7 @@ class_name BehaviorMind extends Resource
 
 
 @export var senses: Array[BehaviorSense] = []
+@export var secondary_senses: Array[BehaviorSense] = []
 @export var goals: Array[BehaviorGoal] = []
 
 
@@ -26,6 +27,7 @@ func _init() -> void:
     _actions_called = {}
 
     senses = senses.duplicate(true)
+    secondary_senses = secondary_senses.duplicate(true)
     goals = goals.duplicate(true)
 
 
@@ -34,6 +36,27 @@ func get_sense(name: StringName) -> BehaviorSense:
     for sense in senses:
         if name == sense.name():
             return sense
+    for sense in secondary_senses:
+        if name == sense.name():
+            return sense
+    return null
+
+## Retrieve a sense by code name. Code names may be unique between senses of the
+## same type, so it is possible to get a specific sense.
+func get_sense_by_code_name(code_name: StringName) -> BehaviorSense:
+    if _code_to_sense.has(code_name):
+        return _code_to_sense.get(code_name)
+
+    for sense in senses:
+        if sense.code_name == code_name:
+            _code_to_sense.set(code_name, sense)
+            return sense
+
+    for sense in secondary_senses:
+        if sense.code_name == code_name:
+            _code_to_sense.set(code_name, sense)
+            return sense
+
     return null
 
 ## Retrieve a goal by name. If two goals are the same type, returns the first one.
@@ -54,6 +77,10 @@ func update(delta: float) -> void:
     memory_bank.locked = false
     memory_bank.decay_memories(delta_time)
     for sense in senses:
+        if sense.tick():
+            sense.on_sense.emit(sense)
+            sense.sense(self)
+    for sense in secondary_senses:
         if sense.tick():
             sense.on_sense.emit(sense)
             sense.sense(self)
@@ -97,6 +124,8 @@ func update(delta: float) -> void:
 
     # Clear sense activations
     for sense in senses:
+        sense.activated = false
+    for sense in secondary_senses:
         sense.activated = false
 
 
@@ -174,17 +203,11 @@ func _is_goal_interest_activated(goal: BehaviorGoal) -> bool:
 
     return interest_memory.interest >= goal.interest_threshold
 
-
 ## Helper to check if any senses are currently marked as activated for goal
 ## processing.
 func _any_senses_activated(code_names: Array[StringName]) -> bool:
     for name in code_names:
-        if not _code_to_sense.has(name):
-            for sense in senses:
-                if sense.code_name == name:
-                    _code_to_sense.set(name, sense)
-                    break
-        var sense: BehaviorSense = _code_to_sense.get(name)
+        var sense: BehaviorSense = get_sense_by_code_name(name)
 
         # NOTE: for development, should be removed
         if not sense:
@@ -193,4 +216,5 @@ func _any_senses_activated(code_names: Array[StringName]) -> bool:
 
         if sense.activated:
             return true
+
     return false

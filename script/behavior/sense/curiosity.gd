@@ -23,11 +23,6 @@ var maximum_curiosity: int = 100
 ## longer create interest, even if the final point is greater than zero.
 @export var distance_falloff: Curve
 
-## How much to multiply interest by based on age of event. It is assumed that
-## events older than the max_domain of the curve will be out of time range and
-## no longer create interest, even if the final point is greater than zero.
-@export var time_falloff: Curve
-
 ## Interesting group names with their base interest and interest threshold. If
 ## a node has multiple groups, the highest values will be used. The first number
 ## is the base interest, before falloff and curiosity multipliers. The second
@@ -37,7 +32,7 @@ var maximum_curiosity: int = 100
 
 # Map of interesting nodes, key is the StringName nade path, the value is the
 # group settings id and the interest to add
-var interesting_nodes: Dictionary[StringName, Vector2i]
+var interesting_nodes: Dictionary[StringName, Vector2]
 
 
 func _init() -> void:
@@ -79,23 +74,29 @@ func sense(mind: BehaviorMind) -> void:
         mind.memory_bank.save_memory_reference(interest_memory)
 
     for node_name in interesting_nodes.keys():
-        var data: Vector2i = interesting_nodes.get(node_name)
-        var group := target_groups[data.x]
-        var add = data.y
+        var data: Vector2 = interesting_nodes.get(node_name)
 
-        var node: PackedByteArray = interest_memory.get_node(node_name)
-        var interest = interest_memory.node_get_interest(node)
+        # NOTE: optimization
+        if data.x == -1.0:
+            continue
 
-        interest_memory.node_set_decay_rate_id(node, data.x)
+        var group_id: int = int(data.x)
+        var group := target_groups[group_id]
+        var add: float = data.y
+
+        var node := interest_memory.get_node(node_name)
+        var interest: float = interest_memory.node_get_interest(node)
+
+        interest_memory.node_set_decay_rate_id(node, group_id)
 
         # Only modify interest if not in refractory period
         var refractory: float = interest_memory.node_get_refresh_time(node)
         if refractory == 0.0:
-            if interest + add >= group.threshold:
-                interest_memory.node_add_interest(node, group.threshold - interest)
+            if is_equal_approx(group.threshold, minf(interest + add, group.threshold)):
+                interest_memory.node_set_interest(node, group.threshold)
                 interest_memory.node_set_refresh_time(node, group.refractory_period)
             else:
-                interest_memory.node_add_interest(node, add)
+                interest_memory.node_set_interest(node, interest + add)
 
 
 func process_sight(
@@ -120,10 +121,9 @@ func process_sight(
         return
 
     # Check time
-    var initial_time: float = memory.get_event_game_time(t, event, 1)
     var update_time: float = memory.get_event_game_time(t, event, 2)
     var current_time: float = GlobalWorld.get_game_time()
-    if maxf(initial_time, current_time - (mind.delta_time * frequency)) - update_time > time_falloff.max_domain:
+    if int((current_time - update_time) / mind.delta_time) > frequency:
         return
 
     # Check node
@@ -136,12 +136,17 @@ func process_sight(
         return
 
     # Get best group
-    var interest: int = 0
+    var interest: float = 0
     var group_id: int = -1
     var group: BehaviorSenseCuriosityTargetSettings = null
     if interesting_nodes.has(node):
-        var data: Vector2i = interesting_nodes.get(node)
-        group_id = data.x
+        var data: Vector2 = interesting_nodes.get(node)
+
+        # NOTE: optimization to avoid double checking bad nodes
+        if data.x == -1.0:
+            return
+
+        group_id = int(data.x)
         group = target_groups[group_id]
         interest = data.y
     else:
@@ -155,25 +160,17 @@ func process_sight(
                 group_id = i
                 group = settings
 
-    # Count interest ticks before the last update, after initial event, and
-    # use time falloff for ticks after the last update
-    var max_count: int = frequency
-    while max_count > 0 and current_time >= initial_time:
-        var time_offset: float = current_time - update_time
-        if time_offset <= time_falloff.max_domain:
-            var markiplier: float = dist_mult
-            markiplier *= time_falloff.sample_baked(maxf(0.0, time_offset))
-            markiplier *= mind.delta_time
+        # NOTE: optimization to avoid double checking nodes
+        if group_id == -1:
+            interesting_nodes.set(node, Vector2(-1.0, 0.0))
 
-            # NOTE: round to nearest integer per tick multiplier, this keeps the
-            #       result roughly consistent no matter the frequency
-            interest += roundi(group.base_interest * markiplier)
+    if group_id == -1:
+        return
 
-        current_time -= mind.delta_time
-        max_count -= 1
+    var add: float = group.base_interest * dist_mult * mind.delta_time * frequency
 
-    if interest == 0:
+    if is_zero_approx(add):
         return
 
     # Save to interesting nodes
-    interesting_nodes.set(node, Vector2i(group_id, interest))
+    interesting_nodes.set(node, Vector2(group_id, interest + add))

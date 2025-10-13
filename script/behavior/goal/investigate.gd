@@ -23,7 +23,7 @@ func update_priority(mind: BehaviorMind) -> int:
     if not sens_memory:
         return 0
 
-    var any_best_interest: int = -1
+    var any_best_interest: float = -INF
     var event: int = -1
     var t: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.MAX
     for type_threshold in type_thresholds:
@@ -37,7 +37,7 @@ func update_priority(mind: BehaviorMind) -> int:
 
         # Find most interesting event
         var best_event: int = -1
-        var best_interest: int = 0
+        var best_interest: float = 0
         for ev in events:
             # TODO
             pass

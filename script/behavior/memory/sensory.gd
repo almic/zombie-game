@@ -524,13 +524,19 @@ func get_event_time_of_day(type: Type, event: int, which: int = 1) -> float:
 ## Get node path data from an event. Returns the empty node path if event lacks
 ## node path data, or `which` is greater than the number of node path data stored.
 func get_event_node_path(type: Type, event: int, which: int = 1) -> NodePath:
+    return NodePath(get_event_node_path_string(type, event, which))
+
+## Get node path data as a StringName from an event. Returns the empty StringName
+## if the event lacks node path data, or `which` is greater than the number of
+## node path data stored.
+func get_event_node_path_string(type: Type, event: int, which: int = 1) -> StringName:
     var events: PackedByteArray = _get_events_reference(type)
     if not events:
-        return NodePath()
+        return &""
 
     var offset: int = _get_event_data_offset(events, event, d_NODEPATH, which)
     if offset < 0:
-        return NodePath()
+        return &""
 
     var size: int = events.decode_u16(offset); offset += 2
     var bytes: PackedByteArray
@@ -539,7 +545,7 @@ func get_event_node_path(type: Type, event: int, which: int = 1) -> NodePath:
     for i in range(size):
         bytes[i] = events[offset + i]
 
-    return NodePath(bytes.get_string_from_utf8())
+    return bytes.get_string_from_utf8()
 
 ## Get location data from an event. Returns empty array if event lacks location
 ## data, or `which` is greater than the number of location data stored.

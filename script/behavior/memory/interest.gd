@@ -8,11 +8,18 @@ func name() -> StringName:
 
 
 func can_decay() -> bool:
-    return true
+    return total_interest > 0 or _longest_timer > 0
 
 func decay(seconds: int) -> void:
+    _longest_timer = 0
+    total_interest = 0
     for node_name in interesting_nodes.keys():
-        decay_node(node_name, seconds)
+        var results := decay_node(node_name, seconds)
+        var interest: int = results[0]
+        var time_left: float = results[1]
+        if time_left > _longest_timer:
+            _longest_timer = time_left
+        total_interest += interest
 
 
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
@@ -24,6 +31,7 @@ var total_interest: int = 0
 
 var _max_interest: int
 var _inv_decay_rates: PackedFloat32Array
+var _longest_timer: float = 0
 
 
 func get_interest() -> int:
@@ -41,24 +49,50 @@ func assign_max_interest(max_interest: int) -> void:
     _max_interest = clampi(max_interest, 0, 255)
 
 
-func decay_node(node_name: StringName, seconds: int) -> void:
+## Decays a node interest and refresh timer according to the decay rate.
+## Returns the interest and refresh timer value, used by the decay memory method
+## to track total interest and the longest timer.
+func decay_node(node_name: StringName, seconds: int) -> Array:
     # NOTE: do not write 'as PackedByteArray' or it will make a copy!
     var node: PackedByteArray = interesting_nodes.get(node_name)
     if not node:
-        return
+        return [int(0), float(0.0)]
 
     var interest: int = node_get_interest(node)
-    var rate: float = node_get_decay_rate(node)
-    var decay_timer: float = node_get_decay_timer(node)
+    var refresh_timer: float = node_get_refresh_time(node)
 
-    decay_timer += seconds
-    while decay_timer >= rate:
-        decay_timer -= rate
-        interest -= 1
-        total_interest -= 1
+    # Nothing to do
+    if interest == 0 and refresh_timer == 0.0:
+        return [int(0), float(0.0)]
 
-    node_set_interest(node, interest)
-    node_set_decay_timer(node, decay_timer)
+    if interest > 0:
+        var change: int = 0
+        var rate: float = node_get_decay_rate(node)
+        var decay_timer: float = node_get_decay_timer(node)
+
+        decay_timer += seconds
+        while decay_timer >= rate:
+            decay_timer -= rate
+            if change < interest:
+                change += 1
+
+        if change > 0:
+            node_add_interest(node, -change)
+            interest -= change
+
+        node_set_decay_timer(node, decay_timer)
+    else:
+        # Decay refresh when interest is zero
+        refresh_timer -= seconds
+        if refresh_timer <= 0.0:
+            refresh_timer = 0.0
+
+            # NOTE: reset decay timer to prevent early decay in the future
+            node_set_decay_timer(node, 0.0)
+
+        node_set_refresh_time(node, refresh_timer)
+
+    return [int(interest), float(refresh_timer)]
 
 
 const d_INTEREST = 0
@@ -68,14 +102,28 @@ const d_DECAYIDX_LEN = 1
 const d_DECAYTIMER = d_DECAYIDX + d_DECAYIDX_LEN
 const d_DECAYTIMER_LEN = 3
 const d_REFRESH = d_DECAYTIMER + d_DECAYTIMER_LEN
-const e_REFRESH_LEN = 3
+const d_REFRESH_LEN = 3
 
+const d_LENGTH = d_REFRESH + d_REFRESH_LEN
+
+
+func get_node(node_name: StringName) -> PackedByteArray:
+    if interesting_nodes.has(node_name):
+        return interesting_nodes.get(node_name)
+
+    var data := PackedByteArray()
+    data.resize(d_LENGTH)
+    data.fill(0)
+
+    interesting_nodes.set(node_name, data)
+    return data
 
 func node_get_interest(node: PackedByteArray) -> int:
     return node.decode_u8(d_INTEREST)
 
-func node_set_interest(node: PackedByteArray, interest: int) -> void:
-    node.encode_u8(d_INTEREST, interest)
+func node_add_interest(node: PackedByteArray, add: int) -> void:
+    var interest = node.decode_u8(d_INTEREST)
+    node.encode_u8(d_INTEREST, clampi(interest + add, 0, 255))
 
 func node_get_decay_rate(node: PackedByteArray) -> float:
     var idx: int = node.decode_u8(d_DECAYIDX)

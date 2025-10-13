@@ -86,7 +86,8 @@ func sense(mind: BehaviorMind) -> void:
             visual = test_vision_character(mind.parent, target)
         elif is_instance_of(target, Node3D):
             visual = test_vision_node(mind.parent, target)
-            # TODO: no memory container can track this yet
+        else:
+            continue
 
         var avg: Vector4 = Vector4.ZERO
         var count: int = 0
@@ -141,6 +142,7 @@ func sense(mind: BehaviorMind) -> void:
 
             mind.memory_bank.save_memory_reference(memory)
             activated = true
+        # TODO: add memory for non-characters
 
 
 func _update_debug_vision_cone() -> void:

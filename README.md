@@ -15,13 +15,13 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
     - [X] Have zombie turn action rotation, it will save the direction and rotate
           when other actions are not overriding turn direction
     - [X] Create a primary and secondary sense group for Mind
-    - [ ] Add 'curiosity' secondary sense that increases interest from primary senses
+    - [X] Add 'curiosity' secondary sense that increases interest from primary senses
           This should use target groups and falloff curves. Interest memory should
           track nodes, accepting interest up to a threshold. When the threshold
           is exceeded, SET a timer (do not start yet). At this point, no more can
           be added. The interest on the node must decay to zero, THEN start the
           timer, and once it reaches zero, interest can once again be added.
-    - [ ] Add interest groups to investigate goal and increase interest from senses
+    - [ ] Find most interesting event to respond to in investigate update_priority()
     - [ ] Add turn action to investigate. Set thresholds for turning
     - [ ] Add navigate action to investigate. Set thresholds for navigating
     - [ ] ...

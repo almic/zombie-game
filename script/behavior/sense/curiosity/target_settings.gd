@@ -3,19 +3,20 @@ class_name BehaviorSenseCuriosityTargetSettings extends Resource
 ## Target group name
 @export var group_name: StringName = &""
 
-## Base interest for this group. If a node has multiple groups, the highest
-## base interest will be selected.
-@export_range(1, 100, 1, 'or_greater')
+## Base interest for this group generated per second. If a node has multiple
+## groups, the highest base interest will be selected.
+@export_range(1, 100, 1, 'or_greater', 'suffix:per second')
 var base_interest: int = 1
 
 ## Maximum interest contribution for an individual node, when reached the
-## interest must decay to zero before more interest can be generated
+## interest must decay to zero before more interest can be generated. Set to
+## zero to disable.
 @export_range(0, 100, 1, 'or_greater')
 var threshold: int = 20
 
 ## Interest unit decay per second. Interest always decays, but this can be
 ## thought of as the initial delay period when the threshold is reached.
-@export_range(0.01, 2.0, 0.01, 'or_greater', 'suffix:/s')
+@export_range(0.01, 2.0, 0.01, 'or_greater', 'suffix:per second')
 var decay_rate: float = 1.0
 
 ## Time period after interest decays to zero, when it has previously exceeded

@@ -92,11 +92,13 @@ func sense(mind: BehaviorMind) -> void:
         # Only modify interest if not in refractory period
         var refractory: float = interest_memory.node_get_refresh_time(node)
         if refractory == 0.0:
-            if is_equal_approx(group.threshold, minf(interest + add, group.threshold)):
+            if not is_zero_approx(group.threshold) and is_equal_approx(group.threshold, minf(interest + add, group.threshold)):
                 interest_memory.node_set_interest(node, group.threshold)
                 interest_memory.node_set_refresh_time(node, group.refractory_period)
             else:
                 interest_memory.node_set_interest(node, interest + add)
+
+        activated = true
 
 
 func process_sight(

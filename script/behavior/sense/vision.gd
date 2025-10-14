@@ -106,7 +106,7 @@ func sense(mind: BehaviorMind) -> void:
         # NOTE: test function will ensure the directions are non-zero length.
         #       HOWEVER, averaging could change them to zero, so handle that
         if direction.is_zero_approx():
-            direction = eye_dir
+            direction = me.global_basis.z
         else:
             direction = direction.normalized()
 
@@ -251,23 +251,23 @@ func test_vision_targets(
             continue
 
         # Check FOV angle
-        distance = sqrt(distance)
         if not is_zero_approx(distance):
-            direction /= distance
+            direction /= sqrt(distance)
             var target_cos_theta: float = direction.dot(eye_dir)
             if target_cos_theta < _fov_cos:
                 continue
             direction = target - me.global_position
+            distance = direction.length()
+            direction /= distance
         else:
+            direction = me.global_basis.z
             distance = 0.0
-            direction = eye_dir
 
         query.to = target
         var hit: Dictionary = space.intersect_ray(query)
 
         # No hit means there is line of sight!
         if not hit:
-            direction = direction.normalized()
             results[i] = Vector4(direction.x, direction.y, direction.z, distance)
 
             if debug_enabled:

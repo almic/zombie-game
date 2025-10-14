@@ -22,7 +22,7 @@ enum Priority {
 var interest_activated: bool = false
 
 ## Threshold of interest value to process this goal
-@export_range(0, 100, 1)
+@export_range(0, 255, 1)
 var interest_threshold: int = 0
 
 

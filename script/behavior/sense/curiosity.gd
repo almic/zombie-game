@@ -30,6 +30,15 @@ var maximum_curiosity: int = 100
 @export var target_groups: Array[BehaviorSenseCuriosityTargetSettings]
 
 
+@export_subgroup("Debug", "debug")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var debug_enabled: bool = false
+
+## Print node interest values to console on sense updates
+@export var debug_print_curious_nodes: bool = false
+
+
 # Map of interesting nodes, key is the StringName nade path, the value is the
 # group settings id and the interest to add
 var interesting_nodes: Dictionary[StringName, Vector2]
@@ -87,7 +96,9 @@ func sense(mind: BehaviorMind) -> void:
         var node := interest_memory.get_node(node_name)
         var interest: float = interest_memory.node_get_interest(node)
 
+        # NOTE: update decay group and reset timer so we don't start decaying instantly
         interest_memory.node_set_decay_rate_id(node, group_id)
+        interest_memory.node_set_decay_timer(node, 0.0)
 
         # Only modify interest if not in refractory period
         var refractory: float = interest_memory.node_get_refresh_time(node)
@@ -98,6 +109,11 @@ func sense(mind: BehaviorMind) -> void:
             else:
                 interest_memory.node_set_interest(node, interest + add)
 
+        if debug_enabled and debug_print_curious_nodes:
+            interest = interest_memory.node_get_interest(node)
+            print('Node ' + str(node_name) + ' interest : ' + str(interest))
+
+        interest_memory.start_decay()
         activated = true
 
 
@@ -138,7 +154,7 @@ func process_sight(
         return
 
     # Get best group
-    var interest: float = 0
+    var last_interest: float = 0
     var group_id: int = -1
     var group: BehaviorSenseCuriosityTargetSettings = null
     if interesting_nodes.has(node):
@@ -150,7 +166,7 @@ func process_sight(
 
         group_id = int(data.x)
         group = target_groups[group_id]
-        interest = data.y
+        last_interest = data.y
     else:
         for i in range(target_groups.size()):
             var settings := target_groups[i]
@@ -169,10 +185,15 @@ func process_sight(
     if group_id == -1:
         return
 
-    var add: float = group.base_interest * dist_mult * mind.delta_time * frequency
+    # TODO: investigate if we overwrite a 1 tick new event with the frequency
+    #       tick older event correctly. Otherwise when a new event is made, we
+    #       are losing some time from the immediately previous event.
+    var initial_time: float = memory.get_event_game_time(t, event, 1)
+    var time: float = minf(mind.delta_time * frequency, current_time - initial_time)
+    var add: float = group.base_interest * dist_mult * time
 
-    if is_zero_approx(add):
+    if is_zero_approx(add) or last_interest > add:
         return
 
     # Save to interesting nodes
-    interesting_nodes.set(node, Vector2(group_id, interest + add))
+    interesting_nodes.set(node, Vector2(group_id, add))

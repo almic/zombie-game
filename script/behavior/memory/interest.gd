@@ -8,11 +8,12 @@ func name() -> StringName:
 
 
 func can_decay() -> bool:
-    return _total_interest > 0 or _longest_timer > 0
+    return _start_decay or _total_interest > 0 or _longest_timer > 0
 
-func decay(seconds: int) -> void:
+func decay(seconds: float) -> void:
     _longest_timer = 0
     _total_interest = 0
+    _start_decay = false
     for node_name in interesting_nodes.keys():
         var results := decay_node(node_name, seconds)
         var interest: float = results[0]
@@ -29,6 +30,7 @@ var _total_interest: float = 0
 var _max_interest: int
 var _inv_decay_rates: PackedFloat32Array
 var _longest_timer: float = 0
+var _start_decay: bool = false
 
 
 func get_interest() -> int:
@@ -47,11 +49,15 @@ func assign_decay_rates(rates: PackedFloat32Array) -> void:
 func assign_max_interest(max_interest: int) -> void:
     _max_interest = clampi(max_interest, 0, 255)
 
+## Call so that decay runs on the next tick, otherwise interest changes may fail
+## to decay at all.
+func start_decay() -> void:
+    _start_decay = true
 
 ## Decays a node interest and refresh timer according to the decay rate.
 ## Returns the interest and refresh timer value, used by the decay memory method
 ## to track total interest and the longest timer.
-func decay_node(node_name: StringName, seconds: int) -> PackedFloat32Array:
+func decay_node(node_name: StringName, seconds: float) -> PackedFloat32Array:
     # NOTE: do not write 'as PackedByteArray' or it will make a copy!
     var node: PackedByteArray = interesting_nodes.get(node_name)
     if not node:
@@ -129,7 +135,9 @@ func node_set_interest(node: PackedByteArray, interest: float) -> void:
     var whole: int = int(interest)
     var frac: int = roundi((interest - whole) * 256.0)
 
-    if frac > 255:
+    if whole > 255:
+        frac = 255
+    elif frac > 255 and whole < 255:
         whole += 1
         frac = 0
 

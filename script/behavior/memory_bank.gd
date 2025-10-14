@@ -5,6 +5,7 @@ class_name BehaviorMemoryBank extends Resource
 var memories: Dictionary[StringName, BehaviorMemory] = {}
 var locked: bool = false
 var decay_timer: float = 0
+var decay_frequency: float = 0.25
 
 
 ## Returns a copy of a memory. If changed, the memory must be saved back using
@@ -43,14 +44,14 @@ func decay_memories(delta: float) -> void:
         return
 
     decay_timer += delta
-    var decay_seconds: int = 0
-    while decay_timer >= 1.0:
-        decay_timer -= 1.0
-        decay_seconds += 1
+    var decay_ticks: int = 0
+    while decay_timer >= decay_frequency:
+        decay_timer -= decay_frequency
+        decay_ticks += 1
 
-    if decay_seconds < 1:
+    if decay_ticks < 1:
         return
 
     for memory in memories.values():
         if (memory as BehaviorMemory).can_decay():
-            (memory as BehaviorMemory).decay(decay_seconds)
+            (memory as BehaviorMemory).decay(decay_ticks * decay_frequency)

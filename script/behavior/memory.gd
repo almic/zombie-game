@@ -22,8 +22,8 @@ class_name BehaviorMemory extends Resource
 
 ""
 
-## Called when an internal delta accumulator exceeds 1 second, and only if
-## `can_decay()` returns true.
+## Called when an internal delta accumulator exceeds a frequency rate, and only
+## if `can_decay()` returns true.
 @warning_ignore("unused_parameter")
-func decay(seconds: int) -> void:
+func decay(seconds: float) -> void:
     pass

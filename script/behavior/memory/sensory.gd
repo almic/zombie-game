@@ -58,7 +58,7 @@ func get_events(type: Type) -> PackedInt32Array:
     return PackedInt32Array()
 
 ## Removes sensory memories that have expired
-func decay(delta: int) -> void:
+func decay(delta: float) -> void:
     for type in event_idxs.keys():
         var i: int = 0
         var events: PackedInt32Array = event_idxs.get(type)
@@ -101,31 +101,24 @@ const e_TRACKINGID_LEN = 8
 const e_FLAG = e_TRACKINGID + e_TRACKINGID_LEN
 const e_FLAG_LEN = 1
 const e_EXPIRE = e_FLAG + e_FLAG_LEN
-const e_EXPIRE_LEN = 2
+const e_EXPIRE_LEN = 3
 const e_DATA = e_EXPIRE + e_EXPIRE_LEN
 const e_DATA_LEN = 1
-const e_DATA_ARRAY = e_DATA + e_DATA_LEN
+const e_HEADERLENGTH = e_DATA + e_DATA_LEN
+const e_DATA_ARRAY = e_HEADERLENGTH
 
 
 ## Start a sensory event
 func start_event(type: Type) -> PackedByteArray:
     var bytes: PackedByteArray = []
 
-    var header_size: int = (
-              e_TYPE_LEN
-            + e_TRACKINGID_LEN
-            + e_FLAG_LEN
-            + e_EXPIRE_LEN
-            + e_DATA_LEN
-    )
-
-    bytes.resize(e_SIZE_LEN + header_size)
+    bytes.resize(e_HEADERLENGTH)
 
     event_set_size(bytes, bytes.size())
     event_set_type(bytes, type)
     event_set_tracking(bytes, 0)
     event_set_flag(bytes, 0)
-    event_set_expire(bytes, 1)
+    event_set_expire(bytes, 1.0)
     event_set_data_count(bytes, 0)
 
     return bytes
@@ -250,7 +243,7 @@ func overwrite_event(type: Type, dest: int, src: PackedByteArray) -> void:
         event_set_flag(src, get_event_flag(type, dest))
 
     # Copy header
-    for i in range(e_DATA_ARRAY):
+    for i in range(e_HEADERLENGTH):
         events[dest + i] = src[i]
 
     # Copy data elements
@@ -290,14 +283,16 @@ func overwrite_event(type: Type, dest: int, src: PackedByteArray) -> void:
 ## Decay the timer of an event by some number of seconds. If the event timer reaches
 ## zero, it is removed from the event log, and `true` is returned. When this removes
 ## an event, you should retrieve event ids again.
-func event_decay(type: Type, event: int, seconds: int) -> bool:
+func event_decay(type: Type, event: int, seconds: float) -> bool:
     var event_log: PackedByteArray = _get_events_reference(type)
-    var time: int = event_log.decode_u16(event + e_EXPIRE)
+    var time: float = get_event_expire(type, event)
     time -= seconds
 
     if time > 0:
-        event_log.encode_u16(event + e_EXPIRE, time)
+        set_event_expire(type, event, time)
         return false
+
+    # print('Deleting memory type ' + str(type) + ' at ' + str(event))
 
     var indexes: PackedInt32Array = event_idxs.get(type)
     var event_id: int = indexes.bsearch(event, false) - 1
@@ -334,13 +329,19 @@ func event_set_data_count(event: PackedByteArray, data_count: int) -> void:
     event.encode_u8(e_DATA, data_count)
 
 ## Get the expire delay of this event
-func event_get_expire(event: PackedByteArray) -> int:
-    return event.decode_u16(e_EXPIRE)
+func event_get_expire(event: PackedByteArray) -> float:
+    var whole: int = event.decode_u16(e_EXPIRE)
+    var frac: int = event.decode_u8(e_EXPIRE + 2)
+
+    return float(whole) + (float(frac) / 256.0)
 
 ## Set the expire delay of this event. The event will be removed after this many
 ## seconds. Can be incremented later to increase the life of the event.
-func event_set_expire(event: PackedByteArray, seconds: int) -> void:
-    event.encode_u16(e_EXPIRE, seconds)
+func event_set_expire(event: PackedByteArray, seconds: float) -> void:
+    var whole: int = int(seconds)
+    var frac: int = int((seconds - float(whole)) * 256.0)
+    event.encode_u16(e_EXPIRE, whole)
+    event.encode_u8(e_EXPIRE + 2, frac)
 
 ## Get the flags of this event
 func event_get_flag(event: PackedByteArray) -> int:
@@ -393,6 +394,29 @@ func get_event_data_count(type: Type, event: int) -> int:
         return -1
 
     return events.decode_u8(event + e_DATA)
+
+## Get an event's expire time. Returns -1 if the event is not found
+func get_event_expire(type: Type, event: int) -> float:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return -1.0
+
+    var whole: int = events.decode_u16(event + e_EXPIRE)
+    var frac: int = events.decode_u8(event + e_EXPIRE + 2)
+
+    return float(whole) + (float(frac) / 256.0)
+
+## Set an event's expire time
+func set_event_expire(type: Type, event: int, expire: float) -> bool:
+    var events := _get_events_reference(type)
+    if not events:
+        return false
+
+    var whole: int = int(expire)
+    var frac: int = int((expire - float(whole)) * 256.0)
+    events.encode_u16(event + e_EXPIRE, clampi(whole, 0, 65535))
+    events.encode_u8(event + e_EXPIRE + 2, clampi(frac, 0, 255))
+    return true
 
 ## Get an event's flag value. Returns -1 if the event is not found
 func get_event_flag(type: Type, event: int) -> int:

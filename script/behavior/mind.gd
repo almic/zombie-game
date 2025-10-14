@@ -6,6 +6,16 @@ class_name BehaviorMind extends Resource
 @export var secondary_senses: Array[BehaviorSense] = []
 @export var goals: Array[BehaviorGoal] = []
 
+@export_group('Memory', 'memory')
+
+## Tick frequency for memory decay, higher values result in more frequent updates
+## to memory. 60 = 1 update per second, 15 = 4 updates per second
+@export var memory_decay_rate: int = 15:
+    set(value):
+        memory_decay_rate = value
+        if memory_bank:
+            memory_bank.decay_frequency = float(value) / 60.0
+
 
 var parent: CharacterBase
 var memory_bank: BehaviorMemoryBank
@@ -29,6 +39,7 @@ func _init() -> void:
     senses = senses.duplicate(true)
     secondary_senses = secondary_senses.duplicate(true)
     goals = goals.duplicate(true)
+    memory_decay_rate = memory_decay_rate
 
 
 ## Retrieve a sense by name. If two senses are the same type, returns the first one.

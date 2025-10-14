@@ -114,12 +114,12 @@ func perform_actions(mind: BehaviorMind) -> void:
     # Addition for chasing, connect to complete and continue chase
     if mind.has_acted(BehaviorActionNavigate.NAME):
         var navigations: Array[BehaviorAction] = mind.get_acted_list(BehaviorActionNavigate.NAME)
-        var oldest: BehaviorActionNavigate = navigations.back()
+        var most_recent: BehaviorActionNavigate = navigations.back()
 
         # Must bind to the signal for later
-        if not oldest.completed:
+        if not most_recent.completed:
             # GlobalWorld.print('connecting chase nav')
-            connect_chase(mind, oldest, navigate, next_direction)
+            connect_chase(mind, most_recent, navigate, next_direction)
         return
 
     # GlobalWorld.print('chasing now')

@@ -1,5 +1,6 @@
 class_name BehaviorActionTurn extends BehaviorAction
 
+
 const NAME = &"turn"
 
 func name() -> StringName:

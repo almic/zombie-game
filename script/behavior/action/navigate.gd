@@ -7,10 +7,8 @@ const NAME = &"navigate"
 func name() -> StringName:
     return NAME
 
-
-## Emitted by the acting CharacterBase when the navigation finishes
-@warning_ignore("unused_signal")
-signal on_complete()
+func can_complete() -> bool:
+    return true
 
 
 ## Direction to travel
@@ -26,7 +24,7 @@ var time: float
 var target_distance: float = 1.0
 
 ## Set by the acting CharacterBase if the requested travel location is already reached
-var completed: bool = false
+var _completed: bool = false
 
 
 @warning_ignore("shadowed_variable")
@@ -34,6 +32,12 @@ func _init(direction: Vector3, distance: float) -> void:
     self.direction = direction
     self.distance = distance
     time = GlobalWorld.get_game_time()
+
+func complete() -> void:
+    _completed = true
+
+func is_complete() -> bool:
+    return _completed
 
 func get_global_position(parent: Node3D) -> Vector3:
     return parent.global_position + (direction * distance)

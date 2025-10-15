@@ -17,6 +17,33 @@ class_name BehaviorMind extends Resource
             memory_bank.decay_frequency = float(value) / 60.0
 
 
+## Info for a previously called action
+class CalledAction:
+    ## The action that was called
+    var action: BehaviorAction:
+        set(value):
+            if _locked:
+                return
+            action = value
+
+    ## The goal that called the action
+    var goal: BehaviorGoal:
+        set(value):
+            if _locked:
+                return
+            goal = value
+
+    ## The reported priority of the goal when it ran the action
+    var priority: int:
+        set(value):
+            if _locked:
+                return
+            priority = value
+
+    # TODO: for dev only, should be removed
+    var _locked: bool = false
+
+
 var parent: CharacterBase
 var memory_bank: BehaviorMemoryBank
 var delta_time: float
@@ -24,9 +51,11 @@ var delta_time: float
 var is_sorting_phase: bool = false
 
 var _priority_list: Dictionary
+var _current_goal: BehaviorGoal
+var _current_priority: int
 var _code_to_sense: Dictionary[StringName, BehaviorSense]
 var _goal_minimum_period: Dictionary[StringName, float]
-var _actions_called: Dictionary[StringName, Array]
+var _actions_called: Dictionary[StringName, CalledAction]
 
 
 func _init() -> void:
@@ -81,9 +110,6 @@ func get_goal(name: StringName) -> BehaviorGoal:
 func update(delta: float) -> void:
     delta_time = delta
 
-    # Clear actions called
-    _actions_called.clear()
-
     # Process senses to update memories
     memory_bank.locked = false
     memory_bank.decay_memories(delta_time)
@@ -122,14 +148,17 @@ func update(delta: float) -> void:
 
     # Perform goals
     _priority_list.sort()
-    var tasks: Array[Variant] = _priority_list.values()
+    var priorities: Array = _priority_list.keys()
     var task: Variant
-    for i in range(tasks.size() - 1, -1, -1):
-        task = tasks[i]
+    for i in range(priorities.size() - 1, -1, -1):
+        _current_priority = priorities[i]
+        task = _priority_list.get(_current_priority)
         if task is Array:
             for t in task:
+                _current_goal = t
                 (t as BehaviorGoal).perform_actions(self)
         else:
+            _current_goal = task
             (task as BehaviorGoal).perform_actions(self)
     _priority_list.clear()
 
@@ -149,11 +178,16 @@ func act(action: BehaviorAction) -> void:
         return
 
     var name: StringName = action.name()
-    if not _actions_called.has(name):
-        var called: Array[BehaviorAction] = [action]
-        _actions_called.set(name, called)
-    else:
-        _actions_called.get(name).append(action)
+    var called_action: CalledAction = _actions_called.get(name)
+    if not called_action:
+        called_action = CalledAction.new()
+        _actions_called.set(name, called_action)
+
+    called_action._locked = false
+    called_action.action = action
+    called_action.goal = _current_goal
+    called_action.priority = _current_priority
+    called_action._locked = true
 
     if parent and parent._handle_action(action):
         return
@@ -161,16 +195,12 @@ func act(action: BehaviorAction) -> void:
     # Default action behaviors
     # TODO
 
-## If an action of the given type has been called previously this update
+## If an action of the given type has been called previously
 func has_acted(action: StringName) -> bool:
     return _actions_called.has(action)
 
-## Get the number of times an action has been called previously on this update
-func get_acted_count(action: StringName) -> int:
-    return _actions_called.get(action).size()
-
 ## Get the actions of the type that have previously been called on this update
-func get_acted_list(action: StringName) -> Array[BehaviorAction]:
+func get_acted(action: StringName) -> CalledAction:
     return _actions_called.get(action)
 
 

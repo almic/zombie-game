@@ -7,6 +7,10 @@ func name() -> StringName:
     return NAME
 
 
+const NORMAL_PRIORITY = BehaviorGoal.Priority.MEDIUM
+const CONTINUE_PRIORITY = BehaviorGoal.Priority.LOW
+
+
 ## Target groups to chase
 @export var target_groups: Array[StringName]
 
@@ -20,14 +24,31 @@ func name() -> StringName:
 ## Event to act on
 var target_event: int
 
-## Most recent navigate request
-var last_navigate: BehaviorActionNavigate = null
-
-## Most recent chase bind for navigation signals
-var last_chase_binding: Callable
+## Most recent navigation action, acted on for chase continuation
+var last_navigate: BehaviorMind.CalledAction
 
 
 func update_priority(mind: BehaviorMind) -> int:
+
+    if mind.has_acted(BehaviorActionNavigate.NAME):
+        # If the last navigate is completed and is equal or higher priority than
+        # our priority, run with a lower continue priority
+        last_navigate = mind.get_acted(BehaviorActionNavigate.NAME)
+        if last_navigate.action.is_complete():
+            if last_navigate.priority >= NORMAL_PRIORITY:
+                target_event = -1
+                return CONTINUE_PRIORITY
+        else:
+            # Skip if the incomplete nav is higher priority
+            if last_navigate.priority > NORMAL_PRIORITY:
+                return 0
+            # TODO: action completion needs to track successful/ failed value
+            #       that way we can mark actions complete but failed, such that
+            #       a goal like this or attack would not run "successful" actions
+            #       like continuing a chase from the wrong location, or attacking
+            #       when not near the target.
+    last_navigate = null
+
     var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
     if not sens_memory:
         return 0
@@ -158,12 +179,14 @@ func connect_chase(
         next: BehaviorActionNavigate,
         next_direction: Vector3 = Vector3.ZERO
 ) -> void:
-    if last_navigate and last_chase_binding and last_navigate.on_complete.is_connected(last_chase_binding):
-        last_navigate.on_complete.disconnect(last_chase_binding)
-
-    last_navigate = after
-    last_chase_binding = continue_chase.bind(mind, next, next_direction)
-    last_navigate.on_complete.connect(last_chase_binding, CONNECT_ONE_SHOT)
+    # TODO ?
+    pass
+    #if last_navigate and last_chase_binding and last_navigate.on_complete.is_connected(last_chase_binding):
+        #last_navigate.on_complete.disconnect(last_chase_binding)
+#
+    #last_navigate = after
+    #last_chase_binding = continue_chase.bind(mind, next, next_direction)
+    #last_navigate.on_complete.connect(last_chase_binding, CONNECT_ONE_SHOT)
 
 func continue_chase(
         mind: BehaviorMind,

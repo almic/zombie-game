@@ -6,6 +6,9 @@ const NAME = &"attack"
 func name() -> StringName:
     return NAME
 
+func can_complete() -> bool:
+    return true
+
 
 ## Node to attack
 var target: Node3D

@@ -119,6 +119,9 @@ var _is_nav_finished: bool = true
 ## Navigation direction to face when stationary while a nav is set
 var _nav_direction: Vector3 = Vector3.ZERO
 
+## Navigation completion function, called by NavigationAgent3D.navigation_finished()
+var _nav_complete_func: Callable = Callable()
+
 ## Target look direction
 ## NOTE: when head turning is added, this would be limited when navigating or
 ##       attacking, otherwise zombie will at least turn the head to this direction
@@ -342,6 +345,10 @@ func _handle_action(action: BehaviorAction) -> bool:
     return false
 
 func act_navigate(navigate: BehaviorActionNavigate) -> void:
+    if nav_agent.navigation_finished.is_connected(_nav_complete_func):
+        nav_agent.navigation_finished.disconnect(_nav_complete_func)
+        _nav_complete_func = Callable()
+
     var next_target: Vector3 = navigate.get_global_position(self)
     var target_distance: float = nav_agent.target_desired_distance
     if not is_equal_approx(target_distance, navigate.target_distance):
@@ -353,13 +360,15 @@ func act_navigate(navigate: BehaviorActionNavigate) -> void:
                 _is_nav_finished
             and global_position.distance_squared_to(next_target) < target_distance
     ):
-        navigate.completed = true
+        if navigate.can_complete():
+            navigate.complete()
     else:
         nav_agent.target_position = next_target
+        _nav_complete_func = navigate.complete
 
         # GlobalWorld.print('target nav: ' + str(navigate.direction))
         _is_nav_finished = false
-        nav_agent.navigation_finished.connect(navigate.on_complete.emit, CONNECT_ONE_SHOT)
+        nav_agent.navigation_finished.connect(_nav_complete_func, CONNECT_ONE_SHOT)
 
 func act_attack(attack: BehaviorActionAttack) -> void:
     # Check if the target is close enough to face

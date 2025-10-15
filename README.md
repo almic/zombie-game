@@ -21,9 +21,11 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
           is exceeded, SET a timer (do not start yet). At this point, no more can
           be added. The interest on the node must decay to zero, THEN start the
           timer, and once it reaches zero, interest can once again be added.
-    - [ ] Find most interesting event to respond to in investigate update_priority()
-    - [ ] Add turn action to investigate. Set thresholds for turning
-    - [ ] Add navigate action to investigate. Set thresholds for navigating
+    - [X] Find most interesting event to respond to in investigate update_priority()
+    - [X] Add turn action to investigate. Set thresholds for turning
+    - [X] Add navigate action to investigate. Set thresholds for navigating
+    - [ ] Set up past action response completion, and continuation from goals
+    - [ ] Tune investigate, chase, attack to reasonable defaults
     - [ ] ...
 - [ ] Add hearing sense
     - [ ] Connect to chase target goal, use hearing information if more recent

@@ -6,6 +6,9 @@ const NAME = &"turn"
 func name() -> StringName:
     return NAME
 
+func can_complete() -> bool:
+    return true
+
 
 ## Turn rotation to apply from the current direction
 var turn: float

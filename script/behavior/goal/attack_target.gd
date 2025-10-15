@@ -77,7 +77,7 @@ func update_priority(mind: BehaviorMind) -> int:
 
     # Look for the most recent and closest target in the group
     var event: int = -1
-    var closest: float = INF
+    var age: float = INF
     var target: Node3D = null
     for ev in sight_events:
         var travel: Array[Variant] = sens_memory.get_event_travel(t, ev)
@@ -86,9 +86,6 @@ func update_priority(mind: BehaviorMind) -> int:
 
         var dist: float = travel[1]
         if dist > activation_range:
-            continue
-
-        if dist >= closest:
             continue
 
         var node_path: NodePath = sens_memory.get_event_node_path(t, ev)
@@ -107,11 +104,13 @@ func update_priority(mind: BehaviorMind) -> int:
         if not in_group:
             continue
 
-        # Check if the sense just set new data
+        # Check if the sense is relatively recent
         var update_time: float = sens_memory.get_event_game_time(t, ev, 2)
-        if BehaviorMemorySensory.is_event_gametime(update_time):
+        var current_time: float = GlobalWorld.get_game_time()
+        var delay: float = current_time - update_time
+        if delay < age and delay <= 1.0:
             event = ev
-            closest = dist
+            age = delay
             target = node
             continue
 
@@ -136,10 +135,17 @@ func perform_actions(mind: BehaviorMind) -> void:
 
     # For melee attacks, must be within melee range
     if attack_target.global_position.distance_squared_to(me.global_position) <= melee_distance * melee_distance:
-        mind.act(BehaviorActionAttack.new(attack_target, true))
+        # Skip navigation if something else already navigated
+        if not mind.is_recent_action(BehaviorActionNavigate.NAME):
+            mind.act(BehaviorActionSpeed.new(me.top_speed))
+            mind.act(BehaviorActionAttack.new(attack_target, true))
         return
 
     if travel_target.is_empty():
         return
 
-    mind.act(BehaviorActionNavigate.new(travel_target[0], travel_target[1], melee_distance), true)
+    mind.act(
+            BehaviorActionNavigate.new(travel_target[0], travel_target[1], melee_distance),
+            true,
+            BehaviorGoal.Priority.MEDIUM - 1
+    )

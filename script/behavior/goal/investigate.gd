@@ -7,6 +7,10 @@ func name() -> StringName:
     return NAME
 
 
+## Priority for investigations
+const NORMAL_PRIORITY = BehaviorGoal.Priority.LOW
+
+
 ## Interest needed to turn towards something
 @export_range(0, 10, 1, 'or_greater')
 var turn_threshold: int = 2
@@ -33,13 +37,16 @@ var navigate_target_distance: float = 2.0
 @export var type_thresholds: Array[BehaviorGoalInvestigateThresholdSettings]
 
 
-# Preprocessed target event to investigate
-var target_event: int
-var target_type := BehaviorMemorySensory.Type.MAX
+## Travel target for investigation
+var travel_target: Array = []
+
+## If the investigation should include a navigation
 var is_nav_response: bool
 
 
 func update_priority(mind: BehaviorMind) -> int:
+    is_nav_response = false
+
     var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
     if not sens_memory:
         return 0
@@ -107,10 +114,21 @@ func update_priority(mind: BehaviorMind) -> int:
             t = type
 
     if event != -1:
-        target_event = event
-        target_type = t
-        is_nav_response = any_best_interest >= navigate_threshold
-        return BehaviorGoal.Priority.LOW
+        travel_target = sens_memory.get_event_travel(t, event)
+        if any_best_interest >= navigate_threshold:
+            # Check that no equal or higher priority navigate is running, but we
+            # may update ours
+            var last_navigate := mind.get_acted(BehaviorActionNavigate.NAME)
+            if not last_navigate or last_navigate.action.is_complete():
+                is_nav_response = true
+            elif last_navigate.priority > NORMAL_PRIORITY:
+                is_nav_response = false
+            elif last_navigate.priority == NORMAL_PRIORITY:
+                is_nav_response = last_navigate.goal.code_name == code_name
+            else:
+                is_nav_response = true
+
+        return NORMAL_PRIORITY
 
     return 0
 
@@ -119,25 +137,15 @@ func perform_actions(mind: BehaviorMind) -> void:
     if not me:
         return
 
-    var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
-    if not sens_memory:
-        return
-
-    var travel := sens_memory.get_event_travel(target_type, target_event)
-    if travel.is_empty():
+    if travel_target.is_empty():
         return
 
     var up: Vector3 = me.up_direction
-    var direction: Vector3 = travel[0]
+    var direction: Vector3 = travel_target[0]
 
-    if is_nav_response:
-        var speed := BehaviorActionSpeed.new(me.top_speed * navigate_speed)
-        var navigate := BehaviorActionNavigate.new(direction, travel[1])
-
-        navigate.target_distance = navigate_target_distance
-
-        mind.act(speed)
-        mind.act(navigate)
+    if is_nav_response and not mind.is_recent_action(BehaviorActionNavigate.NAME):
+        mind.act(BehaviorActionSpeed.new(me.top_speed * navigate_speed))
+        mind.act(BehaviorActionNavigate.new(direction, travel_target[1], navigate_target_distance))
 
     direction -= up * up.dot(direction)
     if direction.is_zero_approx():

@@ -127,20 +127,21 @@ func update_priority(mind: BehaviorMind) -> int:
 
 
 func perform_actions(mind: BehaviorMind) -> void:
+    # If navigation has already been called, we skip
+    if mind.is_recent_action(BehaviorActionNavigate.NAME):
+        return
+
+    var me := mind.parent
+
     # Continue the last navigation for chase distance
     if last_navigate:
-        # Check that no one called navigate but us
-        last_navigate = mind.get_acted(BehaviorActionNavigate.NAME)
-        if last_navigate.goal.code_name != code_name:
-            return
-
         if next_chase_direction.is_zero_approx():
-            next_chase_direction = mind.parent.global_basis.z
+            next_chase_direction = me.global_basis.z
+
         var distance: float = chase_distance
         # HACK: this is cheating the sensory system but idk a better way
         # If we are close to the target node of the chase, end the chase
         if chase_target:
-            var me := mind.parent
             var node: Node3D = me.get_node(chase_target) as Node3D
             if node and node.global_position.distance_squared_to(me.global_position) <= target_distance * target_distance:
                 # If the target is still moving, predict future slightly
@@ -157,15 +158,13 @@ func perform_actions(mind: BehaviorMind) -> void:
                     # We have arrived, end the chase
                     mind.disable_on_complete(BehaviorActionNavigate.NAME)
                     return
-        var chase := BehaviorActionNavigate.new(next_chase_direction, distance)
-        chase.target_distance = target_distance
-        mind.act(chase)
+
+        mind.act(BehaviorActionSpeed.new(me.top_speed))
+        mind.act(BehaviorActionNavigate.new(next_chase_direction, distance, target_distance))
         return
 
     if travel_target.is_empty():
         return
 
-    var navigate := BehaviorActionNavigate.new(travel_target[0], travel_target[1])
-    navigate.target_distance = target_distance
-
-    mind.act(navigate, true)
+    mind.act(BehaviorActionSpeed.new(me.top_speed))
+    mind.act(BehaviorActionNavigate.new(travel_target[0], travel_target[1], target_distance), true)

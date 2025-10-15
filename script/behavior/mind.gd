@@ -65,12 +65,13 @@ var delta_time: float
 
 var is_sorting_phase: bool = false
 
-var _priority_list: Dictionary
+var _priority_list: Dictionary[int, Array]
 var _current_goal: BehaviorGoal
 var _current_priority: int
 var _code_to_sense: Dictionary[StringName, BehaviorSense]
 var _goal_minimum_period: Dictionary[StringName, float]
 var _actions_called: Dictionary[StringName, CalledAction]
+var _recent_actions: Array[StringName]
 
 
 func _init() -> void:
@@ -125,6 +126,8 @@ func get_goal(name: StringName) -> BehaviorGoal:
 func update(delta: float) -> void:
     delta_time = delta
 
+    _recent_actions.clear()
+
     # Process senses to update memories
     memory_bank.locked = false
     memory_bank.decay_memories(delta_time)
@@ -150,31 +153,26 @@ func update(delta: float) -> void:
             continue
 
         if not _priority_list.has(priority):
-            _priority_list.set(priority, goal)
+            _priority_list.set(priority, [goal])
             continue
 
-        var value: Variant = _priority_list.get(priority)
-        if value is Array:
-            value.append(goal)
-            continue
+        var value: Array = _priority_list.get(priority)
+        value.append(goal)
+        continue
 
-        _priority_list.set(priority, [value, goal])
     is_sorting_phase = false
 
     # Perform goals
     _priority_list.sort()
     var priorities: Array = _priority_list.keys()
-    var task: Variant
+    var tasks: Array
     for i in range(priorities.size() - 1, -1, -1):
         _current_priority = priorities[i]
-        task = _priority_list.get(_current_priority)
-        if task is Array:
-            for t in task:
-                _current_goal = t
-                (t as BehaviorGoal).perform_actions(self)
-        else:
-            _current_goal = task
-            (task as BehaviorGoal).perform_actions(self)
+        tasks = _priority_list.get(_current_priority)
+        for t in tasks:
+            _current_goal = t
+            GlobalWorld.print('Goal: ' + t.code_name)
+            (t as BehaviorGoal).perform_actions(self)
     _current_goal = null
     _priority_list.clear()
 
@@ -193,9 +191,11 @@ func update(delta: float) -> void:
 
 
 ## Called by goals during the action phase. Can pass `true` for `update_on_complete`
-## to request running the goal again when the given action completes.
+## to request running the goal again when the given action completes. Use
+## `custom_priority` to set a priority on the action, but it cannot be higher
+## than the calling goal's current priority.
 ## Calling this from a goal's 'update_priority()' method is an error.
-func act(action: BehaviorAction, update_on_complete: bool = false) -> void:
+func act(action: BehaviorAction, update_on_complete: bool = false, custom_priority: int = 0) -> void:
     # NOTE: for development, should be removed
     if is_sorting_phase:
         push_error('BehaviorMind cannot `act()` during the goal sorting phase! Investigate!')
@@ -207,10 +207,16 @@ func act(action: BehaviorAction, update_on_complete: bool = false) -> void:
         called_action = CalledAction.new()
         _actions_called.set(name, called_action)
 
+    if not _recent_actions.has(name):
+        _recent_actions.append(name)
+
     called_action._locked = false
     called_action.action = action
     called_action.goal = _current_goal
-    called_action.priority = _current_priority
+    if custom_priority == 0:
+        called_action.priority = _current_priority
+    else:
+        called_action.priority = mini(_current_priority, custom_priority)
     called_action.update_on_complete = update_on_complete
     called_action.just_completed = false
     called_action._locked = true
@@ -225,9 +231,13 @@ func act(action: BehaviorAction, update_on_complete: bool = false) -> void:
 func has_acted(action: StringName) -> bool:
     return _actions_called.has(action)
 
-## Get the actions of the type that have previously been called on this update
+## Get the actions of the type that have been called previously
 func get_acted(action: StringName) -> CalledAction:
     return _actions_called.get(action)
+
+## Test if an action was recently called on this update
+func is_recent_action(action: StringName) -> bool:
+    return _recent_actions.has(action)
 
 ## Called by goals to disable 'update_on_complete' for certain actions. Does
 ## nothing if the last action goal does not match the currently processing goal.

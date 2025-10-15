@@ -24,16 +24,16 @@ script = ExtResource("2_hqev8")
 time_falloff = ExtResource("3_37cj5")
 type_thresholds = Array[ExtResource("3_fl0w7")]([SubResource("Resource_lg3am")])
 code_name = &"investigate"
-enabled = false
 interest_activated = true
 interest_threshold = 2
+sense_activated = true
 sense_code_names = Array[StringName]([&"curiosity"])
 metadata/_custom_type_script = "uid://ct1i7o41qp4i0"
 
 [sub_resource type="Resource" id="Resource_f6rrc"]
 script = ExtResource("2_j7cw6")
 target_groups = Array[StringName]([&"zombie_target"])
-activation_range = 2.0
+activation_range = 2.5
 melee_enabled = true
 code_name = &"attack"
 interest_activated = true
@@ -45,11 +45,10 @@ metadata/_custom_type_script = "uid://trwc8h08pont"
 [sub_resource type="Resource" id="Resource_hqev8"]
 script = ExtResource("3_f6rrc")
 target_groups = Array[StringName]([&"zombie_target"])
-target_distance = 1.5
+target_distance = 1.8
 code_name = &"chase"
-enabled = false
 interest_activated = true
-interest_threshold = 3
+interest_threshold = 8
 sense_activated = true
 sense_code_names = Array[StringName]([&"vision"])
 metadata/_custom_type_script = "uid://bpw2p77auv67c"

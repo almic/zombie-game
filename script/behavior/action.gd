@@ -35,3 +35,8 @@ func is_complete() -> bool:
 ## always return `true` after.
 func is_success() -> bool:
     return false
+
+## Returns `true` when `is_complete()` is true and `is_success()` is false.
+## May be overridden by extending class.
+func is_failed() -> bool:
+    return is_complete() and !is_success()

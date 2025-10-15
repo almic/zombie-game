@@ -44,5 +44,8 @@ func is_complete() -> bool:
 func is_success() -> bool:
     return _success
 
+func is_failed() -> bool:
+    return _completed and !_success
+
 func get_global_position(parent: Node3D) -> Vector3:
     return parent.global_position + (direction * distance)

@@ -345,7 +345,7 @@ func _handle_action(action: BehaviorAction) -> bool:
     return false
 
 func act_navigate(navigate: BehaviorActionNavigate) -> void:
-    if nav_agent.navigation_finished.is_connected(_nav_complete_func):
+    if _nav_complete_func and nav_agent.navigation_finished.is_connected(_nav_complete_func):
         nav_agent.navigation_finished.disconnect(_nav_complete_func)
         _nav_complete_func = Callable()
 

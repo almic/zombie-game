@@ -15,6 +15,9 @@ enum Priority {
 ## Name for differentiating goals of the same type
 @export var code_name: StringName = &"GOAL"
 
+## Flag to disable goal processing
+@export var enabled: bool = true
+
 
 @export_group("Interest Activated")
 

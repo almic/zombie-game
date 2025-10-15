@@ -24,7 +24,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
     - [X] Find most interesting event to respond to in investigate update_priority()
     - [X] Add turn action to investigate. Set thresholds for turning
     - [X] Add navigate action to investigate. Set thresholds for navigating
-    - [ ] Set up past action response completion, and continuation from goals
+    - [X] Set up past action response completion, and continuation from goals
     - [ ] Tune investigate, chase, attack to reasonable defaults
     - [ ] ...
 - [ ] Add hearing sense
@@ -36,6 +36,12 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
+- [ ] Rename `BehaviorGoal.update_priority()`, it has a poor name right now.
+      The new name should make it clear that all memory processing should
+      happen there, and that `perform_actions()` should not touch memory, only
+      cached values set by `update_priority()`.
+- [ ] Make zombie face position of navigation target when nav ends, otherwise
+      they could fail to look fully towards the target and "miss" the goal
 - [ ] Add zombie head turning as a skeleton modifier (?) so animations still
       play but with additional head turning on top. Use for turning and facing
       to lead the body in rotation.

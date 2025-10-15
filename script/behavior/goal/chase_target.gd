@@ -21,11 +21,17 @@ const CONTINUE_PRIORITY = BehaviorGoal.Priority.LOW
 @export var chase_distance: float = 5.0
 
 
-## Event to act on
-var target_event: int
+## Travel data for navigation
+var travel_target: Array
 
 ## Most recent navigation action, acted on for chase continuation
 var last_navigate: BehaviorMind.CalledAction
+
+## Next direction for chase
+var next_chase_direction: Vector3
+
+## Target node for chase
+var chase_target: NodePath
 
 
 func update_priority(mind: BehaviorMind) -> int:
@@ -35,19 +41,26 @@ func update_priority(mind: BehaviorMind) -> int:
         # our priority, run with a lower continue priority
         last_navigate = mind.get_acted(BehaviorActionNavigate.NAME)
         if last_navigate.action.is_complete():
-            if last_navigate.priority >= NORMAL_PRIORITY:
-                target_event = -1
+
+            # If it was successful and equal or higher priority, we will continue it
+            if last_navigate.action.is_success() and last_navigate.priority >= NORMAL_PRIORITY:
+                travel_target.clear()
+                if last_navigate.goal.code_name != code_name:
+                    chase_target = NodePath()
+                    next_chase_direction = Vector3.ZERO
                 return CONTINUE_PRIORITY
-        else:
-            # Skip if the incomplete nav is higher priority
-            if last_navigate.priority > NORMAL_PRIORITY:
+
+        # Skip if the incomplete nav is higher priority
+        elif last_navigate.priority > NORMAL_PRIORITY:
+            return 0
+        elif last_navigate.priority == NORMAL_PRIORITY:
+            # If this was our navigate, we have new data and should update
+            if last_navigate.goal.code_name != code_name:
                 return 0
-            # TODO: action completion needs to track successful/ failed value
-            #       that way we can mark actions complete but failed, such that
-            #       a goal like this or attack would not run "successful" actions
-            #       like continuing a chase from the wrong location, or attacking
-            #       when not near the target.
+
     last_navigate = null
+    next_chase_direction = Vector3.ZERO
+    chase_target = NodePath()
 
     var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
     if not sens_memory:
@@ -62,6 +75,7 @@ func update_priority(mind: BehaviorMind) -> int:
     # Look for the most recent and closest target in the group
     var event: int = -1
     var closest: float = INF
+    var path: NodePath
     for ev in sight_events:
         var travel: Array[Variant] = sens_memory.get_event_travel(t, ev)
         if travel.is_empty():
@@ -84,128 +98,58 @@ func update_priority(mind: BehaviorMind) -> int:
         if not in_group:
             continue
 
-        var flags: int = sens_memory.get_event_flag(t, ev)
-        if flags == -1:
-            continue
-
-        # Unstarted must be handled right away
-        if not (flags & BehaviorMemorySensory.Flag.RESPONSE_STARTED):
-            event = ev
-            closest = dist
-            continue
-
         # Check if the sense just set new data
         var update_time: float = sens_memory.get_event_game_time(t, ev, 2)
         if BehaviorMemorySensory.is_event_gametime(update_time):
             event = ev
             closest = dist
+            path = target_path
             continue
 
         continue
 
     if event != -1:
-        target_event = event
+        travel_target = sens_memory.get_event_travel(t, event)
+        next_chase_direction = sens_memory.get_event_forward(t, event)
+        chase_target = path
         return BehaviorGoal.Priority.MEDIUM
 
     return 0
 
 
 func perform_actions(mind: BehaviorMind) -> void:
-    var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
-    if not sens_memory:
+    # Continue the last navigation for chase distance
+    if last_navigate:
+        if next_chase_direction.is_zero_approx():
+            next_chase_direction = mind.parent.global_basis.z
+        var distance: float = chase_distance
+        # HACK: this is cheating the sensory system but idk a better way
+        # If we are close to the target node of the chase, end the chase
+        if chase_target:
+            var me := mind.parent
+            var node: Node3D = me.get_node(chase_target) as Node3D
+            if node and node.global_position.distance_squared_to(me.global_position) <= target_distance * target_distance:
+                # If the target is still moving, predict future slightly
+                var character: CharacterBase = node as CharacterBase
+                if character and character.last_velocity.length_squared() > 0.01:
+                    next_chase_direction = (
+                            (character.global_position + character.last_velocity * 0.5)
+                            - me.global_position
+                    )
+                    if not next_chase_direction.is_zero_approx():
+                        distance = next_chase_direction.length()
+                        next_chase_direction /= distance
+                else:
+                    distance = 0.0
+        var chase := BehaviorActionNavigate.new(next_chase_direction, distance)
+        chase.target_distance = target_distance
+        mind.act(chase)
         return
 
-    var t: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.SIGHT
-    var sight_events: PackedInt32Array = sens_memory.get_events(t)
-
-    if not sight_events.has(target_event):
+    if travel_target.is_empty():
         return
 
-    var event = target_event
-
-    # Get the best travel information
-    var navigate := get_best_travel(sens_memory, t, event)
-    var next_direction: Vector3 = get_next_direction(sens_memory, t, event)
-
-    if not navigate:
-        navigate = BehaviorActionNavigate.new(next_direction, chase_distance)
-
+    var navigate := BehaviorActionNavigate.new(travel_target[0], travel_target[1])
     navigate.target_distance = target_distance
 
-    # Addition for chasing, connect to complete and continue chase
-    if mind.has_acted(BehaviorActionNavigate.NAME):
-        var navigations: Array[BehaviorAction] = mind.get_acted_list(BehaviorActionNavigate.NAME)
-        var most_recent: BehaviorActionNavigate = navigations.back()
-
-        # Must bind to the signal for later
-        if not most_recent.completed:
-            # GlobalWorld.print('connecting chase nav')
-            connect_chase(mind, most_recent, navigate, next_direction)
-        return
-
-    # GlobalWorld.print('chasing now')
-    continue_chase(mind, navigate, next_direction)
-
-func get_best_travel(
-        memory: BehaviorMemorySensory,
-        t: BehaviorMemorySensory.Type,
-        event: int
-) -> BehaviorActionNavigate:
-    # TODO: variate the travel request
-
-    # Direct sense
-    var travel: Array[Variant] = memory.get_event_travel(t, event)
-    if travel:
-        return BehaviorActionNavigate.new(travel[0], travel[1])
-
-    return null
-
-func get_next_direction(
-        memory: BehaviorMemorySensory,
-        t: BehaviorMemorySensory.Type,
-        event: int
-) -> Vector3:
-
-    var last_direction: Vector3 = memory.get_event_forward(t, event)
-
-    # TODO: other senses need their "next" direction?
-
-    # TODO: variate the direction
-    return last_direction
-
-func connect_chase(
-        mind: BehaviorMind,
-        after: BehaviorActionNavigate,
-        next: BehaviorActionNavigate,
-        next_direction: Vector3 = Vector3.ZERO
-) -> void:
-    # TODO ?
-    pass
-    #if last_navigate and last_chase_binding and last_navigate.on_complete.is_connected(last_chase_binding):
-        #last_navigate.on_complete.disconnect(last_chase_binding)
-#
-    #last_navigate = after
-    #last_chase_binding = continue_chase.bind(mind, next, next_direction)
-    #last_navigate.on_complete.connect(last_chase_binding, CONNECT_ONE_SHOT)
-
-func continue_chase(
-        mind: BehaviorMind,
-        navigate: BehaviorActionNavigate,
-        last_direction: Vector3 = Vector3.ZERO
-) -> void:
-    if not BehaviorMemorySensory.is_event_gametime(navigate.time):
-        if last_direction.is_zero_approx():
-            return
-        navigate.direction = last_direction
-        navigate.distance = chase_distance
-
-    # GlobalWorld.print('chase navigating! ' + str(navigate.direction))
-    mind.act(navigate)
-    mind.act(BehaviorActionSpeed.new(mind.parent.top_speed))
-
-    # Connect back to this same navigation to continue chasing
-    if not navigate.completed:
-        if last_direction.is_zero_approx():
-            return
-        var next := BehaviorActionNavigate.new(last_direction, chase_distance)
-        connect_chase(mind, navigate, next)
+    mind.act(navigate, true)

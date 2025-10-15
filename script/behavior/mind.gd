@@ -40,6 +40,14 @@ class CalledAction:
                 return
             priority = value
 
+    ## If the goal should update when the action completes, regardless of any
+    ## trigger settings.
+    var update_on_complete: bool:
+        set(value):
+            if _locked:
+                return
+            update_on_complete = value
+
     # TODO: for dev only, should be removed
     var _locked: bool = false
 
@@ -127,7 +135,7 @@ func update(delta: float) -> void:
     var priority: int
     is_sorting_phase = false
     for goal in goals:
-        if not _can_goal_process(goal):
+        if not goal.enabled or not _can_goal_process(goal):
             continue
 
         priority = goal.update_priority(self)
@@ -169,9 +177,10 @@ func update(delta: float) -> void:
         sense.activated = false
 
 
-## Called by goals during the action phase.
+## Called by goals during the action phase. Can pass `true` for `update_on_complete`
+## to request running the goal again when the given action completes.
 ## Calling this from a goal's 'update_priority()' method is an error.
-func act(action: BehaviorAction) -> void:
+func act(action: BehaviorAction, update_on_complete: bool = false) -> void:
     # NOTE: for development, should be removed
     if is_sorting_phase:
         push_error('BehaviorMind cannot `act()` during the goal sorting phase! Investigate!')
@@ -187,6 +196,7 @@ func act(action: BehaviorAction) -> void:
     called_action.action = action
     called_action.goal = _current_goal
     called_action.priority = _current_priority
+    called_action.update_on_complete = update_on_complete
     called_action._locked = true
 
     if parent and parent._handle_action(action):
@@ -205,6 +215,9 @@ func get_acted(action: StringName) -> CalledAction:
 
 
 func _can_goal_process(goal: BehaviorGoal) -> bool:
+    if _is_goal_action_update(goal):
+        return true
+
     if goal.sense_activated:
         if not _is_goal_sense_activated(goal):
             return false
@@ -214,6 +227,16 @@ func _can_goal_process(goal: BehaviorGoal) -> bool:
             return false
 
     return true
+
+func _is_goal_action_update(goal: BehaviorGoal) -> bool:
+    for action_name in _actions_called.keys():
+        var action: CalledAction = _actions_called.get(action_name)
+        if not action or action.goal != goal:
+            continue
+        if action.update_on_complete and action.action.is_complete():
+            return true
+
+    return false
 
 func _is_goal_sense_activated(goal: BehaviorGoal) -> bool:
     if _any_senses_activated(goal.sense_code_names):

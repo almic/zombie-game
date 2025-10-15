@@ -18,11 +18,20 @@ class_name BehaviorAction
 
 ## Called when an action is completed. Should only be called when `can_complete()`
 ## returns `true`. It is up to the implementing class to set some internal state
-## so that `is_complete()` returns `true` after this method is called.
-func complete() -> void:
+## so that `is_complete()` returns `true` after this method is called. It must
+## also cause the `is_success()` method to return `true` when the success
+## parameter is `true`.
+@warning_ignore("unused_parameter")
+func complete(success: bool = true) -> void:
     pass
 
 ## Implemented by extending class. Should always return `false` until the method
 ## `complete()` is called, and then it should always return `true` after.
 func is_complete() -> bool:
+    return false
+
+## Implemented by extending class. Should always return `false` until the method
+## `complete()` is called with `true` as the parameter, and then it should
+## always return `true` after.
+func is_success() -> bool:
     return false

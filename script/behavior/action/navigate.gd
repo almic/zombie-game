@@ -25,6 +25,7 @@ var target_distance: float = 1.0
 
 ## Set by the acting CharacterBase if the requested travel location is already reached
 var _completed: bool = false
+var _success: bool = false
 
 
 @warning_ignore("shadowed_variable")
@@ -33,11 +34,15 @@ func _init(direction: Vector3, distance: float) -> void:
     self.distance = distance
     time = GlobalWorld.get_game_time()
 
-func complete() -> void:
+func complete(success: bool = true) -> void:
     _completed = true
+    _success = success
 
 func is_complete() -> bool:
     return _completed
+
+func is_success() -> bool:
+    return _success
 
 func get_global_position(parent: Node3D) -> Vector3:
     return parent.global_position + (direction * distance)

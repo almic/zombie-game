@@ -45,18 +45,17 @@ func update_priority(mind: BehaviorMind) -> int:
         last_navigate = mind.get_acted(BehaviorActionNavigate.NAME)
         if last_navigate.just_completed:
 
-            # If it was ours at normal or higher, continue the chase
-            if last_navigate.goal.code_name == code_name and last_navigate.priority >= NORMAL_PRIORITY:
-                travel_target.clear()
-                # If it failed, clear the next direction and target so we don't
-                # run in a random direction
-                if last_navigate.action.is_failed():
-                    chase_target = NodePath()
-                    next_chase_direction = Vector3.ZERO
-                return CONTINUE_PRIORITY
+            # If it was equal or higher to our priority, must be ours, otherwise skip
+            if last_navigate.priority >= NORMAL_PRIORITY and last_navigate.goal.code_name != code_name:
+                return 0
 
-            # Not ours, we should have data to respond to
-            pass
+            # If it failed, clear the next direction and target so we don't
+            # run in a random direction
+            travel_target.clear()
+            if last_navigate.action.is_failed():
+                chase_target = NodePath()
+                next_chase_direction = Vector3.ZERO
+            return CONTINUE_PRIORITY
 
         # If the action is still running, we may skip
         elif not last_navigate.action.is_complete():
@@ -129,6 +128,10 @@ func update_priority(mind: BehaviorMind) -> int:
 func perform_actions(mind: BehaviorMind) -> void:
     # If navigation has already been called, we skip
     if mind.is_recent_action(BehaviorActionNavigate.NAME):
+        # Bind to any lower priority navigates, so we can chase later
+        var current_nav := mind.get_acted(BehaviorActionNavigate.NAME)
+        if current_nav and current_nav.priority < NORMAL_PRIORITY and current_nav.update_on_complete:
+            mind.add_on_complete(BehaviorActionNavigate.NAME)
         return
 
     var me := mind.parent

@@ -42,6 +42,9 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       cached values set by `update_priority()`.
 - [ ] Make zombie face position of navigation target when nav ends, otherwise
       they could fail to look fully towards the target and "miss" the goal
+- [ ] Check that chase / attack goals are navigating correctly. Looks like chase
+      binding has poor data, not turning/ traveling far enough. This MUST be done
+      with hearing disabled, as it will likely mask this issue.
 - [ ] Add zombie head turning as a skeleton modifier (?) so animations still
       play but with additional head turning on top. Use for turning and facing
       to lead the body in rotation.

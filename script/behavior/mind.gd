@@ -55,6 +55,9 @@ class CalledAction:
                 return
             just_completed = value
 
+    ## Goals that also want to be updated when this action completes
+    var watching_goals: Array[BehaviorGoal]
+
     # TODO: for dev only, should be removed
     var _locked: bool = false
 
@@ -171,7 +174,7 @@ func update(delta: float) -> void:
         tasks = _priority_list.get(_current_priority)
         for t in tasks:
             _current_goal = t
-            GlobalWorld.print('Goal: ' + t.code_name)
+            # GlobalWorld.print('Goal: ' + t.code_name)
             (t as BehaviorGoal).perform_actions(self)
     _current_goal = null
     _priority_list.clear()
@@ -219,6 +222,7 @@ func act(action: BehaviorAction, update_on_complete: bool = false, custom_priori
         called_action.priority = mini(_current_priority, custom_priority)
     called_action.update_on_complete = update_on_complete
     called_action.just_completed = false
+    called_action.watching_goals = []
     called_action._locked = true
 
     if parent and parent._handle_action(action):
@@ -242,6 +246,9 @@ func is_recent_action(action: StringName) -> bool:
 ## Called by goals to disable 'update_on_complete' for certain actions. Does
 ## nothing if the last action goal does not match the currently processing goal.
 func disable_on_complete(action: StringName) -> void:
+    if not _current_goal:
+        return
+
     if not _actions_called.has(action):
         return
 
@@ -252,6 +259,32 @@ func disable_on_complete(action: StringName) -> void:
     called._locked = false
     called.update_on_complete = false
     called._locked = true
+
+## Adds the calling goal as a candidate for 'update_on_complete' actions. The
+## priority of the action must be equal or lower priority than the calling goal.
+## Does nothing if the action has not been called, or does have 'update_on_complete'
+## set to `true`.
+func add_on_complete(action: StringName) -> void:
+    if not _current_goal:
+        return
+
+    if not _actions_called.has(action):
+        return
+
+    var called: CalledAction = _actions_called.get(action)
+    if !called.update_on_complete:
+        return
+
+    if called.priority > _current_priority:
+        return
+
+    if called.watching_goals.has(_current_goal):
+        return
+
+    # NOTE: because arrays... _locked is pointless
+    # called._locked = false
+    called.watching_goals.append(_current_goal)
+    # called._locked = true
 
 func _can_goal_process(goal: BehaviorGoal) -> bool:
     if _is_goal_action_update(goal):
@@ -270,12 +303,13 @@ func _can_goal_process(goal: BehaviorGoal) -> bool:
 func _is_goal_action_update(goal: BehaviorGoal) -> bool:
     for action_name in _actions_called.keys():
         var action: CalledAction = _actions_called.get(action_name)
-        if not action or action.goal != goal:
+        if not action or !action.update_on_complete or !action.action.is_complete():
             continue
-        if action.update_on_complete and action.action.is_complete():
-            action._locked = false
-            action.just_completed = true
-            action._locked = true
+        if action.goal == goal or action.watching_goals.has(goal):
+            if !action.just_completed:
+                action._locked = false
+                action.just_completed = true
+                action._locked = true
             return true
 
     return false

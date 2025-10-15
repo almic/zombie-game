@@ -64,7 +64,6 @@ metadata/_custom_type_script = "uid://c5fddnomu3esm"
 script = ExtResource("9_lg3am")
 distance_falloff = ExtResource("9_fi45o")
 target_groups = Array[ExtResource("10_fi45o")]([SubResource("Resource_37cj5")])
-debug_enabled = true
 debug_print_curious_nodes = true
 code_name = &"curiosity"
 metadata/_custom_type_script = "uid://c475er3d6t38f"

@@ -7,7 +7,10 @@ func name() -> StringName:
     return NAME
 
 
+## Priority used when initiating a chase
 const NORMAL_PRIORITY = BehaviorGoal.Priority.MEDIUM
+
+## Priority used when continuing a chase
 const CONTINUE_PRIORITY = BehaviorGoal.Priority.LOW
 
 
@@ -40,22 +43,28 @@ func update_priority(mind: BehaviorMind) -> int:
         # If the last navigate is completed and is equal or higher priority than
         # our priority, run with a lower continue priority
         last_navigate = mind.get_acted(BehaviorActionNavigate.NAME)
-        if last_navigate.action.is_complete():
+        if last_navigate.just_completed:
 
-            # If it was successful and equal or higher priority, we will continue it
-            if last_navigate.action.is_success() and last_navigate.priority >= NORMAL_PRIORITY:
+            # If it was ours at normal or higher, continue the chase
+            if last_navigate.goal.code_name == code_name and last_navigate.priority >= NORMAL_PRIORITY:
                 travel_target.clear()
-                if last_navigate.goal.code_name != code_name:
+                # If it failed, clear the next direction and target so we don't
+                # run in a random direction
+                if last_navigate.action.is_failed():
                     chase_target = NodePath()
                     next_chase_direction = Vector3.ZERO
                 return CONTINUE_PRIORITY
 
-        # Skip if the incomplete nav is higher priority
-        elif last_navigate.priority > NORMAL_PRIORITY:
-            return 0
-        elif last_navigate.priority == NORMAL_PRIORITY:
-            # If this was our navigate, we have new data and should update
-            if last_navigate.goal.code_name != code_name:
+            # Not ours, we should have data to respond to
+            pass
+
+        # If the action is still running, we may skip
+        elif not last_navigate.action.is_complete():
+            # Skip if the incomplete nav is higher priority
+            if last_navigate.priority > NORMAL_PRIORITY:
+                return 0
+            # Yield to other goals of the same priority
+            if last_navigate.priority == NORMAL_PRIORITY and last_navigate.goal.code_name != code_name:
                 return 0
 
     last_navigate = null
@@ -120,6 +129,11 @@ func update_priority(mind: BehaviorMind) -> int:
 func perform_actions(mind: BehaviorMind) -> void:
     # Continue the last navigation for chase distance
     if last_navigate:
+        # Check that no one called navigate but us
+        last_navigate = mind.get_acted(BehaviorActionNavigate.NAME)
+        if last_navigate.goal.code_name != code_name:
+            return
+
         if next_chase_direction.is_zero_approx():
             next_chase_direction = mind.parent.global_basis.z
         var distance: float = chase_distance
@@ -140,7 +154,9 @@ func perform_actions(mind: BehaviorMind) -> void:
                         distance = next_chase_direction.length()
                         next_chase_direction /= distance
                 else:
-                    distance = 0.0
+                    # We have arrived, end the chase
+                    mind.disable_on_complete(BehaviorActionNavigate.NAME)
+                    return
         var chase := BehaviorActionNavigate.new(next_chase_direction, distance)
         chase.target_distance = target_distance
         mind.act(chase)

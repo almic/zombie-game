@@ -13,7 +13,11 @@ func can_complete() -> bool:
 ## Node to attack
 var target: Node3D
 
+## If the attack is a melee attack
+var is_melee: bool
+
 
 @warning_ignore("shadowed_variable")
-func _init(target: Node3D) -> void:
+func _init(target: Node3D, is_melee: bool = false) -> void:
     self.target = target
+    self.is_melee = is_melee

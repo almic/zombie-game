@@ -9,24 +9,62 @@ func name() -> StringName:
     return NAME
 
 
+## Priority used when starting an attack
+const NORMAL_PRIORITY = BehaviorGoal.Priority.HIGH
+
+## Priority used when chaining an attack after a navigation
+const CONTINUE_PRIORITY = BehaviorGoal.Priority.HIGH + 100
+
+
 ## Target groups to attack
 @export var target_groups: Array[StringName]
 
-## Target distance for an attack
-@export var target_distance: float = 1.2
+## Activation range for attacking, targets in this range are checked. If melee
+## is enabled, this is the range at which simple navigation is triggered to get
+## within melee range
+@export var activation_range: float = 1.5
 
 
-## Event to act on
-var target_event: int
+@export_group("Melee", "melee")
 
-## Most recent navigate request
-var last_navigate: BehaviorActionNavigate = null
+## If this attack is melee
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var melee_enabled: bool = false
 
-## Most recent attack bind for navigation signals
-var last_attack_binding: Callable
+## Minimum distance to attack with melee. If not in this range when activated,
+## will first navigate within this range to the target before attacking.
+@export var melee_distance: float = 1.2
+
+
+## Target to attack
+var attack_target: Node3D
+
+## Target travel for attack, may be set
+var travel_target: Array = []
 
 
 func update_priority(mind: BehaviorMind) -> int:
+    # NOTE: can clear right away, always called after a completed travel, or we
+    #       have data and will update the travel anyway
+    travel_target.clear()
+
+    # Check if we just finished a navigation in our attack
+    if attack_target and mind.has_acted(BehaviorActionNavigate.NAME):
+        var last_navigate := mind.get_acted(BehaviorActionNavigate.NAME)
+        # If this is ours, and complete, we must be running from the completion
+        # and should not check sensory memory
+        if last_navigate.just_completed and last_navigate.goal.code_name == code_name:
+            if last_navigate.action.is_success():
+                # We should attack immediately with our attack target
+                return CONTINUE_PRIORITY
+            # Navigate failed, wait for new data
+            return 0
+
+        # Not ours or not complete, must have new sensory data
+        pass
+
+    attack_target = null
+
     var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
     if not sens_memory:
         return 0
@@ -40,36 +78,33 @@ func update_priority(mind: BehaviorMind) -> int:
     # Look for the most recent and closest target in the group
     var event: int = -1
     var closest: float = INF
+    var target: Node3D = null
     for ev in sight_events:
         var travel: Array[Variant] = sens_memory.get_event_travel(t, ev)
         if travel.is_empty():
             continue
 
         var dist: float = travel[1]
+        if dist > activation_range:
+            continue
+
         if dist >= closest:
             continue
 
-        var target_path: NodePath = sens_memory.get_event_node_path(t, ev)
-        if not target_path:
+        var node_path: NodePath = sens_memory.get_event_node_path(t, ev)
+        if not node_path:
             continue
 
-        var target: Node = mind.parent.get_node(target_path)
+        var node: Node3D = mind.parent.get_node(node_path) as Node3D
+        if not node:
+            continue
+
         var in_group: bool = false
         for group in target_groups:
-            if target.is_in_group(group):
+            if node.is_in_group(group):
                 in_group = true
                 break
         if not in_group:
-            continue
-
-        var flags: int = sens_memory.get_event_flag(t, ev)
-        if flags == -1:
-            continue
-
-        # Unstarted must be handled right away
-        if not (flags & BehaviorMemorySensory.Flag.RESPONSE_STARTED):
-            event = ev
-            closest = dist
             continue
 
         # Check if the sense just set new data
@@ -77,97 +112,34 @@ func update_priority(mind: BehaviorMind) -> int:
         if BehaviorMemorySensory.is_event_gametime(update_time):
             event = ev
             closest = dist
+            target = node
             continue
 
         continue
 
     if event != -1:
-        target_event = event
-        return BehaviorGoal.Priority.HIGH
+        attack_target = target
+        travel_target = sens_memory.get_event_travel(t, event)
+        return NORMAL_PRIORITY
 
     return 0
 
-
 func perform_actions(mind: BehaviorMind) -> void:
-    var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
-    if not sens_memory:
+    # Call this every time just in case, does nothing if action was not ours
+    mind.disable_on_complete(BehaviorActionNavigate.NAME)
+
+    if !melee_enabled:
+        mind.act(BehaviorActionAttack.new(attack_target))
         return
 
-    var t: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.SIGHT
-    var sight_events: PackedInt32Array = sens_memory.get_events(t)
+    var me := mind.parent
 
-    if not sight_events.has(target_event):
+    # For melee attacks, must be within melee range
+    if attack_target.global_position.distance_squared_to(me.global_position) <= melee_distance * melee_distance:
+        mind.act(BehaviorActionAttack.new(attack_target, true))
         return
 
-    var event = target_event
-
-    var flags: int = sens_memory.get_event_flag(t, event)
-    if flags == -1:
-        # Event not found?
-        return
-    var set_flags: bool = false
-
-    # Mark started
-    if not (flags & BehaviorMemorySensory.Flag.RESPONSE_STARTED):
-        flags |= BehaviorMemorySensory.Flag.RESPONSE_STARTED
-        set_flags = true
-    # Otherwise, new data, clear complete flag
-    elif flags & BehaviorMemorySensory.Flag.RESPONSE_COMPLETE:
-        flags &= ~BehaviorMemorySensory.Flag.RESPONSE_COMPLETE
-        set_flags = true
-
-    var travel: Array[Variant] = sens_memory.get_event_travel(t, event)
-    if not travel:
-        push_error('Incomplete/ new sensory memory has no travel data! This is a mistake? Investigate!')
-        flags |= BehaviorMemorySensory.Flag.RESPONSE_COMPLETE
-        sens_memory.set_event_flag(t, event, flags)
+    if travel_target.is_empty():
         return
 
-    # TODO: variate the travel request
-    var navigate := BehaviorActionNavigate.new(travel[0], travel[1])
-    navigate.target_distance = target_distance
-
-    # Bind navigation signals
-    if (
-                last_navigate
-            and last_attack_binding
-            and last_navigate.on_complete.is_connected(last_attack_binding)
-    ):
-        last_navigate.on_complete.disconnect(last_attack_binding)
-
-    last_navigate = navigate
-    var target_path: NodePath = sens_memory.get_event_node_path(t, event)
-    var target: Node3D
-
-    if target_path:
-        target = mind.parent.get_node(target_path) as Node3D
-
-    if target:
-        last_attack_binding = complete_and_attack.bind(mind, target, event)
-
-    # GlobalWorld.print('attack navigating! ' + str(navigate.direction))
-    mind.act(navigate)
-    mind.act(BehaviorActionSpeed.new(mind.parent.top_speed))
-
-    if navigate.completed:
-        flags |= BehaviorMemorySensory.Flag.RESPONSE_COMPLETE
-        set_flags = true
-        if target:
-            last_attack_binding.call()
-    elif target:
-        last_navigate.on_complete.connect(last_attack_binding, CONNECT_ONE_SHOT)
-
-    if set_flags:
-        sens_memory.set_event_flag(t, event, flags)
-
-
-func complete_and_attack(mind: BehaviorMind, target: Node3D, event: int) -> void:
-    var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
-    if sens_memory:
-        var t: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.SIGHT
-        var flags: int = sens_memory.get_event_flag(t, event)
-        flags |= BehaviorMemorySensory.Flag.RESPONSE_COMPLETE
-        sens_memory.set_event_flag(t, event, flags)
-
-    var attack := BehaviorActionAttack.new(target)
-    mind.act(attack)
+    mind.act(BehaviorActionNavigate.new(travel_target[0], travel_target[1], melee_distance), true)

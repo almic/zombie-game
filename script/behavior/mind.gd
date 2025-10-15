@@ -48,6 +48,13 @@ class CalledAction:
                 return
             update_on_complete = value
 
+    ## Will be true only if the action is complete and caused a goal to process
+    var just_completed: bool:
+        set(value):
+            if _locked:
+                return
+            just_completed = value
+
     # TODO: for dev only, should be removed
     var _locked: bool = false
 
@@ -168,6 +175,7 @@ func update(delta: float) -> void:
         else:
             _current_goal = task
             (task as BehaviorGoal).perform_actions(self)
+    _current_goal = null
     _priority_list.clear()
 
     # Clear sense activations
@@ -175,6 +183,13 @@ func update(delta: float) -> void:
         sense.activated = false
     for sense in secondary_senses:
         sense.activated = false
+
+    # Clear action completions
+    for action_name in _actions_called.keys():
+        var action: CalledAction = _actions_called.get(action_name)
+        action._locked = false
+        action.just_completed = false
+        action._locked = true
 
 
 ## Called by goals during the action phase. Can pass `true` for `update_on_complete`
@@ -197,6 +212,7 @@ func act(action: BehaviorAction, update_on_complete: bool = false) -> void:
     called_action.goal = _current_goal
     called_action.priority = _current_priority
     called_action.update_on_complete = update_on_complete
+    called_action.just_completed = false
     called_action._locked = true
 
     if parent and parent._handle_action(action):
@@ -213,6 +229,19 @@ func has_acted(action: StringName) -> bool:
 func get_acted(action: StringName) -> CalledAction:
     return _actions_called.get(action)
 
+## Called by goals to disable 'update_on_complete' for certain actions. Does
+## nothing if the last action goal does not match the currently processing goal.
+func disable_on_complete(action: StringName) -> void:
+    if not _actions_called.has(action):
+        return
+
+    var called: CalledAction = _actions_called.get(action)
+    if called.goal != _current_goal:
+        return
+
+    called._locked = false
+    called.update_on_complete = false
+    called._locked = true
 
 func _can_goal_process(goal: BehaviorGoal) -> bool:
     if _is_goal_action_update(goal):
@@ -234,6 +263,9 @@ func _is_goal_action_update(goal: BehaviorGoal) -> bool:
         if not action or action.goal != goal:
             continue
         if action.update_on_complete and action.action.is_complete():
+            action._locked = false
+            action.just_completed = true
+            action._locked = true
             return true
 
     return false

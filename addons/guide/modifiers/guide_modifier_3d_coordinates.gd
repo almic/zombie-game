@@ -14,33 +14,39 @@ extends GUIDEModifier
 ## Collision mask to use for the ray cast.
 @export_flags_3d_physics var collision_mask:int
 
+func is_same_as(other:GUIDEModifier) -> bool:
+	return other is GUIDEModifier3DCoordinates and \
+		collide_with_areas == other.collide_with_areas and \
+		collision_mask == other.collision_mask and \
+		is_equal_approx(max_depth, other.max_depth)
+
 
 func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> Vector3:
 	# if we collide with nothing, no need to even try
 	if collision_mask == 0:
 		return Vector3.INF
-		
+
 	if not input.is_finite():
 		return Vector3.INF
-			
+
 	var viewport = Engine.get_main_loop().root
 	var camera:Camera3D = viewport.get_camera_3d()
 	if camera == null:
 		return Vector3.INF
-		
-	
-	var input_position:Vector2 = Vector2(input.x, input.y)	
-		
+
+
+	var input_position:Vector2 = Vector2(input.x, input.y)
+
 	var from:Vector3 = camera.project_ray_origin(input_position)
 	var to:Vector3 = from + camera.project_ray_normal(input_position) * max_depth
 	var query:= PhysicsRayQueryParameters3D.create(from, to, collision_mask)
 	query.collide_with_areas = collide_with_areas
-		
+
 	var result = viewport.world_3d.direct_space_state.intersect_ray(query)
 	if result.has("position"):
 		return result.position
-		
-	return Vector3.INF	
+
+	return Vector3.INF
 
 
 

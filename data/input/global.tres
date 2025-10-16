@@ -1,13 +1,13 @@
 [gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=13 format=3 uid="uid://c03y3iyxl2p81"]
 
-[ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_0j75c"]
-[ext_resource type="Script" uid="uid://d2uxdm701dkpi" path="res://addons/guide/guide_input_mapping.gd" id="2_487i1"]
+[ext_resource type="Script" uid="uid://cpplm41b5bt6m" path="res://addons/guide/guide_action_mapping.gd" id="1_0j75c"]
+[ext_resource type="Script" uid="uid://mtx1unc2aqn7" path="res://addons/guide/guide_input_mapping.gd" id="2_487i1"]
 [ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/global/pause.tres" id="2_cmvib"]
-[ext_resource type="Script" uid="uid://cwoj8ckmjacgf" path="res://addons/guide/guide_mapping_context.gd" id="2_k6484"]
-[ext_resource type="Script" uid="uid://1v1tg76dtp0o" path="res://addons/guide/inputs/guide_input_key.gd" id="4_b1xgh"]
-[ext_resource type="Script" uid="uid://qhehcstl4kq8" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_ybrqv"]
-[ext_resource type="Script" uid="uid://b2wjmqwobesm6" path="res://addons/guide/triggers/guide_trigger.gd" id="6_ib8fc"]
-[ext_resource type="Script" uid="uid://dyw2obmpaoakj" path="res://addons/guide/triggers/guide_trigger_pressed.gd" id="7_82x6x"]
+[ext_resource type="Script" uid="uid://dsa1dnifd6w32" path="res://addons/guide/guide_mapping_context.gd" id="2_k6484"]
+[ext_resource type="Script" uid="uid://cw71o87tvdx3q" path="res://addons/guide/inputs/guide_input_key.gd" id="4_b1xgh"]
+[ext_resource type="Script" uid="uid://bl8rjl4oaldje" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_ybrqv"]
+[ext_resource type="Script" uid="uid://x74mnwgr08a7" path="res://addons/guide/triggers/guide_trigger.gd" id="6_ib8fc"]
+[ext_resource type="Script" uid="uid://b52rqq28tuqpg" path="res://addons/guide/triggers/guide_trigger_pressed.gd" id="7_82x6x"]
 
 [sub_resource type="Resource" id="Resource_bco5q"]
 script = ExtResource("4_b1xgh")
@@ -29,4 +29,3 @@ input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_t31np")])
 [resource]
 script = ExtResource("2_k6484")
 mappings = Array[ExtResource("1_0j75c")]([SubResource("Resource_wy4bc")])
-metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

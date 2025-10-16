@@ -1,14 +1,8 @@
 [gd_resource type="Resource" script_class="GUIDEAction" load_steps=2 format=3 uid="uid://jl3d6mw54p0f"]
 
-[ext_resource type="Script" uid="uid://vmrd1cavtwcx" path="res://addons/guide/guide_action.gd" id="1_21mwc"]
+[ext_resource type="Script" uid="uid://cluhc11vixkf1" path="res://addons/guide/guide_action.gd" id="1_21mwc"]
 
 [resource]
 script = ExtResource("1_21mwc")
-name = &""
-action_value_type = 0
-block_lower_priority_actions = true
-emit_as_godot_actions = false
 is_remappable = true
 display_name = "Melee"
-display_category = ""
-metadata/_custom_type_script = "uid://vmrd1cavtwcx"

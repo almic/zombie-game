@@ -11,12 +11,12 @@ extends Control
 ## Whether or not this renderer can render an icon for this input.
 func supports(input:GUIDEInput) -> bool:
 	return false
-	
+
 ## Set up the scene so that the given input can be rendered. This will
 ## only be called for input where `supports` has returned true.
 func render(input:GUIDEInput) -> void:
 	pass
- 
+
 
 ## A cache key for the given input. This should be unique for this renderer
 ## and the given input. The same input should yield the same cache key for
@@ -27,4 +27,3 @@ func cache_key(input:GUIDEInput) -> String:
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
-

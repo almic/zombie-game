@@ -1,15 +1,15 @@
 [gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=39 format=3 uid="uid://codpo6l5xn1m8"]
 
-[ext_resource type="Script" uid="uid://c34vemoksx1go" path="res://addons/guide/guide_action_mapping.gd" id="1_si4e3"]
+[ext_resource type="Script" uid="uid://cpplm41b5bt6m" path="res://addons/guide/guide_action_mapping.gd" id="1_si4e3"]
 [ext_resource type="Resource" uid="uid://myiwmguaq6ih" path="res://data/input/actions/vehicle/accelerate.tres" id="2_1f07l"]
-[ext_resource type="Script" uid="uid://cwoj8ckmjacgf" path="res://addons/guide/guide_mapping_context.gd" id="2_csvu0"]
-[ext_resource type="Script" uid="uid://d2uxdm701dkpi" path="res://addons/guide/guide_input_mapping.gd" id="3_obwup"]
-[ext_resource type="Script" uid="uid://1v1tg76dtp0o" path="res://addons/guide/inputs/guide_input_key.gd" id="4_y6uqt"]
-[ext_resource type="Script" uid="uid://qhehcstl4kq8" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_fdcy7"]
-[ext_resource type="Script" uid="uid://b2wjmqwobesm6" path="res://addons/guide/triggers/guide_trigger.gd" id="6_qh32l"]
+[ext_resource type="Script" uid="uid://dsa1dnifd6w32" path="res://addons/guide/guide_mapping_context.gd" id="2_csvu0"]
+[ext_resource type="Script" uid="uid://mtx1unc2aqn7" path="res://addons/guide/guide_input_mapping.gd" id="3_obwup"]
+[ext_resource type="Script" uid="uid://cw71o87tvdx3q" path="res://addons/guide/inputs/guide_input_key.gd" id="4_y6uqt"]
+[ext_resource type="Script" uid="uid://bl8rjl4oaldje" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_fdcy7"]
+[ext_resource type="Script" uid="uid://x74mnwgr08a7" path="res://addons/guide/triggers/guide_trigger.gd" id="6_qh32l"]
 [ext_resource type="Resource" uid="uid://bq47bbreu8wai" path="res://data/input/actions/vehicle/brake_reverse.tres" id="7_67ult"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="8_q3wsk"]
-[ext_resource type="Script" uid="uid://cfjjp6w13v8uc" path="res://addons/guide/modifiers/guide_modifier_negate.gd" id="9_e6vif"]
+[ext_resource type="Script" uid="uid://ckggy40lm0vjc" path="res://addons/guide/modifiers/guide_modifier_negate.gd" id="9_e6vif"]
 [ext_resource type="Resource" uid="uid://1oc4rk1h4uql" path="res://data/input/actions/vehicle/headlights.tres" id="10_kcp1l"]
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="11_a8syp"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="12_s3plq"]
@@ -121,4 +121,3 @@ input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_qh32l")])
 [resource]
 script = ExtResource("2_csvu0")
 mappings = Array[ExtResource("1_si4e3")]([SubResource("Resource_rp63r"), SubResource("Resource_fndri"), SubResource("Resource_8t08j"), SubResource("Resource_766sy"), SubResource("Resource_jlhvs"), SubResource("Resource_53qbf"), SubResource("Resource_67ult")])
-metadata/_custom_type_script = "uid://cwoj8ckmjacgf"

@@ -26,7 +26,7 @@ func _ready():
 	_dragger._parent_array = get_parent()
 	_dragger._index = get_index()
 	_dragger.pressed.connect(_show_popup_menu)
-	
+
 	_popup_menu.clear()
 	_popup_menu.add_icon_item(get_theme_icon("Duplicate", "EditorIcons"), "Duplicate", ID_DUPLICATE)
 	_popup_menu.add_icon_item(get_theme_icon("Remove", "EditorIcons"), "Delete", ID_DELETE)
@@ -35,31 +35,31 @@ func _ready():
 func initialize(content:Control):
 	Utils.clear(_content)
 	_content.add_child(content)
-		
+
 
 func _can_drop_data(at_position:Vector2, data) -> bool:
 	if data is Dictionary and data.has("parent_array") and data.parent_array == get_parent() and data.index != get_index():
 		var height = size.y
-	
+
 		var is_before = not _is_last_child() or (at_position.y < height/2.0)
 		if is_before and data.index == get_index() - 1:
 			# don't allow the previous child to be inserted at its
 			# own position
 			return false
-		
+
 		_before_indicator.visible = is_before
 		_after_indicator.visible = not is_before
 		return true
-	
+
 	return false
-	
-	
+
+
 func _drop_data(at_position, data):
 	var height = size.y
 	var is_before = not _is_last_child() or (at_position.y < height/2.0)
 	var from = data.index
 	var to = get_index() if is_before else get_index() + 1
-	move_requested.emit(data.index, to) 
+	move_requested.emit(data.index, to)
 	_before_indicator.visible = false
 	_after_indicator.visible = false
 
@@ -73,7 +73,10 @@ func _on_mouse_exited():
 
 
 func _show_popup_menu():
-	_popup_menu.popup(Rect2(get_global_mouse_position(), Vector2.ZERO))
+	# https://github.com/godotneers/G.U.I.D.E/issues/88
+	# We use DisplayServer.mouse_get_position() to get the position of the mouse
+	# in a way that works with multiple monitors.
+	_popup_menu.popup(Rect2(get_screen_position() + get_local_mouse_position(), Vector2.ZERO))
 
 
 func _on_popup_menu_id_pressed(id:int):

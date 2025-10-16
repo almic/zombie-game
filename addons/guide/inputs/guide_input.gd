@@ -4,47 +4,46 @@
 class_name GUIDEInput
 extends Resource
 
-## The current valueo f this input. Depending on the input type only parts of the 
+## The current valueo f this input. Depending on the input type only parts of the
 ## returned vector may be relevant.
 var _value:Vector3 = Vector3.ZERO
+
+## The current input state. This will be set by GUIDE when the input is used.
+var _state:GUIDEInputState = null
 
 ## Whether this input needs a reset per frame. _input is only called when
 ## there is input happening, but some GUIDE inputs may need to be reset
 ## in the absence of input.
 func _needs_reset() -> bool:
-    return false
-    
+	return false
+
 ## Resets the input value to the default value. Is called once per frame if
 ## _needs_reset returns true.
 func _reset() -> void:
-    _value = Vector3.ZERO
+	_value = Vector3.ZERO
 
-## Called when an input event happens. Should update the 
-## the input value of this input.
-func _input(event:InputEvent):
-    pass
-    
 ## Returns whether this input is the same input as the other input.
 func is_same_as(other:GUIDEInput) -> bool:
-    return false
-    
+	return false
+
 ## Called when the input is started to be used by GUIDE. Can be used to perform
-## initializations.
+## initializations. The state object can be used to subscribe to input events
+## and to get the current input state.
 func _begin_usage() -> void :
-    pass
-    
+	pass
+
 ## Called, when the input is no longer used by GUIDE. Can be used to perform
 ## cleanup.
 func _end_usage() -> void:
-    pass
-    
-    
+	pass
+
+
 func _editor_name() -> String:
-    return ""
-    
+	return ""
+
 func _editor_description() -> String:
-    return ""
-    
+	return ""
+
 
 func _native_value_type() -> GUIDEAction.GUIDEActionValueType:
-    return -1
+	return -1

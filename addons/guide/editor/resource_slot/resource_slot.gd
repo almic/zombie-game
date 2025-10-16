@@ -13,7 +13,7 @@ func _ready():
 	drag_and_drop_selection_enabled = false
 	middle_mouse_paste_enabled = false
 
-## The underlying resource. This is opened for editing when the user clicks on the control. Its also 
+## The underlying resource. This is opened for editing when the user clicks on the control. Its also
 ## used when dragging from the control.
 var _value:Resource = null:
 	set(value):
@@ -23,13 +23,13 @@ var _value:Resource = null:
 		# stop tracking changes to the old resource (if any)
 		if is_instance_valid(_value):
 			_value.changed.disconnect(_update_from_value)
-			
+
 		_value = value
 
 		# track changes to the resource itself
 		if is_instance_valid(_value):
 			_value.changed.connect(_update_from_value)
-		
+
 		_update_from_value()
 		changed.emit()
 
@@ -52,16 +52,16 @@ func _update_from_value():
 ## If the value should be updated ,this method should set the _value property.
 func _do_drop_data(data:Resource):
 	_value = data
-	
-	
+
+
 ## Whether this control can accept drop data. This method is called when the user drags something over the control.
 func _accepts_drop_data(data:Resource) -> bool:
 	return false
-	
+
 func _can_drop_data(at_position, data) -> bool:
 	if data is Resource:
 		return _accepts_drop_data(data)
-	
+
 	if not data is Dictionary:
 		return false
 
@@ -77,11 +77,11 @@ func _drop_data(at_position, data) -> void:
 	if data is Resource:
 		_do_drop_data(data)
 		return
-	
+
 	for file in data["files"]:
 		var item := ResourceLoader.load(file)
 		_do_drop_data(item)
-		
+
 
 func _get_drag_data(at_position: Vector2) -> Variant:
 	if is_instance_valid(_value):
@@ -102,5 +102,3 @@ func _gui_input(event):
 		if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 			if is_instance_valid(_value):
 				EditorInterface.edit_resource(_value)
-
-

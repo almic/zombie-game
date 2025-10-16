@@ -4,23 +4,21 @@ extends GUIDEInput
 
 
 func _begin_usage() -> void :
-	_update_mouse_position()
+	# subscribe to mouse movement events
+	_state.mouse_position_changed.connect(_refresh)
+	_refresh()
 
+func _end_usage() -> void:
+	# unsubscribe from mouse movement events
+	_state.mouse_position_changed.disconnect(_refresh)
 
-func _input(event:InputEvent) -> void:
-	if not event is InputEventMouseMotion:
-		return
-		
-	_update_mouse_position()
-
-
-func _update_mouse_position():
-	var position:Vector2 = Engine.get_main_loop().root.get_mouse_position()
+func _refresh():
+	var position:Vector2 = _state.get_mouse_position()
 
 	_value.x = position.x
 	_value.y = position.y
-		
-		
+
+
 func is_same_as(other:GUIDEInput):
 	return other is GUIDEInputMousePosition
 
@@ -32,7 +30,7 @@ func _to_string():
 func _editor_name() -> String:
 	return "Mouse Position"
 
-	
+
 func _editor_description() -> String:
 	return "Position of the mouse in the main viewport."
 

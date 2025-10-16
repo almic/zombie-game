@@ -20,36 +20,36 @@ func _init():
 func _mark_dirty():
 	_dirty = true
 
-## Returns all classes that directly or indirectly inherit from the 
+## Returns all classes that directly or indirectly inherit from the
 ## given class. Only works for scripts in the project, e.g. doesn't
 ## scan the whole class_db. Key is class name, value is the Script instance
 func find_inheritors(clazz_name:StringName) -> Dictionary:
 	var result:Dictionary = {}
 
 	var root := EditorInterface.get_resource_filesystem().get_filesystem()
-	
+
 	# rebuild the LUT when needed
 	if _dirty:
 		_script_lut.clear()
 		_scan(root)
 		_dirty = false
-		
-	
+
+
 	var open_set:GUIDESet = GUIDESet.new()
 	# a closed set just to avoid infinite loops, we'll never
 	# look at the same class more than once.
 	var closed_set:GUIDESet = GUIDESet.new()
-	
+
 	open_set.add(clazz_name)
-	
+
 	while not open_set.is_empty():
 		var next = open_set.pull()
 		closed_set.add(next)
 		if not _script_lut.has(next):
 			# we don't know this script, ignore, move on
 			continue
-		
-		# now find all scripts that extend the one we 
+
+		# now find all scripts that extend the one we
 		# are looking at
 		for item:ScriptInfo in _script_lut.values():
 			if item.extendz == next:
@@ -59,7 +59,7 @@ func find_inheritors(clazz_name:StringName) -> Dictionary:
 				# unless we already looked at it.
 				if not closed_set.has(item.clazz_name):
 					open_set.add(item.clazz_name)
-		
+
 	return result
 
 
@@ -73,19 +73,18 @@ func _scan(folder:EditorFileSystemDirectory):
 				info.clazz_name = script_clazz
 				info.clazz_script = ResourceLoader.load(folder.get_file_path(i))
 				_script_lut[script_clazz] = info
-				
+
 			var script_extendz = folder.get_file_script_class_extends(i)
 			info.extendz = script_extendz
-			
+
 	for i in folder.get_subdir_count():
-		_scan(folder.get_subdir(i))		
-					
-	
+		_scan(folder.get_subdir(i))
+
+
 class ScriptInfo:
 	var clazz_name:StringName
-	var extendz:StringName	
+	var extendz:StringName
 	var clazz_script:Script
-	
+
 	func _to_string() -> String:
 		return clazz_name + ":" + extendz
-	

@@ -26,16 +26,16 @@ func supports(input:GUIDEInput) -> bool:
 		input is GUIDEInputMouseAxis1D or \
 		input is GUIDEInputMouseAxis2D or \
 		input is GUIDEInputMousePosition
-	
-	
+
+
 func render(input:GUIDEInput) -> void:
 	for child in _controls.get_children():
 		child.visible = false
 	for child in _directions.get_children():
 		child.visible = false
-		
+
 	_directions.visible = false
-		
+
 	if input is GUIDEInputMouseButton:
 		match input.button:
 			MOUSE_BUTTON_LEFT:
@@ -64,7 +64,7 @@ func render(input:GUIDEInput) -> void:
 				_mouse_side_a.visible = true
 			MOUSE_BUTTON_XBUTTON2:
 				_mouse_side_b.visible = true
-				
+
 	if input is GUIDEInputMouseAxis1D:
 		if input.axis == GUIDEInputMouseAxis1D.GUIDEInputMouseAxis.X:
 			_mouse_blank.visible = true
@@ -73,15 +73,15 @@ func render(input:GUIDEInput) -> void:
 		else:
 			_mouse_blank.visible = true
 			_directions.visible = true
-			_vertical.visible = true		
-		
+			_vertical.visible = true
+
 	if input is GUIDEInputMouseAxis2D:
 		_mouse_blank.visible = true
-		
+
 	if input is GUIDEInputMousePosition:
 		_mouse_cursor.visible = true
-	
+
 	call("queue_sort")
- 
+
 func cache_key(input:GUIDEInput) -> String:
 	return "7e27520a-b6d8-4451-858d-e94330c82e85" + input.to_string()

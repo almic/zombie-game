@@ -13,7 +13,7 @@ static func duplicate_if_inline(resource:Resource) -> Resource:
 	if is_inline(resource):
 		return resource.duplicate()
 	return resource
-	
+
 
 ## Checks if the given resource is an inline resource.
 static func is_inline(resource:Resource) -> bool:

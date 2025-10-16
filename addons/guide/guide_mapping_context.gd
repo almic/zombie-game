@@ -5,7 +5,7 @@ extends Resource
 
 const GUIDESet = preload("guide_set.gd")
 
-## The display name for this mapping context during action remapping 
+## The display name for this mapping context during action remapping
 @export var display_name:String:
 	set(value):
 		if value == display_name:

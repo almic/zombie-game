@@ -8,6 +8,9 @@ extends GUIDETrigger
 
 var _accumulated_time: float = 0
 
+func is_same_as(other: GUIDETrigger) -> bool:
+	return other is GUIDETriggerTap and \
+			is_equal_approx(tap_threshold, other.tap_threshold)
 
 func _update_state(input: Vector3, delta: float, value_type:GUIDEAction.GUIDEActionValueType) -> GUIDETriggerState:
 	if _is_actuated(input, value_type):
@@ -36,7 +39,7 @@ func _update_state(input: Vector3, delta: float, value_type:GUIDEAction.GUIDEAct
 			# Otherwise, the tap is not triggered, but we reset the accumulated time
 			# so the trigger is now again ready to be triggered.
 			_accumulated_time = 0
-			
+
  		# in either case, the trigger is not triggered.
 		return GUIDETriggerState.NONE
 

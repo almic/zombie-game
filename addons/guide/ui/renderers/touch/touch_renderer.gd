@@ -25,17 +25,17 @@ func supports(input:GUIDEInput) -> bool:
 		input is GUIDEInputTouchPosition or \
 		input is GUIDEInputTouchAngle or \
 		input is GUIDEInputTouchDistance
-		
-	
-	
+
+
+
 func render(input:GUIDEInput) -> void:
 	for child in _controls.get_children():
 		child.visible = false
 	for child in _directions.get_children():
 		child.visible = false
-		
+
 	_directions.visible = false
-		
+
 	if input is GUIDEInputTouchBase:
 		match input.finger_count:
 			2:
@@ -47,12 +47,12 @@ func render(input:GUIDEInput) -> void:
 			_:
 				# we have no icons for more than 4 fingers, so everything else gets
 				# the 1 finger icon
-				_1_finger.visible = true	
-		
+				_1_finger.visible = true
+
 	if input is GUIDEInputTouchAxis2D:
 		_directions.visible = true
 		_axis2d.visible = true
-		
+
 	if input is GUIDEInputTouchAxis1D:
 		_directions.visible = true
 		match input.axis:
@@ -60,14 +60,14 @@ func render(input:GUIDEInput) -> void:
 				_horizontal.visible = true
 			GUIDEInputTouchAxis1D.GUIDEInputTouchAxis.X:
 				_vertical.visible = true
-				
+
 	if input is GUIDEInputTouchDistance:
 		_zoom.visible = true
-		
+
 	if input is GUIDEInputTouchAngle:
 		_rotate.visible = true
-		
+
 	call("queue_sort")
- 
+
 func cache_key(input:GUIDEInput) -> String:
 	return "1f4c5082-d419-465f-aba8-f889caaff335" + input.to_string()

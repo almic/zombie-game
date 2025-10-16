@@ -8,19 +8,23 @@ extends GUIDEModifier
 	set(value):
 		scale = value
 		emit_changed()
-		
-		
+
+
 ## If true, delta time will be multiplied in addition to the scale.
 @export var apply_delta_time:bool = false:
 	set(value):
 		apply_delta_time = value
 		emit_changed()
 
+func is_same_as(other:GUIDEModifier) -> bool:
+	return other is GUIDEModifierScale and \
+		apply_delta_time == other.apply_delta_time and \
+		scale.is_equal_approx(other.scale)
 
 func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> Vector3:
 	if not input.is_finite():
 		return Vector3.INF
-		
+
 	if apply_delta_time:
 		return input * scale * delta
 	else:

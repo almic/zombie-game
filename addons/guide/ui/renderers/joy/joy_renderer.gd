@@ -12,16 +12,16 @@ extends GUIDEIconRenderer
 
 func supports(input:GUIDEInput) -> bool:
 	return input is GUIDEInputJoyBase
-	
+
 func render(input:GUIDEInput) -> void:
 	_stick.visible = false
 	_button.visible = false
 	_directions.visible = false
 	_horizontal.visible = false
-	_vertical.visible = false	
+	_vertical.visible = false
 	_text.text = ""
 
-		
+
 	if input is GUIDEInputJoyAxis1D:
 		_stick.visible = true
 		match input.axis:
@@ -45,9 +45,9 @@ func render(input:GUIDEInput) -> void:
 				_text.text = "3"
 			JOY_AXIS_TRIGGER_RIGHT:
 				_text.text = "4"
-								
-	
-	
+
+
+
 	if input is GUIDEInputJoyAxis2D:
 		_stick.visible = true
 		match input.x:
@@ -58,12 +58,12 @@ func render(input:GUIDEInput) -> void:
 			_:
 				# well we don't know really what this is but what can we do.
 				_text.text = str(input.x + input.y)
-		
+
 	if input is GUIDEInputJoyButton:
 		_button.visible = true
 		_text.text = str(input.button)
-			
+
 	call("queue_sort")
- 
+
 func cache_key(input:GUIDEInput) -> String:
 	return "a9ced629-de65-4c31-9de0-8e4cbf88a2e0" + input.to_string()

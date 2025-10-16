@@ -1,6 +1,6 @@
 ## Stateful modifier which provides a virtual "mouse" cursor driven by input. The modifier
 ## returns the current cursor position in pixels releative to the origin of the currently
-## active window. 
+## active window.
 @tool
 class_name GUIDEModifierVirtualCursor
 extends GUIDEModifier
@@ -14,7 +14,7 @@ enum ScreenScale {
 	## the same visual speed on all resolutions.
 	LONGER_AXIS = 1,
 	## Input is scaled with the shorter axis of the screen size (e.g. height in
-	## landscape mode, width in portrait mode). The cursor will move with the 
+	## landscape mode, width in portrait mode). The cursor will move with the
 	## same visual speed on all resolutions.
 	SHORTER_AXIS = 2
 }
@@ -34,7 +34,7 @@ enum ScreenScale {
 @export var screen_scale:ScreenScale = ScreenScale.LONGER_AXIS
 
 ## The scale by which the input should be scaled.
-## @deprecated: use [member speed] instead. 
+## @deprecated: use [member speed] instead.
 var scale:Vector3:
 	get: return speed
 	set(value): speed = value
@@ -46,6 +46,13 @@ var scale:Vector3:
 
 ## Cursor offset in pixels.
 var _offset:Vector3 = Vector3.ZERO
+
+func is_same_as(other:GUIDEModifier) -> bool:
+	return other is GUIDEModifierVirtualCursor and \
+		screen_scale == other.screen_scale and \
+		apply_delta_time == other.apply_delta_time and \
+		initial_position.is_equal_approx(other.initial_position) and \
+		speed.is_equal_approx(other.speed)
 
 ## Returns the scaled screen size. This takes Godot's scaling factor for windows into account.
 func _get_scaled_screen_size():
@@ -62,10 +69,10 @@ func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 	if not input.is_finite():
 		# input is invalid, so just return current cursor position
 		return _offset
-		
-	var window_size = _get_scaled_screen_size() 
+
+	var window_size = _get_scaled_screen_size()
 	input *= speed
-		
+
 	if apply_delta_time:
 		input *= delta
 
@@ -74,13 +81,13 @@ func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 		ScreenScale.LONGER_AXIS:
 			screen_scale_factor = max(window_size.x, window_size.y)
 		ScreenScale.SHORTER_AXIS:
-			screen_scale_factor = min(window_size.x, window_size.y)	
-		
+			screen_scale_factor = min(window_size.x, window_size.y)
+
 	input *= screen_scale_factor
-		
-	# apply input and clamp to window size	
+
+	# apply input and clamp to window size
 	_offset = (_offset + input).clamp(Vector3.ZERO, Vector3(window_size.x, window_size.y, 0))
-	
+
 	return _offset
 
 func _editor_name() -> String:
@@ -102,4 +109,3 @@ func _get_property_list():
 			"usage": PROPERTY_USAGE_NO_EDITOR
 		}
 	]
-	

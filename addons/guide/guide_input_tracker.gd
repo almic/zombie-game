@@ -6,12 +6,12 @@ extends Node
 static func _instrument(viewport:Viewport):
 	if viewport.has_meta("x-guide-instrumented"):
 		return
-	
+
 	var tracker = preload("guide_input_tracker.gd").new()
 	tracker.process_mode = Node.PROCESS_MODE_ALWAYS
 	viewport.add_child(tracker, false, Node.INTERNAL_MODE_BACK)
 	viewport.gui_focus_changed.connect(tracker._control_focused)
-	
+
 ## Catches unhandled input and forwards it to GUIDE
 func _unhandled_input(event:InputEvent):
 	GUIDE.inject_input(event)
@@ -21,6 +21,4 @@ func _unhandled_input(event:InputEvent):
 func _control_focused(control:Control):
 	if control is OptionButton or control is ColorPickerButton \
 			or control is MenuButton or control is TabContainer:
-		_instrument(control.get_popup())	
-	
-	
+		_instrument(control.get_popup())

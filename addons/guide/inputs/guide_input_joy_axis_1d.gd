@@ -9,19 +9,16 @@ extends GUIDEInputJoyBase
 		if value == axis:
 			return
 		axis = value
-		emit_changed()	
+		emit_changed()
 
-func _input(event:InputEvent):
-	if not event is InputEventJoypadMotion:
-		return
-		
-	if event.axis != axis:
-		return
-		
-	if joy_index > -1 and event.device != _joy_id:
-		return
-		
-	_value.x = event.axis_value
+func _begin_usage() -> void:
+	_state.joy_axis_state_changed.connect(_refresh)
+
+func _end_usage() -> void:
+	_state.joy_axis_state_changed.disconnect(_refresh)
+
+func _refresh() -> void:
+	_value.x = _state.get_joy_axis_value(joy_index, axis)
 
 
 func is_same_as(other:GUIDEInput) -> bool:
@@ -34,10 +31,10 @@ func _to_string():
 
 func _editor_name() -> String:
 	return "Joy Axis 1D"
-	
+
 func _editor_description() -> String:
 	return "The input from a single joy axis."
-	
+
 
 func _native_value_type() -> GUIDEAction.GUIDEActionValueType:
 	return GUIDEAction.GUIDEActionValueType.AXIS_1D

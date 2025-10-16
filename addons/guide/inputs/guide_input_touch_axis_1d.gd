@@ -12,8 +12,8 @@ enum GUIDEInputTouchAxis {
 		if value == axis:
 			return
 		axis = value
-		emit_changed()		
-		
+		emit_changed()
+
 func is_same_as(other:GUIDEInput):
 	return other is GUIDEInputTouchAxis1D and \
 		other.finger_count == finger_count and \
@@ -35,7 +35,7 @@ func _to_string():
 func _editor_name() -> String:
 	return "Touch Axis1D"
 
-	
+
 func _editor_description() -> String:
 	return "Relative movement of a touching finger on a single axis."
 

@@ -23,6 +23,14 @@ extends GUIDETrigger
 var _delay_until_next_pulse:float = 0
 var _emitted_pulses:int = 0
 
+func is_same_as(other:GUIDETrigger) -> bool:
+	if not other is GUIDETriggerPulse:
+		return false
+	return is_equal_approx(initial_delay, other.initial_delay) and \
+		is_equal_approx(pulse_interval, other.pulse_interval) and \
+		max_pulses == other.max_pulses and \
+		trigger_on_start == other.trigger_on_start
+
 func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> GUIDETriggerState:
 	if _is_actuated(input, value_type):
 		if not _is_actuated(_last_value, value_type):
@@ -32,18 +40,18 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 				return GUIDETriggerState.TRIGGERED
 			else:
 				return GUIDETriggerState.ONGOING
-			
+
 		# if we already are pulsing and have exceeded the maximum number of pulses, we will not pulse anymore.
 		if max_pulses > 0 and _emitted_pulses >= max_pulses:
-			return GUIDETriggerState.NONE	
-		
+			return GUIDETriggerState.NONE
+
 		# subtract the delta from the delay until the next pulse
 		_delay_until_next_pulse -= delta
-		
+
 		if _delay_until_next_pulse > 0:
 			# we are still waiting for the next pulse, nothing to do.
 			return GUIDETriggerState.ONGOING
-		
+
 		# now delta could be larger than our pulse, in which case we loose a few pulses.
 		# as we can pulse at most once per frame.
 
@@ -53,12 +61,12 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 			if max_pulses > 0:
 				_emitted_pulses += 1
 			return GUIDETriggerState.TRIGGERED
-			
+
 		# Now add the delay until the next pulse
 		_delay_until_next_pulse += pulse_interval
-		
+
 		# If the interval is really small, we can potentially have skipped some pulses
-		if _delay_until_next_pulse <= 0: 
+		if _delay_until_next_pulse <= 0:
 			# we have skipped some pulses
 			var skipped_pulses:int = int(-_delay_until_next_pulse / pulse_interval)
 			_delay_until_next_pulse += skipped_pulses * pulse_interval
@@ -66,20 +74,20 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 				_emitted_pulses += skipped_pulses
 				if _emitted_pulses >= max_pulses:
 					return GUIDETriggerState.NONE
-		
+
 		# Record a pulse and return triggered
 		if max_pulses > 0:
 			_emitted_pulses += 1
 		return GUIDETriggerState.TRIGGERED
-		
+
 	# if the input is not actuated, then the trigger is not triggered.
 	_emitted_pulses = 0
 	_delay_until_next_pulse = 0
 	return GUIDETriggerState.NONE
-		
-		
+
+
 func _editor_name() -> String:
-	return "Pulse"		
+	return "Pulse"
 
 
 func _editor_description() -> String:

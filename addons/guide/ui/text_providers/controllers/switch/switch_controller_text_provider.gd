@@ -1,8 +1,8 @@
 extends "res://addons/guide/ui/text_providers/controllers/controller_text_provider.gd"
 
 func _controller_names() -> Array[String]:
-	return ["Nintendo Switch"]	
-	
+	return ["Nintendo Switch"]
+
 func _a_button_name() -> String:
 	return "B"
 

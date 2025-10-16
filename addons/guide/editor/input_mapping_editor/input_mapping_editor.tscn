@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://c323mdijdhktg"]
 
 [ext_resource type="PackedScene" uid="uid://dsv7s6tfmnsrs" path="res://addons/guide/editor/input_display/input_display.tscn" id="1_pg8n3"]
-[ext_resource type="Script" uid="uid://ctvrnogsr7kww" path="res://addons/guide/editor/input_mapping_editor/input_mapping_editor.gd" id="1_xsluc"]
+[ext_resource type="Script" path="res://addons/guide/editor/input_mapping_editor/input_mapping_editor.gd" id="1_xsluc"]
 [ext_resource type="PackedScene" uid="uid://ck5a30syo6bpo" path="res://addons/guide/editor/modifier_slot/modifier_slot.tscn" id="2_uhbrq"]
 [ext_resource type="PackedScene" uid="uid://tk30wnstb0ku" path="res://addons/guide/editor/trigger_slot/trigger_slot.tscn" id="3_e0jys"]
 [ext_resource type="PackedScene" uid="uid://dic27bm4pfw3q" path="res://addons/guide/editor/binding_dialog/binding_dialog.tscn" id="4_oepf3"]

@@ -18,7 +18,7 @@ enum LimitRange {
 			return
 		x = value
 		emit_changed()
-		
+
 ## Whether the Y axis should be affected.
 @export var y:bool = true:
 	set(value):
@@ -35,12 +35,19 @@ enum LimitRange {
 		z = value
 		emit_changed()
 
-		
+
+func is_same_as(other:GUIDEModifier) -> bool:
+	return other is GUIDEModifierPositiveNegative and \
+		range == other.range and \
+		x == other.x and \
+		y == other.y and \
+		z == other.z
+
 
 func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> Vector3:
 	if not input.is_finite():
 		return Vector3.INF
-		
+
 	match range:
 		LimitRange.POSITIVE:
 			return Vector3(
@@ -58,7 +65,7 @@ func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 	return input
 
 func _editor_name() -> String:
-	return "Positive/Negative"	
+	return "Positive/Negative"
 
 
 func _editor_description() -> String:

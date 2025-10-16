@@ -1,8 +1,8 @@
 extends "res://addons/guide/ui/text_providers/controllers/controller_text_provider.gd"
 
 func _controller_names() -> Array[String]:
-	return ["DualSense", "DualShock", "Playstation", "PS3", "PS4", "PS5"]	
-	
+	return ["DualSense", "DualShock", "Playstation", "PS3", "PS4", "PS5"]
+
 func _a_button_name() -> String:
 	return "Cross"
 

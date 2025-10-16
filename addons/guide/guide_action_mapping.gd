@@ -18,4 +18,4 @@ extends Resource
 		if value == input_mappings:
 			return
 		input_mappings = value
-		emit_changed()		
+		emit_changed()

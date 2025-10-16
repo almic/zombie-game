@@ -7,20 +7,17 @@ extends GUIDEInputJoyBase
 		if value == button:
 			return
 		button = value
-		emit_changed()		
+		emit_changed()
 
-func _input(event:InputEvent):
-	if not event is InputEventJoypadButton:
-		return
-	
-	if event.button_index != button:
-		return
-	
-	
-	if joy_index > -1 and event.device != _joy_id:
-		return
-		
-	_value.x = 1.0 if event.pressed else 0.0
+func _begin_usage() -> void:
+	_state.joy_button_state_changed.connect(_refresh)
+	_refresh()
+
+func _end_usage() -> void:
+	_state.joy_button_state_changed.disconnect(_refresh)
+
+func _refresh():
+	_value.x = 1.0 if _state.is_joy_button_pressed(joy_index, button) else 0.0
 
 
 func is_same_as(other:GUIDEInput) -> bool:
@@ -35,10 +32,10 @@ func _to_string():
 
 func _editor_name() -> String:
 	return "Joy Button"
-	
+
 func _editor_description() -> String:
 	return "A button press from a joy button."
-	
+
 
 func _native_value_type() -> GUIDEAction.GUIDEActionValueType:
 	return GUIDEAction.GUIDEActionValueType.BOOL

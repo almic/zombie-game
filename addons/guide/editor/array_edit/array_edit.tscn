@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://cly0ff32fvpb2"]
 
-[ext_resource type="Script" uid="uid://dfisavh334wso" path="res://addons/guide/editor/array_edit/array_edit.gd" id="1_y3qyt"]
+[ext_resource type="Script" path="res://addons/guide/editor/array_edit/array_edit.gd" id="1_y3qyt"]
 [ext_resource type="PackedScene" uid="uid://cjabwsa4gmlpp" path="res://addons/guide/editor/array_edit/array_edit_item.tscn" id="2_n3ncl"]
 
 [sub_resource type="Image" id="Image_efj5n"]

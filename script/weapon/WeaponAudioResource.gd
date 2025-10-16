@@ -1,5 +1,3 @@
-@tool
-
 ## Resource for dynamic weapon sound organization
 class_name WeaponAudioResource extends Resource
 

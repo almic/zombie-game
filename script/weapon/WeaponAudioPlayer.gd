@@ -1,5 +1,3 @@
-@tool
-
 ## Basic utility player for mixing weapons that use multiple audio streams
 class_name WeaponAudioPlayer extends AudioStreamPlayer3D
 

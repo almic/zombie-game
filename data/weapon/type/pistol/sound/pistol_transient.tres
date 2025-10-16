@@ -1,11 +1,14 @@
-[gd_resource type="Resource" script_class="SoundResource" load_steps=2 format=3 uid="uid://bi63muwxwtosg"]
+[gd_resource type="Resource" script_class="VariableSoundResource" load_steps=2 format=3 uid="uid://bi63muwxwtosg"]
 
 [ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/VariableSoundResource.gd" id="1_mm86x"]
 
 [resource]
 script = ExtResource("1_mm86x")
-file = "uid://d0lhay0lxlpkg"
+volume_random_enabled = null
 volume_relative_min = -1.5
+pitch_random_enabled = true
 pitch_relative_min = -0.05
 pitch_relative_max = 0.05
+offset_random_enabled = null
+file = "uid://d0lhay0lxlpkg"
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"

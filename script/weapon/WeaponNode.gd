@@ -28,6 +28,12 @@ signal reload_complete()
 @export var weapon_type: WeaponResource:
     set = load_weapon_type
 
+@export var sound_bus: StringName = &"Weapon":
+    set(value):
+        sound_bus = value
+        if _weapon_audio_player:
+            _weapon_audio_player.bus = sound_bus
+
 
 @export_group("Aiming", "aim")
 
@@ -96,6 +102,7 @@ var melee_excluded_hurtboxes: Array[RID]
 
 func _ready() -> void:
     _weapon_audio_player = WeaponAudioPlayer.new()
+    _weapon_audio_player.bus = sound_bus
 
     if aim_target and aim_target_reduced_rate:
         aim_target.enabled = false

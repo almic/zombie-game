@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="SoundResource" load_steps=2 format=3 uid="uid://bi63muwxwtosg"]
 
-[ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/SoundResource.gd" id="1_mm86x"]
+[ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/VariableSoundResource.gd" id="1_mm86x"]
 
 [resource]
 script = ExtResource("1_mm86x")

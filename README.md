@@ -25,7 +25,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
     - [X] Add turn action to investigate. Set thresholds for turning
     - [X] Add navigate action to investigate. Set thresholds for navigating
     - [X] Set up past action response completion, and continuation from goals
-    - [ ] Tune investigate, chase, attack to reasonable defaults
+    - [X] Tune investigate, chase, attack to reasonable defaults
     - [ ] ...
 - [ ] Add hearing sense
     - [ ] Connect to chase target goal, use hearing information if more recent

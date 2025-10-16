@@ -5,16 +5,7 @@
 [resource]
 script = ExtResource("1_lip07")
 file = "uid://ms1csi6im6uk"
-base_volume = 0.0
-base_pitch_scale = 1.0
-base_offset_ms = 0.0
-volume_distribution = 1
-volume_relative_min = 0.0
-volume_relative_max = 0.0
-pitch_distribution = 1
 pitch_relative_min = -0.2
 pitch_relative_max = 0.1
-offset_distribution = 1
-offset_relative_min = 0.0
 offset_relative_max = 50.0
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"

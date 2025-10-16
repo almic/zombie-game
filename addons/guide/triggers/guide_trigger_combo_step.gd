@@ -16,18 +16,20 @@ func is_same_as(other:GUIDETriggerComboStep) -> bool:
 var _has_fired:bool = false
 
 func _prepare():
-	if completion_events & GUIDETriggerCombo.ActionEventType.TRIGGERED:
-		action.triggered.connect(_fired)
-	if completion_events & GUIDETriggerCombo.ActionEventType.STARTED:
-		action.started.connect(_fired)
-	if completion_events & GUIDETriggerCombo.ActionEventType.ONGOING:
-		action.ongoing.connect(_fired)
-	if completion_events & GUIDETriggerCombo.ActionEventType.CANCELLED:
-		action.cancelled.connect(_fired)
-	if completion_events & GUIDETriggerCombo.ActionEventType.COMPLETED:
-		action.completed.connect(_fired)
+	_connect(GUIDETriggerCombo.ActionEventType.TRIGGERED, action.triggered)
+	_connect(GUIDETriggerCombo.ActionEventType.STARTED, action.started)
+	_connect(GUIDETriggerCombo.ActionEventType.ONGOING, action.ongoing)
+	_connect(GUIDETriggerCombo.ActionEventType.CANCELLED, action.cancelled)
+	_connect(GUIDETriggerCombo.ActionEventType.COMPLETED, action.completed)
 	_has_fired = false
 
+func _connect(type: GUIDETriggerCombo.ActionEventType, to: Signal) -> void:
+	if completion_events & type:
+		if not to.is_connected(_fired):
+			to.connect(_fired)
+	else:
+		if to.is_connected(_fired):
+			to.disconnect(_fired)
 
 func _fired():
 	_has_fired = true

@@ -44,7 +44,7 @@ var travel_target: Array = []
 var is_nav_response: bool
 
 
-func update_priority(mind: BehaviorMind) -> int:
+func process_memory(mind: BehaviorMind) -> int:
     is_nav_response = false
 
     var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)

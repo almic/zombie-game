@@ -151,7 +151,7 @@ func update(delta: float) -> void:
         if not goal.enabled or not _can_goal_process(goal):
             continue
 
-        priority = goal.update_priority(self)
+        priority = goal.process_memory(self)
         if priority < 1:
             continue
 

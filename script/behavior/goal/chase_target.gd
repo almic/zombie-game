@@ -37,7 +37,7 @@ var next_chase_direction: Vector3
 var chase_target: NodePath
 
 
-func update_priority(mind: BehaviorMind) -> int:
+func process_memory(mind: BehaviorMind) -> int:
 
     if mind.has_acted(BehaviorActionNavigate.NAME):
         # If the last navigate is completed and is equal or higher priority than

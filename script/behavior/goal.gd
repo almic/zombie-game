@@ -52,11 +52,17 @@ var minimum_period: int = 0
 ""
 
 ## Process memories and return a desired call priority. Return `0` to skip being
-## called during the action phase, larger values are called earlier.
-@abstract func update_priority(mind: BehaviorMind) -> int
+## called during the action phase, larger values are called earlier. This method
+## should initialize any state needed by `perform_actions`, so that it can run
+## as quickly as possible. This method must not modify any memory or call any
+## actions.
+@abstract func process_memory(mind: BehaviorMind) -> int
 
 ""
 
-## Calls actions to be taken as part of this goal, called only if 'update_priority'
-## returned a positive value, in order relative to other active goals.
+## Calls actions to be taken as part of this goal, called only if `process_memory`
+## returned a positive value, in order relative to other active goals. This
+## method must not access memory, it should have everything it needs from the
+## `process_memory` method. It should also avoid performing actions that have
+## already been called by previous, higher priority, goals.
 @abstract func perform_actions(mind: BehaviorMind) -> void

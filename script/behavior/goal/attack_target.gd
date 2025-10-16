@@ -43,7 +43,7 @@ var attack_target: Node3D
 var travel_target: Array = []
 
 
-func update_priority(mind: BehaviorMind) -> int:
+func process_memory(mind: BehaviorMind) -> int:
     # NOTE: can clear right away, always called after a completed travel, or we
     #       have data and will update the travel anyway
     travel_target.clear()

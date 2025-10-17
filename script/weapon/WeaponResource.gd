@@ -224,7 +224,7 @@ const DEBUG_MISS_COLOR = Color(0.8, 0.12, 0.2, 0.5)
 
 @export_group("Sound", "sound")
 ## Sound effect for this weapon
-@export var sound_effect: WeaponAudioResource
+@export var sound_effect: SoundResourceWeapon
 
 ## Toggle this to listen to the sound effect in-engine
 @export var sound_test: bool = false

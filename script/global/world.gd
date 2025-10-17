@@ -28,6 +28,12 @@ func _physics_process(delta: float) -> void:
         game_time_frac -= 1.0
 
 
+func sound_played(player: PositionalAudioPlayer, loudness: float) -> void:
+    print('playing sound from "' + player.name + ('" with loudness: %.2f' % loudness))
+    # TODO
+    pass
+
+
 func get_nodes_in_group(group: StringName) -> Array[Node]:
 
     if not group_nodes.has(group):

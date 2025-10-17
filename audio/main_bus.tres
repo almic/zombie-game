@@ -11,5 +11,5 @@ bus/2/name = &"Weapon"
 bus/2/solo = false
 bus/2/mute = false
 bus/2/bypass_fx = false
-bus/2/volume_db = -8.009033
+bus/2/volume_db = -8.0
 bus/2/send = &"Master"

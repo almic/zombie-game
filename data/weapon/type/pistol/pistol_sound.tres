@@ -1,8 +1,8 @@
-[gd_resource type="Resource" script_class="WeaponAudioResource" load_steps=6 format=3 uid="uid://bfs5d6tx6ise"]
+[gd_resource type="Resource" script_class="SoundResourceWeapon" load_steps=6 format=3 uid="uid://bfs5d6tx6ise"]
 
 [ext_resource type="Resource" uid="uid://dcwd18su6x23d" path="res://data/weapon/type/pistol/sound/pistol_body.tres" id="1_gngg5"]
 [ext_resource type="Resource" uid="uid://dcegdiqjowcw2" path="res://data/weapon/type/pistol/sound/pistol_kick.tres" id="2_5bd3p"]
-[ext_resource type="Script" uid="uid://cysn8pqvjtsgb" path="res://script/weapon/WeaponAudioResource.gd" id="2_x7p5w"]
+[ext_resource type="Script" uid="uid://cysn8pqvjtsgb" path="res://script/weapon/SoundResourceWeapon.gd" id="2_x7p5w"]
 [ext_resource type="Resource" uid="uid://xixwxkgy6ax5" path="res://data/weapon/type/pistol/sound/pistol_tail.tres" id="5_eo678"]
 [ext_resource type="Resource" uid="uid://bi63muwxwtosg" path="res://data/weapon/type/pistol/sound/pistol_transient.tres" id="6_4drxh"]
 

@@ -1,5 +1,5 @@
 ## Resource for loading dynamic sounds. Must be an OGG Vorbis file.
-class_name VariableSoundResource extends SoundResource
+class_name SoundResourceVariable extends SoundResource
 
 
 ## Base offset in milliseconds. THIS IS NOT A DELAY! Sounds must be rendered

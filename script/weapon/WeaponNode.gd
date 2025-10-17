@@ -95,13 +95,13 @@ var _weapon_scene: WeaponScene
 
 var _particle_system: ParticleSystem
 
-var _weapon_audio_player: WeaponAudioPlayer
+var _weapon_audio_player: PositionalAudioPlayer
 
 var melee_excluded_hurtboxes: Array[RID]
 
 
 func _ready() -> void:
-    _weapon_audio_player = WeaponAudioPlayer.new()
+    _weapon_audio_player = PositionalAudioPlayer.new()
     _weapon_audio_player.bus = sound_bus
 
     if aim_target and aim_target_reduced_rate:
@@ -127,7 +127,7 @@ func _process(delta: float) -> void:
                 weapon_type.particle_test = false
             if weapon_type.sound_test:
                 # re-apply the sound in case it was changed
-                _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
+                _weapon_audio_player.sound = weapon_type.sound_effect
                 trigger_sound()
                 weapon_type.sound_test = false
         return
@@ -385,7 +385,7 @@ func has_ammo_stock() -> bool:
 
 ## Trigger the weapon sound
 func trigger_sound(_activate: bool = true) -> void:
-    _weapon_audio_player.play_sound()
+    _weapon_audio_player.play()
 
 ## Trigger the particle effect
 func trigger_particle(activate: bool = true) -> void:
@@ -436,7 +436,7 @@ func load_weapon_type(type: WeaponResource) -> void:
             _weapon_scene.set_magazine_scene(weapon_type.scene_magazine)
             _weapon_scene.set_reload_scene(weapon_type.scene_magazine)
 
-    _weapon_audio_player.weapon_sound_resource = weapon_type.sound_effect
+    _weapon_audio_player.sound = weapon_type.sound_effect
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:

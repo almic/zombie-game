@@ -5,10 +5,8 @@ var group_reset_ticks: int = 0
 
 var group_nodes: Dictionary[StringName, Array] = {}
 
+var Printer := preload("uid://dao0mebio8ua7")
 
-class Printer:
-    static func _print(s: String) -> void:
-        print(s)
 
 ## TODO: this is probably not implemented correctly for saving, please revisit
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)

@@ -6,6 +6,7 @@ var group_reset_ticks: int = 0
 var group_nodes: Dictionary[StringName, Array] = {}
 
 var Printer := preload("uid://dao0mebio8ua7")
+var Sounds := preload("uid://bq40usjnjtfva")
 
 
 ## TODO: this is probably not implemented correctly for saving, please revisit
@@ -21,16 +22,34 @@ func _physics_process(delta: float) -> void:
         group_reset_ticks = 0
 
     game_time_frac += delta
+    var second_passed: bool = game_time_frac >= 1.0
     while game_time_frac >= 1.0:
         game_time += 1
         game_time_frac -= 1.0
 
+    # Things to do once per second
+    if second_passed:
+        Sounds.trim()
+
 
 func sound_played(player: PositionalAudioPlayer, loudness: float) -> void:
-    print('playing sound from "' + player.name + ('" with loudness: %.2f' % loudness))
-    # TODO
-    pass
+    # self.print('playing sound from "' + player.name + ('" with loudness: %.2f' % loudness))
+    Sounds.add_sound(player, loudness)
 
+func get_sounds_played(
+        seconds_in_past: float,
+        location: Vector3,
+        groups: Array[StringName],
+        min_loudness: float,
+        max_distance: float,
+) -> Array:
+    return Sounds.get_sounds(
+            seconds_in_past,
+            location,
+            groups,
+            min_loudness,
+            max_distance,
+    )
 
 func get_nodes_in_group(group: StringName) -> Array[Node]:
 

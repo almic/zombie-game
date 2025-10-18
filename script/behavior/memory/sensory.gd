@@ -185,8 +185,6 @@ func finish_event(event: PackedByteArray) -> void:
             # Found an old event with same ID, we should insert now
             break
 
-        # We found an event to overwrite, however we can only change same data
-        # elements, so iterate and check types
         if found != -1:
             overwrite_event(type, found, event)
             return

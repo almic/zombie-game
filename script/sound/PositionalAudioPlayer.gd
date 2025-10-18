@@ -5,6 +5,10 @@ class_name PositionalAudioPlayer extends Node3D
 const INVALID_ID: int = AudioStreamPlaybackPolyphonic.INVALID_ID
 
 
+## The producer Node3D of this audio player. Should be set to the top-most parent
+## that owns this node. Used by sound hearing systems to track sound producers.
+@export var source_node: Node3D
+
 ## The sound resource to play when calling `play()`
 @export var sound: SoundResource:
     set(value):

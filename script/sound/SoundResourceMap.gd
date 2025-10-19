@@ -47,6 +47,9 @@ func get_sound(name: StringName) -> SoundResource:
     # Target value was a SoundResourceMap, return 'map' value
     return map
 
+func get_sounds() -> Array[SoundResource]:
+    return sound_map.values()
+
 
 func load_stream() -> AudioStreamOggVorbis:
     push_error('Cannot call "load_stream()" on SoundResourceLayered!')

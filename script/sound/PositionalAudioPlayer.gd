@@ -246,22 +246,70 @@ func _load_sound(snd: SoundResource) -> void:
 
 func _calculate_polyphony(snd: SoundResource) -> int:
 
-    if is_instance_of(snd, SoundResourceLayered):
-        var layered: SoundResourceLayered = snd as SoundResourceLayered
-        if not layered:
-            return 0
+    var count: int = 0
+    var seen: Array[SoundResource] = []
+    var check: Array[SoundResource] = [snd]
 
-        var count: int = 0
-        for layer in layered.get_sounds():
-            if not layer:
+    while not check.is_empty():
+        var res: SoundResource = check.pop_back()
+        seen.append(res)
+
+        if is_instance_of(res, SoundResourceChoice):
+            var choice: SoundResourceChoice = res as SoundResourceChoice
+            if not choice:
                 continue
-            count += _calculate_polyphony(layer)
-        return count
 
-    # TODO: other special sound container types here
-    # elif is_instance_of(sound, ...):
+            for option in choice.get_sounds():
+                if not option:
+                    continue
 
-    if snd:
-        return 1
+                if seen.has(option):
+                    push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_name + '"! Self-reference is not allowed!')
+                    return 0
 
-    return 0
+                check.append(option)
+
+            continue
+
+        if is_instance_of(res, SoundResourceLayered):
+            var layered: SoundResourceLayered = res as SoundResourceLayered
+            if not layered:
+                continue
+
+            for layer in layered.get_sounds():
+                if not layer:
+                    continue
+
+                if seen.has(layer):
+                    push_error('Self-referenced SoundResource in SoundResourceLayered "' + res.resource_name + '"! Self-reference is not allowed!')
+                    return 0
+
+                check.append(layer)
+
+            continue
+
+        if is_instance_of(res, SoundResourceMap):
+            var map: SoundResourceMap = res as SoundResourceMap
+            if not map:
+                continue
+
+            for option in map.get_sounds():
+                if not option:
+                    continue
+
+                if seen.has(option):
+                    push_error('Self-referenced SoundResource in SoundResourceMap "' + res.resource_name + '"! Self-reference is not allowed!')
+                    return 0
+
+                check.append(option)
+
+            continue
+
+        # TODO: other special sound container types here
+        # elif is_instance_of(sound, ...):
+
+        # Regular resource
+        if res.can_overlap:
+            count += 1
+
+    return count

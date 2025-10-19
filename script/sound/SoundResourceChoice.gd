@@ -124,6 +124,8 @@ func pick_sound() -> SoundResource:
     push_error('SoundResourceChoice failed to locate chosen ticket #' + str(_cached) + '! Investigate!')
     return last
 
+func get_sounds() -> Array[SoundResource]:
+    return choices.keys()
 
 func _compute_sum() -> void:
     _sum = 0

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SoundResourceMap" load_steps=4 format=3 uid="uid://cpca87m4m6eeh"]
+
+[ext_resource type="Script" uid="uid://dcjvqq6ydh5qv" path="res://script/sound/SoundResourceMap.gd" id="1_klkwm"]
+[ext_resource type="Script" uid="uid://v2wb8alqo46v" path="res://script/sound/SoundResource.gd" id="2_glcfj"]
+[ext_resource type="Resource" uid="uid://cc0b8075an737" path="res://audio/sound/footsteps/grass/grass_walk_choices.tres" id="3_klkwm"]
+
+[resource]
+script = ExtResource("1_klkwm")
+sound_map = Dictionary[StringName, ExtResource("2_glcfj")]({
+&"walk": ExtResource("3_klkwm")
+})
+metadata/_custom_type_script = "uid://dcjvqq6ydh5qv"

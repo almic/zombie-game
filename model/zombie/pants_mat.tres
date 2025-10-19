@@ -14,3 +14,4 @@ normal_texture = ExtResource("2_wg8yg")
 clearcoat = 0.04
 clearcoat_roughness = 1.0
 anisotropy = 1.0
+texture_filter = 2

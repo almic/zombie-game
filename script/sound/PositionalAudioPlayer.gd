@@ -155,6 +155,7 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
     var vol_db: float = linear_to_db(volume)
 
     # If this exists in no overlap, stop it first
+    # CRITICAL TODO: these always return INVALID RID values!! SILLY!
     var snd_rid: RID = snd.get_rid()
     var last: int = _ids_no_overlap.get(snd_rid, 0)
     if last:

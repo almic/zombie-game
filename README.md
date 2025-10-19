@@ -26,6 +26,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
+- [ ] PositionalAudioPlayer._play_sound() uses Resource.get_rid() for sounds but
+      this value is INVALID. Need a different way to store ids.
 - [ ] Make zombie face position of navigation target when nav ends, otherwise
       they could fail to look fully towards the target and "miss" the goal
 - [ ] Check that chase / attack goals are navigating correctly. Looks like chase

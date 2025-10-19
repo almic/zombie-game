@@ -32,7 +32,15 @@ func _physics_process(delta: float) -> void:
         Sounds.trim()
 
 
+# TODO: make this take all parameters instead of having Sounds pull out the
+#       values from the player, that way physics bindings will always have the
+#       correct values.
 func sound_played(player: PositionalAudioPlayer, loudness: float) -> void:
+    # NOTE: For dev only, remove later
+    if not Engine.is_in_physics_frame():
+        push_error('GlobalWorld.sound_played() can only be called during physics tick! Investigate!')
+        return
+
     # self.print('playing sound from "' + player.name + ('" with loudness: %.2f' % loudness))
     Sounds.add_sound(player, loudness)
 

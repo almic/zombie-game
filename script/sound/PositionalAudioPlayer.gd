@@ -70,6 +70,8 @@ func play(from_position: float = 0.0) -> void:
     if not sound:
         return
 
+    var in_physics: bool = Engine.is_in_physics_frame()
+
     if _sound_dirty:
         stop()
         _update_sound()
@@ -87,14 +89,21 @@ func play(from_position: float = 0.0) -> void:
             _play_sound(layer, from_position)
             max_loudness = maxf(layer.get_loudness(), max_loudness)
 
-        GlobalWorld.sound_played(self, max_loudness)
+        if in_physics:
+            GlobalWorld.sound_played(self, max_loudness)
+        else:
+            get_tree().physics_frame.connect(GlobalWorld.sound_played.bind(self, max_loudness), CONNECT_ONE_SHOT)
+
         return
 
     # TODO: other special sound container types here
     # elif is_instance_of(sound, ...):
 
     _play_sound(sound, from_position)
-    GlobalWorld.sound_played(self, sound.get_loudness())
+    if in_physics:
+        GlobalWorld.sound_played(self, sound.get_loudness())
+    else:
+        get_tree().physics_frame.connect(GlobalWorld.sound_played.bind(self, sound.get_loudness()), CONNECT_ONE_SHOT)
 
 
 func stop() -> void:

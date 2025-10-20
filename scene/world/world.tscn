@@ -3986,7 +3986,7 @@ script = ExtResource("57_i2hso")
 straight_length = 1.67
 handle_length = 4.5
 
-[node name="BlockG" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" groups=["nav_group"]]
+[node name="BlockG" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" groups=["nav_group", "sound_group:rock"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379.6, 2, -468.1)
 use_collision = true
 collision_layer = 16

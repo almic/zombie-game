@@ -9,8 +9,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       in physics process
 - [X] Set up walking sound resources for grass
 - [X] Add sound to player walk
-- [ ] Set up sound resources for "default" (concrete)
-- [ ] Add sound groups to walkable surfaces
+- [X] Set up sound resources for "default" (concrete)
+- [X] Add sound groups to walkable surfaces
 - [ ] Attach positional audio player to characters to play sounds from ground
       when walking
 - [ ] Play footstep sound based on animation for zombies, for the player just do

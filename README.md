@@ -28,8 +28,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 
 # TODO
 
-- [ ] PositionalAudioPlayer._play_sound() uses Resource.get_rid() for sounds but
-      this value is INVALID. Need a different way to store ids.
+- [ ] Allow setting base volume and pitch for Layered and Choice sounds to affect
+      all direct SoundResources contained. Does not apply to nested containers.
 - [ ] Make zombie face position of navigation target when nav ends, otherwise
       they could fail to look fully towards the target and "miss" the goal
 - [ ] Check that chase / attack goals are navigating correctly. Looks like chase
@@ -61,6 +61,8 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [ ] FIX THE SLUG MODEL, metal cap should be longer than the shot shell
 - [ ] Camera Smooth (generic)
 - [ ] Investigate if stairs can be fixed with sliding/ stepping up
+- [X] PositionalAudioPlayer._play_sound() uses Resource.get_rid() for sounds but
+      this value is INVALID. Need a different way to store ids.
 - [X] Rename `BehaviorGoal.update_priority()`, it has a poor name right now.
       The new name should make it clear that all memory processing should
       happen there, and that `perform_actions()` should not touch memory, only
@@ -109,6 +111,9 @@ Total:        76
 
 # ANGRY TODOS
 
+- [ ] Move weapon sounds to process so they play at a steady pace, but leave fire
+      mechanic on physics. Sound should already track in physics process
+      automatically even if called from frame updates.
 - [ ] IDEA for fixing terrain nav meshing: Compare close polygons for XZ overlap,
       and if they overlap then push the lower polygon vertices back so from above
       they do not appear to overlap (easier said than done).

@@ -29,7 +29,7 @@
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="23_8bmvw"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="24_7gte1"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="25_k6mlu"]
-[ext_resource type="Resource" uid="uid://ct8dfxgfcsl58" path="res://audio/sound/footsteps/footsteps_default.tres" id="26_8bmvw"]
+[ext_resource type="Resource" uid="uid://ct8dfxgfcsl58" path="res://audio/sound/footsteps/movement_default.tres" id="26_8bmvw"]
 [ext_resource type="Resource" uid="uid://d4ynu0va0f30" path="res://data/input/actions/vehicle/handbrake.tres" id="26_r212m"]
 [ext_resource type="Script" uid="uid://kxfun8j7t2ei" path="res://script/sound/PositionalAudioPlayer.gd" id="32_2pong"]
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=48 format=3 uid="uid://vvkd1vnbarkk"]
+[gd_scene load_steps=50 format=3 uid="uid://vvkd1vnbarkk"]
 
 [ext_resource type="FontFile" uid="uid://cu8bvod6tnnwr" path="res://addons/guide/ui/renderers/keyboard/Lato-Black.ttf" id="1_uiaus"]
 [ext_resource type="Script" uid="uid://yc5h3mnfmgmn" path="res://character/zombie/zombie.gd" id="2_t0jn8"]
@@ -6,10 +6,12 @@
 [ext_resource type="ArrayMesh" uid="uid://b4lot0o7tuu4k" path="res://model/zombie/romero.res" id="3_eseir"]
 [ext_resource type="AnimationLibrary" uid="uid://g7yly4yxa66j" path="res://animation/zombie/zombie_anim_lib.res" id="4_7nqyo"]
 [ext_resource type="Resource" uid="uid://cb57wji4codsc" path="res://data/zombie/zombie_basic_mind.tres" id="4_82ydo"]
+[ext_resource type="Resource" uid="uid://ct8dfxgfcsl58" path="res://audio/sound/footsteps/movement_default.tres" id="4_d0fm7"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="5_7nqyo"]
 [ext_resource type="Animation" uid="uid://cx7axtvj7b0of" path="res://animation/zombie/reset.res" id="6_6edqa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="6_u2i7b"]
 [ext_resource type="AnimationNodeStateMachine" uid="uid://doyn6aqoxbrjx" path="res://animation/zombie/zombie_state_machine.tres" id="7_i7ii4"]
+[ext_resource type="Script" uid="uid://kxfun8j7t2ei" path="res://script/sound/PositionalAudioPlayer.gd" id="11_82ydo"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d0fm7"]
 radius = 0.34
@@ -177,6 +179,7 @@ script = ExtResource("2_t0jn8")
 life = ExtResource("3_0bopv")
 mind = ExtResource("4_82ydo")
 top_speed = 4.7
+movement_sound_map = ExtResource("4_d0fm7")
 move_acceleration = 18.0
 move_turn_speed_keep = 0.6
 eyes = [NodePath("BodyHurtbox/Head/eye_right")]
@@ -2396,3 +2399,8 @@ metadata/_custom_type_script = "uid://cx8x5g2jhcrm6"
 [node name="collider" type="CollisionShape3D" parent="BodyHurtbox/LegR/Foot/foot_r"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.102, 0)
 shape = SubResource("SphereShape3D_d0fm7")
+
+[node name="MovementSoundPlayer" type="Node3D" parent="."]
+unique_name_in_owner = true
+script = ExtResource("11_82ydo")
+metadata/_custom_type_script = "uid://kxfun8j7t2ei"

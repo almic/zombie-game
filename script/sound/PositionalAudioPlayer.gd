@@ -41,6 +41,7 @@ var playback: AudioStreamPlaybackPolyphonic
 var _ids_no_overlap: Dictionary[int, int]
 var _playing_ids: PackedInt64Array
 var _sound_dirty: bool = false
+var _sound_queue: PackedFloat32Array
 
 
 func _init() -> void:
@@ -50,6 +51,7 @@ func _init() -> void:
 
     _ids_no_overlap = {}
     _playing_ids = PackedInt64Array()
+    _sound_queue = PackedFloat32Array()
 
 
 func _ready() -> void:
@@ -64,6 +66,10 @@ func _physics_process(_delta: float) -> void:
     if _sound_dirty:
         _update_sound()
         _sound_dirty = false
+
+    for item in _sound_queue:
+        GlobalWorld.sound_played(self, item)
+    _sound_queue.clear()
 
 
 func play(from_position: float = 0.0) -> void:
@@ -96,7 +102,7 @@ func play(from_position: float = 0.0) -> void:
     if in_physics:
         GlobalWorld.sound_played(self, max_loudness)
     else:
-        get_tree().physics_frame.connect(GlobalWorld.sound_played.bind(self, max_loudness), CONNECT_ONE_SHOT)
+        _sound_queue.append(max_loudness)
 
 
 func stop() -> void:
@@ -134,7 +140,7 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
     var snd_id: int = snd.get_instance_id()
     var stream_id: int = _ids_no_overlap.get(snd_id, 0)
     if stream_id:
-        GlobalWorld.print('stopping sound stream ' + str(stream_id))
+        # GlobalWorld.print('stopping sound stream ' + str(stream_id))
         playback.stop_stream(stream_id)
 
     stream_id = playback.play_stream(
@@ -203,10 +209,17 @@ static func foreach_sound(initial, sound: SoundResource, all: bool, lambda: Call
 
     var value = initial
     var seen: Array[SoundResource] = []
+    var parents: Array[SoundResource] = []
     var check: Array[SoundResource] = [sound]
 
     while not check.is_empty():
         var res: SoundResource = check.pop_back()
+
+        # nulls mark parent's end
+        if res == null:
+            parents.resize(parents.size() - 1)
+            continue
+
         seen.append(res)
 
         if is_instance_of(res, SoundResourceChoice):
@@ -214,18 +227,36 @@ static func foreach_sound(initial, sound: SoundResource, all: bool, lambda: Call
             if not choice:
                 continue
 
+            parents.append(choice)
+            check.append(null) # Mark a parent pop
+
             if all:
                 for option in choice.get_sounds():
                     if not option:
                         continue
 
-                    if seen.has(option):
-                        push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_name + '"! Self-reference is not allowed!')
+                    if parents.has(option):
+                        push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_path + '"! Self-reference is not allowed!')
                         return
+
+                    if seen.has(option):
+                        continue
 
                     check.append(option)
             else:
-                check.append(choice.pick_sound())
+                var option := choice.pick_sound()
+
+                if not option:
+                    continue
+
+                if parents.has(option):
+                    push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_path + '"! Self-reference is not allowed!')
+                    return
+
+                if seen.has(option):
+                    continue
+
+                check.append(option)
 
             continue
 
@@ -234,13 +265,19 @@ static func foreach_sound(initial, sound: SoundResource, all: bool, lambda: Call
             if not layered:
                 continue
 
+            parents.append(layered)
+            check.append(null) # Mark a parent pop
+
             for layer in layered.get_sounds():
                 if not layer:
                     continue
 
-                if seen.has(layer):
-                    push_error('Self-referenced SoundResource in SoundResourceLayered "' + res.resource_name + '"! Self-reference is not allowed!')
+                if parents.has(layer):
+                    push_error('Self-referenced SoundResource in SoundResourceLayered "' + res.resource_path + '"! Self-reference is not allowed!')
                     return
+
+                if seen.has(layer):
+                    continue
 
                 check.append(layer)
 
@@ -255,13 +292,19 @@ static func foreach_sound(initial, sound: SoundResource, all: bool, lambda: Call
             if not map:
                 continue
 
+            parents.append(map)
+            check.append(null) # Mark a parent pop
+
             for option in map.get_sounds():
                 if not option:
                     continue
 
-                if seen.has(option):
-                    push_error('Self-referenced SoundResource in SoundResourceMap "' + res.resource_name + '"! Self-reference is not allowed!')
+                if parents.has(option):
+                    push_error('Self-referenced SoundResource in SoundResourceMap "' + res.resource_path + '"! Self-reference is not allowed!')
                     return
+
+                if seen.has(option):
+                    continue
 
                 check.append(option)
 

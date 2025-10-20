@@ -164,6 +164,7 @@ func _ready() -> void:
         return
 
     collider = %collider
+    movement_audio_player = %MovementSoundPlayer
     last_hits = last_hits.duplicate()
     life = life.duplicate(true)
 
@@ -392,6 +393,15 @@ func on_attack_start() -> void:
 
 func on_attack_end() -> void:
     attack_hitbox.disable()
+
+func on_footstep(is_right: bool) -> void:
+    if is_right:
+        movement_audio_player.reparent(foot_r, false)
+    else:
+        movement_audio_player.reparent(foot_l, false)
+
+    play_sound_footstep()
+
 
 func update_movement(delta: float, speed: float = top_speed) -> void:
 

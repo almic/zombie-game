@@ -29,14 +29,14 @@ const INVALID_ID: int = AudioStreamPlaybackPolyphonic.INVALID_ID
 @export_range(1, 32, 1, 'or_greater')
 var polyphony: int = 2
 
-
-var player: AudioStreamPlayer3D
-var playback: AudioStreamPlaybackPolyphonic
-var bus: StringName = &"Master":
+@export var bus: StringName = &"Master":
     set(value):
         bus = value
         if player:
             player.bus = bus
+
+var player: AudioStreamPlayer3D
+var playback: AudioStreamPlaybackPolyphonic
 
 var _ids_no_overlap: Dictionary[int, int]
 var _playing_ids: PackedInt64Array
@@ -105,6 +105,7 @@ func stop() -> void:
         return
 
     playback.stop()
+    playback.start()
 
     _playing_ids.clear()
     _ids_no_overlap.clear()

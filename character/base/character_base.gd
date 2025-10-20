@@ -84,6 +84,11 @@ var wall_slide_angle: float = deg_to_rad(4.0):
     set = set_wall_slide_angle
 var wall_slide_cos_theta: float = -1
 
+## The map to use for movement sounds. The expected layout is the first map has
+## the surface type name, the second maps to 'walk', 'run', 'jump', and 'land'.
+@export var movement_sound_map: SoundResourceMap
+
+
 @export_subgroup("Moving", "move")
 
 ## Acceleration in the direction of movement in meters per second^2. Affects
@@ -158,6 +163,9 @@ var collider: CollisionShape3D
 ## Set this before calling `update_movement()`
 var movement_direction: Vector3 = Vector3.ZERO
 
+## The audio player to use for movement sounds
+var movement_audio_player: PositionalAudioPlayer
+
 
 ## Computed after calling `update_movement()`
 var acceleration: Vector3 = Vector3.ZERO
@@ -189,6 +197,7 @@ var next_eye: int = 0
 var _debug_ready_called: bool = false
 var _debug_ready_called_error_printed: bool = false
 
+
 func _ready() -> void:
     _debug_ready_called = true
 
@@ -201,6 +210,13 @@ func _ready() -> void:
     if mind and not Engine.is_editor_hint():
         mind = mind.duplicate(true)
         mind.parent = self as CharacterBase
+
+    if Engine.is_editor_hint():
+        return
+
+    if movement_sound_map:
+        PositionalAudioPlayer.load_sound(movement_sound_map)
+
 
 func set_floor_max_slope(max_slope: float) -> void:
     floor_max_slope = max_slope
@@ -226,6 +242,49 @@ func do_jump() -> void:
 ## If the character is currently grounded
 func is_grounded() -> bool:
     return ground_state == GroundState.GROUNDED or ground_state == GroundState.GROUNDED_STEEP
+
+## Plays a footstep sound from the current movement sound map using the current
+## ground details.
+func play_sound_footstep(is_run: bool = false) -> void:
+    # No player or sound map, cannot play sounds
+    if not movement_audio_player or not movement_sound_map:
+        return
+
+    # Not on ground, no footstep
+    if not is_grounded() or not is_instance_of(ground_details.body, Node):
+        return
+
+    # Get ground object sound groups
+    var group: StringName = &''
+    for sound_group in GlobalWorld.Sounds.get_sound_groups(ground_details.body):
+        if movement_sound_map.has(sound_group):
+            group = sound_group
+            break
+
+    if group.is_empty():
+        # Try using the "default" value
+        if not movement_sound_map.has(&'default'):
+            return
+        group = &'default'
+
+    var path: StringName
+    if is_run:
+        path = &'/run'
+    else:
+        path = &'/walk'
+
+    var sound: SoundResource = movement_sound_map.get_sound(group + path)
+    if not sound:
+        # Try the "default"
+        group = &'default'
+        sound = movement_sound_map.get_sound(group + path)
+
+        if not sound:
+            return
+
+    movement_audio_player.sound = sound
+    movement_audio_player.play()
+
 
 ## Using the current movement direction and velocity, move the character body,
 ## stepping and sliding as needed. This will also compute an acceleration that

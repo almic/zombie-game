@@ -27,11 +27,12 @@ func get_sound(name: StringName) -> SoundResource:
 
     # Search for nested sound resource
     var map: SoundResourceMap = self
-    var keys: Array[StringName] = name.split('/')
+    var keys: Array[StringName] = []
+    keys.assign(name.split('/'))
     keys.reverse()
 
     while not keys.is_empty():
-        var val: SoundResource = map.get(keys.back())
+        var val: SoundResource = map.sound_map.get(keys.back())
         if not val:
             return null
         if val is SoundResourceMap:
@@ -50,28 +51,30 @@ func get_sound(name: StringName) -> SoundResource:
 func get_sounds() -> Array[SoundResource]:
     return sound_map.values()
 
+func has(name: StringName) -> bool:
+    return sound_map.has(name)
 
 func load_stream() -> AudioStreamOggVorbis:
-    push_error('Cannot call "load_stream()" on SoundResourceLayered!')
+    push_error('Cannot call "load_stream()" on SoundResourceMap!')
     return null
 
 ## Queues the audio stream to load asynchronously. Returns `true` if the audio
 ## stream is already loaded.
 func load_stream_async() -> bool:
-    push_error('Cannot call "load_stream_async()" on SoundResourceLayered!')
+    push_error('Cannot call "load_stream_async()" on SoundResourceMap!')
     return false
 
 ## Unloads the stream
 func unload_stream() -> void:
-    push_error('Cannot call "unload_stream()" on SoundResourceLayered!')
+    push_error('Cannot call "unload_stream()" on SoundResourceMap!')
 
 ## Get the audio stream, returns null if not loaded
 func get_stream() -> AudioStreamOggVorbis:
-    push_error('Cannot call "get_stream()" on SoundResourceLayered!')
+    push_error('Cannot call "get_stream()" on SoundResourceMap!')
     return null
 
 ## Check if the audio stream has loaded. Must be called if using `load_stream_async()`
 ## in order for async load requests to be queried.
 func is_stream_ready() -> bool:
-    push_error('Cannot call "is_stream_ready()" on SoundResourceLayered!')
+    push_error('Cannot call "is_stream_ready()" on SoundResourceMap!')
     return false

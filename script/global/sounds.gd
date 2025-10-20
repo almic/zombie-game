@@ -184,3 +184,18 @@ static func _get_gain_linear(sound: Dictionary, distance: float) -> float:
         vol = 1.0
 
     return minf(1.0, vol)
+
+## Returns the base sound group names of a node. Sound groups start with the
+## prefix 'sound_group:'. For example, a node with the group 'sound_group:grass'
+## would return the array `['grass']`.
+static func get_sound_groups(node: Node) -> Array[StringName]:
+    if not node:
+        return []
+
+    var result: Array[StringName] = []
+    for group in node.get_groups():
+        if not group.begins_with(GlobalWorld.SOUND_GROUP_PREFIX):
+            continue
+        result.append(group.get_slice(GlobalWorld.SOUND_GROUP_PREFIX, 1))
+
+    return result

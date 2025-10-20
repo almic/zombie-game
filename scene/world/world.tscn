@@ -667,7 +667,7 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 0, -508)
 navigation_mesh = ExtResource("47_85d2q")
 
-[node name="Terrain3D" type="Terrain3D" parent="." groups=["nav_group"]]
+[node name="Terrain3D" type="Terrain3D" parent="." groups=["nav_group", "sound_group:grass"]]
 data_directory = "res://terrain_data/world"
 material = ExtResource("4_2u3nc")
 assets = ExtResource("14_5enf7")

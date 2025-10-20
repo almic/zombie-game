@@ -5,6 +5,8 @@ var group_reset_ticks: int = 0
 
 var group_nodes: Dictionary[StringName, Array] = {}
 
+const SOUND_GROUP_PREFIX = &'sound_group:'
+
 var Printer := preload("uid://dao0mebio8ua7")
 var Sounds := preload("uid://bq40usjnjtfva")
 

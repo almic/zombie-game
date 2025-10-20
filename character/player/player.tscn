@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=38 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_otwb2"]
@@ -29,7 +29,9 @@
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="23_8bmvw"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="24_7gte1"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="25_k6mlu"]
+[ext_resource type="Resource" uid="uid://ct8dfxgfcsl58" path="res://audio/sound/footsteps/footsteps_default.tres" id="26_8bmvw"]
 [ext_resource type="Resource" uid="uid://d4ynu0va0f30" path="res://data/input/actions/vehicle/handbrake.tres" id="26_r212m"]
+[ext_resource type="Script" uid="uid://kxfun8j7t2ei" path="res://script/sound/PositionalAudioPlayer.gd" id="32_2pong"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qh58e"]
 radius = 0.34
@@ -81,6 +83,7 @@ horn = ExtResource("23_8bmvw")
 steer = ExtResource("24_7gte1")
 exit_vehicle = ExtResource("25_k6mlu")
 handbrake = ExtResource("26_r212m")
+movement_sound_map = ExtResource("26_8bmvw")
 sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
 sight_points_no_depth = true
 
@@ -223,3 +226,12 @@ gizmo_extents = 0.05
 [node name="right_leg" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.34, 0)
 gizmo_extents = 0.05
+
+[node name="MovementSoundPlayer" type="Node3D" parent="." node_paths=PackedStringArray("source_node")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
+script = ExtResource("32_2pong")
+source_node = NodePath("..")
+groups = Array[StringName]([&"player_move", &"character_move"])
+bus = &"Character"
+metadata/_custom_type_script = "uid://kxfun8j7t2ei"

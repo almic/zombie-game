@@ -16,13 +16,21 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 @onready var flashlight: SpotLight3D = %Flashlight
 
 
-
 @export_group("Combat")
 @export var life: LifeResource
 @export var right_hand: bool = true
 
 ## Position of the weapon node relative to the camera
 @export var weapon_position: Vector3 = Vector3.ZERO
+
+
+@export_group("Movement Sounds")
+
+## How many meters of travel to play a footstep sound when walking
+@export var footstep_frequency_walk: float = 0.62
+
+## How many meters of travel to play a footstep sound when running
+@export var footstep_frequency_run: float = 1.4
 
 
 @export_group("Camera")
@@ -51,7 +59,7 @@ var fov: float = 75.0
 
 ## Relative movement speed when aiming, scales top speed over time
 @export_range(0.001, 1.0, 0.001)
-var aim_move_speed: float = 0.6
+var aim_move_speed: float = 0.3
 
 ## Target aiming speed
 @export_range(0.0001, 1.0, 0.0001, 'or_greater', 'radians_as_degrees')
@@ -167,6 +175,9 @@ var _jump_ready: bool = true
 ## Melee can be activated
 var _melee_ready: bool = true
 
+## Ground travel accumulator for playing footstep sounds
+var _footstep_accumulator: float = 0.0
+
 ## Fire may be buffered
 var _fire_can_buffer: bool = true
 
@@ -213,6 +224,7 @@ func _ready() -> void:
         return
 
     collider = %collider
+    movement_audio_player = %MovementSoundPlayer
 
     _fov.current = fov
     _look_roll.current = 0.0
@@ -433,8 +445,26 @@ func _physics_process(delta: float) -> void:
     var last_accel: Vector3 = acceleration
     update_movement(delta, _top_speed.current)
 
+    if is_grounded():
+        _footstep_accumulator += velocity.length() * delta
+
     if just_jumped:
         _jump_ready = false
+        _footstep_accumulator = 0.0
+    else:
+        var target_aim_speed: float = top_speed * aim_move_speed
+        var freq: float = lerpf(
+                footstep_frequency_walk,
+                footstep_frequency_run,
+                clampf(
+                    (_top_speed.current - target_aim_speed) / (top_speed - target_aim_speed),
+                    0.0,
+                    1.0
+                )
+        )
+        if _footstep_accumulator > freq:
+            play_sound_footstep()
+            _footstep_accumulator = 0.0
 
     if camera_smooth_enabled:
         if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_target_last_position):

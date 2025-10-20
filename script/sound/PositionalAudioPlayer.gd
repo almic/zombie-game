@@ -210,7 +210,7 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
 
 
 func _update_sound() -> void:
-    _load_sound(sound)
+    load_sound(sound)
 
     if not player:
         push_error('Failed to update sound, player is null')
@@ -223,32 +223,31 @@ func _update_sound() -> void:
 
     stream.polyphony = polyphony * maxi(1, _calculate_polyphony(sound))
 
-func _load_sound(snd: SoundResource) -> void:
-    if not snd:
-        return
 
-    if is_instance_of(snd, SoundResourceLayered):
-        var layered: SoundResourceLayered = snd as SoundResourceLayered
-        if not layered:
-            return
+static func load_sound(snd: SoundResource) -> void:
+    foreach_sound(null, snd, func(res: SoundResource, _unused):
+        res.load_stream_async()
+    )
 
-        for layer in layered.get_sounds():
-            if not layer:
-                continue
-            _load_sound(layer)
-        return
+static func _calculate_polyphony(snd: SoundResource) -> int:
+    return foreach_sound(0, snd, func(res: SoundResource, value: int):
+        if res.can_overlap:
+            value += 1
+        return value
+    )
 
-    # TODO: other special sound container types here
-    # elif is_instance_of(sound, ...):
+## Iterates through all sounds and runs `lambda` with each basic SoundResource or
+## SoundResourceVariable. The function is passed two parameters, the current
+## sound and the last returned value. For the first call, the initial value is
+## passed. Returns the last return value of the lambda.
+@warning_ignore("shadowed_variable")
+static func foreach_sound(initial, sound: SoundResource, lambda: Callable) -> Variant:
+    if not sound:
+        return initial
 
-    snd.load_stream_async()
-
-
-func _calculate_polyphony(snd: SoundResource) -> int:
-
-    var count: int = 0
+    var value = initial
     var seen: Array[SoundResource] = []
-    var check: Array[SoundResource] = [snd]
+    var check: Array[SoundResource] = [sound]
 
     while not check.is_empty():
         var res: SoundResource = check.pop_back()
@@ -265,7 +264,7 @@ func _calculate_polyphony(snd: SoundResource) -> int:
 
                 if seen.has(option):
                     push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_name + '"! Self-reference is not allowed!')
-                    return 0
+                    return
 
                 check.append(option)
 
@@ -282,7 +281,7 @@ func _calculate_polyphony(snd: SoundResource) -> int:
 
                 if seen.has(layer):
                     push_error('Self-referenced SoundResource in SoundResourceLayered "' + res.resource_name + '"! Self-reference is not allowed!')
-                    return 0
+                    return
 
                 check.append(layer)
 
@@ -299,7 +298,7 @@ func _calculate_polyphony(snd: SoundResource) -> int:
 
                 if seen.has(option):
                     push_error('Self-referenced SoundResource in SoundResourceMap "' + res.resource_name + '"! Self-reference is not allowed!')
-                    return 0
+                    return
 
                 check.append(option)
 
@@ -309,7 +308,6 @@ func _calculate_polyphony(snd: SoundResource) -> int:
         # elif is_instance_of(sound, ...):
 
         # Regular resource
-        if res.can_overlap:
-            count += 1
+        value = lambda.call(res, value)
 
-    return count
+    return value

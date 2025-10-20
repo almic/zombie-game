@@ -212,6 +212,8 @@ func _ready() -> void:
     if Engine.is_editor_hint():
         return
 
+    collider = %collider
+
     _fov.current = fov
     _look_roll.current = 0.0
     _look_speed.current = look_speed

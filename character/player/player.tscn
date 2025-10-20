@@ -1,6 +1,5 @@
-[gd_scene load_steps=37 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=36 format=3 uid="uid://ni06m8vhlyt4"]
 
-[ext_resource type="PackedScene" uid="uid://bj68njysaj2w5" path="res://character/base/character_base.tscn" id="1_g20gq"]
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_otwb2"]
 [ext_resource type="Resource" uid="uid://3vclogxthwtf" path="res://data/player/player_health.tres" id="3_lqp71"]
@@ -49,10 +48,10 @@ height = 1.7
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
 
-[node name="player" node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["zombie_target"] instance=ExtResource("1_g20gq")]
+[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["zombie_target"]]
 process_mode = 1
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
-collision_layer = 1
+collision_mask = 115
 script = ExtResource("1_y482n")
 life = ExtResource("3_lqp71")
 weapon_position = Vector3(0.225, -0.195, -0.605)
@@ -82,34 +81,34 @@ horn = ExtResource("23_8bmvw")
 steer = ExtResource("24_7gte1")
 exit_vehicle = ExtResource("25_k6mlu")
 handbrake = ExtResource("26_r212m")
-collider_shape = SubResource("CapsuleShape3D_qh58e")
 sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
 sight_points_no_depth = true
 
-[node name="collider" parent="." index="0"]
+[node name="collider" type="CollisionShape3D" parent="."]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_qh58e")
 metadata/_edit_lock_ = true
 
-[node name="capsule" type="MeshInstance3D" parent="collider" index="0"]
+[node name="capsule" type="MeshInstance3D" parent="collider"]
 layers = 524288
 gi_mode = 0
 mesh = SubResource("CapsuleMesh_glpr6")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="Neck" type="Node3D" parent="." index="1"]
+[node name="Neck" type="Node3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.395, 0)
 metadata/_edit_lock_ = true
 
-[node name="CameraTarget" type="Node3D" parent="Neck" index="0"]
+[node name="CameraTarget" type="Node3D" parent="Neck"]
 unique_name_in_owner = true
 editor_description = "Target position for the Camera3D, used to smooth vertical jitter."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
 metadata/_edit_lock_ = true
 
-[node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget" index="0"]
+[node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget"]
 unique_name_in_owner = true
 cull_mask = 524287
 current = true
@@ -117,7 +116,7 @@ near = 0.02
 far = 2000.0
 metadata/_edit_lock_ = true
 
-[node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" index="0" node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
+[node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
@@ -129,10 +128,10 @@ aim_duration = 0.25
 metadata/_custom_type_script = "uid://n578e74oit7v"
 metadata/_edit_lock_ = true
 
-[node name="hud" parent="Neck/CameraTarget/Camera3D" index="1" instance=ExtResource("11_vuhga")]
+[node name="hud" parent="Neck/CameraTarget/Camera3D" instance=ExtResource("11_vuhga")]
 metadata/_edit_lock_ = true
 
-[node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D" index="2"]
+[node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D"]
 unique_name_in_owner = true
 editor_description = "Weapon targetting raycast so weapons aim correctly"
 exclude_parent = false
@@ -142,7 +141,7 @@ hit_back_faces = false
 collide_with_areas = true
 metadata/_edit_lock_ = true
 
-[node name="Flashlight" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D" index="3"]
+[node name="Flashlight" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D"]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.413982)
 visible = false
@@ -158,7 +157,7 @@ spot_angle = 33.0
 spot_angle_attenuation = 0.0116912
 metadata/_edit_lock_ = true
 
-[node name="Hurtbox" type="Area3D" parent="." index="2"]
+[node name="Hurtbox" type="Area3D" parent="."]
 unique_name_in_owner = true
 visible = false
 collision_layer = 8
@@ -168,12 +167,12 @@ script = ExtResource("5_px5sl")
 metadata/_custom_type_script = "uid://cx8x5g2jhcrm6"
 metadata/_edit_lock_ = true
 
-[node name="collider" type="CollisionShape3D" parent="Hurtbox" index="0"]
+[node name="collider" type="CollisionShape3D" parent="Hurtbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("SphereShape3D_wfnr8")
 debug_color = Color(0.998291, 0, 0.145787, 0.42)
 
-[node name="Hitbox" type="Area3D" parent="." index="3"]
+[node name="Hitbox" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.01)
 visible = false
 collision_layer = 0
@@ -185,42 +184,42 @@ hitbox_owner = NodePath("..")
 metadata/_custom_type_script = "uid://dc77cbpvaw8jo"
 metadata/_edit_lock_ = true
 
-[node name="collider" type="CollisionShape3D" parent="Hitbox" index="0"]
+[node name="collider" type="CollisionShape3D" parent="Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CylinderShape3D_i6sc0")
 debug_color = Color(1, 0, 0.145, 1)
 
-[node name="SightNodes" type="Node3D" parent="." index="4"]
+[node name="SightNodes" type="Node3D" parent="."]
 visible = false
 
-[node name="eyes" type="Marker3D" parent="SightNodes" index="0"]
+[node name="eyes" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.54, 0)
 gizmo_extents = 0.05
 
-[node name="left_head" type="Marker3D" parent="SightNodes" index="1"]
+[node name="left_head" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 1.4, 0)
 gizmo_extents = 0.05
 
-[node name="right_head" type="Marker3D" parent="SightNodes" index="2"]
+[node name="right_head" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, 1.4, 0)
 gizmo_extents = 0.05
 
-[node name="mid_chest" type="Marker3D" parent="SightNodes" index="3"]
+[node name="mid_chest" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 gizmo_extents = 0.05
 
-[node name="left_chest" type="Marker3D" parent="SightNodes" index="4"]
+[node name="left_chest" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32, 0.9, 0)
 gizmo_extents = 0.05
 
-[node name="right_chest" type="Marker3D" parent="SightNodes" index="5"]
+[node name="right_chest" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0.9, 0)
 gizmo_extents = 0.05
 
-[node name="left_leg" type="Marker3D" parent="SightNodes" index="6"]
+[node name="left_leg" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.34, 0)
 gizmo_extents = 0.05
 
-[node name="right_leg" type="Marker3D" parent="SightNodes" index="7"]
+[node name="right_leg" type="Marker3D" parent="SightNodes"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.34, 0)
 gizmo_extents = 0.05

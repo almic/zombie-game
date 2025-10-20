@@ -61,9 +61,6 @@ class FluidDetails:
 
 @export var mind: BehaviorMind
 
-@export var collider_shape: Shape3D:
-    set = set_collider_shape
-
 
 @export_group("Movement")
 
@@ -155,8 +152,8 @@ var step_snap_down_max_cos_theta: float = -1
 @export var sight_points_no_depth: bool = false
 
 
-@onready var collider: CollisionShape3D = %collider
-
+## Collider used for terrain/ body collision
+var collider: CollisionShape3D
 
 ## Set this before calling `update_movement()`
 var movement_direction: Vector3 = Vector3.ZERO
@@ -194,7 +191,6 @@ var _debug_ready_called_error_printed: bool = false
 
 func _ready() -> void:
     _debug_ready_called = true
-    collider.shape = collider_shape
 
     # Update cached variables
     floor_max_slope = floor_max_slope
@@ -205,12 +201,6 @@ func _ready() -> void:
     if mind and not Engine.is_editor_hint():
         mind = mind.duplicate(true)
         mind.parent = self as CharacterBase
-
-func set_collider_shape(shape: Shape3D) -> void:
-    collider_shape = shape
-    if not is_node_ready():
-        return
-    collider.shape = collider_shape
 
 func set_floor_max_slope(max_slope: float) -> void:
     floor_max_slope = max_slope

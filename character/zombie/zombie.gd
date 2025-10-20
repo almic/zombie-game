@@ -163,6 +163,7 @@ func _ready() -> void:
     if Engine.is_editor_hint():
         return
 
+    collider = %collider
     last_hits = last_hits.duplicate()
     life = life.duplicate(true)
 

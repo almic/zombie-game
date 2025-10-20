@@ -103,6 +103,7 @@ var melee_excluded_hurtboxes: Array[RID]
 func _ready() -> void:
     _weapon_audio_player = PositionalAudioPlayer.new()
     _weapon_audio_player.bus = sound_bus
+    _weapon_audio_player.polyphony = 3
 
     if aim_target and aim_target_reduced_rate:
         aim_target.enabled = false

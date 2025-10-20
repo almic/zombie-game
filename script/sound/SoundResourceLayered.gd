@@ -1,4 +1,4 @@
-# HACK: Tool is needed to hide the `file` value
+# HACK: Tool is needed to hide export values
 @tool
 ## A special sound resource that contains named sound layers. Must be extended.
 class_name SoundResourceLayered extends SoundResource
@@ -9,9 +9,17 @@ class_name SoundResourceLayered extends SoundResource
     get = get_sounds
 
 
-## Hides the `file` export from the inspector and disables storage
+## Hide certain exports from the inspector and disable storage
 func _validate_property(property: Dictionary) -> void:
-    if property.name == 'file':
+    const hidden = [
+            'file',
+            'base_volume',
+            'base_pitch_scale',
+            'loudness',
+            'can_overlap',
+    ]
+
+    if property.name in hidden:
         property.usage = PROPERTY_USAGE_NONE
 
 
@@ -45,16 +53,3 @@ func get_stream() -> AudioStreamOggVorbis:
 func is_stream_ready() -> bool:
     push_error('Cannot call "is_stream_ready()" on SoundResourceLayered!')
     return false
-
-## Compute the loudness of all layers
-func get_loudness() -> float:
-    var max_loudness: float = -1000.0
-
-    for sound in sounds:
-        max_loudness = maxf(max_loudness, sound.get_loudness())
-
-    return linear_to_db(
-              db_to_linear(base_volume)
-            * db_to_linear(loudness)
-            * db_to_linear(max_loudness)
-    )

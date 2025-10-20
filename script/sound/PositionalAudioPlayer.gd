@@ -38,8 +38,8 @@ var bus: StringName = &"Master":
         if player:
             player.bus = bus
 
-var _ids_no_overlap: Dictionary[RID, int]
-var _ids_overlap: PackedInt64Array
+var _ids_no_overlap: Dictionary[int, int]
+var _playing_ids: PackedInt64Array
 var _sound_dirty: bool = false
 
 
@@ -49,7 +49,7 @@ func _init() -> void:
     player.bus = bus
 
     _ids_no_overlap = {}
-    _ids_overlap = PackedInt64Array()
+    _playing_ids = PackedInt64Array()
 
 
 func _ready() -> void:
@@ -76,34 +76,27 @@ func play(from_position: float = 0.0) -> void:
         stop()
         _update_sound()
         _sound_dirty = false
-
-    if is_instance_of(sound, SoundResourceLayered):
-        var layered: SoundResourceLayered = sound as SoundResourceLayered
-        if not layered:
-            return
-
-        var max_loudness: float = 0
-        for layer in layered.get_sounds():
-            if not layer:
-                continue
-            _play_sound(layer, from_position)
-            max_loudness = maxf(layer.get_loudness(), max_loudness)
-
-        if in_physics:
-            GlobalWorld.sound_played(self, max_loudness)
-        else:
-            get_tree().physics_frame.connect(GlobalWorld.sound_played.bind(self, max_loudness), CONNECT_ONE_SHOT)
-
-        return
-
-    # TODO: other special sound container types here
-    # elif is_instance_of(sound, ...):
-
-    _play_sound(sound, from_position)
-    if in_physics:
-        GlobalWorld.sound_played(self, sound.get_loudness())
     else:
-        get_tree().physics_frame.connect(GlobalWorld.sound_played.bind(self, sound.get_loudness()), CONNECT_ONE_SHOT)
+        # Check all playing streams
+        var idx: int = 0
+        for stream in _playing_ids:
+            if playback.is_stream_playing(stream):
+                _playing_ids[idx] = stream
+                idx += 1
+        _playing_ids.resize(idx)
+
+    var max_loudness: float = foreach_sound(-INF, sound, false, func(snd: SoundResource, loudness: float):
+        var snd_loudness: float = snd.get_loudness()
+        if snd_loudness > loudness:
+            loudness = snd_loudness
+        _play_sound(snd, from_position)
+        return loudness
+    )
+
+    if in_physics:
+        GlobalWorld.sound_played(self, max_loudness)
+    else:
+        get_tree().physics_frame.connect(GlobalWorld.sound_played.bind(self, max_loudness), CONNECT_ONE_SHOT)
 
 
 func stop() -> void:
@@ -111,13 +104,10 @@ func stop() -> void:
         push_error('stop() called with a null playback')
         return
 
-    for id in _ids_no_overlap.keys():
-        playback.stop_stream(id)
-    _ids_no_overlap.clear()
+    playback.stop()
 
-    for id in _ids_overlap:
-        playback.stop_stream(id)
-    _ids_overlap.clear()
+    _playing_ids.clear()
+    _ids_no_overlap.clear()
 
 
 func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: float = 1.0, overlap: bool = true) -> void:
@@ -126,21 +116,6 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
 
     volume *= db_to_linear(snd.get_volume())
     pitch *= snd.get_pitch()
-
-    if is_instance_of(snd, SoundResourceLayered):
-        var layered: SoundResourceLayered = sound as SoundResourceLayered
-        if not layered:
-            return
-
-        for layer in layered.get_sounds():
-            if not layer:
-                continue
-            _play_sound(layer, offset, volume, pitch, overlap and layer.can_overlap)
-
-        return
-
-    # TODO: other special sound container types here
-    # elif is_instance_of(sound, ...):
 
     if not snd.is_stream_ready():
         return
@@ -155,44 +130,13 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
     var vol_db: float = linear_to_db(volume)
 
     # If this exists in no overlap, stop it first
-    # CRITICAL TODO: these always return INVALID RID values!! SILLY!
-    var snd_rid: RID = snd.get_rid()
-    var last: int = _ids_no_overlap.get(snd_rid, 0)
-    if last:
-        playback.stop_stream(last)
+    var snd_id: int = snd.get_instance_id()
+    var stream_id: int = _ids_no_overlap.get(snd_id, 0)
+    if stream_id:
+        GlobalWorld.print('stopping sound stream ' + str(stream_id))
+        playback.stop_stream(stream_id)
 
-    if overlap and snd.can_overlap:
-        for i in range(player.stream.polyphony):
-            var id: int = playback.play_stream(
-                    stream,
-                    offset,
-                    vol_db,
-                    pitch,
-                    AudioServer.PLAYBACK_TYPE_DEFAULT,
-                    # NOTE: godot bug, this value is ignored
-                    bus
-            )
-
-            if id != INVALID_ID:
-                # Sound is playing now
-                _ids_overlap.append(id)
-                break
-
-            if _ids_overlap.is_empty():
-                # No overlap stream to stop ??
-                break
-
-            id = _ids_overlap.get(0)
-            playback.stop_stream(id)
-            _ids_overlap.remove_at(0)
-
-        # If this was a non-overlap before, erase it
-        if last:
-            _ids_no_overlap.erase(snd_rid)
-
-        return
-
-    last = playback.play_stream(
+    stream_id = playback.play_stream(
             stream,
             offset,
             vol_db,
@@ -202,11 +146,22 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
             bus
     )
 
-    if last != INVALID_ID:
-        _ids_no_overlap.set(snd_rid, last)
+    if stream_id != INVALID_ID:
+        _playing_ids.append(stream_id)
+    else:
+        GlobalWorld.print('not enough polyphonic! polyphonic: ' + str(player.stream.polyphony) + ' ; streams: ' + str(_playing_ids.size()))
+
+
+    if overlap and snd.can_overlap:
+        # erase just in case
+        _ids_no_overlap.erase(snd_id)
         return
 
-    _ids_no_overlap.erase(snd_rid)
+    if stream_id != INVALID_ID:
+        _ids_no_overlap.set(snd_id, stream_id)
+        return
+
+    _ids_no_overlap.erase(snd_id)
 
 
 func _update_sound() -> void:
@@ -225,12 +180,12 @@ func _update_sound() -> void:
 
 
 static func load_sound(snd: SoundResource) -> void:
-    foreach_sound(null, snd, func(res: SoundResource, _unused):
+    foreach_sound(null, snd, true, func(res: SoundResource, _unused):
         res.load_stream_async()
     )
 
 static func _calculate_polyphony(snd: SoundResource) -> int:
-    return foreach_sound(0, snd, func(res: SoundResource, value: int):
+    return foreach_sound(0, snd, true, func(res: SoundResource, value: int):
         if res.can_overlap:
             value += 1
         return value
@@ -241,7 +196,7 @@ static func _calculate_polyphony(snd: SoundResource) -> int:
 ## sound and the last returned value. For the first call, the initial value is
 ## passed. Returns the last return value of the lambda.
 @warning_ignore("shadowed_variable")
-static func foreach_sound(initial, sound: SoundResource, lambda: Callable) -> Variant:
+static func foreach_sound(initial, sound: SoundResource, all: bool, lambda: Callable) -> Variant:
     if not sound:
         return initial
 
@@ -258,15 +213,18 @@ static func foreach_sound(initial, sound: SoundResource, lambda: Callable) -> Va
             if not choice:
                 continue
 
-            for option in choice.get_sounds():
-                if not option:
-                    continue
+            if all:
+                for option in choice.get_sounds():
+                    if not option:
+                        continue
 
-                if seen.has(option):
-                    push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_name + '"! Self-reference is not allowed!')
-                    return
+                    if seen.has(option):
+                        push_error('Self-referenced SoundResource in SoundResourceChoice "' + res.resource_name + '"! Self-reference is not allowed!')
+                        return
 
-                check.append(option)
+                    check.append(option)
+            else:
+                check.append(choice.pick_sound())
 
             continue
 
@@ -288,6 +246,10 @@ static func foreach_sound(initial, sound: SoundResource, lambda: Callable) -> Va
             continue
 
         if is_instance_of(res, SoundResourceMap):
+            if not all:
+                push_error('Cannot iterate a SoundResourceMap with `all` disabled!')
+                return
+
             var map: SoundResourceMap = res as SoundResourceMap
             if not map:
                 continue

@@ -11,4 +11,5 @@ pitch_relative_max = 0.1
 offset_random_enabled = true
 offset_relative_max = 50.0
 file = "uid://ms1csi6im6uk"
+can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"

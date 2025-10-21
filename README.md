@@ -15,7 +15,7 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       when walking
 - [X] Play footstep sound based on animation for zombies, for the player just do
       speed accumulator to play footsteps
-- [ ] Limit playback of positional footsteps to the closest 20 (or something)
+- [X] Limit playback of positional footsteps to the closest 20 (or something)
       audio players. Too many at once sounds bad and can be a little hard on the
       audio server. I was seeing 10ms times for a group of 50 with only footsteps
       so that must be bad.

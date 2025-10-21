@@ -111,6 +111,10 @@ func stop() -> void:
         return
 
     playback.stop()
+
+    # NOTE: this looks wrong, but this must be restarted in order for future
+    #       play() calls to work. This doesn't actually cause anything to play,
+    #       it only allows the playback to output future sounds.
     playback.start()
 
     _playing_ids.clear()

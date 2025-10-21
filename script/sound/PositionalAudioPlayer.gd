@@ -35,6 +35,25 @@ var polyphony: int = 2
         if player:
             player.bus = bus
 
+
+@export_group("Limitation", "limit")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var limit_enabled: bool = false
+
+## Number of ticks between limit tests
+@export_range(0, 120, 1, 'or_greater')
+var limit_tick_time: int = 60
+
+## Number of closest nodes in the given group that this node must be to play
+## sounds. Set to zero to disable.
+@export_range(0, 50, 1, 'or_greater')
+var limit_closest_count: int = 20
+
+## Group to check when limiting by closest nodes in a group.
+@export var limit_closest_group: StringName = &""
+
+
 var player: AudioStreamPlayer3D
 var playback: AudioStreamPlaybackPolyphonic
 
@@ -42,6 +61,9 @@ var _ids_no_overlap: Dictionary[int, int]
 var _playing_ids: PackedInt64Array
 var _sound_dirty: bool = false
 var _sound_queue: PackedFloat32Array
+
+var _limiter_tick_time: int = 0
+var _is_too_far: bool = false
 
 
 func _init() -> void:
@@ -55,6 +77,14 @@ func _init() -> void:
 
 
 func _ready() -> void:
+    for group in groups:
+        add_to_group(group)
+
+    if limit_enabled:
+        _is_too_far = true
+        if limit_closest_group:
+            add_to_group(limit_closest_group)
+
     add_child(player)
 
     # Silly, MUST call play() before requesting the playback object
@@ -63,6 +93,10 @@ func _ready() -> void:
     playback = player.get_stream_playback()
 
 func _physics_process(_delta: float) -> void:
+    if Engine.is_editor_hint():
+        # AAHOHEAOEHATHSNUS
+        return
+
     if _sound_dirty:
         _update_sound()
         _sound_dirty = false
@@ -71,8 +105,35 @@ func _physics_process(_delta: float) -> void:
         GlobalWorld.sound_played(self, item)
     _sound_queue.clear()
 
+    if limit_enabled:
+        _update_limit()
+
+func _update_limit() -> void:
+    _limiter_tick_time -= 1
+    if _limiter_tick_time >= 0:
+        return
+
+    _limiter_tick_time = limit_tick_time
+
+    if not limit_closest_group or limit_closest_count < 1:
+        return
+
+    var closest := GlobalWorld.get_closest_nodes_in_group(
+            get_viewport().get_camera_3d().global_position,
+            limit_closest_count,
+            limit_closest_group
+    )
+
+    if closest.has(self):
+        _is_too_far = false
+    else:
+        _is_too_far = true
+
 
 func play(from_position: float = 0.0) -> void:
+    if _is_too_far:
+        return
+
     if not sound:
         return
 

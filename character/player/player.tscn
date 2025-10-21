@@ -234,4 +234,6 @@ script = ExtResource("32_2pong")
 source_node = NodePath("..")
 groups = Array[StringName]([&"player_move", &"character_move"])
 bus = &"Character"
+limit_enabled = true
+limit_closest_group = &"player_move"
 metadata/_custom_type_script = "uid://kxfun8j7t2ei"

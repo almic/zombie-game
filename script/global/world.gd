@@ -63,14 +63,18 @@ func get_sounds_played(
 
 func get_nodes_in_group(group: StringName) -> Array[Node]:
 
+    var nodes: Array[Node]
     if not group_nodes.has(group):
-        var nodes: Array[Node] = get_tree().get_nodes_in_group(group)
+        nodes = get_tree().get_nodes_in_group(group)
         group_nodes.set(group, nodes)
+    else:
+        nodes = group_nodes.get(group)
 
-    return group_nodes.get(group)
+    return nodes
 
 func get_nodes_in_groups(groups: Array[StringName]) -> Array[Node]:
 
+    # TODO: defer to single group call when array has 1 element
     const PREFIX = "_MULTIGROUP:"
 
     var groups_sorted: Array[StringName] = groups.duplicate()
@@ -86,6 +90,19 @@ func get_nodes_in_groups(groups: Array[StringName]) -> Array[Node]:
         group_nodes.set(key, multi_group)
 
     return group_nodes.get(key)
+
+func get_closest_nodes_in_group(location: Vector3, count: int, group: StringName) -> Array[Node3D]:
+    var nodes: Array[Node3D]
+    for node in get_nodes_in_group(group):
+        if is_instance_valid(node) and is_instance_of(node, Node3D):
+            nodes.append(node)
+
+    nodes.sort_custom(func(a: Node3D, b: Node3D):
+        return a.global_position.distance_squared_to(location) < b.global_position.distance_squared_to(location)
+    )
+
+    nodes.resize(count)
+    return nodes
 
 ## Get the current game time with fractional seconds
 func get_game_time() -> float:

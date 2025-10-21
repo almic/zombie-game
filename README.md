@@ -11,10 +11,14 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
 - [X] Add sound to player walk
 - [X] Set up sound resources for "default" (concrete)
 - [X] Add sound groups to walkable surfaces
-- [ ] Attach positional audio player to characters to play sounds from ground
+- [X] Attach positional audio player to characters to play sounds from ground
       when walking
-- [ ] Play footstep sound based on animation for zombies, for the player just do
+- [X] Play footstep sound based on animation for zombies, for the player just do
       speed accumulator to play footsteps
+- [ ] Limit playback of positional footsteps to the closest 20 (or something)
+      audio players. Too many at once sounds bad and can be a little hard on the
+      audio server. I was seeing 10ms times for a group of 50 with only footsteps
+      so that must be bad.
 
 
 # Zombie AI TODOs

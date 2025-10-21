@@ -140,7 +140,6 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
     var snd_id: int = snd.get_instance_id()
     var stream_id: int = _ids_no_overlap.get(snd_id, 0)
     if stream_id:
-        # GlobalWorld.print('stopping sound stream ' + str(stream_id))
         playback.stop_stream(stream_id)
 
     stream_id = playback.play_stream(
@@ -157,7 +156,6 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
         _playing_ids.append(stream_id)
     else:
         GlobalWorld.print('not enough polyphonic! polyphonic: ' + str(player.stream.polyphony) + ' ; streams: ' + str(_playing_ids.size()))
-
 
     if overlap and snd.can_overlap:
         # erase just in case

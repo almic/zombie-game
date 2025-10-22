@@ -347,6 +347,7 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
     # Prepare variables
     var stationary: bool = movement_direction.is_zero_approx()
     var grounded: bool = is_grounded()
+    last_velocity = velocity
 
     # Input acceleration
     var stable_move: Vector3
@@ -630,7 +631,6 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
     acceleration = real_velocity - last_velocity
     #var vel_speed: float = velocity.length()
     #print('speed = ' + str(vel_speed))
-    last_velocity = real_velocity
 
 ## Cycles the active eye for the primary vision sense
 func update_eyes() -> void:

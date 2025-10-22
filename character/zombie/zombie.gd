@@ -412,7 +412,7 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
     super.update_movement(delta, speed)
 
     # NOTE: PERFORMANCE CRITICAL! TEST ANY CHANGES!
-    if not movement_direction.is_zero_approx() and last_velocity.length_squared() < sleep_min_travel:
+    if not movement_direction.is_zero_approx() and velocity.length_squared() < sleep_min_travel:
         if _sleep_timeout_time > sleep_timeout:
             _sleep_wakeup_time = sleep_wakeup
         else:

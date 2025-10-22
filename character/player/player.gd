@@ -35,6 +35,10 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 ## The split between running and walking frequency to play running footsteps.
 @export_range(0.0, 1.0, 0.01) var footstep_run_percent: float = 0.7
 
+## Minimum vertical speed when landing to play a landing sound
+@export_range(0.0, 2.0, 0.01, 'or_greater')
+var land_sound_speed: float = 0.98
+
 
 @export_group("Camera")
 
@@ -474,8 +478,10 @@ func _physics_process(delta: float) -> void:
             play_sound_footstep(is_running)
             _footstep_accumulator = 0.0
         elif just_landed:
-            play_sound_land()
-            _footstep_accumulator = 0.0
+            var down_speed_sqrd: float = (up_direction * last_velocity.dot(up_direction)).length_squared()
+            if down_speed_sqrd >= (land_sound_speed * land_sound_speed):
+                play_sound_land()
+                _footstep_accumulator = 0.0
 
     if camera_smooth_enabled:
         if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_target_last_position):

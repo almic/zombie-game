@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="SoundResourceChoice" load_steps=9 format=3 uid="uid://ck07cen6l5ye7"]
+
+[ext_resource type="Script" uid="uid://v2wb8alqo46v" path="res://script/sound/SoundResource.gd" id="1_w7jh3"]
+[ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/SoundResourceVariable.gd" id="2_1j1qt"]
+[ext_resource type="Script" uid="uid://sjek0p3pikof" path="res://script/sound/SoundResourceChoice.gd" id="2_6gdw0"]
+
+[sub_resource type="Resource" id="Resource_80r06"]
+resource_name = "jump 3"
+script = ExtResource("2_1j1qt")
+file = "uid://bwgghlcjs2vqd"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_hmepr"]
+resource_name = "jump 4"
+script = ExtResource("2_1j1qt")
+file = "uid://cjuh1tkw6w24h"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_jdmja"]
+resource_name = "jump 5"
+script = ExtResource("2_1j1qt")
+file = "uid://cb264fh1fw2ln"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_bw7rf"]
+resource_name = "jump 6"
+script = ExtResource("2_1j1qt")
+file = "uid://d2cg3tqvqfigu"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_q0h82"]
+resource_name = "jump 9"
+script = ExtResource("2_1j1qt")
+file = "uid://dyp0exib4if5p"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[resource]
+script = ExtResource("2_6gdw0")
+choices = Dictionary[ExtResource("1_w7jh3"), int]({
+SubResource("Resource_80r06"): 5,
+SubResource("Resource_hmepr"): 5,
+SubResource("Resource_jdmja"): 5,
+SubResource("Resource_bw7rf"): 5,
+SubResource("Resource_q0h82"): 5
+})
+metadata/_custom_type_script = "uid://sjek0p3pikof"

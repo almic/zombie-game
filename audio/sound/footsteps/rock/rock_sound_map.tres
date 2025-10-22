@@ -1,12 +1,18 @@
-[gd_resource type="Resource" script_class="SoundResourceMap" load_steps=4 format=3 uid="uid://buxodnn16bwav"]
+[gd_resource type="Resource" script_class="SoundResourceMap" load_steps=7 format=3 uid="uid://buxodnn16bwav"]
 
 [ext_resource type="Script" uid="uid://dcjvqq6ydh5qv" path="res://script/sound/SoundResourceMap.gd" id="1_2valp"]
 [ext_resource type="Script" uid="uid://v2wb8alqo46v" path="res://script/sound/SoundResource.gd" id="2_yk624"]
 [ext_resource type="Resource" uid="uid://c58a405t1uvnf" path="res://audio/sound/footsteps/rock/rock_walk_choices.tres" id="3_yk624"]
+[ext_resource type="Resource" uid="uid://kytah4xv1kug" path="res://audio/sound/footsteps/rock/rock_run_choices.tres" id="4_ga3no"]
+[ext_resource type="Resource" uid="uid://34sx57ag8kiw" path="res://audio/sound/footsteps/rock/rock_jump_choices.tres" id="5_2nl76"]
+[ext_resource type="Resource" uid="uid://etds4sgl7qop" path="res://audio/sound/footsteps/rock/rock_land_choices.tres" id="6_ft0us"]
 
 [resource]
 script = ExtResource("1_2valp")
 sound_map = Dictionary[StringName, ExtResource("2_yk624")]({
+&"jump": ExtResource("5_2nl76"),
+&"land": ExtResource("6_ft0us"),
+&"run": ExtResource("4_ga3no"),
 &"walk": ExtResource("3_yk624")
 })
 metadata/_custom_type_script = "uid://dcjvqq6ydh5qv"

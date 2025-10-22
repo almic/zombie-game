@@ -1,0 +1,46 @@
+[gd_resource type="Resource" script_class="SoundResourceChoice" load_steps=9 format=3 uid="uid://dwox35a35umdu"]
+
+[ext_resource type="Script" uid="uid://v2wb8alqo46v" path="res://script/sound/SoundResource.gd" id="1_0nfcy"]
+[ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/SoundResourceVariable.gd" id="2_khaq8"]
+[ext_resource type="Script" uid="uid://sjek0p3pikof" path="res://script/sound/SoundResourceChoice.gd" id="2_l7y44"]
+
+[sub_resource type="Resource" id="Resource_uaxst"]
+resource_name = "land 1"
+script = ExtResource("2_khaq8")
+file = "uid://c14wlucrcv6ji"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_wf1qx"]
+resource_name = "land 2"
+script = ExtResource("2_khaq8")
+file = "uid://b08q0fe58x48n"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_bg4oi"]
+resource_name = "land 3"
+script = ExtResource("2_khaq8")
+file = "uid://vib2wk87aldg"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_6yu1h"]
+resource_name = "land 9"
+script = ExtResource("2_khaq8")
+file = "uid://bfo1doqiuutgu"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[sub_resource type="Resource" id="Resource_xsm53"]
+resource_name = "land 6"
+script = ExtResource("2_khaq8")
+file = "uid://btglgafbbq7wf"
+metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
+
+[resource]
+script = ExtResource("2_l7y44")
+choices = Dictionary[ExtResource("1_0nfcy"), int]({
+SubResource("Resource_uaxst"): 5,
+SubResource("Resource_wf1qx"): 5,
+SubResource("Resource_bg4oi"): 5,
+SubResource("Resource_6yu1h"): 5,
+SubResource("Resource_xsm53"): 5
+})
+metadata/_custom_type_script = "uid://sjek0p3pikof"

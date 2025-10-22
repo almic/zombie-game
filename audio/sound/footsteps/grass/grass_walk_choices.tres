@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/SoundResourceVariable.gd" id="2_qed30"]
 
 [sub_resource type="Resource" id="Resource_v5vde"]
+resource_name = "walk 1"
 script = ExtResource("2_qed30")
 file = "uid://y3s4maw4ptrn"
 base_volume = -4.0
@@ -13,6 +14,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_x4kgi"]
+resource_name = "walk 2"
 script = ExtResource("2_qed30")
 file = "uid://dqasi6qd5n4ny"
 base_volume = -4.0
@@ -21,6 +23,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_v4a1n"]
+resource_name = "walk 3"
 script = ExtResource("2_qed30")
 file = "uid://c057y4liapqem"
 base_volume = -4.0
@@ -28,6 +31,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_ycby2"]
+resource_name = "walk 4"
 script = ExtResource("2_qed30")
 file = "uid://cfg3edpie30cg"
 base_volume = -4.0
@@ -36,6 +40,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_yx6b2"]
+resource_name = "walk 5"
 script = ExtResource("2_qed30")
 file = "uid://c8i7gn78x1iq3"
 base_volume = -4.0
@@ -44,6 +49,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_6hg54"]
+resource_name = "walk 6"
 script = ExtResource("2_qed30")
 file = "uid://dj6su3fifsen2"
 base_volume = -4.0
@@ -52,6 +58,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_6spyu"]
+resource_name = "walk 7"
 script = ExtResource("2_qed30")
 file = "uid://deom4gmqtgy1t"
 base_volume = -4.0
@@ -60,6 +67,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_e600v"]
+resource_name = "walk 8"
 script = ExtResource("2_qed30")
 file = "uid://bl74hkif2hu63"
 base_volume = -4.0
@@ -68,6 +76,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_n85e1"]
+resource_name = "walk 9"
 script = ExtResource("2_qed30")
 file = "uid://ijaxn4ug1yrs"
 base_volume = -4.0
@@ -76,6 +85,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_s13wu"]
+resource_name = "walk 10"
 script = ExtResource("2_qed30")
 file = "uid://b3ebvcc7ripqh"
 base_volume = -4.0
@@ -84,6 +94,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_vest7"]
+resource_name = "walk 11"
 script = ExtResource("2_qed30")
 file = "uid://nfags7footkn"
 base_volume = -4.0
@@ -92,6 +103,7 @@ can_overlap = false
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"
 
 [sub_resource type="Resource" id="Resource_of2ag"]
+resource_name = "walk 12"
 script = ExtResource("2_qed30")
 file = "uid://o0ecudxerdkb"
 base_volume = -4.0

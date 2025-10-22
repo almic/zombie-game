@@ -32,6 +32,9 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 ## How many meters of travel to play a footstep sound when running
 @export var footstep_frequency_run: float = 1.4
 
+## The split between running and walking frequency to play running footsteps.
+@export_range(0.0, 1.0, 0.01) var footstep_run_percent: float = 0.7
+
 
 @export_group("Camera")
 
@@ -450,20 +453,28 @@ func _physics_process(delta: float) -> void:
 
     if just_jumped:
         _jump_ready = false
+        play_sound_jump()
         _footstep_accumulator = 0.0
     else:
         var target_aim_speed: float = top_speed * aim_move_speed
+        var run_amount: float = clampf(
+                (_top_speed.current - target_aim_speed) / (top_speed - target_aim_speed),
+                0.0,
+                1.0
+        )
         var freq: float = lerpf(
                 footstep_frequency_walk,
                 footstep_frequency_run,
-                clampf(
-                    (_top_speed.current - target_aim_speed) / (top_speed - target_aim_speed),
-                    0.0,
-                    1.0
-                )
+                run_amount
         )
         if _footstep_accumulator > freq:
-            play_sound_footstep()
+            var is_running: bool = false
+            if run_amount >= footstep_run_percent:
+                is_running = true
+            play_sound_footstep(is_running)
+            _footstep_accumulator = 0.0
+        elif just_landed:
+            play_sound_land()
             _footstep_accumulator = 0.0
 
     if camera_smooth_enabled:

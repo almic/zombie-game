@@ -35,6 +35,20 @@ enum FluidState
     EMPTY
 }
 
+enum MovementSound
+{
+    ## Walking
+    WALK,
+    ## Running
+    RUN,
+    ## Jumping
+    JUMP,
+    ## Landing
+    LAND,
+    ## Passing by/ through noisy objects (e.g. bushes)
+    FOLEY
+}
+
 class GroundDetails:
     var body: Object = null
     var normal: Vector3 = Vector3.ZERO
@@ -173,6 +187,9 @@ var last_velocity: Vector3 = Vector3.ZERO
 
 ## If the character jumped on this update
 var just_jumped: bool = false
+## If the character just landed on ground this update
+var just_landed: bool = false
+## Tracks jump input wish
 var _wants_jump: bool = false
 
 # Updated by stepping and snapping to account for in velocity updates
@@ -246,20 +263,53 @@ func is_grounded() -> bool:
 ## Plays a footstep sound from the current movement sound map using the current
 ## ground details.
 func play_sound_footstep(is_run: bool = false) -> void:
+    if is_run:
+        _play_movement_sound(MovementSound.RUN)
+    else:
+        _play_movement_sound(MovementSound.WALK)
+
+## Plays a jump sound from the current movement sound map using the previous
+## ground details. Should be called the same frame of the jump right after the
+## character detaches from the ground, otherwise ground details will be empty and
+## a default sound will play.
+func play_sound_jump() -> void:
+    _play_movement_sound(MovementSound.JUMP, last_ground_details)
+
+## Plays a landing sound from the current movement sound map using the current
+## ground details.
+func play_sound_land() -> void:
+    _play_movement_sound(MovementSound.LAND)
+
+## Generic function to play a movement sound
+func _play_movement_sound(type: MovementSound, ground: GroundDetails = ground_details) -> void:
     # No player or sound map, cannot play sounds
     if not movement_audio_player or not movement_sound_map:
         return
 
-    # Not on ground, no footstep
-    if not is_grounded() or not is_instance_of(ground_details.body, Node):
+    var path: StringName = &'/'
+    if type == MovementSound.WALK:
+        path += &'walk'
+    elif type == MovementSound.RUN:
+        path += &'run'
+    elif type == MovementSound.JUMP:
+        path += &'jump'
+    elif type == MovementSound.LAND:
+        path += &'land'
+    elif type == MovementSound.FOLEY:
+        path += &'foley'
+    else:
+        push_error('Unknown sound type ' + str(type) + ' passed to _play_movement_sound()! Investigate!')
         return
 
     # Get ground object sound groups
     var group: StringName = &''
-    for sound_group in GlobalWorld.Sounds.get_sound_groups(ground_details.body):
-        if movement_sound_map.has(sound_group):
-            group = sound_group
-            break
+
+    # Get ground group
+    if is_instance_of(ground.body, Node):
+        for sound_group in GlobalWorld.Sounds.get_sound_groups(ground.body):
+            if movement_sound_map.has(sound_group):
+                group = sound_group
+                break
 
     if group.is_empty():
         # Try using the "default" value
@@ -267,14 +317,11 @@ func play_sound_footstep(is_run: bool = false) -> void:
             return
         group = &'default'
 
-    var path: StringName
-    if is_run:
-        path = &'/run'
-    else:
-        path = &'/walk'
-
     var sound: SoundResource = movement_sound_map.get_sound(group + path)
     if not sound:
+        if group == &'default':
+            return
+
         # Try the "default"
         group = &'default'
         sound = movement_sound_map.get_sound(group + path)
@@ -552,6 +599,7 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
     velocity = real_velocity
 
     # Update ground state
+    just_landed = false
     if ground_details.has_ground():
         if best_ground_dot < floor_max_cos_theta:
             ground_state = GroundState.GROUNDED_STEEP
@@ -562,6 +610,7 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
         # Take vertical velocity from ground if we just hit it
         # This allows jumps on the frame after hitting the ground to apply properly
         if not grounded:
+            just_landed = true
             velocity = velocity.slide(up_direction) + up_direction * up_direction.dot(ground_details.velocity)
 
     else:

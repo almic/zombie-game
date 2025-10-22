@@ -233,6 +233,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
 script = ExtResource("32_2pong")
 source_node = NodePath("..")
 groups = Array[StringName]([&"player_move", &"character_move"])
+polyphony = 3
 bus = &"Character"
 limit_enabled = true
 limit_closest_group = &"player_move"

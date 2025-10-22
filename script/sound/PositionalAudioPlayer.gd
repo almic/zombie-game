@@ -87,11 +87,6 @@ func _ready() -> void:
 
     add_child(player)
 
-    # Silly, MUST call play() before requesting the playback object
-    # NOTE: confirmed October 16 2025, still undocumented behavior
-    player.play()
-    playback = player.get_stream_playback()
-
 func _physics_process(_delta: float) -> void:
     if Engine.is_editor_hint():
         # AAHOHEAOEHATHSNUS
@@ -140,7 +135,9 @@ func play(from_position: float = 0.0) -> void:
     var in_physics: bool = Engine.is_in_physics_frame()
 
     if _sound_dirty:
-        stop()
+        # NOTE: IDK why but having this line just nukes all audio for the player
+        #       PERMANENTLY. Even replacing the stream doesn't fix it. Maybe Godot bug.
+        # stop()
         _update_sound()
         _sound_dirty = false
     else:
@@ -167,6 +164,10 @@ func play(from_position: float = 0.0) -> void:
 
 
 func stop() -> void:
+    # TODO: figure out why this happens to all audio output. Possibly caused by
+    #       the lock() / unlock() maybe getting reordered?
+    push_error('This method sometimes breaks ALL audio permanently. Please don\'t use it.')
+
     if not playback:
         push_error('stop() called with a null playback')
         return
@@ -241,12 +242,15 @@ func _update_sound() -> void:
         push_error('Failed to update sound, player is null')
         return
 
-    var stream: AudioStreamPolyphonic = player.stream as AudioStreamPolyphonic
-    if not stream:
-        push_error('Failed to update sound, stream is null or not polyphonic')
-        return
-
+    var stream: AudioStreamPolyphonic = AudioStreamPolyphonic.new()
     stream.polyphony = polyphony * maxi(1, _calculate_polyphony(sound))
+
+    player.stream = stream
+
+    # Silly, MUST call play() before requesting the playback object
+    # NOTE: confirmed October 16 2025, still undocumented behavior
+    player.play()
+    playback = player.get_stream_playback()
 
 
 static func load_sound(snd: SoundResource) -> void:

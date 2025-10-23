@@ -38,7 +38,15 @@ enum Flag {
 var sensory_logs: Dictionary[Type, PackedByteArray]
 
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
-var event_idxs: Dictionary[Type, PackedInt32Array]
+var event_idxs: Dictionary[Type, PackedInt32Array]:
+    set(value):
+        event_idxs = value
+        event_idxs_sorted = event_idxs.duplicate(true)
+        for type in event_idxs_sorted:
+            event_idxs_sorted.get(type).sort()
+
+## This is just a mirror of event_idxs which maintains sorted order
+var event_idxs_sorted: Dictionary[Type, PackedInt32Array]
 
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
 var event_count: int = 0
@@ -59,9 +67,9 @@ func get_events(type: Type) -> PackedInt32Array:
 
 ## Removes sensory memories that have expired
 func decay(delta: float) -> void:
-    for type in event_idxs.keys():
+    for type in event_idxs_sorted:
         var i: int = 0
-        var events: PackedInt32Array = event_idxs.get(type)
+        var events: PackedInt32Array = event_idxs_sorted.get(type)
         var size: int = events.size()
         var event: int
         while i < size:
@@ -142,6 +150,22 @@ func finish_event(event: PackedByteArray) -> void:
         for ev in events:
             var other_id: int = get_event_tracking(type, ev)
             if tracking != other_id:
+
+                # If we are doing time checks, we may be able to stop early if
+                # we reach a very old event.
+                if track_time:
+                    @warning_ignore("confusable_local_declaration")
+                    var other_time: float = get_event_game_time(type, ev)
+                    if other_time == -1:
+                        continue
+
+                    @warning_ignore("confusable_local_declaration")
+                    var delta_time: float = game_time - other_time
+                    # Will definitely be original, can stop looking now
+                    if delta_time > TRACKING_TIME * 2:
+                        mark_original = true
+                        break
+
                 continue
 
             # If we find a matching ID, this probably won't be original
@@ -187,6 +211,23 @@ func finish_event(event: PackedByteArray) -> void:
 
         if found != -1:
             overwrite_event(type, found, event)
+
+            # Update time dependent indexes to maintain time order
+            var time_indexes: PackedInt32Array = event_idxs.get(type)
+            var event_id: int = time_indexes.find(found)
+            if event_id == -1:
+                push_error('Found event does not exist in event indexes! Huh??')
+                return
+
+            # Do not need to move, already at the front
+            if event_id == 0:
+                return
+
+            # Move all previous events back
+            for i in range(event_id, 0, -1):
+                time_indexes[i] = time_indexes[i - 1]
+
+            time_indexes[0] = found
             return
 
         if mark_original:
@@ -200,11 +241,15 @@ func finish_event(event: PackedByteArray) -> void:
 
     # update indexes
     var indexes: PackedInt32Array = event_idxs.get_or_add(type, PackedInt32Array())
+    var sorted_indexes: PackedInt32Array = event_idxs_sorted.get_or_add(type, PackedInt32Array())
     var idx_len: int = indexes.size()
     indexes.resize(idx_len + 1)
+    sorted_indexes.resize(idx_len + 1)
     for i in range(idx_len, 0, -1): # NOTE: up to the second element only
         indexes[i] = indexes[i - 1] + size
+        sorted_indexes[i] = sorted_indexes[i - 1] + size
     indexes[0] = 0
+    sorted_indexes[0] = 0
 
     sensory_logs.set(type, event)
     event_count += 1
@@ -213,6 +258,14 @@ func finish_event(event: PackedByteArray) -> void:
 ## and in the same order, otherwise the write will be partial and undefined
 ## behavior may happen.
 func overwrite_event(type: Type, dest: int, src: PackedByteArray) -> void:
+    # TODO: decide if events with dynamically sized data can overwrite that data
+    #       as long as the overall length is the same, or the length of that
+    #       dynamic data is the same. Or, just deny overwriting dynamic data at
+    #       all and just skip over it, allowing it to be empty/ zero length from
+    #       the source, or whatever it stores is ignored and not considered when
+    #       overwriting (allowing diff lengths as long as no new data elements/
+    #       order is changed).
+
     var events: PackedByteArray = _get_events_reference(type)
     if not events:
         return
@@ -259,18 +312,29 @@ func overwrite_event(type: Type, dest: int, src: PackedByteArray) -> void:
             push_error('Failed to overwrite sensory event, mismatching data types! Investigate!')
             break
 
+        var fixed_size: bool = false
         if src_type == d_NODEPATH:
             data_size = src.decode_u16(e_DATA_ARRAY + i + 1) + 2
+            var dest_data_size: int = events.decode_u16(dest + e_DATA_ARRAY + i + 1) + 2
+            if data_size != dest_data_size:
+                push_error('Failed to overwrite sensory event, dynamically sized nodepath data have different lengths! What to do here?')
+                break
+        elif src_type == d_GROUPS:
+            data_size = src.decode_u8(e_DATA_ARRAY + i + 1) + 1
+            var dest_data_size: int = events.decode_u8(dest + e_DATA_ARRAY + i + 1) + 1
+            if data_size != dest_data_size:
+                push_error('Failed to overwrite sensory event, dynamically sized group data have different lengths! What to do here?')
+                break
         else:
             data_size = d_STRIDES.get(src_type)
+            fixed_size = true
 
         # Time tracking will NOT overwrite the FIRST 'gametime' data
         if time_tracking and src_type == d_GAMETIME and not skipped_first_gametime:
             skipped_first_gametime = true
-        else:
-            # Copy data
-            for k in range(1, data_size + 1):
-                events[dest + e_DATA_ARRAY + i + k] = src[e_DATA_ARRAY + i + k]
+        elif fixed_size:
+            # Copy fixed size data
+            events.copy_range(dest + e_DATA_ARRAY + i + 1, src, e_DATA_ARRAY + i + 1, data_size)
 
         i += data_size + 1
         data_index += 1
@@ -292,7 +356,7 @@ func event_decay(type: Type, event: int, seconds: float) -> bool:
 
     # print('Deleting memory type ' + str(type) + ' at ' + str(event))
 
-    var indexes: PackedInt32Array = event_idxs.get(type)
+    var indexes: PackedInt32Array = event_idxs_sorted.get(type)
     var event_id: int = indexes.bsearch(event, false) - 1
     var size: int = event_log.decode_u16(event + e_SIZE)
     var log_size: int = event_log.size()

@@ -125,6 +125,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
 controller = NodePath("../../../..")
 hitbox = NodePath("../../../../Hitbox")
+sound_groups = Array[StringName]([&"gunshot"])
 aim_target = NodePath("../AimTarget")
 aim_target_reduced_rate = false
 aim_duration = 0.25

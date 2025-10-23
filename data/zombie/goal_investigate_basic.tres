@@ -1,0 +1,37 @@
+[gd_resource type="Resource" script_class="BehaviorGoalInvestigate" load_steps=6 format=3 uid="uid://cled17rlahlpm"]
+
+[ext_resource type="Script" uid="uid://ct1i7o41qp4i0" path="res://script/behavior/goal/investigate.gd" id="1_cslcx"]
+[ext_resource type="Curve" uid="uid://s8gm47o3n4yx" path="res://data/zombie/time_falloff.tres" id="2_7v5q2"]
+[ext_resource type="Script" uid="uid://cqaxwryreum7v" path="res://script/behavior/goal/investigate/threshold_settings.gd" id="3_vqc7w"]
+
+[sub_resource type="Resource" id="Resource_lg3am"]
+resource_name = "sight"
+script = ExtResource("3_vqc7w")
+type = 1
+metadata/_custom_type_script = "uid://cqaxwryreum7v"
+
+[sub_resource type="Resource" id="Resource_m82nh"]
+resource_name = "sound"
+script = ExtResource("3_vqc7w")
+type = 2
+turn_threshold = 5
+navigate_threshold = 12
+metadata/_custom_type_script = "uid://cqaxwryreum7v"
+
+[resource]
+resource_name = "Investigate"
+script = ExtResource("1_cslcx")
+turn_threshold = null
+navigate_threshold = null
+navigate_speed = null
+navigate_target_distance = null
+time_falloff = ExtResource("2_7v5q2")
+type_thresholds = Array[ExtResource("3_vqc7w")]([SubResource("Resource_lg3am"), SubResource("Resource_m82nh")])
+code_name = &"investigate"
+enabled = null
+interest_activated = true
+interest_threshold = 2
+sense_activated = true
+sense_code_names = Array[StringName]([&"curiosity"])
+minimum_period = null
+metadata/_custom_type_script = "uid://ct1i7o41qp4i0"

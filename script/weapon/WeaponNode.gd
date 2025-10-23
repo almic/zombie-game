@@ -34,6 +34,9 @@ signal reload_complete()
         if _weapon_audio_player:
             _weapon_audio_player.bus = sound_bus
 
+## Groups to assign the audio player to
+@export var sound_groups: Array[StringName]
+
 
 @export_group("Aiming", "aim")
 
@@ -102,6 +105,8 @@ var melee_excluded_hurtboxes: Array[RID]
 
 func _ready() -> void:
     _weapon_audio_player = PositionalAudioPlayer.new()
+    _weapon_audio_player.source_node = self
+    _weapon_audio_player.groups = sound_groups.duplicate()
     _weapon_audio_player.bus = sound_bus
     _weapon_audio_player.polyphony = 3
 

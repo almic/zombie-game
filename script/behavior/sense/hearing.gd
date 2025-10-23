@@ -56,7 +56,10 @@ func sense(mind: BehaviorMind) -> void:
         memory.event_add_time_of_day(event)
         memory.event_add_travel(event, sound.direction, sound.distance)
         memory.event_add_location(event, me.global_position, me.global_basis.z)
-        memory.event_add_node_path(event, sound.source.get_path())
+        memory.event_add_groups(event, sound.groups)
+
+        if sound.source:
+            memory.event_add_node_path(event, sound.source.get_path())
 
         memory.finish_event(event)
         mind.memory_bank.save_memory_reference(memory)

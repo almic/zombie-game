@@ -1,74 +1,46 @@
-[gd_resource type="Resource" script_class="BehaviorMind" load_steps=20 format=3 uid="uid://cb57wji4codsc"]
+[gd_resource type="Resource" script_class="BehaviorMind" load_steps=17 format=3 uid="uid://cb57wji4codsc"]
 
 [ext_resource type="Script" uid="uid://d2sl5aie3kmae" path="res://script/behavior/goal.gd" id="1_b41gs"]
-[ext_resource type="Script" uid="uid://ct1i7o41qp4i0" path="res://script/behavior/goal/investigate.gd" id="2_hqev8"]
-[ext_resource type="Script" uid="uid://trwc8h08pont" path="res://script/behavior/goal/attack_target.gd" id="2_j7cw6"]
+[ext_resource type="Resource" uid="uid://cled17rlahlpm" path="res://data/zombie/goal_investigate_basic.tres" id="2_fi45o"]
 [ext_resource type="Script" uid="uid://ctlftw6w3ws7s" path="res://script/behavior/mind.gd" id="2_wnfdo"]
-[ext_resource type="Curve" uid="uid://s8gm47o3n4yx" path="res://data/zombie/time_falloff.tres" id="3_37cj5"]
-[ext_resource type="Script" uid="uid://bpw2p77auv67c" path="res://script/behavior/goal/chase_target.gd" id="3_f6rrc"]
-[ext_resource type="Script" uid="uid://cqaxwryreum7v" path="res://script/behavior/goal/investigate/threshold_settings.gd" id="3_fl0w7"]
+[ext_resource type="Resource" uid="uid://cchx7yys2de76" path="res://data/zombie/goal_attack_basic.tres" id="3_37cj5"]
 [ext_resource type="Script" uid="uid://bgv53nvmr2huy" path="res://script/behavior/sense.gd" id="3_j7cw6"]
+[ext_resource type="Resource" uid="uid://c1recmiaqlhfw" path="res://data/zombie/goal_chase_basic.tres" id="4_p6cof"]
 [ext_resource type="Script" uid="uid://dk102hcra0ikj" path="res://script/behavior/sense/vision.gd" id="4_wnfdo"]
 [ext_resource type="Curve" uid="uid://bx472ukty7uiy" path="res://data/zombie/distance_falloff.tres" id="9_fi45o"]
 [ext_resource type="Script" uid="uid://c475er3d6t38f" path="res://script/behavior/sense/curiosity.gd" id="9_lg3am"]
 [ext_resource type="Script" uid="uid://c5fddnomu3esm" path="res://script/behavior/sense/curiosity/target_settings.gd" id="10_fi45o"]
-
-[sub_resource type="Resource" id="Resource_lg3am"]
-script = ExtResource("3_fl0w7")
-type = 1
-threshold = 5
-metadata/_custom_type_script = "uid://cqaxwryreum7v"
-
-[sub_resource type="Resource" id="Resource_h5feg"]
-script = ExtResource("2_hqev8")
-time_falloff = ExtResource("3_37cj5")
-type_thresholds = Array[ExtResource("3_fl0w7")]([SubResource("Resource_lg3am")])
-code_name = &"investigate"
-interest_activated = true
-interest_threshold = 2
-sense_activated = true
-sense_code_names = Array[StringName]([&"curiosity"])
-metadata/_custom_type_script = "uid://ct1i7o41qp4i0"
-
-[sub_resource type="Resource" id="Resource_f6rrc"]
-script = ExtResource("2_j7cw6")
-target_groups = Array[StringName]([&"zombie_target"])
-activation_range = 2.5
-melee_enabled = true
-code_name = &"attack"
-interest_activated = true
-interest_threshold = 5
-sense_activated = true
-sense_code_names = Array[StringName]([&"vision"])
-metadata/_custom_type_script = "uid://trwc8h08pont"
-
-[sub_resource type="Resource" id="Resource_hqev8"]
-script = ExtResource("3_f6rrc")
-target_groups = Array[StringName]([&"zombie_target"])
-target_distance = 1.8
-code_name = &"chase"
-interest_activated = true
-interest_threshold = 8
-sense_activated = true
-sense_code_names = Array[StringName]([&"vision"])
-metadata/_custom_type_script = "uid://bpw2p77auv67c"
+[ext_resource type="Script" uid="uid://bafy0pc7ibc6b" path="res://script/behavior/sense/hearing.gd" id="13_p6cof"]
 
 [sub_resource type="Resource" id="Resource_37cj5"]
+resource_name = "zombie_target"
 script = ExtResource("10_fi45o")
 group_name = &"zombie_target"
+sense_type = 1
 base_interest = 5
 threshold = 0
 metadata/_custom_type_script = "uid://c5fddnomu3esm"
 
+[sub_resource type="Resource" id="Resource_tm71h"]
+resource_name = "gunshot"
+script = ExtResource("10_fi45o")
+group_name = &"gunshot"
+sense_type = 2
+base_interest = 40
+threshold = 0
+metadata/_custom_type_script = "uid://c5fddnomu3esm"
+
 [sub_resource type="Resource" id="Resource_p6cof"]
+resource_name = "curiosity"
 script = ExtResource("9_lg3am")
 distance_falloff = ExtResource("9_fi45o")
-target_groups = Array[ExtResource("10_fi45o")]([SubResource("Resource_37cj5")])
+target_groups = Array[ExtResource("10_fi45o")]([SubResource("Resource_37cj5"), SubResource("Resource_tm71h")])
 debug_print_curious_nodes = true
 code_name = &"curiosity"
 metadata/_custom_type_script = "uid://c475er3d6t38f"
 
 [sub_resource type="Resource" id="Resource_j7cw6"]
+resource_name = "vision"
 script = ExtResource("4_wnfdo")
 target_groups = Array[StringName]([&"zombie_target"])
 debug_show_cone = true
@@ -78,9 +50,16 @@ code_name = &"vision"
 frequency = 10
 metadata/_custom_type_script = "uid://dk102hcra0ikj"
 
+[sub_resource type="Resource" id="Resource_dacxx"]
+resource_name = "hearing"
+script = ExtResource("13_p6cof")
+target_groups = Array[StringName]([&"gunshot"])
+code_name = &"hearing"
+metadata/_custom_type_script = "uid://bafy0pc7ibc6b"
+
 [resource]
 script = ExtResource("2_wnfdo")
-senses = Array[ExtResource("3_j7cw6")]([SubResource("Resource_j7cw6")])
+senses = Array[ExtResource("3_j7cw6")]([SubResource("Resource_j7cw6"), SubResource("Resource_dacxx")])
 secondary_senses = Array[ExtResource("3_j7cw6")]([SubResource("Resource_p6cof")])
-goals = Array[ExtResource("1_b41gs")]([SubResource("Resource_h5feg"), SubResource("Resource_f6rrc"), SubResource("Resource_hqev8")])
+goals = Array[ExtResource("1_b41gs")]([ExtResource("2_fi45o"), ExtResource("3_37cj5"), ExtResource("4_p6cof")])
 metadata/_custom_type_script = "uid://ctlftw6w3ws7s"

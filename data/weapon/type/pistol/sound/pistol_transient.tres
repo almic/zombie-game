@@ -11,4 +11,5 @@ pitch_relative_min = -0.05
 pitch_relative_max = 0.05
 offset_random_enabled = null
 file = "uid://d0lhay0lxlpkg"
+loudness = 160.0
 metadata/_custom_type_script = "uid://b1wx0vpn36hgj"

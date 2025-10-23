@@ -1,7 +1,11 @@
 class_name BehaviorSenseCuriosityTargetSettings extends Resource
 
+
 ## Target group name
 @export var group_name: StringName = &""
+
+## The sense type this target is for
+@export var sense_type: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.MAX
 
 ## Base interest for this group generated per second. If a node has multiple
 ## groups, the highest base interest will be selected.

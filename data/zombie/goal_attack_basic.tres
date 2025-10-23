@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="BehaviorGoalAttackTarget" load_steps=2 format=3 uid="uid://cchx7yys2de76"]
+
+[ext_resource type="Script" uid="uid://trwc8h08pont" path="res://script/behavior/goal/attack_target.gd" id="1_cbxh3"]
+
+[resource]
+resource_name = "Attack"
+script = ExtResource("1_cbxh3")
+target_groups = Array[StringName]([&"zombie_target"])
+activation_range = 2.5
+melee_enabled = true
+code_name = &"attack"
+interest_activated = true
+interest_threshold = 5
+sense_activated = true
+sense_code_names = Array[StringName]([&"vision"])
+metadata/_custom_type_script = "uid://trwc8h08pont"

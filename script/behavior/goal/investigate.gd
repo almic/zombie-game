@@ -11,14 +11,6 @@ func name() -> StringName:
 const NORMAL_PRIORITY = BehaviorGoal.Priority.LOW
 
 
-## Interest needed to turn towards something
-@export_range(0, 10, 1, 'or_greater')
-var turn_threshold: int = 2
-
-## Interest needed to navigate towards something
-@export_range(0, 10, 1, 'or_greater')
-var navigate_threshold: int = 5
-
 ## Relative speed to travel at when investigating. Multiplied by
 ## `CharacterBase.top_speed` when navigating.
 @export_range(0.0, 1.0, 0.001, 'or_greater')
@@ -31,10 +23,11 @@ var navigate_target_distance: float = 2.0
 ## Falloff curve for events, use this to decay interest in older events.
 @export var time_falloff: Curve
 
-## Thresholds for interesting events related to sensory types. The order
-## determines which type to select when they meet their thresholds. If no types
-## meet their threshold, then the highest interest will be chosen.
-@export var type_thresholds: Array[BehaviorGoalInvestigateThresholdSettings]
+## Parameters for interesting events related to sensory types. This is used to
+## favor certain senses for turning and navigation, as well as priority when
+## multiple senses compete for a response. In the event two senses are equally
+## favorable, the first one in the list will be selected.
+@export var type_interests: Array[BehaviorGoalInvestigateInterestSettings]
 
 
 ## Travel target for investigation
@@ -55,24 +48,17 @@ func process_memory(mind: BehaviorMind) -> int:
     if not interest_memory:
         return 0
 
-    var min_interest: float = minf(turn_threshold, navigate_threshold)
-    var any_best_interest: float = -INF
-    var event: int = -1
-    var t: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.MAX
-    for type_threshold in type_thresholds:
-        var type := type_threshold.type
-        var threshold := type_threshold.threshold
-        var min_threshold: float = minf(threshold, min_interest)
-
+    var best_interest: float = -INF
+    var best_event: int = -1
+    var best_event_type: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.MAX
+    for interest in type_interests:
+        var type := interest.type
         var events: PackedInt32Array = sens_memory.get_events(type)
 
         if events.is_empty():
             continue
 
         # Find most interesting event
-        var best_event: int = -1
-        var best_interest: float = 0
-
         for ev in events:
             var node_path := sens_memory.get_event_node_path_string(type, ev)
             if not node_path:
@@ -81,52 +67,35 @@ func process_memory(mind: BehaviorMind) -> int:
             # NOTE: revisit this, could potentially benefit from a set to check
             #       if a node has already been tested, or just a list
 
-            var update_time: float = sens_memory.get_event_game_time(type, ev, 2)
-            var delay: float = GlobalWorld.get_game_time() - update_time
+            # var update_time: float = sens_memory.get_event_game_time(type, ev, 2)
+            # var delay: float = GlobalWorld.get_game_time() - update_time
+            #
+            # var node := interest_memory.get_node(node_path)
+            # var interest := interest_memory.node_get_interest(node)
+            #
+            # if time_falloff:
+            #     if delay > time_falloff.max_domain:
+            #         continue
+            #     interest *= time_falloff.sample(delay)
+            #
+            # if interest < min_threshold:
+            #     continue
+            #
+            # if interest > best_interest:
+            #     best_event = ev
+            #     best_interest = interest
 
-            var node := interest_memory.get_node(node_path)
-            var interest := interest_memory.node_get_interest(node)
-
-            if time_falloff:
-                if delay > time_falloff.max_domain:
-                    continue
-                interest *= time_falloff.sample_baked(delay)
-
-            if interest < min_threshold:
-                continue
-
-            if interest > best_interest:
-                best_event = ev
-                best_interest = interest
-
-        if best_event == -1:
-            continue
-
-        if best_interest >= threshold:
-            any_best_interest = best_interest
-            event = best_event
-            t = type
-            break
-
-        if best_interest > any_best_interest:
-            any_best_interest = best_interest
-            event = best_event
-            t = type
-
-    if event != -1:
-        travel_target = sens_memory.get_event_travel(t, event)
-        if any_best_interest >= navigate_threshold:
+    if best_event != -1:
+        travel_target = sens_memory.get_event_travel(best_event_type, best_event)
+        if is_nav_response:
             # Check that no equal or higher priority navigate is running, but we
             # may update ours
             var last_navigate := mind.get_acted(BehaviorActionNavigate.NAME)
-            if not last_navigate or last_navigate.action.is_complete():
-                is_nav_response = true
-            elif last_navigate.priority > NORMAL_PRIORITY:
-                is_nav_response = false
-            elif last_navigate.priority == NORMAL_PRIORITY:
-                is_nav_response = last_navigate.goal.code_name == code_name
-            else:
-                is_nav_response = true
+            if last_navigate and not last_navigate.action.is_complete():
+                if last_navigate.priority > NORMAL_PRIORITY:
+                    is_nav_response = false
+                elif last_navigate.priority == NORMAL_PRIORITY:
+                    is_nav_response = last_navigate.goal.code_name == code_name
 
         return NORMAL_PRIORITY
 

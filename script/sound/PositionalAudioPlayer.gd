@@ -70,6 +70,8 @@ func _init() -> void:
     player = AudioStreamPlayer3D.new()
     player.stream = AudioStreamPolyphonic.new()
     player.bus = bus
+    player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+    player.unit_size = 1.0
 
     _ids_no_overlap = {}
     _playing_ids = PackedInt64Array()
@@ -78,6 +80,9 @@ func _init() -> void:
 
 func _ready() -> void:
     for group in groups:
+        if GlobalWorld.Groups.get_group_id(group) == -1:
+            push_error('Group "' + group + '" is not a global group! Did you forget to add it, or typo?')
+            continue
         add_to_group(group)
 
     if limit_enabled:

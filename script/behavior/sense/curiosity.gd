@@ -55,9 +55,13 @@ func sense(mind: BehaviorMind) -> void:
 
     interesting_nodes.clear()
 
-    var sight_events: PackedInt32Array = sens_memory.get_events(BehaviorMemorySensory.Type.SIGHT)
-    for event in sight_events:
+    var events: PackedInt32Array = sens_memory.get_events(BehaviorMemorySensory.Type.SIGHT)
+    for event in events:
         process_sight(mind, sens_memory, event)
+
+    events = sens_memory.get_events(BehaviorMemorySensory.Type.SOUND)
+    for event in events:
+        process_sound(mind, sens_memory, event)
 
     # TODO: add other primary senses here
 
@@ -134,7 +138,7 @@ func process_sight(
     if dist > distance_falloff.max_domain:
         return
 
-    var dist_mult: float = distance_falloff.sample_baked(dist)
+    var dist_mult: float = distance_falloff.sample(dist)
     if is_zero_approx(dist_mult):
         return
 
@@ -171,6 +175,9 @@ func process_sight(
         for i in range(target_groups.size()):
             var settings := target_groups[i]
 
+            if settings.sense_type != t:
+                continue
+
             if not target.is_in_group(settings.group_name):
                 continue
 
@@ -191,6 +198,91 @@ func process_sight(
     var initial_time: float = memory.get_event_game_time(t, event, 1)
     var time: float = minf(mind.delta_time * frequency, current_time - initial_time)
     var add: float = group.base_interest * dist_mult * time
+
+    if is_zero_approx(add) or last_interest > add:
+        return
+
+    # Save to interesting nodes
+    interesting_nodes.set(node, Vector2(group_id, add))
+
+func process_sound(
+        mind: BehaviorMind,
+        memory: BehaviorMemorySensory,
+        event: int
+) -> void:
+    const t = BehaviorMemorySensory.Type.SOUND
+
+    # check distance
+    var travel: Array[Variant] = memory.get_event_travel(t, event)
+    if travel.is_empty():
+        return
+
+    # Check distance
+    var dist: float = travel[1]
+    if dist > distance_falloff.max_domain:
+        return
+
+    var dist_mult: float = distance_falloff.sample(dist)
+    if is_zero_approx(dist_mult):
+        return
+
+    # Check time
+    var event_time: float = memory.get_event_game_time(t, event)
+    var current_time: float = GlobalWorld.get_game_time()
+    if int((current_time - event_time) / mind.delta_time) > frequency:
+        return
+
+    # Check node
+    var node: StringName = memory.get_event_node_path_string(t, event)
+    if node.is_empty():
+        return
+
+    # Check groups
+    var sound_groups: PackedInt32Array = memory.get_event_groups(t, event)
+    if sound_groups.is_empty():
+        return
+
+    # Get best group
+    var last_interest: float = 0
+    var group_id: int = -1
+    var group: BehaviorSenseCuriosityTargetSettings = null
+    if interesting_nodes.has(node):
+        var data: Vector2 = interesting_nodes.get(node)
+
+        # NOTE: optimization to avoid double checking bad nodes
+        if data.x == -1.0:
+            return
+
+        group_id = int(data.x)
+        group = target_groups[group_id]
+        last_interest = data.y
+    else:
+        for i in range(target_groups.size()):
+            var settings := target_groups[i]
+
+            if settings.sense_type != t:
+                continue
+
+            var sound_group_id: int = GlobalWorld.Groups.get_group_id(settings.group_name)
+            if sound_group_id == -1:
+                push_error('The target group "' + settings.group_name + '" is not a global group! Did you forget to add it, or typo?')
+                continue
+
+            if not sound_groups.has(sound_group_id):
+                continue
+
+            if group == null or settings.base_interest > group.base_interest:
+                group_id = i
+                group = settings
+
+        # NOTE: optimization to avoid double checking nodes
+        if group_id == -1:
+            interesting_nodes.set(node, Vector2(-1.0, 0.0))
+
+    if group_id == -1:
+        return
+
+    var add: float = group.base_interest * dist_mult
 
     if is_zero_approx(add) or last_interest > add:
         return

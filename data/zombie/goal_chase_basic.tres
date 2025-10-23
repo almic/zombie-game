@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="BehaviorGoalChaseTarget" load_steps=2 format=3 uid="uid://c1recmiaqlhfw"]
+
+[ext_resource type="Script" uid="uid://bpw2p77auv67c" path="res://script/behavior/goal/chase_target.gd" id="1_3ggsy"]
+
+[resource]
+resource_name = "Chase"
+script = ExtResource("1_3ggsy")
+target_groups = Array[StringName]([&"zombie_target"])
+target_distance = 1.8
+code_name = &"chase"
+interest_activated = true
+interest_threshold = 8
+sense_activated = true
+sense_code_names = Array[StringName]([&"vision"])
+metadata/_custom_type_script = "uid://bpw2p77auv67c"

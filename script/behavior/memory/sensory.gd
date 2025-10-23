@@ -463,6 +463,9 @@ const d_TIMEOFDAY_SIZE = 2
 ## String containing a node path, dynamic size
 const d_NODEPATH = 3
 
+## Array of groups, stored by unique global ID
+const d_GROUPS = 4
+
 ## Two vector 3s, first is a position, second is a direction
 const d_LOCATION = 16
 const d_LOCATION_SIZE = ((4) * 3) * 2
@@ -507,6 +510,8 @@ func _get_event_data_offset(events: PackedByteArray, event: int, search: int, wh
                 return offset + i + 1
         if data_type == d_NODEPATH:
             i += 2 + events.decode_u16(offset + i + 1)
+        elif data_type == d_GROUPS:
+            i += 1 + events.decode_u8(offset + i + 1)
         else:
             i += d_STRIDES[data_type]
         i += 1
@@ -568,6 +573,30 @@ func get_event_node_path_string(type: Type, event: int, which: int = 1) -> Strin
         bytes[i] = events[offset + i]
 
     return bytes.get_string_from_utf8()
+
+## Get the groups from an event. Groups are stored by their unique global ID.
+## Returns an array with -1 as the only element if the event lacks group data,
+## or `which` is greater than the number of group data stored. The reason to not
+## return an empty array instead is because an empty array is valid, while negative
+## elements are invalid.
+func get_event_groups(type: Type, event: int, which: int = 1) -> PackedInt32Array:
+    var events: PackedByteArray = _get_events_reference(type)
+    if not events:
+        return [-1]
+
+    var offset: int = _get_event_data_offset(events, event, d_GROUPS, which)
+    if offset < 0:
+        return [-1]
+
+    var size: int = events.decode_u8(offset); offset += 1
+    var ids: PackedInt32Array
+    ids.resize(size)
+
+    for i in range(size):
+        ids[i] = events.decode_u8(offset + i)
+
+    return ids
+
 
 ## Get location data from an event. Returns empty array if event lacks location
 ## data, or `which` is greater than the number of location data stored.
@@ -685,6 +714,23 @@ func event_add_node_path(event: PackedByteArray, node_path: NodePath) -> void:
 
     for i in range(size):
         event[offset + i] = bytes[i]
+
+## Add an array of group names. Groups must be global groups.
+func event_add_groups(event: PackedByteArray, groups: Array[StringName]) -> void:
+    var size: int = groups.size()
+    var ids: PackedInt32Array = []
+    for group in groups:
+        var group_id: int = GlobalWorld.Groups.get_group_id(group)
+        if group_id == -1:
+            push_error('Cannot add non-global group "' + group + '" to sensory memory')
+            continue
+        ids.append(group_id)
+
+    var offset: int = _event_add_data(event, d_GROUPS, 1 + ids.size())
+
+    event.encode_u8(offset, ids.size()); offset += 1
+    for id in ids:
+        event.encode_u8(offset, id); offset += 1
 
 ## Add location data. Contains a position and direction
 func event_add_location(event: PackedByteArray, position: Vector3, direction: Vector3) -> void:

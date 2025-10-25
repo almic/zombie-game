@@ -175,9 +175,14 @@ func _ready() -> void:
     life.hurt.connect(on_hurt)
     life.check_health()
 
+
+    mind.debug_root = %MindDebugMarker
+
     var vision: BehaviorSenseVision = mind.get_sense(BehaviorSenseVision.NAME)
     if vision:
         vision.on_sense.connect(func(_s): update_eyes())
+
+    nav_agent.navigation_finished.connect(on_navigate_finished)
 
 
 func _process(_delta: float) -> void:
@@ -347,8 +352,7 @@ func _handle_action(action: BehaviorAction) -> bool:
     return false
 
 func act_navigate(navigate: BehaviorActionNavigate) -> void:
-    if _nav_complete_func and nav_agent.navigation_finished.is_connected(_nav_complete_func):
-        nav_agent.navigation_finished.disconnect(_nav_complete_func)
+    if _nav_complete_func:
         _nav_complete_func = Callable()
 
     var next_target: Vector3 = navigate.get_global_position(self)
@@ -370,7 +374,6 @@ func act_navigate(navigate: BehaviorActionNavigate) -> void:
 
         # GlobalWorld.print('target nav: ' + str(navigate.direction))
         _is_nav_finished = false
-        nav_agent.navigation_finished.connect(_nav_complete_func, CONNECT_ONE_SHOT)
 
 func act_attack(attack: BehaviorActionAttack) -> void:
     # Check if the target is close enough to face
@@ -401,6 +404,17 @@ func on_footstep(is_right: bool) -> void:
         movement_audio_player.reparent(foot_l, false)
 
     play_sound_footstep(true)
+
+func on_navigate_finished() -> void:
+    if _nav_complete_func:
+        _nav_complete_func.call()
+        _nav_complete_func = Callable()
+
+    if nav_agent.is_target_reached() and _target_direction.is_zero_approx():
+        _target_direction = (nav_agent.target_position - global_position)
+        _target_direction.y = 0
+        if not _target_direction.is_zero_approx():
+            _target_direction = _target_direction.normalized()
 
 
 func update_movement(delta: float, speed: float = top_speed) -> void:

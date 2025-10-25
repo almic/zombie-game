@@ -1,0 +1,1 @@
+class_name BehaviorDebugScene extends Node3D

@@ -2,6 +2,9 @@
 class_name BehaviorMind extends Resource
 
 
+static var DEBUG_SCENE: PackedScene = preload("uid://cma3vinjxx686")
+
+
 @export var senses: Array[BehaviorSense] = []
 @export var secondary_senses: Array[BehaviorSense] = []
 @export var goals: Array[BehaviorGoal] = []
@@ -15,6 +18,13 @@ class_name BehaviorMind extends Resource
         memory_decay_rate = value
         if memory_bank:
             memory_bank.decay_frequency = float(value) / 60.0
+
+
+@export_group('Debug', 'debug')
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var debug_enabled: bool = false
+
 
 
 ## Info for a previously called action
@@ -76,6 +86,9 @@ var _goal_minimum_period: Dictionary[StringName, float]
 var _actions_called: Dictionary[StringName, CalledAction]
 var _recent_actions: Array[StringName]
 
+var debug: BehaviorDebugScene
+var debug_root: Node3D
+
 
 func _init() -> void:
     memory_bank = BehaviorMemoryBank.new()
@@ -128,6 +141,11 @@ func get_goal(name: StringName) -> BehaviorGoal:
 ## Call during the physics frame to do behavior stuff
 func update(delta: float) -> void:
     delta_time = delta
+
+    if debug_enabled and debug_root:
+        if not debug:
+            debug = DEBUG_SCENE.instantiate()
+            debug_root.add_child(debug)
 
     _recent_actions.clear()
 

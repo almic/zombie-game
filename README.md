@@ -3,19 +3,8 @@
 My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and blast zombies.
 
 
-# Zombie AI TODOs
-
-- [ ] Add hearing sense
-    - [ ] Connect to chase target goal, use hearing information if more recent
-          than last seen velocity
-    - [ ] Connect to investigate goal, use hearing information to face and
-          travel towards
-
-
 # TODO
 
-- [ ] Allow setting base volume and pitch for Layered and Choice sounds to affect
-      all direct SoundResources contained. Does not apply to nested containers.
 - [ ] Make zombie face position of navigation target when nav ends, otherwise
       they could fail to look fully towards the target and "miss" the goal
 - [ ] Check that chase / attack goals are navigating correctly. Looks like chase
@@ -41,6 +30,12 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
       charging a magazine weapon if the chambered round is a different type than
       the reserve. Maybe require the input to be held for some time to prevent
       "check" charges from ejecting a round.
+- [ ] Allow setting base volume and pitch for Layered and Choice sounds to affect
+      all direct SoundResources contained. Does not apply to nested containers.
+- [ ] Research and add some kind of generic frequency attenuation with distance
+      from a source sound. Perhaps even generating echo from distant, very loud
+      sounds. Someone shouting from a distance would echo a little, a gunshot
+      from far away becomes a distant thud with echo.
 - [ ] Pack weapon images and round icons into two textures, one for all weapons,
       one for all round types. WeaponResource and AmmoResource will need to have
       icon indexes added to support this.

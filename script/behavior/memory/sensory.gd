@@ -356,8 +356,12 @@ func event_decay(type: Type, event: int, seconds: float) -> bool:
 
     # print('Deleting memory type ' + str(type) + ' at ' + str(event))
 
-    var indexes: PackedInt32Array = event_idxs_sorted.get(type)
-    var event_id: int = indexes.bsearch(event, false) - 1
+    var sorted_indexes: PackedInt32Array = event_idxs_sorted.get(type)
+    var indexes: PackedInt32Array = event_idxs.get(type)
+
+    var sorted_event_id: int = sorted_indexes.bsearch(event, false) - 1
+    var event_id: int = indexes.find(event)
+
     var size: int = event_log.decode_u16(event + e_SIZE)
     var log_size: int = event_log.size()
 
@@ -372,10 +376,16 @@ func event_decay(type: Type, event: int, seconds: float) -> bool:
 
     # erase index
     indexes.remove_at(event_id)
+    sorted_indexes.remove_at(sorted_event_id)
 
     # update indexes
-    for i in range(event_id, indexes.size()):
-        indexes[i] -= size
+    for i in range(sorted_event_id, sorted_indexes.size()):
+        sorted_indexes[i] -= size
+
+    for i in range(indexes.size()):
+        var ev: int = indexes[i]
+        if ev > event:
+            indexes[i] = ev - size
 
     event_count -= 1
 

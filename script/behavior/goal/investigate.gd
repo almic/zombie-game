@@ -31,7 +31,10 @@ var navigate_target_distance: float = 2.0
 
 
 ## Travel target for investigation
-var travel_target: Array = []
+var turn_target: Vector3
+
+## Navigation target for investigation, can be separate from turning
+var nav_target: Array
 
 ## If the investigation should include a navigation
 var is_nav_response: bool
@@ -39,6 +42,10 @@ var is_nav_response: bool
 
 func process_memory(mind: BehaviorMind) -> int:
     is_nav_response = false
+
+    if not time_falloff:
+        push_error('Investigate goal requires a time falloff curve!')
+        return 0
 
     var sens_memory: BehaviorMemorySensory = mind.memory_bank.get_memory_reference(BehaviorMemorySensory.NAME)
     if not sens_memory:
@@ -49,44 +56,59 @@ func process_memory(mind: BehaviorMind) -> int:
         return 0
 
     var best_interest: float = -INF
-    var best_event: int = -1
-    var best_event_type: BehaviorMemorySensory.Type = BehaviorMemorySensory.Type.MAX
     for interest in type_interests:
         var type := interest.type
         var events: PackedInt32Array = sens_memory.get_events(type)
+
+        # TODO: dev only, should be removed later
+        if interest.turn > interest.navigate:
+            push_error('Interest type ' + str(interest.type) + ' has `turn` higher than `navigate`. This does not make sense, turn should be lower! Change it!')
 
         if events.is_empty():
             continue
 
         # Find most interesting event
         for ev in events:
-            var node_path := sens_memory.get_event_node_path_string(type, ev)
-            if not node_path:
-                continue
 
             # NOTE: revisit this, could potentially benefit from a set to check
             #       if a node has already been tested, or just a list
 
-            # var update_time: float = sens_memory.get_event_game_time(type, ev, 2)
-            # var delay: float = GlobalWorld.get_game_time() - update_time
-            #
-            # var node := interest_memory.get_node(node_path)
-            # var interest := interest_memory.node_get_interest(node)
-            #
-            # if time_falloff:
-            #     if delay > time_falloff.max_domain:
-            #         continue
-            #     interest *= time_falloff.sample(delay)
-            #
-            # if interest < min_threshold:
-            #     continue
-            #
-            # if interest > best_interest:
-            #     best_event = ev
-            #     best_interest = interest
+            var event_time: float = sens_memory.get_event_game_time(type, ev, 2)
+            if event_time == -1:
+                event_time = sens_memory.get_event_game_time(type, ev)
 
-    if best_event != -1:
-        travel_target = sens_memory.get_event_travel(best_event_type, best_event)
+            if event_time == -1:
+                continue
+
+            # If this event is too old, we can stop here, the rest will be older
+            var delay: float = GlobalWorld.get_game_time() - event_time
+            if delay > time_falloff.max_domain:
+                break
+
+            var travel: Array = sens_memory.get_event_travel(type, ev)
+            if not travel:
+                continue
+
+            var node_path := sens_memory.get_event_node_path_string(type, ev)
+            if not node_path:
+                continue
+
+            var node := interest_memory.get_node(node_path)
+            var node_interest := interest_memory.node_get_interest(node)
+            node_interest *= time_falloff.sample(delay)
+
+            if node_interest < interest.turn:
+                continue
+
+            if node_interest > best_interest:
+                turn_target = travel[0]
+                if node_interest >= interest.navigate:
+                    nav_target = travel
+                    is_nav_response = true
+
+                best_interest = node_interest * interest.multiplier
+
+    if best_interest > 0:
         if is_nav_response:
             # Check that no equal or higher priority navigate is running, but we
             # may update ours
@@ -106,15 +128,12 @@ func perform_actions(mind: BehaviorMind) -> void:
     if not me:
         return
 
-    if travel_target.is_empty():
-        return
-
-    var up: Vector3 = me.up_direction
-    var direction: Vector3 = travel_target[0]
-
     if is_nav_response and not mind.is_recent_action(BehaviorActionNavigate.NAME):
         mind.act(BehaviorActionSpeed.new(me.top_speed * navigate_speed))
-        mind.act(BehaviorActionNavigate.new(direction, travel_target[1], navigate_target_distance))
+        mind.act(BehaviorActionNavigate.new(nav_target[0], nav_target[1], navigate_target_distance))
+
+    var up: Vector3 = me.up_direction
+    var direction: Vector3 = turn_target
 
     direction -= up * up.dot(direction)
     if direction.is_zero_approx():

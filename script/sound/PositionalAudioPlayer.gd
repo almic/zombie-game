@@ -23,6 +23,15 @@ const INVALID_ID: int = AudioStreamPlaybackPolyphonic.INVALID_ID
             groups = []
         return groups
 
+@export_range(-24.0, 6.0, 0.1, 'or_greater', 'or_less', 'suffix:dB')
+var base_volume: float = 0.0:
+    set(value):
+        base_volume = value
+        if player:
+            player.volume_db = base_volume
+            if base_volume > player.max_db:
+                player.max_db = base_volume
+
 ## Desired polyphony of the sound when played. Determines if played sounds can
 ## overlap, and how many times they can overlap. Acts as a multiplier when the
 ## sound resource is a SoundResourceLayered.
@@ -70,8 +79,11 @@ func _init() -> void:
     player = AudioStreamPlayer3D.new()
     player.stream = AudioStreamPolyphonic.new()
     player.bus = bus
-    player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
-    player.unit_size = 1.0
+    player.volume_db = base_volume
+    if base_volume > player.max_db:
+        player.max_db = base_volume
+    player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_LOGARITHMIC
+    player.attenuation_filter_cutoff_hz = 2500
 
     _ids_no_overlap = {}
     _playing_ids = PackedInt64Array()
@@ -161,6 +173,7 @@ func play(from_position: float = 0.0) -> void:
         _play_sound(snd, from_position)
         return loudness
     )
+    player.volume_log_db = max_loudness
 
     if in_physics:
         GlobalWorld.sound_played(self, max_loudness)
@@ -226,7 +239,7 @@ func _play_sound(snd: SoundResource, offset: float, volume: float = 1.0, pitch: 
     if stream_id != INVALID_ID:
         _playing_ids.append(stream_id)
     else:
-        GlobalWorld.print('not enough polyphonic! polyphonic: ' + str(player.stream.polyphony) + ' ; streams: ' + str(_playing_ids.size()))
+        push_warning('Not enough streams for polyphonic! polyphonic: ' + str(player.stream.polyphony) + ' ; streams: ' + str(_playing_ids.size()))
 
     if overlap and snd.can_overlap:
         # erase just in case

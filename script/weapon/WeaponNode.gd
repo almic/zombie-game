@@ -108,7 +108,7 @@ func _ready() -> void:
     _weapon_audio_player.source_node = self
     _weapon_audio_player.groups = sound_groups.duplicate()
     _weapon_audio_player.bus = sound_bus
-    _weapon_audio_player.polyphony = 3
+    _weapon_audio_player.polyphony = 7 # nice
 
     if aim_target and aim_target_reduced_rate:
         aim_target.enabled = false

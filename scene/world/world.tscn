@@ -265,6 +265,7 @@ visible = false
 [node name="NavTesting" type="Node" parent="."]
 
 [node name="NavTestingCamera" type="Camera3D" parent="NavTesting"]
+process_mode = 4
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -420, 170, -549.13)
 size = 250.0
 far = 1000.0
@@ -8854,9 +8855,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
 mesh = SubResource("PlaneMesh_avgpp")
 metadata/_edit_lock_ = true
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(0.796252, -0.030462, -0.604198, -0.000888604, 0.998672, -0.0515213, 0.604964, 0.0415608, 0.795167, -163.365, 2.2, 496.226)
+[node name="Cameras" type="Node" parent="."]
+
+[node name="MountainCamera" type="Camera3D" parent="Cameras"]
+process_mode = 4
+transform = Transform3D(0.79625220765581, -0.03046193341738, -0.60419739524077, -0.00088860423174, 0.99867150204279, -0.05152127123936, 0.60496415776951, 0.04156081832779, 0.79516731962157, -163.365, 2.2, 496.226)
 fov = 25.3494
+
+[node name="SoundTestCamera" type="Camera3D" parent="Cameras"]
+process_mode = 4
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -368.0724358, 3.83, -697.2323225)
 
 [node name="ColorSquares" parent="." instance=ExtResource("58_pb8w5")]
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)

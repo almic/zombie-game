@@ -126,7 +126,10 @@ static func get_sounds(
                     markiplier = _get_gain_linear(sound, sound_dist)
 
                 if sound_max_dist > 0.0:
-                    markiplier *= clampf(1.0 - (sound_dist / sound_max_dist), 0.0, 1.0)
+                    markiplier = minf(
+                            markiplier,
+                            clampf(1.0 - (sound_dist / sound_max_dist), 0.0, 1.0)
+                    )
 
                 loudness_linear *= markiplier
                 loudness = linear_to_db(loudness_linear)
@@ -179,6 +182,7 @@ static func _get_gain_linear(sound: Dictionary, distance: float) -> float:
         vol = sound.att_unit_size / maxf(distance, EPSILON)
         vol *= vol
     elif model == AudioStreamPlayer3D.AttenuationModel.ATTENUATION_LOGARITHMIC:
+        # TODO: update to match the final gain db for distance in the engine source
         vol = db_to_linear(-20.0 * log(maxf(distance, EPSILON) / sound.att_unit_size))
     else:
         vol = 1.0

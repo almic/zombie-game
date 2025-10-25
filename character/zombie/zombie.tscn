@@ -2402,9 +2402,11 @@ shape = SubResource("SphereShape3D_d0fm7")
 
 [node name="MovementSoundPlayer" type="Node3D" parent="." node_paths=PackedStringArray("source_node")]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
 script = ExtResource("11_82ydo")
 source_node = NodePath("..")
 groups = Array[StringName]([&"character_move", &"zombie_move"])
+polyphony = 3
 bus = &"Character"
 limit_enabled = true
 limit_closest_count = 25

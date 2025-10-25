@@ -400,7 +400,7 @@ func on_footstep(is_right: bool) -> void:
     else:
         movement_audio_player.reparent(foot_l, false)
 
-    play_sound_footstep()
+    play_sound_footstep(true)
 
 
 func update_movement(delta: float, speed: float = top_speed) -> void:

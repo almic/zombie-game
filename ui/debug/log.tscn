@@ -1,0 +1,129 @@
+[gd_scene load_steps=6 format=3 uid="uid://tm8ou68ducip"]
+
+[ext_resource type="Script" uid="uid://c58mg4hhgnvk5" path="res://ui/debug/log.gd" id="1_yy7ym"]
+[ext_resource type="Theme" uid="uid://b5s57mka8km1" path="res://ui/debug/log_theme.tres" id="2_1ahfo"]
+
+[sub_resource type="SystemFont" id="SystemFont_goivg"]
+font_names = PackedStringArray("Office Code Pro D", "Courier", "Monospace")
+
+[sub_resource type="SystemFont" id="SystemFont_yy7ym"]
+font_names = PackedStringArray("Office Code Pro D", "Courier", "Monospace")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1ahfo"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.28235295)
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 0.6)
+corner_detail = 5
+
+[node name="Log" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+mouse_filter = 1
+script = ExtResource("1_yy7ym")
+
+[node name="box" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 240.0
+offset_right = -1428.0
+offset_bottom = -240.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="split" type="VBoxContainer" parent="box"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="scroll" type="ScrollContainer" parent="box/split"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme = ExtResource("2_1ahfo")
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 4
+
+[node name="negative_fill" type="MarginContainer" parent="box/split/scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_right = -10
+
+[node name="logs" type="VBoxContainer" parent="box/split/scroll/negative_fill"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="grow_bg" type="ColorRect" parent="box/split/scroll/negative_fill/logs"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+color = Color(0, 0, 0, 0.28235295)
+
+[node name="log_entry" type="MarginContainer" parent="box/split/scroll/negative_fill/logs"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="bg" type="ColorRect" parent="box/split/scroll/negative_fill/logs/log_entry"]
+layout_mode = 2
+color = Color(1, 0, 0, 0.28235295)
+
+[node name="margin" type="MarginContainer" parent="box/split/scroll/negative_fill/logs/log_entry"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 2
+
+[node name="text" type="RichTextLabel" parent="box/split/scroll/negative_fill/logs/log_entry/margin"]
+layout_mode = 2
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
+theme_override_constants/line_separation = -4
+theme_override_constants/shadow_outline_size = 1
+theme_override_constants/outline_size = 1
+theme_override_fonts/normal_font = SubResource("SystemFont_goivg")
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "This is a test message. It has a lot of iii"
+fit_content = true
+scroll_active = false
+
+[node name="input" type="LineEdit" parent="box/split"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.786376, 1, 0.8029584, 1)
+theme_override_colors/font_outline_color = Color(0, 0.13725491, 0, 1)
+theme_override_colors/caret_color = Color(0.7537482, 0.9999998, 0.77356994, 1)
+theme_override_colors/clear_button_color = Color(0.6296756, 0.6296743, 0.62967473, 1)
+theme_override_colors/clear_button_color_pressed = Color(0.92535293, 0.9253528, 0.9253529, 1)
+theme_override_constants/outline_size = 2
+theme_override_fonts/font = SubResource("SystemFont_yy7ym")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_1ahfo")
+keep_editing_on_text_submit = true
+backspace_deletes_composite_character_enabled = true
+clear_button_enabled = true
+caret_blink = true
+text_direction = 1

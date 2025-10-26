@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=13 format=3 uid="uid://c03y3iyxl2p81"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=28 format=3 uid="uid://c03y3iyxl2p81"]
 
 [ext_resource type="Script" uid="uid://cpplm41b5bt6m" path="res://addons/guide/guide_action_mapping.gd" id="1_0j75c"]
 [ext_resource type="Script" uid="uid://mtx1unc2aqn7" path="res://addons/guide/guide_input_mapping.gd" id="2_487i1"]
@@ -8,6 +8,9 @@
 [ext_resource type="Script" uid="uid://bl8rjl4oaldje" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_ybrqv"]
 [ext_resource type="Script" uid="uid://x74mnwgr08a7" path="res://addons/guide/triggers/guide_trigger.gd" id="6_ib8fc"]
 [ext_resource type="Script" uid="uid://b52rqq28tuqpg" path="res://addons/guide/triggers/guide_trigger_pressed.gd" id="7_82x6x"]
+[ext_resource type="Resource" uid="uid://mie3rlidsb5b" path="res://data/input/actions/global/debug_toggle_zombie_targeting.tres" id="8_b1xgh"]
+[ext_resource type="Resource" uid="uid://dgky2snybxdau" path="res://data/input/actions/global/debug_focus_log.tres" id="9_ib8fc"]
+[ext_resource type="Resource" uid="uid://bfsb06cgsqlvw" path="res://data/input/actions/global/debug_toggle_log.tres" id="10_82x6x"]
 
 [sub_resource type="Resource" id="Resource_bco5q"]
 script = ExtResource("4_b1xgh")
@@ -26,6 +29,59 @@ script = ExtResource("1_0j75c")
 action = ExtResource("2_cmvib")
 input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_t31np")])
 
+[sub_resource type="Resource" id="Resource_ybrqv"]
+script = ExtResource("4_b1xgh")
+key = 4194438
+shift = true
+
+[sub_resource type="Resource" id="Resource_ib8fc"]
+script = ExtResource("7_82x6x")
+
+[sub_resource type="Resource" id="Resource_82x6x"]
+script = ExtResource("2_487i1")
+input = SubResource("Resource_ybrqv")
+triggers = Array[ExtResource("6_ib8fc")]([SubResource("Resource_ib8fc")])
+
+[sub_resource type="Resource" id="Resource_fkql8"]
+script = ExtResource("1_0j75c")
+action = ExtResource("8_b1xgh")
+input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_82x6x")])
+
+[sub_resource type="Resource" id="Resource_dlv8v"]
+script = ExtResource("4_b1xgh")
+key = 4194310
+
+[sub_resource type="Resource" id="Resource_xukv4"]
+script = ExtResource("7_82x6x")
+
+[sub_resource type="Resource" id="Resource_0o612"]
+script = ExtResource("2_487i1")
+input = SubResource("Resource_dlv8v")
+triggers = Array[ExtResource("6_ib8fc")]([SubResource("Resource_xukv4")])
+
+[sub_resource type="Resource" id="Resource_sppcm"]
+script = ExtResource("1_0j75c")
+action = ExtResource("9_ib8fc")
+input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_0o612")])
+
+[sub_resource type="Resource" id="Resource_f87bs"]
+script = ExtResource("4_b1xgh")
+key = 96
+shift = true
+
+[sub_resource type="Resource" id="Resource_tbrc0"]
+script = ExtResource("7_82x6x")
+
+[sub_resource type="Resource" id="Resource_151n2"]
+script = ExtResource("2_487i1")
+input = SubResource("Resource_f87bs")
+triggers = Array[ExtResource("6_ib8fc")]([SubResource("Resource_tbrc0")])
+
+[sub_resource type="Resource" id="Resource_g20ei"]
+script = ExtResource("1_0j75c")
+action = ExtResource("10_82x6x")
+input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_151n2")])
+
 [resource]
 script = ExtResource("2_k6484")
-mappings = Array[ExtResource("1_0j75c")]([SubResource("Resource_wy4bc")])
+mappings = Array[ExtResource("1_0j75c")]([SubResource("Resource_wy4bc"), SubResource("Resource_fkql8"), SubResource("Resource_sppcm"), SubResource("Resource_g20ei")])

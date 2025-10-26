@@ -1,0 +1,73 @@
+[gd_scene load_steps=3 format=3 uid="uid://c7mm138kmfrn0"]
+
+[ext_resource type="Script" uid="uid://ibcepwf2i3fv" path="res://script/behavior/debug/debug_display.gd" id="1_ucdh8"]
+
+[sub_resource type="SystemFont" id="SystemFont_ucdh8"]
+font_names = PackedStringArray("Office Code Pro D")
+subpixel_positioning = 0
+
+[node name="debug_display" type="Control"]
+layout_direction = 2
+layout_mode = 3
+anchor_right = 0.325
+anchor_bottom = 1.733
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ucdh8")
+
+[node name="main" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="action_log" type="VBoxContainer" parent="main"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="action_base" type="MarginContainer" parent="main/action_log"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="color_bg" type="ColorRect" parent="main/action_log/action_base"]
+layout_mode = 2
+color = Color(0, 0, 0, 0.5019608)
+
+[node name="action_text_container" type="MarginContainer" parent="main/action_log/action_base"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="text" type="RichTextLabel" parent="main/action_log/action_base/action_text_container"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5882353)
+theme_override_constants/shadow_outline_size = 4
+theme_override_constants/outline_size = 2
+theme_override_fonts/normal_font = SubResource("SystemFont_ucdh8")
+theme_override_font_sizes/normal_font_size = 30
+bbcode_enabled = true
+text = "[color=red]This[/color] is a sentence. This is a sentence. This is a sentence. This is a sentence. This is a sentence. This is a sentence. aoeuaoeu"
+fit_content = true
+scroll_active = false
+autowrap_mode = 2
+
+[node name="mind_state" type="MarginContainer" parent="main"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ColorRect" type="ColorRect" parent="main/mind_state"]
+layout_mode = 2
+color = Color(0.48235294, 0, 0, 0.6117647)
+
+[node name="Label" type="Label" parent="main/mind_state"]
+layout_mode = 2
+text = "Some mind state here"

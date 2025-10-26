@@ -25,6 +25,12 @@ static var DEBUG_SCENE: PackedScene = preload("uid://cma3vinjxx686")
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
 var debug_enabled: bool = false
 
+## Show a log of actions taken by goals
+@export var debug_show_actions: bool = false
+
+## Print actions taken to the console
+@export var debug_print_actions: bool = false
+
 
 
 ## Info for a previously called action
@@ -231,6 +237,9 @@ func act(action: BehaviorAction, update_on_complete: bool = false, custom_priori
     if not _recent_actions.has(name):
         _recent_actions.append(name)
 
+    if debug_enabled and debug_show_actions:
+        _debug_action(action)
+
     called_action._locked = false
     called_action.action = action
     called_action.goal = _current_goal
@@ -376,3 +385,18 @@ func _any_senses_activated(code_names: Array[StringName]) -> bool:
             return true
 
     return false
+
+func _debug_action(action: BehaviorAction) -> void:
+    if not debug:
+        return
+
+    var message: String = (
+        ("[[color=thistle]%.3f[/color]] " % GlobalWorld.get_game_time()) +
+        "[color=light_cyan]" + _current_goal.code_name + "[/color] >> " +
+        "[color=wheat]" + action.name() + "[/color]"
+    )
+
+    debug.add_action(message)
+
+    if debug_print_actions:
+        GlobalWorld.print(message, false)

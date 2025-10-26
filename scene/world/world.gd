@@ -7,8 +7,11 @@ class_name World extends Node3D
 @export var first_person: GUIDEMappingContext
 @export var vehicle_context: GUIDEMappingContext
 
-@export_group("Global Actions")
-@export var pause : GUIDEAction
+@export_group("Global Actions", 'act')
+@export var act_pause: GUIDEAction
+@export var act_focus_log: GUIDEAction
+@export var act_toggle_log: GUIDEAction
+@export var act_toggle_zombie_targeting: GUIDEAction
 
 
 @export_category("Zombies")
@@ -16,8 +19,9 @@ class_name World extends Node3D
 ## If zombies should spawn
 @export var enable_spawning: bool = true
 
-## If zombies should do targetting
-@export var enable_targetting: bool = true
+## If zombies should do targeting
+@export var enable_targeting: bool = true:
+    set = set_zombie_targeting
 
 ## The target number of zombies to have in the world
 @export var target_spawn_count: int = 50:
@@ -65,16 +69,24 @@ var _spawn_timer: float = 0
 ## The zombie to spawn
 @export var zomb_basic_zombie: PackedScene
 
+## Rate (in seconds) at which to update active zombie list
+@export_range(1.0, 10.0, 0.1, 'or_greater')
+var zomb_active_update_rate: float = 5.0
 
-@onready var pause_menu: Control = %pause
-@onready var gameover_screen: GameoverScreen = %gameover
+
+@onready var pause_menu: Control = %ui_pause
+@onready var gameover_screen: GameoverScreen = %ui_gameover
+@onready var text_log: TextLog = %ui_log
 
 
 var is_gameover: bool = false
 
 var _zombies: Array[Zombie] = []
+var _zombies_update_timer: float = 0.0
+var _zombies_updated_this_tick: bool = false
 var _zombies_alive: int = 0
 var _spawn_points: Array[SpawnPoint] = []
+
 
 func _ready() -> void:
     GUIDE.enable_mapping_context(global_context)
@@ -82,25 +94,43 @@ func _ready() -> void:
     GUIDE.enable_mapping_context(camera_context)
     Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
+    text_log.is_writable = true
+    GlobalWorld.Log = text_log
+
     # Engine.time_scale = 0.25
     spawn_rate_at_target = spawn_rate_at_target
     _spawn_timer = spawn_timer_minimum
 
     update_spawn_points()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 
     handle_pause()
+
+    handle_text_log()
+
+    if act_toggle_zombie_targeting.is_triggered():
+        enable_targeting = !enable_targeting
 
     if get_tree().paused:
         return
 
+func _physics_process(delta: float) -> void:
+
     if enable_spawning:
         spawn_zombie(delta)
 
+    _zombies_update_timer += delta
+    if _zombies_update_timer >= zomb_active_update_rate:
+        update_zombie_counts()
+
 
 func handle_pause() -> void:
-    if is_gameover or not pause.is_triggered():
+    if is_gameover or not act_pause.is_triggered():
+        return
+
+    # If the text log has input focus, ignore pause inputs
+    if text_log.is_input_active:
         return
 
     if get_tree().paused:
@@ -124,6 +154,29 @@ func handle_gameover() -> void:
     gameover_screen.visible = true
     gameover_screen.play_gameover()
 
+func handle_text_log() -> void:
+    if act_toggle_log.is_triggered():
+        if not text_log.is_expanded:
+            text_log.is_expanded = true
+        # Ignore during input, unless ESCAPE is pressed
+        # TODO: see if there is a way to get the exact key input that triggered the action
+        #       then, check if it is a typable key, and if not then accept it.
+        elif not text_log.is_input_active or GUIDE._input_state.is_key_pressed(Key.KEY_ESCAPE):
+            text_log.is_expanded = false
+
+        return
+
+    if act_focus_log.is_triggered():
+        if not text_log.is_expanded:
+            text_log.is_expanded = true
+            text_log.is_input_active = true
+            # TODO: focus input on text log, and only on the first open (don't refocus)
+        return
+
+    # Accept generic escape key press to get out of input mode
+    if text_log.is_input_active and GUIDE._input_state.is_key_pressed(Key.KEY_ESCAPE):
+        text_log.is_input_active = false
+
 
 func spawn_zombie(delta: float) -> void:
     _spawn_timer -= delta
@@ -131,7 +184,6 @@ func spawn_zombie(delta: float) -> void:
         return
 
     #print("Running zombie spawn")
-    update_zombie_counts()
     var chance: float = clampf(compute_spawn_chance(), 0.0, 1.0)
 
     _spawn_timer = spawn_timer_minimum + ((spawn_timer_maximum - spawn_timer_minimum) * (1.0 - chance))
@@ -164,10 +216,34 @@ func spawn_zombie(delta: float) -> void:
     if zombie is Zombie:
         zombie.attack_damage = 20
 
+        var mind: BehaviorMind = zombie.mind
+        if enable_targeting:
+            for sense in mind.senses:
+                if sense is BehaviorSenseVision:
+                    if not sense.target_groups.has('zombie_target'):
+                        sense.target_groups.append('zombie_target')
+                elif sense is BehaviorSenseHearing:
+                    if not sense.target_groups.has('zombie_target'):
+                        sense.target_groups.append('zombie_target')
+        else:
+            for sense in mind.senses:
+                if sense is BehaviorSenseVision:
+                    if sense.target_groups.has('zombie_target'):
+                        sense.target_groups.erase('zombie_target')
+                elif sense is BehaviorSenseHearing:
+                    if sense.target_groups.has('zombie_target'):
+                        sense.target_groups.erase('zombie_target')
+
+
 func update_spawn_points() -> void:
     _spawn_points.assign(get_tree().get_nodes_in_group('zombie_spawn'))
 
 func update_zombie_counts() -> void:
+    if _zombies_updated_this_tick:
+        return
+
+    _zombies_update_timer = 0.0
+    _zombies_updated_this_tick = true
     _zombies.assign(get_tree().get_nodes_in_group('zombie'))
 
     var alive: int = 0
@@ -233,3 +309,29 @@ func on_enter_vehicle() -> void:
 func on_exit_vehicle() -> void:
     GUIDE.disable_mapping_context(vehicle_context)
     GUIDE.enable_mapping_context(first_person)
+
+func set_zombie_targeting(enabled: bool) -> void:
+    enable_targeting = enabled
+
+    if enable_targeting:
+        for zomb in _zombies:
+            var mind := zomb.mind
+            for sense in mind.senses:
+                if sense is BehaviorSenseVision:
+                    if not sense.target_groups.has('zombie_target'):
+                        sense.target_groups.append('zombie_target')
+                elif sense is BehaviorSenseHearing:
+                    if not sense.target_groups.has('zombie_target'):
+                        sense.target_groups.append('zombie_target')
+                # TODO: add other primary senses
+    else:
+        for zomb in _zombies:
+            var mind := zomb.mind
+            for sense in mind.senses:
+                if sense is BehaviorSenseVision:
+                    if sense.target_groups.has('zombie_target'):
+                        sense.target_groups.erase('zombie_target')
+                elif sense is BehaviorSenseHearing:
+                    if sense.target_groups.has('zombie_target'):
+                        sense.target_groups.erase('zombie_target')
+                # TODO: add other primary senses

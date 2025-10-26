@@ -10,7 +10,13 @@ const SOUND_GROUP_PREFIX = &'sound_group:'
 var Groups := preload("uid://cyl7gkx0y7oyu")
 var Printer := preload("uid://dao0mebio8ua7")
 var Sounds := preload("uid://bq40usjnjtfva")
-
+var Log: TextLog:
+    set(value):
+        if Log and Log.on_message.is_connected(_handle_log_message):
+            Log.on_message.disconnect(_handle_log_message)
+        Log = value
+        if Log:
+            Log.on_message.connect(_handle_log_message)
 
 ## TODO: this is probably not implemented correctly for saving, please revisit
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
@@ -118,5 +124,43 @@ func get_day_time() -> DynamicDay:
     return world.find_child("DynamicDay", false) as DynamicDay
 
 ## Print a message with the game time prepended
-func print(message: String) -> void:
-    Printer._print(('[%.4f] ' % (game_time + game_time_frac)) + message)
+func print(message: String, add_game_time: bool = true, skip_log: bool = false) -> void:
+    if add_game_time:
+        message = ('[%.4f] ' % get_game_time()) + message
+
+    Printer._print(message)
+
+    if (not skip_log) and Log:
+        Log.add_log(message)
+
+func quit_game() -> void:
+    get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
+    get_tree().quit()
+
+func _handle_log_message(from_user: bool, message: String) -> void:
+    if from_user:
+        _handle_command(true, message)
+    else:
+        pass
+
+@warning_ignore("unused_parameter")
+func _handle_command(from_user: bool, command: String) -> void:
+    if not command:
+        return
+
+    var is_command: bool = false
+
+    if command == 'quit':
+        quit_game.call_deferred()
+        is_command = true
+    elif command.begins_with('say'):
+        self.print.call_deferred(command.lstrip('say').strip_edges(true, false))
+        is_command = true
+    # TODO: more commands ?
+    # elif command == '...':
+
+    if is_command:
+        command = '[color=pale_green]' + command + '[/color]'
+    self.print(command)
+    if not is_command:
+        self.print('[color=brown]Unknown command[/color]')

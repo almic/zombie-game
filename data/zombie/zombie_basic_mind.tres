@@ -63,4 +63,6 @@ senses = Array[ExtResource("3_j7cw6")]([SubResource("Resource_j7cw6"), SubResour
 secondary_senses = Array[ExtResource("3_j7cw6")]([SubResource("Resource_p6cof")])
 goals = Array[ExtResource("1_b41gs")]([ExtResource("2_fi45o"), ExtResource("3_37cj5"), ExtResource("4_p6cof")])
 debug_enabled = true
+debug_show_actions = true
+debug_print_actions = true
 metadata/_custom_type_script = "uid://ctlftw6w3ws7s"

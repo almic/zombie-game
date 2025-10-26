@@ -1,4 +1,4 @@
-[gd_scene load_steps=108 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=112 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
@@ -11,12 +11,16 @@
 [ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="5_dwbse"]
 [ext_resource type="CameraAttributesPhysical" uid="uid://djs1o5pq2224k" path="res://environment/camera_attributes_physical.tres" id="6_pb8w5"]
 [ext_resource type="Environment" uid="uid://v7b5rsas5c8s" path="res://environment/environment.tres" id="7_ioo17"]
+[ext_resource type="Resource" uid="uid://dgky2snybxdau" path="res://data/input/actions/global/debug_focus_log.tres" id="7_xxc2j"]
+[ext_resource type="Resource" uid="uid://bfsb06cgsqlvw" path="res://data/input/actions/global/debug_toggle_log.tres" id="8_c4lkr"]
+[ext_resource type="Resource" uid="uid://mie3rlidsb5b" path="res://data/input/actions/global/debug_toggle_zombie_targeting.tres" id="9_cqpt1"]
 [ext_resource type="Compositor" uid="uid://lqdw34ardwn6" path="res://environment/compositor.tres" id="9_ic0uy"]
 [ext_resource type="PackedScene" uid="uid://bb3wt0w01eidc" path="res://ui/gameover.tscn" id="11_18ff0"]
 [ext_resource type="PackedScene" uid="uid://dtnbm25ngrmtq" path="res://scene/debug/light_spheres/light_spheres.tscn" id="12_f0qux"]
 [ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="14_5enf7"]
 [ext_resource type="Script" uid="uid://cdt3hagm54l67" path="res://scene/world/nav_testing_camera.gd" id="15_4dcww"]
 [ext_resource type="Resource" uid="uid://bcd20ysn860xe" path="res://data/weapon/type/shovel/shovel.tres" id="15_4duv0"]
+[ext_resource type="PackedScene" uid="uid://tm8ou68ducip" path="res://ui/debug/log.tscn" id="15_85d2q"]
 [ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="15_d2i0j"]
 [ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="17_lpj8c"]
 [ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="18_udj0i"]
@@ -194,7 +198,10 @@ global_context = ExtResource("2_rf70f")
 camera_context = ExtResource("3_fur4y")
 first_person = ExtResource("2_tlwt5")
 vehicle_context = ExtResource("3_wuj0p")
-pause = ExtResource("3_036b0")
+act_pause = ExtResource("3_036b0")
+act_focus_log = ExtResource("7_xxc2j")
+act_toggle_log = ExtResource("8_c4lkr")
+act_toggle_zombie_targeting = ExtResource("9_cqpt1")
 enable_spawning = false
 target_spawn_count = 5
 spawn_count_extra = 5
@@ -251,16 +258,21 @@ directional_shadow_blend_splits = true
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 process_mode = 3
 
-[node name="pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
+[node name="ui_pause" parent="CanvasLayer" instance=ExtResource("5_dwbse")]
 unique_name_in_owner = true
 process_mode = 2
 visible = false
 top_level = true
 
-[node name="gameover" parent="CanvasLayer" instance=ExtResource("11_18ff0")]
+[node name="ui_gameover" parent="CanvasLayer" instance=ExtResource("11_18ff0")]
 unique_name_in_owner = true
 process_mode = 4
 visible = false
+
+[node name="ui_log" parent="CanvasLayer" instance=ExtResource("15_85d2q")]
+unique_name_in_owner = true
+process_mode = 3
+mouse_filter = 2
 
 [node name="NavTesting" type="Node" parent="."]
 

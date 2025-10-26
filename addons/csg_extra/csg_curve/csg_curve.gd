@@ -60,7 +60,8 @@ func _child_removed(node: Node) -> void:
     if not point:
         return
 
-    point.modified.disconnect(update_points)
+    if point.modified.is_connected(update_points):
+        point.modified.disconnect(update_points)
 
 func _children_reordered() -> void:
     update_children()

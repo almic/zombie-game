@@ -18,7 +18,7 @@
 [ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/first_person/reload.tres" id="10_muf2e"]
 [ext_resource type="Resource" uid="uid://bc4fyxn7gu6kv" path="res://data/input/actions/first_person/weapon_ammo_switch.tres" id="11_jo6ux"]
 [ext_resource type="Resource" uid="uid://c8ipmag2tt3b7" path="res://data/input/actions/first_person/interact.tres" id="11_nphxe"]
-[ext_resource type="PackedScene" uid="uid://duylaogq2cjd6" path="res://ui/hud.tscn" id="11_vuhga"]
+[ext_resource type="PackedScene" uid="uid://duylaogq2cjd6" path="res://ui/hud/hud.tscn" id="11_vuhga"]
 [ext_resource type="Resource" uid="uid://upe5t1x0l8xr" path="res://data/input/actions/first_person/unload.tres" id="12_pedpu"]
 [ext_resource type="Script" uid="uid://dc77cbpvaw8jo" path="res://script/hitbox/hitbox.gd" id="13_jo6ux"]
 [ext_resource type="Resource" uid="uid://c2rpnfawllvdb" path="res://data/input/actions/vehicle/drive.tres" id="19_4u7af"]

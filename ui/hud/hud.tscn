@@ -1,6 +1,6 @@
 [gd_scene load_steps=15 format=3 uid="uid://duylaogq2cjd6"]
 
-[ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
+[ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://ui/hud/hud.gd" id="1_276te"]
 [ext_resource type="Resource" uid="uid://dvpvjiyiktmp6" path="res://data/weapon/type/bolt/bolt.tres" id="2_1v5rv"]
 [ext_resource type="Script" uid="uid://b8ty0aywli1vd" path="res://script/crosshair/crosshair.gd" id="2_546lt"]
 [ext_resource type="Resource" uid="uid://csa7jc86bj06l" path="res://data/weapon/ammo/buckshot.tres" id="3_1v5rv"]

@@ -74,6 +74,9 @@ func _on_hit(from: Node3D, part: HurtBox, hit: Dictionary, damage: float) -> voi
     if not is_hitbox:
         damage *= _hurtboxes.get(part, 1.0)
 
+    take_damage(damage, from, part, hit)
+
+func take_damage(damage: float, from: Node3D = null, part: HurtBox = null, hit: Dictionary = {}) -> void:
     var was_alive: bool = is_alive
 
     health -= damage

@@ -236,6 +236,8 @@ func _ready() -> void:
     if Engine.is_editor_hint():
         return
 
+    GlobalWorld.player = self
+
     collider = %collider
     movement_audio_player = %MovementSoundPlayer
 

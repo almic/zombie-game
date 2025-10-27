@@ -24,6 +24,7 @@ var game_time: int
 var game_time_frac: float
 
 var world: World
+var player: Player
 
 ## Used to strip bbcode tags from text
 var _rich_text_helper: RichTextLabel = RichTextLabel.new()
@@ -67,14 +68,14 @@ func get_local_world() -> World:
 # TODO: make this take all parameters instead of having Sounds pull out the
 #       values from the player, that way physics bindings will always have the
 #       correct values.
-func sound_played(player: PositionalAudioPlayer, loudness: float) -> void:
+func sound_played(audio_player: PositionalAudioPlayer, loudness: float) -> void:
     # NOTE: For dev only, remove later
     if not Engine.is_in_physics_frame():
         push_error('GlobalWorld.sound_played() can only be called during physics tick! Investigate!')
         return
 
     # self.print('playing sound from "' + player.name + ('" with loudness: %.2f' % loudness))
-    Sounds.add_sound(player, loudness)
+    Sounds.add_sound(audio_player, loudness)
 
 func get_sounds_played(
         seconds_in_past: float,
@@ -207,6 +208,10 @@ func _handle_command(from_user: bool, command: String) -> void:
         is_command = true
     elif command.begins_with('say'):
         self.print.call_deferred(command.lstrip('say').strip_edges(true, false))
+        is_command = true
+    elif command == 'yiliya':
+        player.life.take_damage(player.life.health * 0.5)
+        Log.add_log.call_deferred('[color=brown]Ouch[/color]')
         is_command = true
     # TODO: more commands ?
     # elif command == '...':

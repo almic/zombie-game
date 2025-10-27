@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://duylaogq2cjd6"]
+[gd_scene load_steps=15 format=3 uid="uid://duylaogq2cjd6"]
 
 [ext_resource type="Script" uid="uid://dpfyrr2a6s6u0" path="res://script/hud/hud.gd" id="1_276te"]
 [ext_resource type="Resource" uid="uid://dvpvjiyiktmp6" path="res://data/weapon/type/bolt/bolt.tres" id="2_1v5rv"]
@@ -25,6 +25,34 @@ font_color = Color(1, 0.92549, 0.72549, 1)
 shadow_size = 3
 shadow_color = Color(0, 0, 0, 0.501961)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1v5rv"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0, 0.015686275, 0.18039216, 0.78431374)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q43x7"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.00017058742, 0.01687632, 0.17879081, 0.3764706)
+border_width_right = 2
+border_color = Color(0.9843137, 0.8745098, 0.65882355, 0.76862746)
+corner_detail = 1
+
+[sub_resource type="SystemFont" id="SystemFont_srpbi"]
+font_names = PackedStringArray("Office Code Pro D", "Courier", "Monospace")
+
+[sub_resource type="SystemFont" id="SystemFont_spcu4"]
+font_names = PackedStringArray("Office Code Pro D", "Courier", "Monospace")
+
 [node name="hud" type="MarginContainer" groups=["hud"]]
 anchors_preset = 15
 anchor_right = 1.0
@@ -32,10 +60,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 20
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
 script = ExtResource("1_276te")
 _preview_weapon = ExtResource("2_1v5rv")
 _preview_weapon_ammo_mix = PackedInt32Array(2, 2, 3, 3)
@@ -44,14 +72,21 @@ _preview_weapon_ammo_reserve_total = 11
 _preview_stock_ammo_type = ExtResource("3_1v5rv")
 _preview_stock_ammo_amount = 13
 
-[node name="crosshair_root" type="CenterContainer" parent="."]
+[node name="inner_margins" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="crosshair_root" type="CenterContainer" parent="inner_margins"]
 layout_mode = 2
 
-[node name="crosshair_ctl" type="Control" parent="crosshair_root"]
+[node name="crosshair_ctl" type="Control" parent="inner_margins/crosshair_root"]
 layout_mode = 2
 mouse_filter = 2
 
-[node name="CrossHair" type="Node2D" parent="crosshair_root/crosshair_ctl"]
+[node name="CrossHair" type="Node2D" parent="inner_margins/crosshair_root/crosshair_ctl"]
 unique_name_in_owner = true
 script = ExtResource("2_546lt")
 center_enabled = true
@@ -59,25 +94,25 @@ center_size = 1.4
 center_color = Color(0.916, 0.267, 0, 0.46)
 metadata/_custom_type_script = "uid://b8ty0aywli1vd"
 
-[node name="score_container" type="HBoxContainer" parent="."]
+[node name="score_container" type="HBoxContainer" parent="inner_margins"]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 
-[node name="score_label" type="Label" parent="score_container"]
+[node name="score_label" type="Label" parent="inner_margins/score_container"]
 layout_mode = 2
 text = "Score:"
 
-[node name="gap" type="Control" parent="score_container"]
+[node name="gap" type="Control" parent="inner_margins/score_container"]
 layout_mode = 2
 
-[node name="score_value" type="Label" parent="score_container"]
+[node name="score_value" type="Label" parent="inner_margins/score_container"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"NumberLabel"
 text = "0"
 
-[node name="health_bar" type="ProgressBar" parent="."]
+[node name="health_bar" type="ProgressBar" parent="inner_margins"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(500, 35)
 layout_mode = 2
@@ -90,24 +125,24 @@ max_value = 1.0
 value = 1.0
 show_percentage = false
 
-[node name="weapon_hud" type="VBoxContainer" parent="."]
+[node name="weapon_hud" type="VBoxContainer" parent="inner_margins"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 8
 
-[node name="stock_box_container" type="MarginContainer" parent="weapon_hud"]
+[node name="stock_box_container" type="MarginContainer" parent="inner_margins/weapon_hud"]
 layout_mode = 2
 theme_override_constants/margin_left = 18
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 4
 
-[node name="stock_box" type="HBoxContainer" parent="weapon_hud/stock_box_container"]
+[node name="stock_box" type="HBoxContainer" parent="inner_margins/weapon_hud/stock_box_container"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="stock_texture" type="TextureRect" parent="weapon_hud/stock_box_container/stock_box"]
+[node name="stock_texture" type="TextureRect" parent="inner_margins/weapon_hud/stock_box_container/stock_box"]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_q43x7")
 custom_minimum_size = Vector2(0, 70)
@@ -117,19 +152,73 @@ size_flags_vertical = 4
 texture = ExtResource("6_q43x7")
 expand_mode = 3
 
-[node name="stock_amount" type="Label" parent="weapon_hud/stock_box_container/stock_box"]
+[node name="stock_amount" type="Label" parent="inner_margins/weapon_hud/stock_box_container/stock_box"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 text = "13"
 label_settings = SubResource("LabelSettings_7ihmi")
 
-[node name="clock" type="HBoxContainer" parent="."]
+[node name="clock" type="HBoxContainer" parent="inner_margins"]
 layout_mode = 2
 size_flags_horizontal = 8
 size_flags_vertical = 0
 
-[node name="time" type="Label" parent="clock"]
+[node name="time" type="Label" parent="inner_margins/clock"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "00:00:00"
+
+[node name="debug_bar" type="MarginContainer" parent="."]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="bg" type="PanelContainer" parent="debug_bar"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_1v5rv")
+
+[node name="debug_bar_items" type="HBoxContainer" parent="debug_bar"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+theme_override_constants/separation = 0
+
+[node name="debug_bar_item" type="MarginContainer" parent="debug_bar/debug_bar_items"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+
+[node name="bg" type="PanelContainer" parent="debug_bar/debug_bar_items/debug_bar_item"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_q43x7")
+
+[node name="margin" type="MarginContainer" parent="debug_bar/debug_bar_items/debug_bar_item"]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 1
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 3
+
+[node name="text" type="HBoxContainer" parent="debug_bar/debug_bar_items/debug_bar_item/margin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="name" type="Label" parent="debug_bar/debug_bar_items/debug_bar_item/margin/text"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_srpbi")
+theme_override_font_sizes/font_size = 16
+text = "name"
+
+[node name="sep" type="Label" parent="debug_bar/debug_bar_items/debug_bar_item/margin/text"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_srpbi")
+theme_override_font_sizes/font_size = 16
+text = "|"
+
+[node name="value" type="Label" parent="debug_bar/debug_bar_items/debug_bar_item/margin/text"]
+layout_mode = 2
+theme_override_fonts/font = SubResource("SystemFont_spcu4")
+theme_override_font_sizes/font_size = 16
+text = "000"

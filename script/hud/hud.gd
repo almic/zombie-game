@@ -16,6 +16,11 @@ class_name HUD extends Control
 @onready var stock_texture: TextureRect = %stock_texture
 @onready var stock_amount: Label = %stock_amount
 
+@onready var debug_bar_items: HBoxContainer = %debug_bar_items
+
+
+const DebugFPSCounter = preload("uid://b8yiuxku8g0ap")
+
 
 @export_group("Preview", "_preview")
 
@@ -90,10 +95,22 @@ var _preview_stock_ammo: Dictionary
 var _weapon_hud_scene_path: String
 var _weapon_ui_scene: WeaponUI
 
+var debug_item_base: MarginContainer
+
 
 func _ready() -> void:
-    if not Engine.is_editor_hint():
-        reset.call_deferred()
+    if Engine.is_editor_hint():
+        return
+
+    debug_item_base = %debug_bar_item.duplicate()
+    for child in debug_bar_items.get_children():
+        debug_bar_items.remove_child(child)
+        child.queue_free()
+
+    reset.call_deferred()
+
+    debug_add_fps()
+
 
 func _process(_delta: float) -> void:
     # Set shader parameters
@@ -162,3 +179,9 @@ func update_weapon_hud(weapon: WeaponResource) -> void:
         return
 
     _weapon_ui_scene.update(weapon)
+
+func debug_add_fps() -> void:
+    var item: Control = debug_item_base.duplicate()
+    item.set_script(DebugFPSCounter)
+
+    debug_bar_items.add_child(item)

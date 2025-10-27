@@ -87,6 +87,12 @@ var _zombies_updated_this_tick: bool = false
 var _zombies_alive: int = 0
 var _spawn_points: Array[SpawnPoint] = []
 
+## If a mouse capture should be attempted the next time it enters the main window
+var _capture_requested: bool = false
+
+## If we are pretty sure the mouse is in the window. Could be wrong.
+var _mouse_in_window: bool = false
+
 
 func _ready() -> void:
     GUIDE.enable_mapping_context(global_context)
@@ -96,10 +102,17 @@ func _ready() -> void:
 
     text_log.is_writable = true
     GlobalWorld.Log = text_log
+    GlobalWorld.world = self
 
     # Engine.time_scale = 0.25
     spawn_rate_at_target = spawn_rate_at_target
     _spawn_timer = spawn_timer_minimum
+
+    var root := get_tree().root
+    root.mouse_entered.connect(on_mouse_entered)
+    root.mouse_exited.connect(on_mouse_exited)
+    root.focus_entered.connect(on_focus_entered)
+    root.focus_exited.connect(on_focus_exited)
 
     update_spawn_points()
 
@@ -124,6 +137,22 @@ func _physics_process(delta: float) -> void:
     if _zombies_update_timer >= zomb_active_update_rate:
         update_zombie_counts()
 
+## Pause the game and show the pause menu
+func pause() -> void:
+    Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+    get_tree().paused = true
+    pause_menu.visible = true
+
+## Unpauses the game, hiding the pause menu
+func unpause() -> void:
+    Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+    get_tree().paused = false
+    pause_menu.visible = false
+
+## Check if the pause menu is shown
+func is_paused() -> bool:
+    return pause_menu.visible
+
 
 func handle_pause() -> void:
     if is_gameover or not act_pause.is_triggered():
@@ -133,14 +162,10 @@ func handle_pause() -> void:
     if text_log.is_input_active:
         return
 
-    if get_tree().paused:
-        Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-        get_tree().paused = false
-        pause_menu.visible = false
+    if is_paused():
+        unpause()
     else:
-        Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-        get_tree().paused = true
-        pause_menu.visible = true
+        pause()
 
 func handle_gameover() -> void:
     if is_gameover:
@@ -170,13 +195,28 @@ func handle_text_log() -> void:
         if not text_log.is_expanded:
             text_log.is_expanded = true
             text_log.is_input_active = true
+            Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
             # TODO: focus input on text log, and only on the first open (don't refocus)
         return
 
-    # Accept generic escape key press to get out of input mode
-    if text_log.is_input_active and GUIDE._input_state.is_key_pressed(Key.KEY_ESCAPE):
-        text_log.is_input_active = false
+## Checks current game state and captures the mouse if it should be captured.
+## If the mouse is not in windown bounds, it will be captured the next time it
+## enters the window, provided game state remains in a capturable state.
+## If retry is true, will retry the next time the mouse enters the game window.
+func try_capture_mouse(retry: bool = true) -> void:
 
+    if _mouse_in_window:
+        if (
+               pause_menu.visible
+            or gameover_screen.visible
+        ):
+            # Do not capture mouse
+            pass
+        else:
+            Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+            _mouse_in_window = true
+    elif retry:
+        _capture_requested = true
 
 func spawn_zombie(delta: float) -> void:
     _spawn_timer -= delta
@@ -309,6 +349,37 @@ func on_enter_vehicle() -> void:
 func on_exit_vehicle() -> void:
     GUIDE.disable_mapping_context(vehicle_context)
     GUIDE.enable_mapping_context(first_person)
+
+func on_mouse_entered() -> void:
+    _mouse_in_window = true
+
+    if not _capture_requested:
+        return
+
+    _capture_requested = false
+    try_capture_mouse(false)
+
+func on_mouse_exited() -> void:
+    _mouse_in_window = false
+
+    # Ensure this method is called
+    on_focus_exited()
+
+func on_focus_entered() -> void:
+    if _capture_requested:
+        try_capture_mouse(false)
+
+func on_focus_exited() -> void:
+    # If we are captured, free the mouse and queue a recapture
+    # This can happen if another window pulls focus or the mouse otherwise
+    # just teleports outside the window
+    if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+        Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+        _capture_requested = true
+
+        # Also pause, just a nice thing to do
+        if not is_paused():
+            pause()
 
 func set_zombie_targeting(enabled: bool) -> void:
     enable_targeting = enabled

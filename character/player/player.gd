@@ -379,7 +379,7 @@ func update_vehicle(delta: float) -> void:
 
         current_vehicle = null
 
-        get_tree().call_group('world', 'on_exit_vehicle')
+        GlobalWorld.world.on_exit_vehicle()
         return
 
     # Keep player body attached to the vehicle
@@ -796,7 +796,7 @@ func on_hurt(_from: Node3D, _part: HurtBox, _damage: float, _hit: Dictionary) ->
 func on_death() -> void:
     print('Gah! I died!')
 
-    get_tree().call_group('world', 'on_player_death')
+    GlobalWorld.world.on_player_death()
 
 func is_input_buffered(action: GUIDEAction) -> bool:
     if _next_input_timer < 0.0001:
@@ -913,7 +913,7 @@ func interact_with(object: Object) -> void:
         _look_roll.reset(0.0)
         _look_speed.reset(look_speed)
 
-        get_tree().call_group('world', 'on_enter_vehicle')
+        GlobalWorld.world.on_enter_vehicle()
 
 func set_score(value: int) -> void:
     if score == value:

@@ -81,6 +81,9 @@ func _ready() -> void:
 
                 # Collapse when leaving edit mode
                 is_expanded = false
+
+                # Try to capture mouse
+                GlobalWorld.world.try_capture_mouse()
     )
 
     scroll.get_v_scroll_bar().scrolling.connect(

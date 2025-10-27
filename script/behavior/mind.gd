@@ -95,6 +95,8 @@ var _recent_actions: Array[StringName]
 var debug: BehaviorDebugScene
 var debug_root: Node3D
 
+var _debug_last_goal: BehaviorGoal = null
+
 
 func _init() -> void:
     memory_bank = BehaviorMemoryBank.new()
@@ -148,8 +150,9 @@ func get_goal(name: StringName) -> BehaviorGoal:
 func update(delta: float) -> void:
     delta_time = delta
 
-    if debug_enabled and debug_root:
-        if not debug:
+    if debug_enabled:
+        _debug_last_goal = null
+        if debug_root and not debug:
             debug = DEBUG_SCENE.instantiate()
             debug_root.add_child(debug)
 
@@ -238,7 +241,7 @@ func act(action: BehaviorAction, update_on_complete: bool = false, custom_priori
         _recent_actions.append(name)
 
     if debug_enabled and debug_show_actions:
-        _debug_action(action)
+        _debug_action(action, custom_priority)
 
     called_action._locked = false
     called_action.action = action
@@ -386,17 +389,24 @@ func _any_senses_activated(code_names: Array[StringName]) -> bool:
 
     return false
 
-func _debug_action(action: BehaviorAction) -> void:
+func _debug_action(action: BehaviorAction, custom_priority: int) -> void:
     if not debug:
         return
 
-    var message: String = (
-        ("[[color=thistle]%.3f[/color]] " % GlobalWorld.get_game_time()) +
-        "[color=light_cyan]" + _current_goal.code_name + "[/color] >> " +
-        "[color=wheat]" + action.name() + "[/color]"
-    )
+    var message: String = ""
+
+    if _current_goal != _debug_last_goal:
+        message = "[[color=pale_green]" + str(_current_priority) + "[/color]] [color=light_cyan]" + _current_goal.code_name + "[/color]:\n"
+        _debug_last_goal = _current_goal
+
+    message += " >>"
+
+    if custom_priority != 0 and custom_priority != _current_priority:
+        message += " [[color=pale_green]" + str(custom_priority) + "[/color]]"
+
+    message += " [color=wheat]" + action.name() + "[/color]"
 
     debug.add_action(message)
 
     if debug_print_actions:
-        GlobalWorld.print(message, false)
+        GlobalWorld.print(message)

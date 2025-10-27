@@ -23,6 +23,25 @@ var Log: TextLog:
 var game_time: int
 var game_time_frac: float
 
+var world: World
+
+## Used to strip bbcode tags from text
+var _rich_text_helper: RichTextLabel = RichTextLabel.new()
+
+
+func _ready() -> void:
+    # Simply attempt a mouse capture when clicking into the window when capture
+    # mode is off
+    get_tree().root.window_input.connect(
+        func(event: InputEvent):
+            if event.is_canceled():
+                return
+            if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
+                return
+            if event is InputEventMouseButton:
+                if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+                    world.try_capture_mouse(false)
+    )
 
 func _physics_process(delta: float) -> void:
     group_reset_ticks += 1
@@ -40,6 +59,10 @@ func _physics_process(delta: float) -> void:
     if second_passed:
         Sounds.trim()
 
+
+## Get the local World node
+func get_local_world() -> World:
+    return get_nodes_in_group('world').front()
 
 # TODO: make this take all parameters instead of having Sounds pull out the
 #       values from the player, that way physics bindings will always have the
@@ -124,11 +147,18 @@ func get_day_time() -> DynamicDay:
     return world.find_child("DynamicDay", false) as DynamicDay
 
 ## Print a message with the game time prepended
-func print(message: String, add_game_time: bool = true, skip_log: bool = false) -> void:
-    if add_game_time:
-        message = ('[%.4f] ' % get_game_time()) + message
+func print(message: String, add_game_time: bool = true, skip_log: bool = false, strip_bb: bool = false) -> void:
+    var plain_text: String = strip_bbcode(message)
 
-    Printer._print(message)
+    if strip_bb:
+        message = plain_text
+
+    if add_game_time:
+        var time: float = get_game_time()
+        message = _format_time(time, true) + " " + message
+        plain_text = _format_time(time) + " " + plain_text
+
+    Printer._print(plain_text)
 
     if (not skip_log) and Log:
         Log.add_log(message)
@@ -136,6 +166,29 @@ func print(message: String, add_game_time: bool = true, skip_log: bool = false) 
 func quit_game() -> void:
     get_tree().root.propagate_notification(NOTIFICATION_WM_CLOSE_REQUEST)
     get_tree().quit()
+
+## Escapes tags from text. Plainly replaces '[' and ']' characters with the
+## escaped equivalent '[lb]' and '[rb]' text.
+func escape_bbcode(text: String) -> String:
+    return RichTextLabel.escape_bbcode(text)
+
+## Removes bbcode tags from text. This essentially wraps a call to
+## RichTextLabel.append_text() with 'drop_tags' = true. As such, it does not
+## simply delete anything that looks like a tag, so input like "[not_a_tag]"
+## would return unchanged. It only drops known tags, and ignores text-outputing
+## tags like '[lb]' and '[char=...]'.
+func strip_bbcode(text: String) -> String:
+    _rich_text_helper.clear()
+    _rich_text_helper.append_text(text, true)
+    var result: String = _rich_text_helper.get_parsed_text()
+    _rich_text_helper.clear()
+    return result
+
+func _format_time(time: float, colors: bool = false) -> String:
+    var time_str: String = "%.3f" % time
+    if colors:
+        return "[[color=thistle]" + time_str + "[/color]]"
+    return "[" + time_str + "]"
 
 func _handle_log_message(from_user: bool, message: String) -> void:
     if from_user:
@@ -160,7 +213,12 @@ func _handle_command(from_user: bool, command: String) -> void:
     # elif command == '...':
 
     if is_command:
-        command = '[color=pale_green]' + command + '[/color]'
-    self.print(command)
+        var time: float = get_game_time()
+        Log.add_log(_format_time(time, true) + ' [color=pale_green]' + escape_bbcode(command) + '[/color]')
+        Printer._print(_format_time(time) + " " + command)
+    else:
+        # text chat???
+        self.print(command, true, false, true)
+
     if not is_command:
         self.print('[color=brown]Unknown command[/color]')

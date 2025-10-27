@@ -42,8 +42,10 @@ var is_input_active: bool:
         if not value:
             if input.is_editing():
                 input.unedit()
+                input.editing_toggled.emit(false)
         elif not input.is_editing():
             input.edit()
+            input.editing_toggled.emit(true)
 
 
 var base_log_entry: MarginContainer
@@ -75,12 +77,12 @@ func _ready() -> void:
     input.text_submitted.connect(on_text_submitted)
     input.editing_toggled.connect(
         func(editing):
-            if not editing:
+            if editing:
+                # If we focus for editing, set mouse to visible
+                Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+            else:
                 # Forcibly unfocus when leaving edit mode. Stupid.
                 input.release_focus()
-
-                # Collapse when leaving edit mode
-                is_expanded = false
 
                 # Try to capture mouse
                 GlobalWorld.world.try_capture_mouse()

@@ -182,6 +182,12 @@ var _jump_ready: bool = true
 ## Melee can be activated
 var _melee_ready: bool = true
 
+## Fire can be activated
+var _fire_ready: bool = true
+
+## Disabled when mouse is not captured
+var _handle_input: bool = true
+
 ## Ground travel accumulator for playing footstep sounds
 var _footstep_accumulator: float = 0.0
 
@@ -257,9 +263,15 @@ func _process(delta: float) -> void:
         weapon_node.position = weapon_position
         return
 
+    # If we could not fire the last frame, force a "trigger reset" for fire_primary
+    if not _handle_input:
+        _fire_ready = false
+
+    _handle_input = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
+
     # Test interactions before everything else, so they appear to occur with
     # the frame the player sees right now
-    if interact.is_triggered():
+    if _handle_input and interact.is_triggered():
         var a_collider = aim_target.get_collider()
         if a_collider:
             interact_with(a_collider)
@@ -268,6 +280,7 @@ func _process(delta: float) -> void:
         update_vehicle(delta)
     else:
         update_first_person(delta)
+
 
 func update_first_person_camera(delta: float) -> void:
     if not _look_roll.is_done:
@@ -281,20 +294,22 @@ func update_first_person_camera(delta: float) -> void:
 
     camera_3d.fov = _fov.current
 
-    rotation.y -= look.value_axis_2d.x * _look_speed.current
+    if _handle_input:
+        rotation.y -= look.value_axis_2d.x * _look_speed.current
 
     neck.rotation.z = _look_roll.current
     weapon_node.rotation.z = -_look_roll.current * 0.5
 
-    _look_transform = _look_transform.rotated_local(
-            Vector3.RIGHT,
-            -look.value_axis_2d.y * _look_speed.current
-    )
-    var look_euler: Vector3 = _look_transform.basis.get_euler()
-    look_euler.x = clampf(look_euler.x, LOOK_DOWN_MAX, LOOK_UP_MAX)
-    look_euler.z = _look_roll.current * 0.5
-    look_euler.y = rotation.y
-    _look_transform.basis = Basis.from_euler(look_euler)
+    if _handle_input:
+        _look_transform = _look_transform.rotated_local(
+                Vector3.RIGHT,
+                -look.value_axis_2d.y * _look_speed.current
+        )
+        var look_euler: Vector3 = _look_transform.basis.get_euler()
+        look_euler.x = clampf(look_euler.x, LOOK_DOWN_MAX, LOOK_UP_MAX)
+        look_euler.z = _look_roll.current * 0.5
+        look_euler.y = rotation.y
+        _look_transform.basis = Basis.from_euler(look_euler)
 
 
     interpolate_camera_smooth(delta)
@@ -310,7 +325,7 @@ func update_first_person(delta: float) -> void:
     if not _top_speed.is_done:
         _top_speed.update(delta)
 
-    update_aiming(aim.is_triggered(), delta)
+    update_aiming(_handle_input && aim.is_triggered(), delta)
 
     var was_fanning: bool
     var revolver: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
@@ -333,7 +348,7 @@ func update_first_person(delta: float) -> void:
 
     # NOTE: Reload cancel uses this to track if it should ignore aim attempts
     #       if we were not already trying to aim
-    _aim_was_triggered = aim.is_triggered()
+    _aim_was_triggered = _handle_input && aim.is_triggered()
 
     var move_length: float = move.value_axis_3d.length()
 
@@ -348,7 +363,7 @@ func update_first_person(delta: float) -> void:
     else:
         _jump_ready = true
 
-    if flashlight_action.is_triggered():
+    if _handle_input and flashlight_action.is_triggered():
         flashlight.visible = !flashlight.visible
 
     if _next_input_timer > 0.0:
@@ -373,7 +388,7 @@ func update_vehicle(delta: float) -> void:
     if _vehicle_exit_delay > 0.0:
         _vehicle_exit_delay -= delta
 
-    if not _vehicle_exit_delay > 0.0 and exit_vehicle.is_triggered():
+    if _handle_input and (not _vehicle_exit_delay > 0.0) and exit_vehicle.is_triggered():
         global_position = current_vehicle.get_exit_position()
         show_self(true)
 
@@ -422,14 +437,15 @@ func update_vehicle_camera(_delta: float) -> void:
 
     # TODO: Create an arm to track distance and lock vertical look
     _look_transform.origin = Vector3.ZERO
-    _look_transform = _look_transform.rotated(
-            Vector3.UP,
-            -look.value_axis_2d.x * _look_speed.current
-    )
-    _look_transform = _look_transform.rotated_local(
-            Vector3.RIGHT,
-            -look.value_axis_2d.y * _look_speed.current
-    )
+    if _handle_input:
+        _look_transform = _look_transform.rotated(
+                Vector3.UP,
+                -look.value_axis_2d.x * _look_speed.current
+        )
+        _look_transform = _look_transform.rotated_local(
+                Vector3.RIGHT,
+                -look.value_axis_2d.y * _look_speed.current
+        )
 
     camera_3d.transform = _look_transform
 
@@ -632,14 +648,17 @@ func update_weapon_node(delta: float) -> void:
 
     weapon_node.set_walking(!_aim_is_aiming and !movement_direction.is_zero_approx())
 
-    if switch_ammo.is_triggered():
+    if _handle_input and switch_ammo.is_triggered():
         weapon_node.switch_ammo()
 
-    var triggered: bool = fire_primary.is_triggered()
+    if not _fire_ready and not fire_primary.is_triggered():
+        _fire_ready = true
+
+    var triggered: bool = _fire_ready && _handle_input && fire_primary.is_triggered()
     if triggered:
         update_last_input(fire_primary)
     else:
-        _fire_can_buffer = true
+        _fire_can_buffer = _fire_ready && _handle_input
 
     var action: WeaponNode.Action = weapon_node.update_trigger(triggered, delta)
 
@@ -669,7 +688,7 @@ func update_weapon_node(delta: float) -> void:
     if triggered:
         weapon_node.continue_reload = false
 
-    if melee.is_triggered():
+    if _handle_input and melee.is_triggered():
         weapon_node.continue_reload = false
         update_last_input(melee)
         if _melee_ready or weapon_node.melee():
@@ -680,7 +699,7 @@ func update_weapon_node(delta: float) -> void:
     else:
         _melee_ready = true
 
-    if fan_hammer.is_triggered():
+    if _handle_input and fan_hammer.is_triggered():
         # NOTE: ignore this action unless we have a revolver
         if weapon_node.weapon_type is RevolverWeapon:
             weapon_node.continue_reload = false
@@ -701,7 +720,7 @@ func update_weapon_node(delta: float) -> void:
             if okay:
                 clear_input_buffer()
 
-    if charge.is_triggered():
+    if _handle_input and charge.is_triggered():
         weapon_node.continue_reload = false
         update_last_input(charge)
 
@@ -730,7 +749,7 @@ func update_weapon_node(delta: float) -> void:
                 # Requeue the primary fire action as buffer is too short normally
                 update_input_buffer(fire_primary)
 
-    if reload.is_triggered():
+    if _handle_input and reload.is_triggered():
         var do_reload: bool = false
         if _weapon_reload_time == 0:
             # Cancel a full reload if we trigger while continue is on
@@ -771,7 +790,7 @@ func update_weapon_node(delta: float) -> void:
             if action == WeaponNode.Action.OKAY:
                 clear_input_buffer()
 
-    if unload.is_triggered():
+    if _handle_input and unload.is_triggered():
         weapon_node.continue_reload = false
         weapon_node.continue_unload = true
         weapon_node.unload()
@@ -779,7 +798,7 @@ func update_weapon_node(delta: float) -> void:
         weapon_node.continue_unload = false
 
     # Stop reloads if we press the aim button for the first time
-    if weapon_node.continue_reload and aim.is_triggered() and not _aim_was_triggered:
+    if weapon_node.continue_reload and (_handle_input and aim.is_triggered()) and not _aim_was_triggered:
         weapon_node.continue_reload = false
 
 func on_reload_complete() -> void:
@@ -835,6 +854,9 @@ func update_last_input(action: GUIDEAction) -> void:
     _last_input_timer = LAST_INPUT_TIME
 
 func update_weapon_switch() -> void:
+    if not _handle_input:
+        return
+
     var next_weapon_dir: int = 0
     if weapon_next.is_triggered():
         next_weapon_dir += 1

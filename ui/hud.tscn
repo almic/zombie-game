@@ -82,6 +82,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(500, 35)
 layout_mode = 2
 size_flags_horizontal = 4
+mouse_filter = 2
 theme_override_font_sizes/font_size = 19
 theme_override_styles/background = SubResource("StyleBoxFlat_hr31g")
 theme_override_styles/fill = SubResource("StyleBoxFlat_lqp71")

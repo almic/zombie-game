@@ -140,7 +140,6 @@ func get_game_time() -> float:
 
 ## Returns the DynamicDay in the current scene
 func get_day_time() -> DynamicDay:
-    var world: World = get_tree().current_scene as World
     if not world:
         return null
 

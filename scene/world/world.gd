@@ -192,12 +192,18 @@ func handle_text_log() -> void:
         return
 
     if act_focus_log.is_triggered():
-        if not text_log.is_expanded:
+        # focus only if not expanded or mouse is captured
+        if not text_log.is_expanded or Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
             text_log.is_expanded = true
             text_log.is_input_active = true
             Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-            # TODO: focus input on text log, and only on the first open (don't refocus)
         return
+
+    # Accept generic escape key press to get out of input mode
+    if GUIDE._input_state.is_key_pressed(Key.KEY_ESCAPE):
+        if text_log.is_input_active:
+            text_log.is_input_active = false
+
 
 ## Checks current game state and captures the mouse if it should be captured.
 ## If the mouse is not in windown bounds, it will be captured the next time it
@@ -211,10 +217,22 @@ func try_capture_mouse(retry: bool = true) -> void:
             or gameover_screen.visible
         ):
             # Do not capture mouse
-            pass
-        else:
-            Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-            _mouse_in_window = true
+            return
+
+        # Check that we are not hovering a mouse intercepting GUI element
+        var gui: Control = get_tree().root.gui_get_hovered_control()
+        while gui:
+            if gui.mouse_filter == Control.MOUSE_FILTER_STOP:
+                return
+            elif gui.mouse_filter == Control.MOUSE_FILTER_PASS:
+                gui = gui.get_parent() as Control
+            break
+
+        Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+        _mouse_in_window = true
+        # Stop typing in the text log
+        if text_log.is_input_active:
+            text_log.is_input_active = false
     elif retry:
         _capture_requested = true
 

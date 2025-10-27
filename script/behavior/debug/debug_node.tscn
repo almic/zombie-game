@@ -17,21 +17,21 @@ billboard_keep_scale = true
 [sub_resource type="QuadMesh" id="QuadMesh_ummb1"]
 resource_local_to_scene = true
 material = SubResource("StandardMaterial3D_32ae1")
-size = Vector2(1.4, 4.2)
+size = Vector2(1.4, 2.1)
 
 [node name="BehaviorDebug" type="Node3D"]
 script = ExtResource("1_xwygs")
 
 [node name="display" type="MeshInstance3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, 0)
 mesh = SubResource("QuadMesh_ummb1")
 
 [node name="viewport" type="SubViewport" parent="."]
 unique_name_in_owner = true
 transparent_bg = true
 screen_space_aa = 1
-size = Vector2i(624, 1872)
+size = Vector2i(624, 936)
 size_2d_override = Vector2i(1920, 1080)
 
 [node name="BehaviorDebugUI" parent="viewport" instance=ExtResource("2_32ae1")]

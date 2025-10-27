@@ -36,6 +36,7 @@ script = ExtResource("1_yy7ym")
 [node name="box" type="Control" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 8.0
@@ -99,6 +100,7 @@ theme_override_constants/margin_bottom = 2
 
 [node name="text" type="RichTextLabel" parent="box/split/scroll/negative_fill/logs/log_entry/margin"]
 layout_mode = 2
+focus_mode = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.5019608)
 theme_override_constants/line_separation = -4
 theme_override_constants/shadow_outline_size = 1
@@ -109,6 +111,7 @@ bbcode_enabled = true
 text = "This is a test message. It has a lot of iii"
 fit_content = true
 scroll_active = false
+selection_enabled = true
 
 [node name="input" type="LineEdit" parent="box/split"]
 unique_name_in_owner = true

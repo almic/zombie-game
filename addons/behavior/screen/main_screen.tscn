@@ -1,0 +1,111 @@
+[gd_scene load_steps=7 format=3 uid="uid://os0fy1o7hann"]
+
+[ext_resource type="Script" uid="uid://b7e6giehu5bw3" path="res://addons/behavior/screen/main_screen.gd" id="1_n1eyf"]
+[ext_resource type="PackedScene" uid="uid://co2ju0gpm5s0a" path="res://addons/behavior/screen/create_new.tscn" id="2_58n4d"]
+[ext_resource type="PackedScene" uid="uid://dfu7q11sy44hk" path="res://addons/behavior/screen/editor_mind.tscn" id="3_yujss"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yujss"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_bottom = 2
+border_color = Color(0, 0, 0, 0.6)
+corner_detail = 5
+
+[sub_resource type="InputEventKey" id="InputEventKey_n0fyj"]
+device = -1
+ctrl_pressed = true
+keycode = 83
+unicode = 115
+
+[sub_resource type="Shortcut" id="Shortcut_eqhsy"]
+events = [SubResource("InputEventKey_n0fyj")]
+
+[node name="MainScreen" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+script = ExtResource("1_n1eyf")
+
+[node name="CreateNew" parent="." instance=ExtResource("2_58n4d")]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+
+[node name="Main" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="Main"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+
+[node name="GridContainer" type="GridContainer" parent="Main/MarginContainer"]
+layout_mode = 2
+columns = 2
+
+[node name="ResourceNameContainer" type="HBoxContainer" parent="Main/MarginContainer/GridContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="Label" type="Label" parent="Main/MarginContainer/GridContainer/ResourceNameContainer"]
+layout_mode = 2
+text = "Editing:"
+
+[node name="ResourceName" type="Label" parent="Main/MarginContainer/GridContainer/ResourceNameContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Example"
+
+[node name="ResourceNameEdit" type="LineEdit" parent="Main/MarginContainer/GridContainer/ResourceNameContainer"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_yujss")
+expand_to_text_length = true
+
+[node name="ButtonRenameResource" type="Button" parent="Main/MarginContainer/GridContainer/ResourceNameContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Change the [code]resource_name[/color] of this resource. The [code]resource_name[/code] is used for display in the Editor and in debug tools.
+[b]NOTE[/b]: This is [i]not[/i] related to the file path of the resource."
+action_mode = 0
+text = "Rename"
+
+[node name="ButtonContainer" type="HBoxContainer" parent="Main/MarginContainer/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+alignment = 2
+
+[node name="ButtonSaveResource" type="Button" parent="Main/MarginContainer/GridContainer/ButtonContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Save the current resource"
+action_mode = 0
+shortcut = SubResource("Shortcut_eqhsy")
+text = "Save"
+
+[node name="ResourceNodes" type="HBoxContainer" parent="Main"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="ResourceEditor" type="MarginContainer" parent="Main"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MindEditor" parent="Main/ResourceEditor" instance=ExtResource("3_yujss")]
+unique_name_in_owner = true
+layout_mode = 2

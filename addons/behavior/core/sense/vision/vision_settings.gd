@@ -1,0 +1,1 @@
+class_name BehaviorSenseVisionSettings extends BehaviorSenseSettings

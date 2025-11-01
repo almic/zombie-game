@@ -26,6 +26,9 @@ const TYPE_VARIANTS = {
 ## Emitted when creating a new resource
 signal new_resource(res: Resource)
 
+## Emitted when traveling to the resource editor
+signal goto_editor()
+
 ## Emitted when traveling to project behavior settings
 signal goto_settings()
 
@@ -37,6 +40,7 @@ var _created_type_name: String
 
 func _ready() -> void:
     # Setup menu
+    %ButtonEditor.pressed.connect(goto_editor.emit)
     %ButtonCreate.pressed.connect(show_create_menu)
     %ButtonSettings.pressed.connect(show_settings_menu)
     %ButtonBack.pressed.connect(show_menu)

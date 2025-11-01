@@ -3,9 +3,8 @@ extends Control
 
 
 func _ready() -> void:
-    %Menu.new_resource.connect(edit)
     %Menu.goto_settings.connect(show_settings)
-    %Menu.goto_editor.connect(show_editor)
+    %Menu.goto_editor.connect(edit)
 
     %Settings.goto_menu.connect(show_menu)
 
@@ -19,7 +18,9 @@ func edit(res: Resource) -> void:
     %Menu.visible = false
 
     %Editor.visible = true
-    %Editor.edit(res)
+
+    if res:
+        %Editor.edit(res)
 
 
 func show_editor() -> void:

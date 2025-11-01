@@ -1,0 +1,75 @@
+[gd_scene load_steps=2 format=3 uid="uid://cd6347u3w4lsf"]
+
+[ext_resource type="Script" uid="uid://lobuwfhkh5i7" path="res://addons/behavior/screen/menu/create.gd" id="1_g1u74"]
+
+[node name="Create" type="VBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+size_flags_horizontal = 4
+theme_override_constants/separation = 8
+script = ExtResource("1_g1u74")
+
+[node name="TypeSelection" type="OptionButton" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
+selected = 0
+fit_to_longest_item = false
+item_count = 4
+popup/item_0/text = "Select Type"
+popup/item_0/id = 0
+popup/item_0/disabled = true
+popup/item_0/separator = true
+popup/item_1/text = "Mind"
+popup/item_1/id = 1
+popup/item_2/text = "Sense"
+popup/item_2/id = 2
+popup/item_3/text = "Goal"
+popup/item_3/id = 3
+
+[node name="VariantSelection" type="OptionButton" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
+disabled = true
+flat = true
+selected = 0
+item_count = 1
+popup/item_0/text = "Select Variant"
+popup/item_0/id = 0
+popup/item_0/disabled = true
+popup/item_0/separator = true
+
+[node name="NameEditCreate" type="LineEdit" parent="."]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
+editable = false
+clear_button_enabled = true
+
+[node name="Buttons" type="HBoxContainer" parent="."]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 1
+
+[node name="ButtonBack" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ButtonLarge"
+text = "Back"
+
+[node name="ButtonCreateNew" type="Button" parent="Buttons"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"ButtonLarge"
+disabled = true
+action_mode = 0
+text = "Create"

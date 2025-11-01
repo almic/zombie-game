@@ -205,6 +205,10 @@ func save_group_desc(description: String, group_name: StringName) -> void:
 
 ## Saves the current UI states to project settings
 func save_all() -> void:
+    # Check if CTRL+S is pressed, then save the current scene as well
+    if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
+        EditorInterface.save_scene()
+
     var groups := [
         [%VisionGroups, BehaviorSystemConstants.VISION_GROUP_PREFIX],
         [%SoundGroups, BehaviorSystemConstants.SOUND_GROUP_PREFIX],
@@ -218,4 +222,3 @@ func save_all() -> void:
             ProjectSettings.set_setting(group_name, group_desc)
 
     ProjectSettings.save()
-    EditorInterface.save_scene()

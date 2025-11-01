@@ -12,6 +12,10 @@ func _ready() -> void:
 
 
 func edit(res: Resource) -> void:
+    if not %Editor.is_saved():
+        # TODO: popup confirm save, discard, or cancel (describe clearly in text)
+        pass
+
     %Settings.visible = false
     %Menu.visible = false
 
@@ -25,6 +29,7 @@ func show_settings() -> void:
 
     %Settings.visible = true
     %Settings.refresh_groups()
+
 
 func show_menu() -> void:
     %Editor.visible = false

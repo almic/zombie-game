@@ -1,1 +1,1 @@
-extends Resource
+class_name BehaviorSenseHearingSettings extends BehaviorSenseSettings

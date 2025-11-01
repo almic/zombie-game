@@ -23,7 +23,7 @@ func _handles(object: Object) -> bool:
 
 func _edit(object: Object) -> void:
     if _handles(object):
-        main_screen._edit(object)
+        main_screen.edit(object)
 
 func _enable_plugin() -> void:
     # Add autoloads here.

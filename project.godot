@@ -80,6 +80,9 @@ nav_group="Used in terrain nav baking"
 sound_group:grass="group for grass"
 sound_group:rock=""
 player="Is a player"
+"aeu o3#! ~@@#$^(*&(^/?+//"="wtf"
+bhvr:vision:zombie_target="Will be chased and attacked by zombies"
+bhvr:sound:gunshot="From a gun"
 
 [gui]
 

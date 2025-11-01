@@ -1,5 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://os0fy1o7hann"]
+[gd_scene load_steps=6 format=3 uid="uid://os0fy1o7hann"]
 
+[ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_n0fyj"]
 [ext_resource type="Script" uid="uid://b7e6giehu5bw3" path="res://addons/behavior/screen/main_screen.gd" id="1_n1eyf"]
 [ext_resource type="PackedScene" uid="uid://co2ju0gpm5s0a" path="res://addons/behavior/screen/menu/menu.tscn" id="2_58n4d"]
 [ext_resource type="PackedScene" uid="uid://bwnd7nt53uv48" path="res://addons/behavior/screen/project_settings/project_settings.tscn" id="3_21dad"]
@@ -13,6 +14,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme = ExtResource("1_n0fyj")
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4

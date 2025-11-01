@@ -3,6 +3,11 @@ extends Control
 
 const GROUP_ITEM = preload("uid://dsx2ght6i0kuv")
 
+
+## Emitted when traveling to behavior menu
+signal goto_menu()
+
+
 var group_item_base: HBoxContainer
 
 
@@ -18,6 +23,7 @@ func _ready() -> void:
     %ButtonAddVisionGroup.pressed.connect(popup_add_group.bind(add_vision_group, 'Vision'))
 
     %ButtonSave.pressed.connect(save_all)
+    %ButtonMenu.pressed.connect(goto_menu.emit)
 
     ProjectSettings.settings_changed.connect(refresh_groups)
 
@@ -212,3 +218,4 @@ func save_all() -> void:
             ProjectSettings.set_setting(group_name, group_desc)
 
     ProjectSettings.save()
+    EditorInterface.save_scene()

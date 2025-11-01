@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=78 format=3 uid="uid://d0tmanljmd1ao"]
+[gd_resource type="Theme" load_steps=81 format=3 uid="uid://d0tmanljmd1ao"]
 
 [sub_resource type="SystemFont" id="SystemFont_0d5qu"]
 font_names = PackedStringArray("Sans-Serif")
@@ -33,9 +33,9 @@ expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_lh3ja"]
-content_margin_left = 4.0
+content_margin_left = 8.0
 content_margin_top = 4.0
-content_margin_right = 4.0
+content_margin_right = 8.0
 content_margin_bottom = 4.0
 bg_color = Color(1, 1, 1, 0.1882353)
 corner_radius_top_left = 3
@@ -82,6 +82,20 @@ content_margin_top = 0.0
 content_margin_right = 4.0
 content_margin_bottom = 0.0
 color = Color(0.8784314, 0.8784314, 0.8784314, 0.5019608)
+
+[sub_resource type="DPITexture" id="DPITexture_0d5qu"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"8\" height=\"48\"><path fill=\"gray\" fill-opacity=\".65\" d=\"M3.15 4v40h1.7V4z\"/></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_8r66t"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"30\" height=\"60\"><rect width=\"28\" height=\"58\" x=\"1\" y=\"1\" fill=\"#e0e0e0\" fill-opacity=\".6\" stroke=\"#000\" stroke-width=\".8\" rx=\"7\"/></svg>
+"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_egfda"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
 
 [sub_resource type="SystemFont" id="SystemFont_1oj7c"]
 font_names = PackedStringArray("Sans-Serif")
@@ -621,6 +635,12 @@ DarkLabel/colors/font_color = Color(0.7529412, 0.7529412, 0.7529412, 1)
 DarkLabel/styles/normal = SubResource("StyleBoxFlat_hefsy")
 HSeparator/constants/separation = 16
 HSeparator/styles/separator = SubResource("StyleBoxLine_m5x4x")
+HSplitContainer/constants/autohide = 1
+HSplitContainer/constants/minimum_grab_thickness = 6
+HSplitContainer/constants/separation = 6
+HSplitContainer/icons/grabber = SubResource("DPITexture_0d5qu")
+HSplitContainer/icons/touch_dragger = SubResource("DPITexture_8r66t")
+HSplitContainer/styles/split_bar_background = SubResource("StyleBoxEmpty_egfda")
 HeaderLarge/font_sizes/font_size = 28
 HeaderMedium/font_sizes/font_size = 24
 HeaderSmall/font_sizes/font_size = 20

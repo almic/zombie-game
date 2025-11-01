@@ -30,6 +30,15 @@ size_flags_horizontal = 4
 [node name="Menu" type="VBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ButtonEditor" type="Button" parent="VBoxContainer/Menu"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_type_variation = &"ButtonLarge"
+text = "Resource Editor"
 
 [node name="ButtonCreate" type="Button" parent="VBoxContainer/Menu"]
 unique_name_in_owner = true
@@ -38,9 +47,6 @@ layout_mode = 2
 size_flags_horizontal = 4
 theme_type_variation = &"ButtonLarge"
 text = "New Behavior Resource"
-
-[node name="Separator" type="Control" parent="VBoxContainer/Menu"]
-layout_mode = 2
 
 [node name="ButtonSettings" type="Button" parent="VBoxContainer/Menu"]
 unique_name_in_owner = true

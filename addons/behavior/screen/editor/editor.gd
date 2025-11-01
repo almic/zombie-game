@@ -1,5 +1,9 @@
 @tool
-extends VBoxContainer
+extends HSplitContainer
+
+
+## Emitted when traveling to behavior menu
+signal goto_menu()
 
 
 var current_resource: Resource
@@ -11,6 +15,10 @@ func _ready() -> void:
     %ResourceNameEdit.text_submitted.connect(on_rename_resource_submitted)
 
     %ButtonSaveResource.pressed.connect(save_resource)
+    %ButtonCollapseList.icon = get_theme_icon("Back", "EditorIcons")
+    %ButtonCollapseList.pressed.connect(on_collapse_list)
+
+    %ButtonMenu.pressed.connect(goto_menu.emit)
 
 
 func edit(res: Resource) -> void:
@@ -27,6 +35,21 @@ func edit(res: Resource) -> void:
         %MindEditor.visible = true
         %MindEditor.edit(current_resource)
         editor_save = %MindEditor.save
+
+
+func on_collapse_list() -> void:
+    if collapsed:
+        %ResourceList.visible = true
+        %ButtonCollapseList.icon = get_theme_icon("Back", "EditorIcons")
+        dragger_visibility = SplitContainer.DRAGGER_VISIBLE
+        collapsed = false
+        return
+
+    %ResourceList.visible = false
+    %ButtonCollapseList.icon = get_theme_icon("Forward", "EditorIcons")
+    dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
+    collapsed = true
+
 
 func on_rename_resource() -> void:
     if not %ResourceNameEdit.editable:
@@ -52,12 +75,6 @@ func on_rename_resource_submitted(new_name: String) -> void:
     %ResourceNameEdit.text = current_resource.resource_name
     %ButtonRenameResource.text = "Rename"
 
-
-func is_saved() -> bool:
-    return (
-            %MindEditor.is_saved
-        #and
-    )
 
 func save_resource() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well

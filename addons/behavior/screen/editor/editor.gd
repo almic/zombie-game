@@ -12,6 +12,7 @@ func _ready() -> void:
 
     %ButtonSaveResource.pressed.connect(save_resource)
 
+
 func edit(res: Resource) -> void:
     current_resource = res
 
@@ -51,7 +52,24 @@ func on_rename_resource_submitted(new_name: String) -> void:
     %ResourceNameEdit.text = current_resource.resource_name
     %ButtonRenameResource.text = "Rename"
 
+
+func is_saved() -> bool:
+    return (
+            %MindEditor.is_saved
+        #and
+    )
+
 func save_resource() -> void:
-    editor_save.call()
-    ResourceSaver.save(current_resource)
-    EditorInterface.save_scene()
+    # Check if CTRL+S is pressed, then save the current scene as well
+    if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
+        EditorInterface.save_scene()
+
+    var updated: bool = editor_save.call()
+    if not updated:
+        return
+
+    var err: Error = ResourceSaver.save(current_resource)
+    if err:
+        push_error('Failed to save resource "%s"! Error: ' + str(err))
+        editor_save.call(true)
+        return

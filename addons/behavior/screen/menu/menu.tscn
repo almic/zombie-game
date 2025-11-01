@@ -1,39 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://co2ju0gpm5s0a"]
+[gd_scene load_steps=3 format=3 uid="uid://co2ju0gpm5s0a"]
 
 [ext_resource type="Script" uid="uid://bwsu7iko7f6ye" path="res://addons/behavior/screen/menu/menu.gd" id="1_docbi"]
-
-[sub_resource type="StyleBoxLine" id="StyleBoxLine_rq20d"]
-content_margin_left = 4.0
-content_margin_top = 0.0
-content_margin_right = 4.0
-content_margin_bottom = 0.0
-color = Color(0.5, 0.5, 0.5, 1)
-grow_begin = 80.0
-grow_end = 80.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0ihcn"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.1, 0.1, 0.1, 0.6)
-border_width_bottom = 2
-border_color = Color(0, 0, 0, 0.6)
-corner_detail = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pa5ea"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.1, 0.1, 0.1, 0.3)
-border_width_bottom = 2
-border_color = Color(0, 0, 0, 0.3)
-corner_detail = 5
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_jvtw3"]
+[ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_m0rmn"]
 
 [node name="MainMenu" type="CenterContainer"]
+theme = ExtResource("1_m0rmn")
 script = ExtResource("1_docbi")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
@@ -52,10 +23,9 @@ vertical_alignment = 1
 autowrap_mode = 2
 
 [node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_constants/separation = 10
-theme_override_styles/separator = SubResource("StyleBoxLine_rq20d")
 
 [node name="Menu" type="VBoxContainer" parent="VBoxContainer"]
 unique_name_in_owner = true
@@ -66,6 +36,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_type_variation = &"ButtonLarge"
 text = "New Behavior Resource"
 
 [node name="Separator" type="Control" parent="VBoxContainer/Menu"]
@@ -76,6 +47,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_type_variation = &"ButtonLarge"
 text = "Edit Project Settings"
 
 [node name="Create" type="VBoxContainer" parent="VBoxContainer"]
@@ -89,6 +61,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
 selected = 0
 fit_to_longest_item = false
 item_count = 4
@@ -108,6 +81,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
 disabled = true
 flat = true
 selected = 0
@@ -122,9 +96,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_styles/normal = SubResource("StyleBoxFlat_0ihcn")
-theme_override_styles/read_only = SubResource("StyleBoxFlat_pa5ea")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_jvtw3")
+theme_override_font_sizes/font_size = 16
 editable = false
 clear_button_enabled = true
 
@@ -133,15 +105,15 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_type_variation = &"ButtonLarge"
 disabled = true
 action_mode = 0
 text = "Create"
 
 [node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_constants/separation = 10
-theme_override_styles/separator = SubResource("StyleBoxLine_rq20d")
 
 [node name="ButtonBack" type="Button" parent="VBoxContainer"]
 unique_name_in_owner = true

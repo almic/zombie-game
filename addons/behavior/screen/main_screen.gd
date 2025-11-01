@@ -5,10 +5,10 @@ extends Control
 func _ready() -> void:
     %Menu.new_resource.connect(edit)
     %Menu.goto_settings.connect(show_settings)
-    %Menu.visible = true
 
-    %Editor.visible = false
-    %Settings.visible = false
+    %Settings.goto_menu.connect(show_menu)
+
+    show_menu()
 
 
 func edit(res: Resource) -> void:
@@ -25,3 +25,9 @@ func show_settings() -> void:
 
     %Settings.visible = true
     %Settings.refresh_groups()
+
+func show_menu() -> void:
+    %Editor.visible = false
+    %Settings.visible = false
+
+    %Menu.visible = true

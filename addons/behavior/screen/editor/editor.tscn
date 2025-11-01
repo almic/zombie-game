@@ -1,17 +1,17 @@
-[gd_scene load_steps=6 format=3 uid="uid://dmwmompdaabqp"]
+[gd_scene load_steps=9 format=3 uid="uid://dmwmompdaabqp"]
 
 [ext_resource type="Script" uid="uid://dw2db5uca28dk" path="res://addons/behavior/screen/editor/editor.gd" id="1_dht7n"]
+[ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_mqvbe"]
 [ext_resource type="PackedScene" uid="uid://dfu7q11sy44hk" path="res://addons/behavior/screen/editor/editor_mind.tscn" id="2_mqvbe"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yujss"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.1, 0.1, 0.1, 0.6)
-border_width_bottom = 2
-border_color = Color(0, 0, 0, 0.6)
-corner_detail = 5
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mqvbe"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_5e7se"]
+device = -1
+keycode = 4194333
+
+[sub_resource type="Shortcut" id="Shortcut_6uchm"]
+events = [SubResource("InputEventKey_5e7se")]
 
 [sub_resource type="InputEventKey" id="InputEventKey_n0fyj"]
 device = -1
@@ -28,6 +28,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_mqvbe")
 script = ExtResource("1_dht7n")
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
@@ -47,26 +48,26 @@ theme_override_constants/separation = 16
 
 [node name="Label" type="Label" parent="MarginContainer/GridContainer/ResourceNameContainer"]
 layout_mode = 2
+theme_type_variation = &"HeaderSmall"
 text = "Editing:"
-
-[node name="ResourceName" type="Label" parent="MarginContainer/GridContainer/ResourceNameContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-text = "Example"
 
 [node name="ResourceNameEdit" type="LineEdit" parent="MarginContainer/GridContainer/ResourceNameContainer"]
 unique_name_in_owner = true
-visible = false
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_yujss")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/focus = SubResource("StyleBoxEmpty_mqvbe")
+editable = false
 expand_to_text_length = true
 
 [node name="ButtonRenameResource" type="Button" parent="MarginContainer/GridContainer/ResourceNameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-tooltip_text = "Change the [code]resource_name[/color] of this resource. The [code]resource_name[/code] is used for display in the Editor and in debug tools.
-[b]NOTE[/b]: This is [i]not[/i] related to the file path of the resource."
+tooltip_text = "Change the name of this resource. The name is used for display in the Editor and in debug tools.
+
+NOTE: This is NOT related to the file path of the resource."
+theme_type_variation = &"ButtonLarge"
 action_mode = 0
+shortcut = SubResource("Shortcut_6uchm")
 text = "Rename"
 
 [node name="ButtonContainer" type="HBoxContainer" parent="MarginContainer/GridContainer"]
@@ -80,13 +81,13 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 tooltip_text = "Save the current resource"
+theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
 text = "Save"
 
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 16
 
 [node name="ResourceNodes" type="HBoxContainer" parent="."]
 unique_name_in_owner = true

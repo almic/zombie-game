@@ -1,6 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://bwnd7nt53uv48"]
 
 [ext_resource type="Script" uid="uid://jfap2q44fggy" path="res://addons/behavior/screen/project_settings/project_settings.gd" id="1_edybn"]
+[ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_jwc78"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_pka41"]
 device = -1
@@ -11,15 +12,7 @@ unicode = 115
 [sub_resource type="Shortcut" id="Shortcut_jwc78"]
 events = [SubResource("InputEventKey_pka41")]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_edybn"]
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-bg_color = Color(0, 0, 0, 0.1254902)
-corner_detail = 1
-
-[sub_resource type="DPITexture" id="DPITexture_edybn"]
+[sub_resource type="DPITexture" id="DPITexture_suskl"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#ff5d5d\" d=\"M2 1v8.586l1.293-1.293a1 1 0 0 1 1.414 0L7 10.587l2.293-2.293a1 1 0 0 1 1.414 0L13 10.586l1-1V6H9V1H2zm8 0v4h4zm-6 9.414-2 2V15h12v-2.586l-.293.293a1 1 0 0 1-1.414 0L10 10.414l-2.293 2.293a1 1 0 0 1-1.414 0L4 10.414z\"/></svg>
 "
 
@@ -29,6 +22,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme = ExtResource("1_jwc78")
 script = ExtResource("1_edybn")
 
 [node name="HeaderMargin" type="MarginContainer" parent="."]
@@ -42,6 +36,7 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="HeaderMargin/Header"]
 layout_mode = 2
+theme_type_variation = &"HeaderMedium"
 text = "Project Settings"
 
 [node name="Buttons" type="HBoxContainer" parent="HeaderMargin/Header"]
@@ -53,12 +48,19 @@ alignment = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 shortcut = SubResource("Shortcut_jwc78")
 text = "Save"
 
+[node name="ButtonMenu" type="Button" parent="HeaderMargin/Header/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+theme_type_variation = &"ButtonLarge"
+text = "Menu"
+
 [node name="HSeparator" type="HSeparator" parent="."]
 layout_mode = 2
-theme_override_constants/separation = 16
 
 [node name="ScrollContainer" type="ScrollContainer" parent="."]
 layout_mode = 2
@@ -72,7 +74,6 @@ theme_override_constants/separation = 0
 
 [node name="VisionGroupPanel" type="PanelContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_edybn")
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/VisionGroupPanel"]
 layout_mode = 2
@@ -87,7 +88,7 @@ theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="ScrollContainer/VBoxContainer/VisionGroupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"HeaderSmall"
 text = "Vision Global Groups"
 
 [node name="LabelNoVisionGroups" type="Label" parent="ScrollContainer/VBoxContainer/VisionGroupPanel/MarginContainer/VBoxContainer"]
@@ -107,9 +108,10 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
 action_mode = 0
 text = "Vision Group"
-icon = SubResource("DPITexture_edybn")
+icon = SubResource("DPITexture_suskl")
 
 [node name="HSeparator" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
@@ -117,7 +119,6 @@ theme_override_constants/separation = 0
 
 [node name="SoundGroupPanel" type="PanelContainer" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_edybn")
 
 [node name="MarginContainer" type="MarginContainer" parent="ScrollContainer/VBoxContainer/SoundGroupPanel"]
 layout_mode = 2
@@ -132,11 +133,12 @@ theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="ScrollContainer/VBoxContainer/SoundGroupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_type_variation = &"HeaderSmall"
 text = "Sound Global Groups"
 
 [node name="LabelNoSoundGroups" type="Label" parent="ScrollContainer/VBoxContainer/SoundGroupPanel/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
+visible = false
 layout_mode = 2
 text = "	There are currently no sound groups. Click the button to add one."
 tab_stops = PackedFloat32Array(50)
@@ -151,6 +153,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 16
 action_mode = 0
 text = "Sound Group"
-icon = SubResource("DPITexture_edybn")
+icon = SubResource("DPITexture_suskl")

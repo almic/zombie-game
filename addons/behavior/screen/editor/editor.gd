@@ -1,38 +1,37 @@
+@tool
 extends VBoxContainer
 
 
 var current_resource: Resource
-
-var _is_renaming: bool
+var editor_save: Callable
 
 
 func _ready() -> void:
     %ButtonRenameResource.pressed.connect(on_rename_resource)
     %ResourceNameEdit.text_submitted.connect(on_rename_resource_submitted)
 
+    %ButtonSaveResource.pressed.connect(save_resource)
 
 func edit(res: Resource) -> void:
     current_resource = res
 
-    %ResourceName.text = res.resource_name
-    %ResourceName.visible = true
-    %ResourceNameEdit.visible = false
+    %ResourceNameEdit.text = current_resource.resource_name
+    %ResourceNameEdit.editable = false
     %ButtonRenameResource.text = "Rename"
-    _is_renaming = false
 
     %Menu.visible = false
     %Editor.visible = true
 
-    if res is BehaviorMindSettings:
+    if current_resource is BehaviorMindSettings:
         %MindEditor.visible = true
+        %MindEditor.edit(current_resource)
+        editor_save = %MindEditor.save
 
 func on_rename_resource() -> void:
-    if not _is_renaming:
-        %ResourceNameEdit.text = %ResourceName.text
-        %ResourceName.visible = false
-        %ResourceNameEdit.visible = true
+    if not %ResourceNameEdit.editable:
+        %ResourceNameEdit.text = current_resource.resource_name
+        %ResourceNameEdit.editable = true
         %ButtonRenameResource.text = "Confirm"
-        _is_renaming = true
         return
 
     on_rename_resource_submitted(%ResourceNameEdit.text)
@@ -48,8 +47,11 @@ func on_rename_resource_submitted(new_name: String) -> void:
         current_resource.resource_name = old_name
         return
 
-    %ResourceName.text = current_resource.resource_name
+    %ResourceNameEdit.editable = false
+    %ResourceNameEdit.text = current_resource.resource_name
     %ButtonRenameResource.text = "Rename"
-    %ResourceNameEdit.visible = false
-    %ResourceName.visible = true
-    _is_renaming = false
+
+func save_resource() -> void:
+    editor_save.call()
+    ResourceSaver.save(current_resource)
+    EditorInterface.save_scene()

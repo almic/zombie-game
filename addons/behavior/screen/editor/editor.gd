@@ -2,21 +2,26 @@
 extends HSplitContainer
 
 
+const CREATE = preload("uid://cd6347u3w4lsf")
+
+
 ## Emitted when traveling to behavior menu
 signal goto_menu()
 
 
 var current_resource: Resource
-var editor_save: Callable
 
 
 func _ready() -> void:
-    %ButtonRenameResource.pressed.connect(on_rename_resource)
-    %ResourceNameEdit.text_submitted.connect(on_rename_resource_submitted)
-
-    %ButtonSaveResource.pressed.connect(save_resource)
     %ButtonCollapseList.icon = get_theme_icon("Back", "EditorIcons")
     %ButtonCollapseList.pressed.connect(on_collapse_list)
+
+    %ButtonRename.pressed.connect(on_rename_resource)
+    %ResourceNameEdit.text_submitted.connect(on_rename_resource_submitted)
+
+    %ButtonSave.pressed.connect(save_resource)
+
+    %ButtonNew.pressed.connect(create_resource)
 
     %ButtonMenu.pressed.connect(goto_menu.emit)
 
@@ -26,15 +31,9 @@ func edit(res: Resource) -> void:
 
     %ResourceNameEdit.text = current_resource.resource_name
     %ResourceNameEdit.editable = false
-    %ButtonRenameResource.text = "Rename"
+    %ButtonRename.text = "Rename"
 
-    %Menu.visible = false
-    %Editor.visible = true
-
-    if current_resource is BehaviorMindSettings:
-        %MindEditor.visible = true
-        %MindEditor.edit(current_resource)
-        editor_save = %MindEditor.save
+    # TODO: open new editor and add to list
 
 
 func on_collapse_list() -> void:
@@ -73,7 +72,30 @@ func on_rename_resource_submitted(new_name: String) -> void:
 
     %ResourceNameEdit.editable = false
     %ResourceNameEdit.text = current_resource.resource_name
-    %ButtonRenameResource.text = "Rename"
+    %ButtonRename.text = "Rename"
+
+
+func create_resource() -> void:
+    var popup: AcceptDialog = AcceptDialog.new()
+    popup.title = 'Create New Resource'
+    popup.get_label().visible = false
+    popup.get_ok_button().visible = false
+    popup.theme = theme
+
+    var create: Control = CREATE.instantiate()
+    create.new_resource.connect(
+        func(res: Resource):
+            edit(res)
+            popup.queue_free()
+    )
+    create.canceled.connect(
+        func():
+            popup.queue_free()
+    )
+
+    popup.add_child(create)
+
+    EditorInterface.popup_dialog_centered(popup)
 
 
 func save_resource() -> void:
@@ -81,12 +103,8 @@ func save_resource() -> void:
     if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
         EditorInterface.save_scene()
 
-    var updated: bool = editor_save.call()
-    if not updated:
-        return
+    # TODO: save currently opened resource
 
-    var err: Error = ResourceSaver.save(current_resource)
-    if err:
-        push_error('Failed to save resource "%s"! Error: ' + str(err))
-        editor_save.call(true)
-        return
+    # var err: Error = ResourceSaver.save(current_resource)
+    # if err:
+    #     push_error('Failed to save resource "%s"! Error: ' + str(err))

@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://co2ju0gpm5s0a"]
+[gd_scene load_steps=4 format=3 uid="uid://co2ju0gpm5s0a"]
 
 [ext_resource type="Script" uid="uid://bwsu7iko7f6ye" path="res://addons/behavior/screen/menu/menu.gd" id="1_docbi"]
 [ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_m0rmn"]
+[ext_resource type="PackedScene" uid="uid://cd6347u3w4lsf" path="res://addons/behavior/screen/menu/create.tscn" id="3_yq2x7"]
 
 [node name="MainMenu" type="CenterContainer"]
 theme = ExtResource("1_m0rmn")
@@ -56,75 +57,12 @@ size_flags_horizontal = 4
 theme_type_variation = &"ButtonLarge"
 text = "Edit Project Settings"
 
-[node name="Create" type="VBoxContainer" parent="VBoxContainer"]
+[node name="Create" parent="VBoxContainer" instance=ExtResource("3_yq2x7")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="TypeSelection" type="OptionButton" parent="VBoxContainer/Create"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 16
-selected = 0
-fit_to_longest_item = false
-item_count = 4
-popup/item_0/text = "Select Type"
-popup/item_0/id = 0
-popup/item_0/disabled = true
-popup/item_0/separator = true
-popup/item_1/text = "Mind"
-popup/item_1/id = 1
-popup/item_2/text = "Sense"
-popup/item_2/id = 2
-popup/item_3/text = "Goal"
-popup/item_3/id = 3
-
-[node name="VariantSelection" type="OptionButton" parent="VBoxContainer/Create"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 16
-disabled = true
-flat = true
-selected = 0
-item_count = 1
-popup/item_0/text = "Select Variant"
-popup/item_0/id = 0
-popup/item_0/disabled = true
-popup/item_0/separator = true
-
-[node name="NameEditCreate" type="LineEdit" parent="VBoxContainer/Create"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 16
-editable = false
-clear_button_enabled = true
-
-[node name="ButtonCreateNew" type="Button" parent="VBoxContainer/Create"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(300, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_type_variation = &"ButtonLarge"
-disabled = true
-action_mode = 0
-text = "Create"
 
 [node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 4
-
-[node name="ButtonBack" type="Button" parent="VBoxContainer"]
-unique_name_in_owner = true
-visible = false
-custom_minimum_size = Vector2(100, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Back"

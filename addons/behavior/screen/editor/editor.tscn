@@ -80,7 +80,7 @@ placeholder_text = "Unnamed Resource"
 editable = false
 expand_to_text_length = true
 
-[node name="ButtonRenameResource" type="Button" parent="Right/MarginContainer/HeaderBar/ResourceNameContainer"]
+[node name="ButtonRename" type="Button" parent="Right/MarginContainer/HeaderBar/ResourceNameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Change the name of this resource. The name is used for display in the Editor and in debug tools.
@@ -95,9 +95,10 @@ text = "Rename"
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+theme_override_constants/separation = 8
 alignment = 2
 
-[node name="ButtonSaveResource" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
+[node name="ButtonSave" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
@@ -106,6 +107,16 @@ theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
 text = "Save"
+
+[node name="ButtonNew" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+tooltip_text = "Save the current resource"
+theme_type_variation = &"ButtonLarge"
+action_mode = 0
+shortcut = SubResource("Shortcut_eqhsy")
+text = "New"
 
 [node name="ButtonMenu" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true

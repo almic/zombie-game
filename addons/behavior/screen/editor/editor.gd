@@ -164,17 +164,25 @@ func on_drag_start(at: Vector2) -> Variant:
 
 func on_drag_can_drop(at: Vector2, data: Variant) -> bool:
     var d: Dictionary = data as Dictionary
-    if d.get('type') != LIST_ITEM:
-        return false
-    if typeof(d.get('idx')) == TYPE_INT:
-        return true
+    if d.get('type') == LIST_ITEM:
+        if typeof(d.get('idx')) == TYPE_INT:
+            return true
+    # From the file system
+    elif str(d.get('type')) == 'files':
+        # Accept if any file matches our types
+        for file in d.get('files'):
+            if file.is_empty() or not FileAccess.file_exists(file):
+                continue
+            if ResourceLoader.exists(file, 'Resource'):
+                return true
     return false
 
 func on_drag_end(at: Vector2, data: Variant) -> void:
     if not on_drag_can_drop(at, data):
         return
 
-    var from_idx: int = (data as Dictionary).get('idx')
+    var d: Dictionary = data as Dictionary
+
     var new_idx: int = 0
     if at == Vector2.INF:
         if %ItemList.is_anything_selected():
@@ -182,7 +190,53 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
     else:
         new_idx = %ItemList.get_item_at_position(at)
 
-    move_item(from_idx, new_idx)
+    if d.get('type') == LIST_ITEM:
+        var from_idx: int = (data as Dictionary).get('idx')
+        move_item(from_idx, new_idx)
+        return
+
+    if str(d.get('type')) == 'files':
+        if %ItemList.item_count > 0:
+            new_idx = all_items.find(%ItemList.get_item_metadata(new_idx))
+            if new_idx == -1:
+                push_error('Unable to find original item index when dropping files!')
+                new_idx = 0
+
+        # Load many files
+        var last_item: ResourceItem = null
+        for file in d.get('files'):
+            if file.is_empty() or not FileAccess.file_exists(file):
+                continue
+            if not ResourceLoader.exists(file, 'Resource'):
+                continue
+
+            var res: Resource = ResourceLoader.load(file)
+            if not res:
+                push_error('Failed to load resource "%s" from file drop!' % file)
+                continue
+
+            var bvhr_res: BehaviorExtendedResource = res as BehaviorExtendedResource
+            if not bvhr_res:
+                toast('Resource at "%s" is not a recognized Behavior resource type.' % file, EditorToaster.SEVERITY_WARNING)
+                continue
+
+            var item := get_or_add_resource(bvhr_res)
+            last_item = item
+
+            var idx: int = get_item_index(item)
+            if idx != -1:
+                # Already in our list
+                continue
+
+            # Add to list in place
+            idx = add_to_item_list(item)
+            move_item(idx, new_idx)
+            new_idx += 1
+
+        if last_item:
+            select_item(last_item)
+
+        return
 
 
 func on_filter_text_changed(filter: String) -> void:

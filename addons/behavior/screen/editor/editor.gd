@@ -107,6 +107,8 @@ func get_or_add_resource(res: Resource) -> ResourceItem:
     var editor: Control
     if res is BehaviorMindSettings:
         editor = EDITOR_MIND.instantiate()
+    # TODO: add other editor types
+    # elif res is ... :
     else:
         push_error('Unknown resource type "%s"! Cannot open for editing.' % (res.get_script() as Script).get_global_name())
         return null
@@ -270,6 +272,7 @@ func on_popup_id_pressed(id: int, item_idx: int) -> void:
 
         if %ItemList.item_count == 0:
             %NoItem.visible = true
+            %ResourceNameEdit.text = ''
             return
 
         # Select next index
@@ -398,6 +401,8 @@ func show_popup_menu(idx: int) -> void:
 
     popup_menu.position = get_screen_position() + get_local_mouse_position()
     popup_menu.reset_size()
+    for connection in popup_menu.id_pressed.get_connections():
+        popup_menu.id_pressed.disconnect(connection.callable)
     popup_menu.id_pressed.connect(on_popup_id_pressed.bind(idx), CONNECT_ONE_SHOT)
     popup_menu.popup()
 

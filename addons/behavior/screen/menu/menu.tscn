@@ -8,11 +8,29 @@
 theme = ExtResource("1_m0rmn")
 script = ExtResource("1_docbi")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="AspectRatioContainer" type="AspectRatioContainer" parent="."]
+layout_mode = 2
+ratio = 1.333
+stretch_mode = 3
+
+[node name="PanelContainer" type="PanelContainer" parent="AspectRatioContainer"]
+layout_mode = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="AspectRatioContainer/PanelContainer"]
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="AspectRatioContainer/PanelContainer/CenterContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer"]
 custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 
-[node name="Label" type="Label" parent="VBoxContainer"]
+[node name="Label" type="Label" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
@@ -23,17 +41,17 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="Menu" type="VBoxContainer" parent="VBoxContainer"]
+[node name="Menu" type="VBoxContainer" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ButtonEditor" type="Button" parent="VBoxContainer/Menu"]
+[node name="ButtonEditor" type="Button" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer/Menu"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
@@ -41,7 +59,7 @@ size_flags_horizontal = 4
 theme_type_variation = &"ButtonLarge"
 text = "Resource Editor"
 
-[node name="ButtonCreate" type="Button" parent="VBoxContainer/Menu"]
+[node name="ButtonCreate" type="Button" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer/Menu"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
@@ -49,7 +67,7 @@ size_flags_horizontal = 4
 theme_type_variation = &"ButtonLarge"
 text = "New Behavior Resource"
 
-[node name="ButtonSettings" type="Button" parent="VBoxContainer/Menu"]
+[node name="ButtonSettings" type="Button" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer/Menu"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
@@ -57,12 +75,12 @@ size_flags_horizontal = 4
 theme_type_variation = &"ButtonLarge"
 text = "Edit Project Settings"
 
-[node name="Create" parent="VBoxContainer" instance=ExtResource("3_yq2x7")]
+[node name="Create" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer" instance=ExtResource("3_yq2x7")]
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
 
-[node name="HSeparator2" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator2" type="HSeparator" parent="AspectRatioContainer/PanelContainer/CenterContainer/MarginContainer/VBoxContainer"]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 size_flags_horizontal = 4

@@ -29,6 +29,8 @@ signal goto_menu()
 var current_item: ResourceItem
 var popup_menu: PopupMenu
 
+var all_items: Array[ResourceItem]
+
 # Copied from engine source
 var grab_focus_block: bool = false
 
@@ -89,10 +91,16 @@ func select_item(item: ResourceItem) -> void:
     var idx: int = get_item_index(item)
     if idx != -1:
         %ItemList.select(idx)
+        return
+
+    # Must add to the list
+    idx = add_to_item_list(item)
+    move_item(idx, 0)
+    %ItemList.select(0)
+
 
 func get_or_add_resource(res: Resource) -> ResourceItem:
-    for i in range(%ItemList.item_count):
-        var item: ResourceItem = %ItemList.get_item_metadata(i)
+    for item in all_items:
         if item.resource == res:
             return item
 
@@ -105,12 +113,11 @@ func get_or_add_resource(res: Resource) -> ResourceItem:
 
     editor.focus_mode = Control.FOCUS_ALL
     editor.resource = res
+    editor.visible = false
     %Editors.add_child(editor)
 
     var res_item: ResourceItem = ResourceItem.new(res, editor)
-    var idx: int = %ItemList.add_item(res.resource_path.get_file())
-    %ItemList.set_item_metadata(idx, res_item)
-    %ItemList.select(idx)
+    all_items.append(res_item)
 
     return res_item
 
@@ -175,13 +182,11 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
     else:
         new_idx = %ItemList.get_item_at_position(at)
 
-    if from_idx == new_idx:
-        return
+    move_item(from_idx, new_idx)
 
-    %ItemList.move_item(from_idx, new_idx)
 
 func on_filter_text_changed(filter: String) -> void:
-    pass
+    update_list()
 
 
 func on_item_clicked(idx: int, at_pos: Vector2, mouse_button: int) -> void:
@@ -206,6 +211,7 @@ func on_popup_id_pressed(id: int, item_idx: int) -> void:
         # TODO: check if not saved and ask to save
         %Editors.remove_child(item.editor)
         %ItemList.remove_item(item_idx)
+        all_items.erase(item)
         current_item = null
 
         if %ItemList.item_count == 0:
@@ -227,6 +233,8 @@ func on_rename_resource() -> void:
     if not %ResourceNameEdit.editable:
         %ResourceNameEdit.text = current_item.resource.resource_name
         %ResourceNameEdit.editable = true
+        %ResourceNameEdit.edit()
+        %ResourceNameEdit.caret_column = %ResourceNameEdit.text.length()
         %ButtonRename.text = "Confirm"
         return
 
@@ -251,6 +259,11 @@ func on_rename_resource_submitted(new_name: String) -> void:
     %ButtonRename.text = "Rename"
 
 
+func add_to_item_list(item: ResourceItem) -> int:
+    var idx: int = %ItemList.add_item(item.resource.resource_path.get_file())
+    %ItemList.set_item_metadata(idx, item)
+    return idx
+
 func create_resource() -> void:
     var popup: AcceptDialog = AcceptDialog.new()
     popup.title = 'Create New Resource'
@@ -272,6 +285,31 @@ func create_resource() -> void:
     popup.add_child(create)
 
     EditorInterface.popup_dialog_centered(popup)
+
+func move_item(from: int, to: int) -> void:
+    if from == to:
+        return
+
+    # If fewer than two items, ignore
+    if %ItemList.item_count < 2:
+        return
+
+    var item_from: ResourceItem = %ItemList.get_item_metadata(from)
+    var item_to: ResourceItem = %ItemList.get_item_metadata(to)
+
+    if not item_from or not item_to:
+        return
+
+    var item_from_idx: int = all_items.find(item_from)
+    var item_to_idx: int = all_items.find(item_to)
+
+    if item_from_idx == -1 or item_to_idx == -1:
+        return
+
+    all_items.remove_at(item_from_idx)
+    all_items.insert(item_to_idx, item_from)
+
+    %ItemList.move_item(from, to)
 
 
 func save_resource() -> void:
@@ -308,6 +346,40 @@ func show_popup_menu(idx: int) -> void:
     popup_menu.reset_size()
     popup_menu.id_pressed.connect(on_popup_id_pressed.bind(idx), CONNECT_ONE_SHOT)
     popup_menu.popup()
+
+func update_list() -> void:
+
+    %ItemList.clear()
+    if all_items.is_empty():
+        return
+
+    var filtered: Array[ResourceItem]
+
+    if %LineEditFilter.text.is_empty():
+        filtered = all_items
+    else:
+        var names: PackedStringArray = []
+        for item in all_items:
+            names.append(item.resource.resource_path.get_file())
+
+        var results: Array = []
+        String.fuzzy_search(%LineEditFilter.text, names, results)
+        results.sort_custom(
+            func(a: Dictionary, b: Dictionary):
+                return a.original_index < b.original_index
+        )
+
+        filtered.resize(results.size())
+        var i: int = 0
+        for search in results:
+            filtered[i] = all_items[search.original_index]
+            i += 1
+
+    %LabelNoFilterItems.visible = filtered.is_empty()
+
+    for item in filtered:
+        add_to_item_list(item)
+
 
 static func toast(
         message: String,

@@ -2,8 +2,12 @@
 extends HSplitContainer
 
 
+const THEME = preload("uid://d0tmanljmd1ao")
 const CREATE = preload("uid://cd6347u3w4lsf")
 const EDITOR_MIND = preload("uid://dfu7q11sy44hk")
+
+const LIST_ITEM = &'bhvr_editor_list_item'
+
 
 enum Menu {
     CLOSE = 1,
@@ -128,13 +132,53 @@ func on_collapse_list() -> void:
     dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
 
 func on_drag_start(at: Vector2) -> Variant:
-    return {}
+    if not %ItemList.is_anything_selected():
+        return null
+
+    var idx: int = %ItemList.get_selected_items()[0]
+    var item: ResourceItem = %ItemList.get_item_metadata(idx)
+
+    var preview: PanelContainer = PanelContainer.new()
+    preview.theme = THEME
+    preview.theme_type_variation = 'DragPreview'
+    var margin: MarginContainer = MarginContainer.new()
+    margin.add_theme_constant_override('margin_right', 4)
+    margin.add_theme_constant_override('margin_left', 4)
+    var label: Label = Label.new()
+    label.text = item.resource.resource_path.get_file()
+    margin.add_child(label)
+    preview.add_child(margin)
+    %ItemList.set_drag_preview(preview)
+
+    return {
+        type = LIST_ITEM,
+        idx = idx,
+    }
 
 func on_drag_can_drop(at: Vector2, data: Variant) -> bool:
+    var d: Dictionary = data as Dictionary
+    if d.get('type') != LIST_ITEM:
+        return false
+    if typeof(d.get('idx')) == TYPE_INT:
+        return true
     return false
 
 func on_drag_end(at: Vector2, data: Variant) -> void:
-    pass
+    if not on_drag_can_drop(at, data):
+        return
+
+    var from_idx: int = (data as Dictionary).get('idx')
+    var new_idx: int = 0
+    if at == Vector2.INF:
+        if %ItemList.is_anything_selected():
+            new_idx = %ItemList.get_selected_items()[0]
+    else:
+        new_idx = %ItemList.get_item_at_position(at)
+
+    if from_idx == new_idx:
+        return
+
+    %ItemList.move_item(from_idx, new_idx)
 
 func on_filter_text_changed(filter: String) -> void:
     pass

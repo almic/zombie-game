@@ -58,6 +58,20 @@ focus_neighbor_right = NodePath("../../Main/MarginContainer/HeaderBar/ResourceNa
 focus_neighbor_bottom = NodePath("../../Main/MarginContainer/HeaderBar/ResourceNameContainer/ButtonCollapseList")
 allow_search = false
 
+[node name="LabelNoFilterItems" type="Label" parent="ResourceList/ItemList"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 20.0
+grow_horizontal = 2
+theme_type_variation = &"TransparentLabel"
+text = "No items match this filter"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="Main" type="VBoxContainer" parent="."]
 layout_mode = 2
 

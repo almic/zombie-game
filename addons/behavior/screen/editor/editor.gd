@@ -3,16 +3,40 @@ extends HSplitContainer
 
 
 const CREATE = preload("uid://cd6347u3w4lsf")
+const EDITOR_MIND = preload("uid://dfu7q11sy44hk")
+
+enum Menu {
+    CLOSE = 1,
+}
+
+class ResourceItem:
+    var resource: Resource
+    var editor: Control
+
+    func _init(resource: Resource, editor: Control = null):
+        self.resource = resource
+        self.editor = editor
 
 
 ## Emitted when traveling to behavior menu
 signal goto_menu()
 
 
-var current_resource: Resource
+var current_item: ResourceItem
+var popup_menu: PopupMenu
+
+# Copied from engine source
+var grab_focus_block: bool = false
 
 
 func _ready() -> void:
+    %LineEditFilter.right_icon = get_theme_icon("Search", "EditorIcons")
+    %LineEditFilter.text_changed.connect(on_filter_text_changed)
+
+    %ItemList.item_selected.connect(on_item_selected)
+    %ItemList.item_clicked.connect(on_item_clicked, CONNECT_DEFERRED)
+    %ItemList.set_drag_forwarding(on_drag_start, on_drag_can_drop, on_drag_end)
+
     %ButtonCollapseList.icon = get_theme_icon("Back", "EditorIcons")
     %ButtonCollapseList.pressed.connect(on_collapse_list)
 
@@ -27,51 +51,159 @@ func _ready() -> void:
 
 
 func edit(res: Resource) -> void:
-    current_resource = res
+    var item: ResourceItem = get_or_add_resource(res)
 
-    %ResourceNameEdit.text = current_resource.resource_name
+    if item == null:
+        return
+
+    select_item(item)
+
+
+func select_item(item: ResourceItem) -> void:
+    if item == current_item:
+        return
+
+    if current_item:
+        current_item.editor.visible = false
+    else:
+        %NoItem.visible = false
+    current_item = item
+
+    current_item.editor.visible = true
+    if not grab_focus_block:
+        current_item.editor.grab_focus()
+
+    %ResourceNameEdit.text = current_item.resource.resource_name
     %ResourceNameEdit.editable = false
     %ButtonRename.text = "Rename"
 
-    # TODO: open new editor and add to list
+    # Select from list (if not selected)
+    var selected: PackedInt32Array = %ItemList.get_selected_items()
+    if not selected.is_empty() and item == %ItemList.get_item_metadata(selected[0]):
+        return
 
+    var idx: int = get_item_index(item)
+    if idx != -1:
+        %ItemList.select(idx)
+
+func get_or_add_resource(res: Resource) -> ResourceItem:
+    for i in range(%ItemList.item_count):
+        var item: ResourceItem = %ItemList.get_item_metadata(i)
+        if item.resource == res:
+            return item
+
+    var editor: Control
+    if res is BehaviorMindSettings:
+        editor = EDITOR_MIND.instantiate()
+    else:
+        push_error('Unknown resource type "%s"! Cannot open for editing.' % (res.get_script() as Script).get_global_name())
+        return null
+
+    editor.focus_mode = Control.FOCUS_ALL
+    editor.resource = res
+    %Editors.add_child(editor)
+
+    var res_item: ResourceItem = ResourceItem.new(res, editor)
+    var idx: int = %ItemList.add_item(res.resource_path.get_file())
+    %ItemList.set_item_metadata(idx, res_item)
+    %ItemList.select(idx)
+
+    return res_item
+
+func get_item_index(item: ResourceItem) -> int:
+    for i in range(%ItemList.item_count):
+        if item == %ItemList.get_item_metadata(i):
+            return i
+    return -1
 
 func on_collapse_list() -> void:
-    if collapsed:
+    if not %ResourceList.visible:
         %ResourceList.visible = true
         %ButtonCollapseList.icon = get_theme_icon("Back", "EditorIcons")
         dragger_visibility = SplitContainer.DRAGGER_VISIBLE
-        collapsed = false
         return
 
     %ResourceList.visible = false
     %ButtonCollapseList.icon = get_theme_icon("Forward", "EditorIcons")
     dragger_visibility = SplitContainer.DRAGGER_HIDDEN_COLLAPSED
-    collapsed = true
 
+func on_drag_start(at: Vector2) -> Variant:
+    return {}
+
+func on_drag_can_drop(at: Vector2, data: Variant) -> bool:
+    return false
+
+func on_drag_end(at: Vector2, data: Variant) -> void:
+    pass
+
+func on_filter_text_changed(filter: String) -> void:
+    pass
+
+
+func on_item_clicked(idx: int, at_pos: Vector2, mouse_button: int) -> void:
+    if mouse_button == MouseButton.MOUSE_BUTTON_LEFT:
+        select_item(%ItemList.get_item_metadata(idx))
+        return
+    elif mouse_button == MouseButton.MOUSE_BUTTON_RIGHT:
+        show_popup_menu(idx)
+        return
+
+func on_item_selected(idx: int) -> void:
+    grab_focus_block = !Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) # Quote: "amazing hack, simply amazing"
+    select_item(%ItemList.get_item_metadata(idx))
+    grab_focus_block = false
+
+func on_popup_id_pressed(id: int, item_idx: int) -> void:
+    if item_idx < 0 or item_idx >= %ItemList.item_count:
+        return
+
+    var item: ResourceItem = %ItemList.get_item_metadata(item_idx)
+    if id == Menu.CLOSE:
+        # TODO: check if not saved and ask to save
+        %Editors.remove_child(item.editor)
+        %ItemList.remove_item(item_idx)
+        current_item = null
+
+        if %ItemList.item_count == 0:
+            %NoItem.visible = true
+            return
+
+        # Select next index
+        item_idx = clampi(item_idx - 1, 0, %ItemList.item_count - 1)
+        %ItemList.select(item_idx)
+        %ItemList.item_selected.emit(item_idx)
+
+        return
 
 func on_rename_resource() -> void:
+    if not current_item:
+        toast('No resource opened!', EditorToaster.SEVERITY_WARNING)
+        return
+
     if not %ResourceNameEdit.editable:
-        %ResourceNameEdit.text = current_resource.resource_name
+        %ResourceNameEdit.text = current_item.resource.resource_name
         %ResourceNameEdit.editable = true
-        %ButtonRenameResource.text = "Confirm"
+        %ButtonRename.text = "Confirm"
         return
 
     on_rename_resource_submitted(%ResourceNameEdit.text)
 
 
 func on_rename_resource_submitted(new_name: String) -> void:
-    var old_name: String = current_resource.resource_name
-    current_resource.resource_name = new_name
+    if not current_item:
+        toast('No resource opened!', EditorToaster.SEVERITY_WARNING)
 
-    var err: Error = ResourceSaver.save(current_resource)
+    var old_name: String = current_item.resource.resource_name
+    current_item.resource.resource_name = new_name
+
+    var err: Error = ResourceSaver.save(current_item.resource)
     if err:
         push_error('Error renaming resource from "' + old_name + '" to "' + new_name + '": ' + str(err))
-        current_resource.resource_name = old_name
+        current_item.resource.resource_name = old_name
         return
 
     %ResourceNameEdit.editable = false
-    %ResourceNameEdit.text = current_resource.resource_name
+    %ResourceNameEdit.text = current_item.resource.resource_name
     %ButtonRename.text = "Rename"
 
 
@@ -103,8 +235,39 @@ func save_resource() -> void:
     if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
         EditorInterface.save_scene()
 
-    # TODO: save currently opened resource
+    if not current_item:
+        toast('No opened behavior resource to save.')
 
-    # var err: Error = ResourceSaver.save(current_resource)
-    # if err:
-    #     push_error('Failed to save resource "%s"! Error: ' + str(err))
+    var err: Error = ResourceSaver.save(current_item.resource)
+    if err:
+        push_error('Failed to save resource "%s"! Error: %d' % [current_item.resource.resource_path, err])
+
+
+func show_popup_menu(idx: int) -> void:
+    if not popup_menu:
+        popup_menu = PopupMenu.new()
+        add_child(popup_menu)
+
+    var sh: Shortcut
+    var ev: InputEventKey
+    popup_menu.clear()
+
+    sh = Shortcut.new()
+    ev = InputEventKey.new()
+    ev.keycode = KEY_W
+    ev.ctrl_pressed = true
+    sh.events.append(ev)
+    popup_menu.add_item("Close", Menu.CLOSE)
+    popup_menu.set_item_shortcut(-1, sh)
+
+    popup_menu.position = get_screen_position() + get_local_mouse_position()
+    popup_menu.reset_size()
+    popup_menu.id_pressed.connect(on_popup_id_pressed.bind(idx), CONNECT_ONE_SHOT)
+    popup_menu.popup()
+
+static func toast(
+        message: String,
+        severity: EditorToaster.Severity = EditorToaster.Severity.SEVERITY_INFO,
+        tooltip: String = ''
+) -> void:
+    EditorInterface.get_editor_toaster().push_toast(message, severity, tooltip)

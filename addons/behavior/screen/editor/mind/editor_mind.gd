@@ -6,8 +6,8 @@ var resource: BehaviorMindSettings
 var is_saved: bool = true
 
 
-func edit(res: BehaviorMindSettings) -> void:
-    resource = res
+func _ready() -> void:
+    pass
 
 func save(failed: bool = false) -> bool:
     if is_saved:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dmwmompdaabqp"]
+[gd_scene load_steps=8 format=3 uid="uid://dmwmompdaabqp"]
 
 [ext_resource type="Script" uid="uid://dw2db5uca28dk" path="res://addons/behavior/screen/editor/editor.gd" id="1_dht7n"]
 [ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_mqvbe"]
@@ -6,8 +6,6 @@
 [sub_resource type="DPITexture" id="DPITexture_dht7n"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#ff5d5d\" d=\"M2 1v8.586l1.293-1.293a1 1 0 0 1 1.414 0L7 10.587l2.293-2.293a1 1 0 0 1 1.414 0L13 10.586l1-1V6H9V1H2zm8 0v4h4zm-6 9.414-2 2V15h12v-2.586l-.293.293a1 1 0 0 1-1.414 0L10 10.414l-2.293 2.293a1 1 0 0 1-1.414 0L4 10.414z\"/></svg>
 "
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mqvbe"]
 
 [sub_resource type="InputEventKey" id="InputEventKey_5e7se"]
 device = -1
@@ -44,6 +42,8 @@ layout_mode = 2
 [node name="LineEditFilter" type="LineEdit" parent="ResourceList"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_neighbor_left = NodePath("../../Main/MarginContainer/HeaderBar/ButtonContainer/ButtonMenu")
+focus_neighbor_right = NodePath("../../Main/MarginContainer/HeaderBar/ResourceNameContainer/ButtonCollapseList")
 placeholder_text = "Filter Resources"
 clear_button_enabled = true
 right_icon = SubResource("DPITexture_dht7n")
@@ -52,8 +52,11 @@ right_icon = SubResource("DPITexture_dht7n")
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+focus_neighbor_left = NodePath("../../Main/MarginContainer/HeaderBar/ButtonContainer/ButtonMenu")
+focus_neighbor_top = NodePath("../LineEditFilter")
+focus_neighbor_right = NodePath("../../Main/MarginContainer/HeaderBar/ResourceNameContainer/ButtonCollapseList")
+focus_neighbor_bottom = NodePath("../../Main/MarginContainer/HeaderBar/ResourceNameContainer/ButtonCollapseList")
 allow_search = false
-text_overrun_behavior = 5
 
 [node name="Main" type="VBoxContainer" parent="."]
 layout_mode = 2
@@ -77,13 +80,17 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Toggle Files Panel"
+focus_neighbor_left = NodePath("../../../../../ResourceList/ItemList")
+focus_neighbor_right = NodePath("../ResourceNameEdit")
+focus_neighbor_bottom = NodePath("../../../../Editors")
 icon = SubResource("DPITexture_dht7n")
 
 [node name="ResourceNameEdit" type="LineEdit" parent="Main/MarginContainer/HeaderBar/ResourceNameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
+focus_neighbor_left = NodePath("../ButtonCollapseList")
+focus_neighbor_right = NodePath("../ButtonRename")
 theme_override_font_sizes/font_size = 20
-theme_override_styles/focus = SubResource("StyleBoxEmpty_mqvbe")
 placeholder_text = "Unnamed Resource"
 editable = false
 expand_to_text_length = true
@@ -94,6 +101,8 @@ layout_mode = 2
 tooltip_text = "Change the name of this resource. The name is used for display in the Editor and in debug tools.
 
 NOTE: This is NOT related to the file path of the resource."
+focus_neighbor_left = NodePath("../ResourceNameEdit")
+focus_neighbor_right = NodePath("../../ButtonContainer/ButtonSave")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_6uchm")
@@ -111,6 +120,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 tooltip_text = "Save the current resource"
+focus_neighbor_left = NodePath("../../ResourceNameContainer/ButtonRename")
+focus_neighbor_right = NodePath("../ButtonNew")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
@@ -121,6 +132,8 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 tooltip_text = "Save the current resource"
+focus_neighbor_left = NodePath("../ButtonSave")
+focus_neighbor_right = NodePath("../ButtonMenu")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
@@ -131,6 +144,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 tooltip_text = "Save the current resource"
+focus_neighbor_left = NodePath("../ButtonNew")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
@@ -140,3 +154,26 @@ text = "Menu"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="NoItem" type="CenterContainer" parent="Main/Editors"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Main/Editors/NoItem"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Main/Editors/NoItem/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"HeaderSmall"
+text = "No Behavior Resource Selected"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Main/Editors/NoItem/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="Main/Editors/NoItem/VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"TransparentLabel"
+text = "Select a resource from the file system,
+or click the \"New\" button at the top-right."
+horizontal_alignment = 1

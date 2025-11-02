@@ -2,7 +2,6 @@
 extends Control
 
 
-
 ## Emitted when traveling to the resource editor
 signal goto_editor(res: Resource)
 

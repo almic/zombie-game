@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dw2db5uca28dk" path="res://addons/behavior/screen/editor/editor.gd" id="1_dht7n"]
 [ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_mqvbe"]
 
-[sub_resource type="DPITexture" id="DPITexture_mqvbe"]
+[sub_resource type="DPITexture" id="DPITexture_dht7n"]
 _source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><path fill=\"#ff5d5d\" d=\"M2 1v8.586l1.293-1.293a1 1 0 0 1 1.414 0L7 10.587l2.293-2.293a1 1 0 0 1 1.414 0L13 10.586l1-1V6H9V1H2zm8 0v4h4zm-6 9.414-2 2V15h12v-2.586l-.293.293a1 1 0 0 1-1.414 0L10 10.414l-2.293 2.293a1 1 0 0 1-1.414 0L4 10.414z\"/></svg>
 "
 
@@ -36,42 +36,50 @@ split_offset = 220
 drag_area_margin_begin = 56
 script = ExtResource("1_dht7n")
 
-[node name="Left" type="PanelContainer" parent="."]
-layout_mode = 2
-
-[node name="MarginContainer" type="MarginContainer" parent="Left"]
-layout_mode = 2
-
-[node name="ResourceList" type="VBoxContainer" parent="Left/MarginContainer"]
+[node name="ResourceList" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 
-[node name="Right" type="VBoxContainer" parent="."]
+[node name="LineEditFilter" type="LineEdit" parent="ResourceList"]
+unique_name_in_owner = true
+layout_mode = 2
+placeholder_text = "Filter Resources"
+clear_button_enabled = true
+right_icon = SubResource("DPITexture_dht7n")
+
+[node name="ItemList" type="ItemList" parent="ResourceList"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+allow_search = false
+text_overrun_behavior = 5
+
+[node name="Main" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="MarginContainer" type="MarginContainer" parent="Right"]
+[node name="MarginContainer" type="MarginContainer" parent="Main"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="HeaderBar" type="HBoxContainer" parent="Right/MarginContainer"]
+[node name="HeaderBar" type="HBoxContainer" parent="Main/MarginContainer"]
 layout_mode = 2
 
-[node name="ResourceNameContainer" type="HBoxContainer" parent="Right/MarginContainer/HeaderBar"]
+[node name="ResourceNameContainer" type="HBoxContainer" parent="Main/MarginContainer/HeaderBar"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
-[node name="ButtonCollapseList" type="Button" parent="Right/MarginContainer/HeaderBar/ResourceNameContainer"]
+[node name="ButtonCollapseList" type="Button" parent="Main/MarginContainer/HeaderBar/ResourceNameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Toggle Files Panel"
-icon = SubResource("DPITexture_mqvbe")
+icon = SubResource("DPITexture_dht7n")
 
-[node name="ResourceNameEdit" type="LineEdit" parent="Right/MarginContainer/HeaderBar/ResourceNameContainer"]
+[node name="ResourceNameEdit" type="LineEdit" parent="Main/MarginContainer/HeaderBar/ResourceNameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 20
@@ -80,7 +88,7 @@ placeholder_text = "Unnamed Resource"
 editable = false
 expand_to_text_length = true
 
-[node name="ButtonRename" type="Button" parent="Right/MarginContainer/HeaderBar/ResourceNameContainer"]
+[node name="ButtonRename" type="Button" parent="Main/MarginContainer/HeaderBar/ResourceNameContainer"]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Change the name of this resource. The name is used for display in the Editor and in debug tools.
@@ -91,14 +99,14 @@ action_mode = 0
 shortcut = SubResource("Shortcut_6uchm")
 text = "Rename"
 
-[node name="ButtonContainer" type="HBoxContainer" parent="Right/MarginContainer/HeaderBar"]
+[node name="ButtonContainer" type="HBoxContainer" parent="Main/MarginContainer/HeaderBar"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 8
 alignment = 2
 
-[node name="ButtonSave" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
+[node name="ButtonSave" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
@@ -108,7 +116,7 @@ action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
 text = "Save"
 
-[node name="ButtonNew" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
+[node name="ButtonNew" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
@@ -118,7 +126,7 @@ action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
 text = "New"
 
-[node name="ButtonMenu" type="Button" parent="Right/MarginContainer/HeaderBar/ButtonContainer"]
+[node name="ButtonMenu" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
@@ -128,7 +136,7 @@ action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
 text = "Menu"
 
-[node name="Editors" type="PanelContainer" parent="Right"]
+[node name="Editors" type="PanelContainer" parent="Main"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3

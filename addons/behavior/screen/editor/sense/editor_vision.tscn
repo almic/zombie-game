@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://dh5k5n1pp0xmg"]
+
+[ext_resource type="Script" uid="uid://cmi8x3xtldtm3" path="res://addons/behavior/screen/editor/sense/editor_vision.gd" id="1_gh27e"]
+
+[node name="EditorVision" type="MarginContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_gh27e")
+
+[node name="Properties" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Fov" type="VBoxContainer" parent="Properties"]
+layout_mode = 2
+theme_override_constants/separation = -4
+
+[node name="FovSpinBox" type="SpinBox" parent="Properties/Fov"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="FovSlider" type="HSlider" parent="Properties/Fov"]
+unique_name_in_owner = true
+layout_mode = 2
+scrollable = false
+
+[node name="Range" type="VBoxContainer" parent="Properties"]
+layout_mode = 2
+theme_override_constants/separation = -4
+
+[node name="RangeSpinBox" type="SpinBox" parent="Properties/Range"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="RangeSlider" type="HSlider" parent="Properties/Range"]
+unique_name_in_owner = true
+layout_mode = 2
+scrollable = false

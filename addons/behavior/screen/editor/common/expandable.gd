@@ -111,6 +111,17 @@ func _notification(what: int) -> void:
             is_hovering = false
 
 
+func _draw() -> void:
+    if is_expanded and expandable:
+        var type: StringName = "ExpandableContainer"
+        if not theme_type_variation.is_empty():
+            type = theme_type_variation
+        draw_style_box(
+                get_theme_stylebox('background', type),
+                Rect2(0, title_panel.size.y, size.x, expandable.size.y)
+        )
+
+
 func update_icon() -> void:
     if is_expanded:
         icon.texture = icon_fold
@@ -121,6 +132,7 @@ func set_expanded(expanded: bool) -> void:
     is_expanded = expanded
     is_hovering = is_hovering # NOTE: trigger stylebox update
     update_icon()
+    queue_redraw()
 
     if not expandable:
         return

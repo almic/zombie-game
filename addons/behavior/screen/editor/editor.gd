@@ -36,14 +36,14 @@ var grab_focus_block: bool = false
 
 
 func _ready() -> void:
-    %LineEditFilter.right_icon = get_theme_icon("Search", "EditorIcons")
+    %LineEditFilter.right_icon = get_theme_icon(&'Search', &'EditorIcons')
     %LineEditFilter.text_changed.connect(on_filter_text_changed)
 
     %ItemList.item_selected.connect(on_item_selected)
     %ItemList.item_clicked.connect(on_item_clicked, CONNECT_DEFERRED)
     %ItemList.set_drag_forwarding(on_drag_start, on_drag_can_drop, on_drag_end)
 
-    %ButtonCollapseList.icon = get_theme_icon("Back", "EditorIcons")
+    %ButtonCollapseList.icon = get_theme_icon(&'Back', &'EditorIcons')
     %ButtonCollapseList.pressed.connect(on_collapse_list)
 
     %ButtonRename.pressed.connect(on_rename_resource)
@@ -76,6 +76,10 @@ func select_item(item: ResourceItem) -> void:
     current_item = item
 
     current_item.editor.visible = true
+    if current_item.resource is BehaviorMindSettings:
+        pass
+
+
     if not grab_focus_block:
         current_item.editor.grab_focus()
 
@@ -114,9 +118,10 @@ func get_or_add_resource(res: Resource) -> ResourceItem:
         return null
 
     editor.focus_mode = Control.FOCUS_ALL
-    editor.resource = res
     editor.visible = false
     %Editors.add_child(editor)
+    # NOTE: set resource after ready (add_child)
+    editor.resource = res
 
     var res_item: ResourceItem = ResourceItem.new(res, editor)
     all_items.append(res_item)

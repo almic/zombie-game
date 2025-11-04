@@ -1,5 +1,6 @@
 ## A resource type that specifies a parent and overrides properties from the
 ## parent.
+@tool
 class_name BehaviorExtendedResource extends Resource
 
 
@@ -16,14 +17,11 @@ var base_overrides: Dictionary:
     set = set_overrides
 
 
-## If this resource had 'init_from_base()' called on it.
-var initialized: bool = false
-
 
 ## Must be called to properly initialize the resource properties from its base.
 ## It is safe to call this when no base is defined.
-func init_from_base() -> void:
-    initialized = true
+func _on_load(path: String) -> void:
+    print('_on_load called for "%s" at path "%s"' % [resource_name, path])
 
     if not base:
         return
@@ -31,10 +29,6 @@ func init_from_base() -> void:
     # Ensure setters run which do some validation
     base = base
     base_overrides = base_overrides
-
-    # Ensure base is initialized
-    if not base.initialized:
-        base.init_from_base()
 
     # Copy values from base, set values from override
     var props: Array[Dictionary] = base.get_property_list()
@@ -57,6 +51,9 @@ func set_base(new_base: BehaviorExtendedResource) -> void:
         base = null
         return
 
+    if new_base == base:
+        return
+
     # Base must be of the same class_name
     var my_name: StringName = get_script().get_global_name()
     var base_name: StringName = new_base.get_script().get_global_name()
@@ -65,6 +62,7 @@ func set_base(new_base: BehaviorExtendedResource) -> void:
         return
 
     base = new_base
+    _on_load(resource_path)
 
 
 func set_overrides(overrides: Dictionary) -> void:
@@ -83,3 +81,11 @@ func set_overrides(overrides: Dictionary) -> void:
             return
 
     base_overrides = overrides
+
+
+func override(name: String, value: Variant) -> void:
+    if value == null:
+        base_overrides.erase(name)
+        return
+
+    base_overrides.set(name, value)

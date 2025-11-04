@@ -96,7 +96,7 @@ layout_mode = 2
 tooltip_text = "Toggle Files Panel"
 focus_neighbor_left = NodePath("../../../../../ResourceList/ItemList")
 focus_neighbor_right = NodePath("../ResourceNameEdit")
-focus_neighbor_bottom = NodePath("../../../../Editors")
+focus_neighbor_bottom = NodePath("../../../../EditorsPanel")
 icon = SubResource("DPITexture_dht7n")
 
 [node name="ResourceNameEdit" type="LineEdit" parent="Main/MarginContainer/HeaderBar/ResourceNameContainer"]
@@ -164,28 +164,43 @@ action_mode = 0
 shortcut = SubResource("Shortcut_eqhsy")
 text = "Menu"
 
-[node name="Editors" type="PanelContainer" parent="Main"]
-unique_name_in_owner = true
+[node name="EditorsPanel" type="ScrollContainer" parent="Main"]
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
+vertical_scroll_mode = 4
 
-[node name="NoItem" type="CenterContainer" parent="Main/Editors"]
+[node name="Editors" type="PanelContainer" parent="Main/EditorsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_type_variation = &"PanelContainerScrolling"
+
+[node name="NoItem" type="CenterContainer" parent="Main/EditorsPanel/Editors"]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Main/Editors/NoItem"]
+[node name="MarginContainer" type="MarginContainer" parent="Main/EditorsPanel/Editors/NoItem"]
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Main/EditorsPanel/Editors/NoItem/MarginContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Main/Editors/NoItem/VBoxContainer"]
+[node name="Label" type="Label" parent="Main/EditorsPanel/Editors/NoItem/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_type_variation = &"HeaderSmall"
 text = "No Behavior Resource Selected"
 horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="Main/Editors/NoItem/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="Main/EditorsPanel/Editors/NoItem/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label2" type="Label" parent="Main/Editors/NoItem/VBoxContainer"]
+[node name="Label2" type="Label" parent="Main/EditorsPanel/Editors/NoItem/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_type_variation = &"TransparentLabel"
 text = "Select a resource from the file system,

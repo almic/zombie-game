@@ -12,29 +12,6 @@ func name() -> StringName:
     return NAME
 
 
-## Groups that can be seen
-@export var target_groups: Array[StringName]
-
-## Angular size of the cone field of view
-@export_range(1.0, 180.0, 1.0, 'radians_as_degrees')
-var fov: float = deg_to_rad(100.0):
-    set(value):
-        fov = value
-        _fov_cos = cos(fov * 0.5)
-var _fov_cos: float = cos(fov * 0.5)
-
-## Range of vision, cannot see anything beyond this distance.
-@export_range(0.0, 100.0, 0.01, "or_greater")
-var vision_range: float = 50.0:
-    set(value):
-        vision_range = value
-        _range_squared = vision_range * vision_range
-var _range_squared: float = vision_range * vision_range
-
-## Mask of physics layers that block vision
-@export_flags_3d_physics var mask: int = 16
-
-
 @export_subgroup("Debug", "debug")
 
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, '')

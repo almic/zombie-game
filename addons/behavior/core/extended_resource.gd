@@ -17,7 +17,6 @@ var base_overrides: Dictionary:
     set = set_overrides
 
 
-
 ## Must be called to properly initialize the resource properties from its base.
 ## It is safe to call this when no base is defined.
 func _on_load(path: String) -> void:
@@ -55,8 +54,8 @@ func set_base(new_base: BehaviorExtendedResource) -> void:
         return
 
     # Base must be of the same class_name
-    var my_name: StringName = get_script().get_global_name()
-    var base_name: StringName = new_base.get_script().get_global_name()
+    var my_name: StringName = get_script().resource_path
+    var base_name: StringName = new_base.get_script().resource_path
     if base_name != my_name:
         push_error('Cannot set a base type "%s" for my type "%s"! Base must be the same type!' % [base_name, my_name])
         return
@@ -85,7 +84,74 @@ func set_overrides(overrides: Dictionary) -> void:
 
 func override(name: String, value: Variant) -> void:
     if value == null:
+        print('deleting override: ' + name)
         base_overrides.erase(name)
         return
 
+    print('setting override "%s" = %s' % [name, str(value)])
     base_overrides.set(name, value)
+
+
+func _set(property: StringName, value: Variant) -> bool:
+    const extended_type = &'BehaviorExtendedResource'
+    if not base:
+        return false
+
+    # Check for override property
+    for prop in get_property_list():
+        # NOTE: everything from 'base' onward is to be ignored
+        if prop.class_name == extended_type:
+            return false
+
+        if prop.name != property:
+            continue
+
+        if prop.usage & PROPERTY_USAGE_SCRIPT_VARIABLE == 0:
+            return false
+
+        if prop.usage & PROPERTY_USAGE_STORAGE == 0:
+            return false
+
+        override(property, value)
+        break
+
+    return false
+
+## Create property editors for basic resource exports. Does not modify the
+## original resource. Value updates are passed to the provided callable.
+static func get_editor_property(
+        resource: BehaviorExtendedResource,
+        property_name: StringName,
+        on_changed_func: Callable
+) -> EditorProperty:
+    var info: Dictionary = resource.get_property_info(property_name)
+    if info.is_empty():
+        push_error('Cannot create EditorProperty for "%s" because it was not in the property list!' % property_name)
+        return null
+
+    var editor: EditorProperty = EditorInspector.instantiate_property_editor(
+            # NOTE: the passed object and name are actually 100% ignored
+            #       because we MUST call 'set_object_and_property' later,
+            #       otherwise it claims the object was Nil (stupid)
+            null, info.type, '',
+            info.hint, info.hint_string, PROPERTY_USAGE_NONE
+    )
+    editor.draw_label = false
+    editor.set_object_and_property(resource.duplicate(true), property_name)
+    editor.update_property()
+    editor.property_changed.connect(
+        func(_p: StringName, value: Variant, _f: StringName, _c: bool):
+            on_changed_func.call(value)
+    )
+
+    return editor
+
+
+## Returns the property info from 'get_property_list()'
+func get_property_info(property_name: StringName) -> Dictionary:
+    for prop in get_property_list():
+        if prop.name == property_name:
+            return prop
+
+    push_error('Cannot get property info for "%s" because it was not in the property list!' % property_name)
+    return {}

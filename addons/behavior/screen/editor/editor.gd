@@ -4,7 +4,9 @@ extends HSplitContainer
 
 const THEME = preload("uid://d0tmanljmd1ao")
 const CREATE = preload("uid://cd6347u3w4lsf")
+
 const EDITOR_MIND = preload("uid://dfu7q11sy44hk")
+const EDITOR_VISION = preload("uid://dh5k5n1pp0xmg")
 
 const LIST_ITEM = &'bhvr_editor_list_item'
 
@@ -111,6 +113,11 @@ func get_or_add_resource(res: Resource) -> ResourceItem:
     var editor: Control
     if res is BehaviorMindSettings:
         editor = EDITOR_MIND.instantiate()
+        var vision := get_or_add_resource(res.sense_vision)
+        #var hearing := get_or_add_resource(res.sense_hearing)
+        editor.accept_editors(vision.editor, null)
+    elif res is BehaviorSenseVisionSettings:
+        editor = EDITOR_VISION.instantiate()
     # TODO: add other editor types
     # elif res is ... :
     else:
@@ -119,9 +126,8 @@ func get_or_add_resource(res: Resource) -> ResourceItem:
 
     editor.focus_mode = Control.FOCUS_ALL
     editor.visible = false
-    %Editors.add_child(editor)
-    # NOTE: set resource after ready (add_child)
     editor.resource = res
+    %Editors.add_child(editor)
 
     var res_item: ResourceItem = ResourceItem.new(res, editor)
     all_items.append(res_item)

@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=94 format=3 uid="uid://d0tmanljmd1ao"]
+[gd_resource type="Theme" load_steps=96 format=3 uid="uid://d0tmanljmd1ao"]
 
 [sub_resource type="SystemFont" id="SystemFont_0d5qu"]
 font_names = PackedStringArray("Sans-Serif")
@@ -87,6 +87,16 @@ border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.09411765, 0.09411765, 0.09411765, 1)
+corner_detail = 1
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_lh3ja"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rh788"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0, 0, 0, 0.09411765)
 corner_detail = 1
 
 [sub_resource type="SystemFont" id="SystemFont_1oj7c"]
@@ -749,6 +759,8 @@ DarkLabel/colors/font_color = Color(0.7529412, 0.7529412, 0.7529412, 1)
 DarkLabel/styles/normal = SubResource("StyleBoxFlat_hefsy")
 DragPreview/base_type = &"PanelContainer"
 DragPreview/styles/panel = SubResource("StyleBoxFlat_dc3cw")
+EditorProperty/styles/child_bg = SubResource("StyleBoxEmpty_lh3ja")
+ExpandableContainer/styles/background = SubResource("StyleBoxFlat_rh788")
 FoldableContainer/colors/collapsed_font_color = Color(1, 1, 1, 0.627451)
 FoldableContainer/colors/font_color = Color(0.8784314, 0.8784314, 0.8784314, 1)
 FoldableContainer/colors/font_outline_color = Color(0, 0, 0, 0)

@@ -16,9 +16,14 @@ var _btn_hearing_extend: Button
 
 
 func _ready() -> void:
+    if not resource:
+        push_error('Must have a resource before adding to scene!')
+        return
 
     setup_settings(%VisionSettings, &'vision')
     setup_settings(%HearingSettings, &'hearing')
+
+    resource = resource
 
 
 func setup_settings(container: ExpandableContainer, type: StringName) -> void:
@@ -32,16 +37,12 @@ func setup_settings(container: ExpandableContainer, type: StringName) -> void:
 
         label = _label_vision
         btn_extend = _btn_vision_extend
-
-        set_extendable_vision(true)
     elif type == &'hearing':
         _label_hearing = LineEdit.new()
         _btn_hearing_extend = Button.new()
 
         label = _label_hearing
         btn_extend = _btn_hearing_extend
-
-        set_extendable_hearing(true)
 
     var title_bar: HBoxContainer = HBoxContainer.new()
     title_bar.alignment = BoxContainer.ALIGNMENT_BEGIN
@@ -115,23 +116,21 @@ func save(failed: bool = false) -> bool:
     return true
 
 func set_resource(res: BehaviorMindSettings) -> void:
-    if not is_node_ready():
-        push_error('Must add editor node to scene before setting the resource!')
-        return
-
     resource = res
 
-    update_label(resource.sense_vision, _label_vision)
-    update_label(resource.sense_hearing, _label_hearing)
+    update_labels(resource.sense_vision, _label_vision, set_extendable_vision)
+    update_labels(resource.sense_hearing, _label_hearing, set_extendable_hearing)
 
-func update_label(res: Resource, label: LineEdit) -> void:
+func update_labels(res: Resource, label: LineEdit, extendable_func: Callable) -> void:
     if not label:
         return
 
     if not res.resource_scene_unique_id.is_empty():
         label.text = ''
+        extendable_func.call(false)
     else:
         label.text = res.resource_path.get_file()
+        extendable_func.call(true)
 
 func set_extendable_hearing(extendable: bool) -> void:
     _set_extendable(_btn_hearing_extend, extendable, extend_hearing)

@@ -117,35 +117,6 @@ func _set(property: StringName, value: Variant) -> bool:
 
     return false
 
-## Create property editors for basic resource exports. Does not modify the
-## original resource. Value updates are passed to the provided callable.
-static func get_editor_property(
-        resource: BehaviorExtendedResource,
-        property_name: StringName,
-        on_changed_func: Callable
-) -> EditorProperty:
-    var info: Dictionary = resource.get_property_info(property_name)
-    if info.is_empty():
-        push_error('Cannot create EditorProperty for "%s" because it was not in the property list!' % property_name)
-        return null
-
-    var editor: EditorProperty = EditorInspector.instantiate_property_editor(
-            # NOTE: the passed object and name are actually 100% ignored
-            #       because we MUST call 'set_object_and_property' later,
-            #       otherwise it claims the object was Nil (stupid)
-            null, info.type, '',
-            info.hint, info.hint_string, PROPERTY_USAGE_NONE
-    )
-    editor.draw_label = false
-    editor.set_object_and_property(resource.duplicate(true), property_name)
-    editor.update_property()
-    editor.property_changed.connect(
-        func(_p: StringName, value: Variant, _f: StringName, _c: bool):
-            on_changed_func.call(value)
-    )
-
-    return editor
-
 
 ## Returns the property info from 'get_property_list()'
 func get_property_info(property_name: StringName) -> Dictionary:

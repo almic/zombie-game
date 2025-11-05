@@ -3,10 +3,11 @@ extends Control
 
 
 var resource: BehaviorSenseVisionSettings:
-    set = set_resource
-
-
-var mask_editor: EditorProperty
+    set(value):
+        if is_node_ready():
+            push_error('Cannot change resource once added to scene!')
+            return
+        resource = value
 
 
 func _ready() -> void:
@@ -14,25 +15,10 @@ func _ready() -> void:
         push_error('Must have a resource before adding to scene!')
         return
 
-    %FovSlider.share(%FovSpinBox)
-    %RangeSlider.share(%RangeSpinBox)
-
-    mask_editor = BehaviorExtendedResource.get_editor_property(resource, &'mask', on_mask_changed)
-
-    %Properties.add_child(mask_editor)
-
-    resource = resource
-
-func on_mask_changed(mask: int) -> void:
-    resource.mask = mask
-
-func set_resource(res: BehaviorSenseVisionSettings) -> void:
-    resource = res
-
-    if not is_node_ready():
-        return
-
-    %FovSlider.value = resource.fov
-    %RangeSlider.value = resource.vision_range
-    mask_editor.set_object_and_property(resource, 'mask')
-    mask_editor.update_property()
+    for prop in resource.get_property_list():
+        if prop.name == 'fov':
+            %Properties.add_child(BehaviorPropertyEditor.get_editor_for_property(resource, prop))
+        elif prop.name == 'vision_range':
+            %Properties.add_child(BehaviorPropertyEditor.get_editor_for_property(resource, prop))
+        elif prop.name == 'mask':
+            %Properties.add_child(BehaviorPropertyEditor.get_editor_for_property(resource, prop))

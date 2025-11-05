@@ -11,17 +11,12 @@ var suffix: String = '':
 
 
 func _ready() -> void:
+    # NOTE: Slider will be the main owner of range settings
     %Slider.share(%SpinBox)
 
 
 func get_range() -> Range:
-    return %SpinBox
-
-func get_slider() -> Slider:
     return %Slider
-
-func get_spin_box() -> SpinBox:
-    return %SpinBox
 
 func set_show_slider(value: bool) -> void:
     %Slider.visible = value
@@ -117,7 +112,7 @@ func _value_changed(value: float) -> void:
     var new_value: float = resource.get(property.name)
     if new_value == value:
         return
-    %Slider.set_value_no_signal(new_value)
+    get_range().set_value_no_signal(new_value)
 
 
 func _on_editor_property_changed(

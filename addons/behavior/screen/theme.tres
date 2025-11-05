@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=96 format=3 uid="uid://d0tmanljmd1ao"]
+[gd_resource type="Theme" load_steps=102 format=3 uid="uid://d0tmanljmd1ao"]
 
 [sub_resource type="SystemFont" id="SystemFont_0d5qu"]
 font_names = PackedStringArray("Sans-Serif")
@@ -144,6 +144,46 @@ content_margin_top = 0.0
 content_margin_right = 4.0
 content_margin_bottom = 0.0
 color = Color(0.8784314, 0.8784314, 0.8784314, 0.5019608)
+
+[sub_resource type="DPITexture" id="DPITexture_0d5qu"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#fefefe\" fill-opacity=\".75\"/></svg>
+"
+base_scale = 0.63
+
+[sub_resource type="DPITexture" id="DPITexture_8r66t"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#fefefe\" fill-opacity=\".37\"/></svg>
+"
+base_scale = 0.63
+
+[sub_resource type="DPITexture" id="DPITexture_egfda"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#fefefe\"/></svg>
+"
+base_scale = 0.63
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_i22ju"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.3764706)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m4skm"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 0.627451)
+corner_detail = 1
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v4i6w"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0, 0, 0, 0.2509804)
+corner_detail = 1
+expand_margin_left = 4.0
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nncjv"]
 content_margin_left = 4.0
@@ -777,6 +817,15 @@ FoldableContainer/styles/title_hover_panel = SubResource("StyleBoxFlat_3ws61")
 FoldableContainer/styles/title_panel = SubResource("StyleBoxFlat_d2k6j")
 HSeparator/constants/separation = 16
 HSeparator/styles/separator = SubResource("StyleBoxLine_m5x4x")
+HSlider/constants/center_grabber = 1
+HSlider/constants/grabber_offset = 0
+HSlider/constants/tick_offset = 0
+HSlider/icons/grabber = SubResource("DPITexture_0d5qu")
+HSlider/icons/grabber_disabled = SubResource("DPITexture_8r66t")
+HSlider/icons/grabber_highlight = SubResource("DPITexture_egfda")
+HSlider/styles/grabber_area = SubResource("StyleBoxFlat_i22ju")
+HSlider/styles/grabber_area_highlight = SubResource("StyleBoxFlat_m4skm")
+HSlider/styles/slider = SubResource("StyleBoxFlat_v4i6w")
 HSplitContainer/constants/autohide = 1
 HSplitContainer/constants/minimum_grab_thickness = 6
 HSplitContainer/constants/separation = 6

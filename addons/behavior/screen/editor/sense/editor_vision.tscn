@@ -13,29 +13,3 @@ script = ExtResource("1_gh27e")
 [node name="Properties" type="VBoxContainer" parent="."]
 unique_name_in_owner = true
 layout_mode = 2
-
-[node name="Fov" type="VBoxContainer" parent="Properties"]
-layout_mode = 2
-theme_override_constants/separation = -4
-
-[node name="FovSpinBox" type="SpinBox" parent="Properties/Fov"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="FovSlider" type="HSlider" parent="Properties/Fov"]
-unique_name_in_owner = true
-layout_mode = 2
-scrollable = false
-
-[node name="Range" type="VBoxContainer" parent="Properties"]
-layout_mode = 2
-theme_override_constants/separation = -4
-
-[node name="RangeSpinBox" type="SpinBox" parent="Properties/Range"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="RangeSlider" type="HSlider" parent="Properties/Range"]
-unique_name_in_owner = true
-layout_mode = 2
-scrollable = false

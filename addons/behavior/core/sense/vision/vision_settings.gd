@@ -15,7 +15,7 @@ var fov: float:
 var fov_cos_half: float = cos(deg_to_rad(100.0) * 0.5)
 
 ## Range of vision in meters
-@export_custom(PROPERTY_HINT_RANGE, '1,50,0.1,or_greater', PROPERTY_USAGE_STORAGE)
+@export_custom(PROPERTY_HINT_RANGE, '1,50,0.1,or_greater,suffix:m', PROPERTY_USAGE_STORAGE)
 var vision_range: float = 50.0
 
 ## Mask of physics layers that block vision

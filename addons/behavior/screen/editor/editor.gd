@@ -7,6 +7,7 @@ const CREATE = preload("uid://cd6347u3w4lsf")
 
 const EDITOR_MIND = preload("uid://dfu7q11sy44hk")
 const EDITOR_VISION = preload("uid://dh5k5n1pp0xmg")
+const EDITOR_HEARING = preload("uid://b7bxudl0ogo2i")
 
 const LIST_ITEM = &'bhvr_editor_list_item'
 
@@ -19,9 +20,14 @@ class ResourceItem:
     var resource: Resource
     var editor: Control
 
+    ## Child items, this list is just meant to keep a reference. Should not be
+    ## used to access the child items.
+    var children: Array[ResourceItem]
+
     func _init(resource: Resource, editor: Control = null):
         self.resource = resource
         self.editor = editor
+        children = []
 
 
 ## Emitted when traveling to behavior menu
@@ -32,6 +38,7 @@ var current_item: ResourceItem
 var popup_menu: PopupMenu
 
 var all_items: Array[ResourceItem]
+var opened: Array[ResourceItem]
 
 # Copied from engine source
 var grab_focus_block: bool = false
@@ -59,13 +66,12 @@ func _ready() -> void:
 
 
 func edit(res: Resource) -> void:
-    var item: ResourceItem = get_or_add_resource(res)
+    var item: ResourceItem = get_or_add_item(res)
 
     if item == null:
         return
 
-    select_item(item)
-
+    open_item(item)
 
 func select_item(item: ResourceItem) -> void:
     if item == current_item:
@@ -73,66 +79,94 @@ func select_item(item: ResourceItem) -> void:
 
     if current_item:
         current_item.editor.visible = false
-    else:
-        %NoItem.visible = false
+
     current_item = item
 
-    current_item.editor.visible = true
-    if current_item.resource is BehaviorMindSettings:
-        pass
+    if not current_item:
+        %NoItem.visible = true
+        %ResourceNameEdit.release_focus()
+        %ResourceNameEdit.editable = false
+        %ResourceNameEdit.visible = false
+        %ButtonRename.visible = false
+        %ButtonSave.visible = false
+        return
 
+    %NoItem.visible = false
+
+    %ButtonRename.visible = true
+    %ButtonRename.text = "Rename"
+
+    %ButtonSave.visible = true
+
+    %ResourceNameEdit.visible = true
+    %ResourceNameEdit.editable = false
+    %ResourceNameEdit.text = current_item.resource.resource_name
+
+    # Ensure the editor is on the main window
+    if current_item.editor.get_parent():
+        current_item.editor.reparent(%Editors, false)
+    else:
+        %Editors.add_child(current_item.editor)
+    current_item.editor.visible = true
+
+    if current_item.resource is BehaviorMindSettings:
+        var resource: BehaviorMindSettings = current_item.resource as BehaviorMindSettings
+        var vision := get_or_add_item(resource.sense_vision)
+        var hearing := get_or_add_item(resource.sense_hearing)
+        current_item.editor.accept_editors(vision.editor, hearing.editor)
 
     if not grab_focus_block:
         current_item.editor.grab_focus()
 
-    %ResourceNameEdit.text = current_item.resource.resource_name
-    %ResourceNameEdit.editable = false
-    %ButtonRename.text = "Rename"
-
     # Select from list (if not selected)
     var selected: PackedInt32Array = %ItemList.get_selected_items()
-    if not selected.is_empty() and item == %ItemList.get_item_metadata(selected[0]):
+    if not selected.is_empty() and current_item == %ItemList.get_item_metadata(selected[0]):
         return
 
-    var idx: int = get_item_index(item)
+    var idx: int = get_item_index(current_item)
     if idx != -1:
         %ItemList.select(idx)
         return
 
-    # Must add to the list
+    # Temporarily add to the list, put at the top
     idx = add_to_item_list(item)
     move_item(idx, 0)
     %ItemList.select(0)
 
 
-func get_or_add_resource(res: Resource) -> ResourceItem:
+## Ensures a resource is in the "all items" list. This does not open or select
+## the item. This is mainly responsible for instancing a ResourceItem
+func get_or_add_item(resource: Resource) -> ResourceItem:
     for item in all_items:
-        if item.resource == res:
+        if item.resource == resource:
             return item
 
     var editor: Control
-    if res is BehaviorMindSettings:
+    var children: Array[ResourceItem]
+    if resource is BehaviorMindSettings:
         editor = EDITOR_MIND.instantiate()
-        var vision := get_or_add_resource(res.sense_vision)
-        #var hearing := get_or_add_resource(res.sense_hearing)
-        editor.accept_editors(vision.editor, null)
-    elif res is BehaviorSenseVisionSettings:
+        var vision := get_or_add_item(resource.sense_vision)
+        var hearing := get_or_add_item(resource.sense_hearing)
+        children = [vision, hearing]
+    elif resource is BehaviorSenseVisionSettings:
         editor = EDITOR_VISION.instantiate()
+    elif resource is BehaviorSenseHearingSettings:
+        editor = EDITOR_HEARING.instantiate()
     # TODO: add other editor types
     # elif res is ... :
     else:
-        push_error('Unknown resource type "%s"! Cannot open for editing.' % (res.get_script() as Script).get_global_name())
+        push_error('Unknown resource type "%s"!' % (resource.get_script() as Script).get_global_name())
         return null
 
     editor.focus_mode = Control.FOCUS_ALL
     editor.visible = false
-    editor.resource = res
-    %Editors.add_child(editor)
+    editor.set('resource', resource)
 
-    var res_item: ResourceItem = ResourceItem.new(res, editor)
-    all_items.append(res_item)
+    var item: ResourceItem = ResourceItem.new(resource, editor)
+    item.children.append_array(children)
+    all_items.append(item)
 
-    return res_item
+    return item
 
 func get_item_index(item: ResourceItem) -> int:
     for i in range(%ItemList.item_count):
@@ -210,7 +244,7 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
 
     if str(d.get('type')) == 'files':
         if %ItemList.item_count > 0:
-            new_idx = all_items.find(%ItemList.get_item_metadata(new_idx))
+            new_idx = opened.find(%ItemList.get_item_metadata(new_idx))
             if new_idx == -1:
                 push_error('Unable to find original item index when dropping files!')
                 new_idx = 0
@@ -233,7 +267,8 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
                 toast('Resource at "%s" is not a recognized Behavior resource type.' % file, EditorToaster.SEVERITY_WARNING)
                 continue
 
-            var item := get_or_add_resource(bvhr_res)
+            var item := get_or_add_item(bvhr_res)
+            open_item(item, false)
             last_item = item
 
             var idx: int = get_item_index(item)
@@ -251,10 +286,8 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
 
         return
 
-
 func on_filter_text_changed(filter: String) -> void:
     update_list()
-
 
 func on_item_clicked(idx: int, at_pos: Vector2, mouse_button: int) -> void:
     if mouse_button == MouseButton.MOUSE_BUTTON_LEFT:
@@ -276,21 +309,7 @@ func on_popup_id_pressed(id: int, item_idx: int) -> void:
     var item: ResourceItem = %ItemList.get_item_metadata(item_idx)
     if id == Menu.CLOSE:
         # TODO: check if not saved and ask to save
-        %Editors.remove_child(item.editor)
-        %ItemList.remove_item(item_idx)
-        all_items.erase(item)
-        current_item = null
-
-        if %ItemList.item_count == 0:
-            %NoItem.visible = true
-            %ResourceNameEdit.text = ''
-            return
-
-        # Select next index
-        item_idx = clampi(item_idx - 1, 0, %ItemList.item_count - 1)
-        %ItemList.select(item_idx)
-        %ItemList.item_selected.emit(item_idx)
-
+        close_item(item)
         return
 
 func on_rename_resource() -> void:
@@ -308,7 +327,6 @@ func on_rename_resource() -> void:
 
     on_rename_resource_submitted(%ResourceNameEdit.text)
 
-
 func on_rename_resource_submitted(new_name: String) -> void:
     if not current_item:
         toast('No resource opened!', EditorToaster.SEVERITY_WARNING)
@@ -325,7 +343,6 @@ func on_rename_resource_submitted(new_name: String) -> void:
     %ResourceNameEdit.editable = false
     %ResourceNameEdit.text = current_item.resource.resource_name
     %ButtonRename.text = "Rename"
-
 
 func add_to_item_list(item: ResourceItem) -> int:
     var idx: int = %ItemList.add_item(item.resource.resource_path.get_file())
@@ -368,17 +385,49 @@ func move_item(from: int, to: int) -> void:
     if not item_from or not item_to:
         return
 
-    var item_from_idx: int = all_items.find(item_from)
-    var item_to_idx: int = all_items.find(item_to)
+    var item_from_idx: int = opened.find(item_from)
+    var item_to_idx: int = opened.find(item_to)
 
     if item_from_idx == -1 or item_to_idx == -1:
         return
 
-    all_items.remove_at(item_from_idx)
-    all_items.insert(item_to_idx, item_from)
+    opened.remove_at(item_from_idx)
+    opened.insert(item_to_idx, item_from)
 
     %ItemList.move_item(from, to)
 
+## Ensures an item is in the "opened" list, allowing it to appear in the main
+## item list. It will also be selected for editing, but this can be disabled by
+## passing 'false' as the second parameter.
+func open_item(item: ResourceItem, select: bool = true) -> void:
+    if not opened.has(item):
+        opened.append(item)
+
+    if select:
+        select_item(item)
+
+## Remove an item from the "opened" list, preventing it from showing up in the
+## main item list. It will also open the next available item for editing, but
+## this can be disabled by passing 'false' as the second parameter.
+func close_item(item: ResourceItem, select_next: bool = true) -> void:
+    opened.erase(item)
+
+    var idx: int = get_item_index(item)
+    if idx != -1:
+        %ItemList.remove_item(idx)
+
+    var selected: bool = false
+    if select_next:
+        var items: PackedInt32Array = %ItemList.get_selected_items()
+        if items.size() > 0:
+            var next: int = clampi(items[0] - 1, 0, %ItemList.item_count - 1)
+            select_item(%ItemList.get_item_metadata(next))
+            selected = true
+
+    if not selected:
+        select_item(null)
+
+    update_all_items.call_deferred()
 
 func save_resource() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well
@@ -389,9 +438,15 @@ func save_resource() -> void:
         toast('No opened behavior resource to save.')
 
     var err: Error = ResourceSaver.save(current_item.resource)
-    if err:
-        push_error('Failed to save resource "%s"! Error: %d' % [current_item.resource.resource_path, err])
-
+    if err == OK:
+        var res_name: String = current_item.resource.resource_name
+        if res_name.is_empty():
+            res_name = current_item.resource.resource_path
+        toast('Saved resource "%s"!' % res_name)
+    else:
+        var msg: String = 'Failed to save resource "%s"! Error: %d' % [current_item.resource.resource_path, err]
+        toast(msg, EditorToaster.SEVERITY_ERROR)
+        push_error(msg)
 
 func show_popup_menu(idx: int) -> void:
     if not popup_menu:
@@ -417,19 +472,43 @@ func show_popup_menu(idx: int) -> void:
     popup_menu.id_pressed.connect(on_popup_id_pressed.bind(idx), CONNECT_ONE_SHOT)
     popup_menu.popup()
 
+func update_all_items() -> void:
+    var first: bool = true
+    var removed: bool = false
+    while first or removed:
+        first = false
+        removed = false
+        var count: int = all_items.size()
+        var i: int = 0
+        while i < count:
+            # NOTE: Count should be 2 when the item is only referenced in 'all_items'
+            #       and here (+1 when getting the ref count). Can be safely removed.
+            var ref_count: int = all_items[i].get_reference_count()
+            if ref_count == 2:
+                all_items.remove_at(i)
+                removed = true
+                count -= 1
+            else:
+                i += 1
+
 func update_list() -> void:
 
+    # Maintain selected item
+    var selected: ResourceItem
+    if %ItemList.is_anything_selected():
+        selected = %ItemList.get_item_metadata(%ItemList.get_selected_items()[0])
+
     %ItemList.clear()
-    if all_items.is_empty():
+    if opened.is_empty():
         return
 
     var filtered: Array[ResourceItem]
 
     if %LineEditFilter.text.is_empty():
-        filtered = all_items
+        filtered = opened
     else:
         var names: PackedStringArray = []
-        for item in all_items:
+        for item in opened:
             names.append(item.resource.resource_path.get_file())
 
         var results: Array = []
@@ -442,14 +521,16 @@ func update_list() -> void:
         filtered.resize(results.size())
         var i: int = 0
         for search in results:
-            filtered[i] = all_items[search.original_index]
+            filtered[i] = opened[search.original_index]
             i += 1
 
     %LabelNoFilterItems.visible = filtered.is_empty()
 
     for item in filtered:
-        add_to_item_list(item)
-
+        var idx: int = add_to_item_list(item)
+        if selected and item == selected:
+            %ItemList.select(idx)
+            selected = null
 
 static func toast(
         message: String,

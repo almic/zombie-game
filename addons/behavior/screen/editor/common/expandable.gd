@@ -63,14 +63,9 @@ func _ready() -> void:
     # Search first child and make it the expandable
     if not expandable and get_child_count() > 0:
         expandable = get_child(0)
-
-    if expandable:
-        if expandable.get_parent():
-            expandable.reparent(self, false)
-        else:
-            add_child(expandable)
-        move_child(expandable, 0)
-        expandable.visible = is_expanded
+    else:
+        # Force an update
+        expandable = expandable
 
     if not icon_fold:
         icon_fold = get_theme_icon(&'GuiTreeArrowDown', &'EditorIcons')
@@ -172,10 +167,15 @@ func set_title_control(control: Control) -> void:
         title_bar.add_child(title)
 
 func set_expandable_control(control: Control) -> void:
-    if expandable:
+    if expandable and expandable.get_parent() == self:
         remove_child(expandable)
 
     expandable = control
+
+    if not expandable:
+        return
+
+    expandable.visible = is_expanded
 
     if is_node_ready():
         if expandable.get_parent():
@@ -183,6 +183,7 @@ func set_expandable_control(control: Control) -> void:
         else:
             add_child(expandable)
         move_child(expandable, 0)
+
 
 func set_expandable_separation(separation: int) -> void:
     add_theme_constant_override('separation', separation)

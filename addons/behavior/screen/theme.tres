@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=102 format=3 uid="uid://d0tmanljmd1ao"]
+[gd_resource type="Theme" load_steps=103 format=3 uid="uid://d0tmanljmd1ao"]
 
 [sub_resource type="SystemFont" id="SystemFont_0d5qu"]
 font_names = PackedStringArray("Sans-Serif")
@@ -241,6 +241,9 @@ expand_margin_left = 8.0
 expand_margin_right = 8.0
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_4wsu4"]
+
+[sub_resource type="SystemFont" id="SystemFont_8r66t"]
+font_names = PackedStringArray("Office Code Pro D", "monospace", "mono")
 
 [sub_resource type="SystemFont" id="SystemFont_pytki"]
 font_names = PackedStringArray("Sans-Serif")
@@ -866,6 +869,8 @@ Label/font_sizes/font_size = 14
 Label/fonts/font = SubResource("SystemFont_1oj7c")
 Label/styles/focus = SubResource("StyleBoxFlat_egfda")
 Label/styles/normal = SubResource("StyleBoxEmpty_4wsu4")
+LabelMono/base_type = &"Label"
+LabelMono/fonts/font = SubResource("SystemFont_8r66t")
 LineEdit/colors/caret_color = Color(0.95, 0.95, 0.95, 1)
 LineEdit/colors/clear_button_color = Color(0.875, 0.875, 0.875, 1)
 LineEdit/colors/clear_button_color_pressed = Color(1, 1, 1, 1)

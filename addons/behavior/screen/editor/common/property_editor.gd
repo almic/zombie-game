@@ -4,6 +4,7 @@ class_name BehaviorPropertyEditor extends Control
 
 # TODO: put editor scenes here
 const NUMBER_EDITOR = preload("uid://xafwseh7radi")
+const ARRAY_EDITOR = preload("uid://do33q3toxspah")
 
 
 ## Emitted when changing the value
@@ -33,11 +34,18 @@ static func get_editor_for_property(
     var editor: BehaviorPropertyEditor
     if type == TYPE_INT or type == TYPE_FLOAT:
         editor = NUMBER_EDITOR.instantiate()
-
+    elif type == TYPE_ARRAY:
+        editor = ARRAY_EDITOR.instantiate()
+    else:
+        push_error('No editor for type (%d)!' % type)
+        return
 
     editor.set_resource_property(resource, property)
     if on_changed_func.is_null():
-        editor.on_changed_func = editor.default_on_changed
+        if type == TYPE_ARRAY:
+            editor.on_changed_func = editor.default_on_changed_array
+        else:
+            editor.on_changed_func = editor.default_on_changed
     else:
         editor.on_changed_func = on_changed_func
     return editor
@@ -49,3 +57,25 @@ func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> v
 
 func default_on_changed(value: Variant) -> void:
     resource.set(property.name, value)
+
+func default_on_changed_array(value: Variant, index: int) -> void:
+    var array: Array = resource.get(property.name)
+    # Deleting element
+    if value == null:
+        if array.is_empty():
+            push_error('Cannot remove the value at index %d, array is empty!' % index)
+            return
+        elif index < 0 or index >= array.size():
+            push_error('Cannot remove the value at index %d, not in the range [0, %d]!' % [index, array.size() - 1])
+            return
+
+        array.remove_at(index)
+    # Setting / Adding element
+    else:
+        if index < 0 or index > array.size():
+            push_error('Cannot set the value at index %d, not in the range [0, %d]!' % [index, array.size()])
+            return
+        if index == array.size():
+            array.append(value)
+        else:
+            array[index] = value

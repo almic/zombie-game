@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://xafwseh7radi"]
 
 [ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_quhsq"]
-[ext_resource type="Script" uid="uid://cs44iwk4mulbn" path="res://addons/behavior/screen/editor/common/number_editor.gd" id="1_v4cbv"]
+[ext_resource type="Script" uid="uid://cs44iwk4mulbn" path="res://addons/behavior/screen/editor/common/number/number_editor.gd" id="1_v4cbv"]
 
 [node name="NumberEditor" type="VBoxContainer"]
 theme = ExtResource("1_quhsq")

@@ -18,13 +18,13 @@ enum Menu {
 
 class ResourceItem:
     var resource: Resource
-    var editor: Control
+    var editor: BehaviorResourceEditor
 
     ## Child items, this list is just meant to keep a reference. Should not be
     ## used to access the child items.
     var children: Array[ResourceItem]
 
-    func _init(resource: Resource, editor: Control = null):
+    func _init(resource: Resource, editor: BehaviorResourceEditor = null):
         self.resource = resource
         self.editor = editor
         children = []
@@ -42,6 +42,9 @@ var opened: Array[ResourceItem]
 
 # Copied from engine source
 var grab_focus_block: bool = false
+
+# Used to ensure only 1 list save check each call
+var _run_check_list: bool = false
 
 
 func _ready() -> void:
@@ -141,7 +144,7 @@ func get_or_add_item(resource: Resource) -> ResourceItem:
         if item.resource == resource:
             return item
 
-    var editor: Control
+    var editor: BehaviorResourceEditor
     var children: Array[ResourceItem]
     if resource is BehaviorMindSettings:
         editor = EDITOR_MIND.instantiate()
@@ -160,7 +163,7 @@ func get_or_add_item(resource: Resource) -> ResourceItem:
 
     editor.focus_mode = Control.FOCUS_ALL
     editor.visible = false
-    editor.set('resource', resource)
+    editor.set_resource(resource)
 
     var item: ResourceItem = ResourceItem.new(resource, editor)
     item.children.append_array(children)
@@ -346,6 +349,8 @@ func on_rename_resource_submitted(new_name: String) -> void:
 
 func add_to_item_list(item: ResourceItem) -> int:
     var idx: int = %ItemList.add_item(item.resource.resource_path.get_file())
+    %ItemList.set_item_icon(idx, get_theme_icon("Warning", "EditorIcons"))
+    %ItemList.set_item_icon_modulate(idx, Color(0, 0, 0, 0))
     %ItemList.set_item_metadata(idx, item)
     return idx
 
@@ -402,6 +407,8 @@ func move_item(from: int, to: int) -> void:
 func open_item(item: ResourceItem, select: bool = true) -> void:
     if not opened.has(item):
         opened.append(item)
+        item.editor.changed.connect(check_saved)
+        item.editor.saved.connect(check_saved)
 
     if select:
         select_item(item)
@@ -411,6 +418,11 @@ func open_item(item: ResourceItem, select: bool = true) -> void:
 ## this can be disabled by passing 'false' as the second parameter.
 func close_item(item: ResourceItem, select_next: bool = true) -> void:
     opened.erase(item)
+
+    if item.editor.changed.is_connected(check_saved):
+        item.editor.changed.disconnect(check_saved)
+    if item.editor.saved.is_connected(check_saved):
+        item.editor.saved.disconnect(check_saved)
 
     var idx: int = get_item_index(item)
     if idx != -1:
@@ -439,6 +451,7 @@ func save_resource() -> void:
 
     var err: Error = ResourceSaver.save(current_item.resource)
     if err == OK:
+        current_item.editor.on_save()
         var res_name: String = current_item.resource.resource_name
         if res_name.is_empty():
             res_name = current_item.resource.resource_path
@@ -493,11 +506,6 @@ func update_all_items() -> void:
 
 func update_list() -> void:
 
-    # Maintain selected item
-    var selected: ResourceItem
-    if %ItemList.is_anything_selected():
-        selected = %ItemList.get_item_metadata(%ItemList.get_selected_items()[0])
-
     %ItemList.clear()
     if opened.is_empty():
         return
@@ -528,9 +536,26 @@ func update_list() -> void:
 
     for item in filtered:
         var idx: int = add_to_item_list(item)
-        if selected and item == selected:
+        if item == current_item:
             %ItemList.select(idx)
-            selected = null
+
+func check_saved() -> void:
+    _run_check_list = true
+    _check_saved.call_deferred()
+
+func _check_saved() -> void:
+    if not _run_check_list:
+        return
+
+    _run_check_list = false
+
+    for i in range(%ItemList.item_count):
+        var item: ResourceItem = %ItemList.get_item_metadata(i)
+        if item.editor.is_saved:
+            %ItemList.set_item_icon_modulate(i, Color(0, 0, 0, 0))
+        else:
+            %ItemList.set_item_icon_modulate(i, Color(1, 1, 1, 1))
+
 
 static func toast(
         message: String,

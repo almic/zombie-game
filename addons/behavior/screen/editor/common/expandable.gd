@@ -9,8 +9,7 @@ var icon: TextureRect
 var title: Control:
     set = set_title_control
 
-var expandable: Control:
-    set = set_expandable_control
+var expandable: Control
 
 @export
 var is_expanded: bool = true:
@@ -183,7 +182,6 @@ func set_expandable_control(control: Control) -> void:
         else:
             add_child(expandable)
         move_child(expandable, 0)
-
 
 func set_expandable_separation(separation: int) -> void:
     add_theme_constant_override('separation', separation)

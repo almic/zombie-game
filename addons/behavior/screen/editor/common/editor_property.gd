@@ -6,6 +6,10 @@ class_name BehaviorPropertyEditor extends Control
 const NUMBER_EDITOR = preload("uid://xafwseh7radi")
 
 
+## Emitted when changing the value
+signal changed()
+
+
 var resource: BehaviorExtendedResource
 var property: Dictionary
 var on_changed_func: Callable

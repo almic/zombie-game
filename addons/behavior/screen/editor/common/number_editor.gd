@@ -109,6 +109,7 @@ func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> v
 func _value_changed(value: float) -> void:
     if on_changed_func.is_valid():
         on_changed_func.call(value)
+    changed.emit()
     var new_value: float = resource.get(property.name)
     if new_value == value:
         return

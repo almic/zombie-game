@@ -1,15 +1,17 @@
 @tool
-extends MarginContainer
+extends BehaviorResourceEditor
 
 
-var resource: BehaviorMindSettings:
-    set = set_resource
+var resource: BehaviorMindSettings
 
-var is_saved: bool = true
+
+var vision_changed: bool = false
+var hearing_changed: bool = false
 
 
 var _label_vision: LineEdit
 var _btn_vision_extend: Button
+
 
 var _label_hearing: LineEdit
 var _btn_hearing_extend: Button
@@ -23,8 +25,20 @@ func _ready() -> void:
     setup_settings(%VisionSettings, &'vision')
     setup_settings(%HearingSettings, &'hearing')
 
-    resource = resource
+    update_labels(resource.sense_vision, _label_vision, set_extendable_vision)
+    update_labels(resource.sense_hearing, _label_hearing, set_extendable_hearing)
 
+func _set_resource(resource: BehaviorExtendedResource) -> void:
+    if resource is BehaviorMindSettings:
+        self.resource = resource
+
+func on_save() -> void:
+    super.on_save()
+
+    if %VisionSettings.expandable:
+        %VisionSettings.expandable.on_save()
+    if %HearingSettings.expandable:
+        %HearingSettings.expandable.on_save()
 
 func setup_settings(container: ExpandableContainer, type: StringName) -> void:
     const btn_width = 80
@@ -100,26 +114,21 @@ func setup_settings(container: ExpandableContainer, type: StringName) -> void:
     container.set_title_control(title_bar)
 
 
-func accept_editors(vision: Control, hearing: Control) -> void:
+func accept_editors(vision: BehaviorResourceEditor, hearing: BehaviorResourceEditor) -> void:
     %VisionSettings.set_expandable_control(vision)
     %HearingSettings.set_expandable_control(hearing)
 
-func save(failed: bool = false) -> bool:
-    if is_saved:
-        return false
+    vision_changed = not vision.is_saved
+    hearing_changed = not hearing.is_saved
 
-    if failed:
-        is_saved = false
-        return true
+    _connect_editor(vision, _on_vision_changed, _on_vision_saved)
+    _connect_editor(hearing, _on_hearing_changed, _on_hearing_saved)
 
-    is_saved = true
-    return true
-
-func set_resource(res: BehaviorMindSettings) -> void:
-    resource = res
-
-    update_labels(resource.sense_vision, _label_vision, set_extendable_vision)
-    update_labels(resource.sense_hearing, _label_hearing, set_extendable_hearing)
+func _connect_editor(editor: BehaviorResourceEditor, on_changed: Callable, on_saved: Callable) -> void:
+    if not editor.changed.is_connected(on_changed):
+        editor.changed.connect(on_changed)
+    if not editor.saved.is_connected(on_saved):
+        editor.saved.connect(on_saved)
 
 func update_labels(res: Resource, label: LineEdit, extendable_func: Callable) -> void:
     if not label:
@@ -147,6 +156,37 @@ func extend_vision(is_original: bool) -> void:
 ## this will just save it as a new resource.
 func extend_hearing(is_original: bool) -> void:
     pass
+
+func _on_vision_changed() -> void:
+    if vision_changed:
+        return
+    vision_changed = true
+    on_change()
+
+func _on_hearing_changed() -> void:
+    if hearing_changed:
+        return
+    hearing_changed = true
+    on_change()
+
+func _on_vision_saved() -> void:
+    if not vision_changed:
+        return
+
+    vision_changed = false
+    _update_save()
+
+func _on_hearing_saved() -> void:
+    if not hearing_changed:
+        return
+
+    hearing_changed = false
+    _update_save()
+
+func _update_save() -> void:
+    if vision_changed or hearing_changed:
+        return
+    on_save()
 
 func _set_extendable(btn: Button, extendable: bool, extend_func) -> void:
     for c in btn.pressed.get_connections():

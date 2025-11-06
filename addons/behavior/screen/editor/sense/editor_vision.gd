@@ -1,13 +1,8 @@
 @tool
-extends Control
+extends BehaviorResourceEditor
 
 
-var resource: BehaviorSenseVisionSettings:
-    set(value):
-        if is_node_ready():
-            push_error('Cannot change resource once added to scene!')
-            return
-        resource = value
+var resource: BehaviorSenseVisionSettings
 
 
 func _ready() -> void:
@@ -16,9 +11,18 @@ func _ready() -> void:
         return
 
     for prop in resource.get_property_list():
+        var editor: BehaviorPropertyEditor
         if prop.name == 'fov':
-            %Properties.add_child(BehaviorPropertyEditor.get_editor_for_property(resource, prop))
+            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
         elif prop.name == 'vision_range':
-            %Properties.add_child(BehaviorPropertyEditor.get_editor_for_property(resource, prop))
+            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
         elif prop.name == 'mask':
-            %Properties.add_child(BehaviorPropertyEditor.get_editor_for_property(resource, prop))
+            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
+        else:
+            continue
+        editor.changed.connect(on_change)
+        %Properties.add_child(editor)
+
+func _set_resource(resource: BehaviorExtendedResource) -> void:
+    if resource is BehaviorSenseVisionSettings:
+        self.resource = resource

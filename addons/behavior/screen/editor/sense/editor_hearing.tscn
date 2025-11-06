@@ -1,4 +1,6 @@
-[gd_scene format=3 uid="uid://b7bxudl0ogo2i"]
+[gd_scene load_steps=2 format=3 uid="uid://b7bxudl0ogo2i"]
+
+[ext_resource type="Script" uid="uid://bohclakkl6b3u" path="res://addons/behavior/screen/editor/sense/editor_hearing.gd" id="1_pco0l"]
 
 [node name="EditorHearing" type="Control"]
 layout_mode = 3
@@ -7,3 +9,4 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("1_pco0l")

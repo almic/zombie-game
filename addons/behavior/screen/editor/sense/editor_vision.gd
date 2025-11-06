@@ -18,6 +18,8 @@ func _ready() -> void:
             editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
         elif prop.name == 'mask':
             editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
+        elif prop.name == 'target_groups':
+            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
         else:
             continue
         editor.changed.connect(on_change)

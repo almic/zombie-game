@@ -10,8 +10,14 @@ signal goto_menu()
 
 var group_item_base: HBoxContainer
 
+var has_unsaved: bool = false
+
 
 func _ready() -> void:
+    # print('ready project_settings.gd at path: %s' % str(get_path()))
+    if get_parent().get_parent().name != &'MainScreen':
+        # fake
+        return
 
     group_item_base = GROUP_ITEM.instantiate()
     (group_item_base.get_node('delete') as Button).icon = get_theme_icon("Remove", "EditorIcons")
@@ -26,6 +32,7 @@ func _ready() -> void:
     %ButtonMenu.pressed.connect(goto_menu.emit)
 
     ProjectSettings.settings_changed.connect(refresh_groups)
+    refresh_groups()
 
 
 func popup_add_group(next: Callable, type: String) -> void:
@@ -82,7 +89,7 @@ func add_sound_group(group_name: String) -> void:
     )
 
     ProjectSettings.set_setting(group_name, '')
-    ProjectSettings.save()
+    save_all()
     refresh_groups()
 
 
@@ -94,7 +101,7 @@ func add_vision_group(group_name: String) -> void:
     )
 
     ProjectSettings.set_setting(group_name, '')
-    ProjectSettings.save()
+    save_all()
     refresh_groups()
 
 
@@ -134,7 +141,8 @@ func refresh_groups() -> void:
         (group_item.get_node('name') as Label).text = display_name
         var desc_edit: LineEdit = (group_item.get_node('description') as LineEdit)
         desc_edit.text = group_desc
-        desc_edit.text_submitted.connect(save_group_desc.bind(group_name))
+        desc_edit.text_changed.connect(func(_s: String): has_unsaved = true)
+        desc_edit.text_submitted.connect(func(_s: String): save_all())
         (group_item.get_node('delete') as Button).pressed.connect(
                 delete_group.bind(group_name, group_type, display_name)
         )
@@ -191,22 +199,15 @@ func delete_group(group_name: StringName, type: String, display: String) -> void
     confirm.confirmed.connect((
         func():
             ProjectSettings.set_setting(BehaviorSystemConstants.GLOBAL_GROUP_PREFIX + group_name, null)
-            ProjectSettings.save()
+            save_all()
     ), CONNECT_ONE_SHOT)
 
     EditorInterface.popup_dialog_centered(confirm)
 
-# NOTE: the order of parameters looks weird because this is how function binding
-#       passes them, bound parameters come after arguments to .call()
-func save_group_desc(description: String, group_name: StringName) -> void:
-    ProjectSettings.set_setting(BehaviorSystemConstants.GLOBAL_GROUP_PREFIX + group_name, description)
-    ProjectSettings.save()
-    refresh_groups()
-
 ## Saves the current UI states to project settings
 func save_all() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well
-    if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
+    if is_visible_in_tree() and Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
         EditorInterface.save_scene()
 
     var groups := [
@@ -222,3 +223,7 @@ func save_all() -> void:
             ProjectSettings.set_setting(group_name, group_desc)
 
     ProjectSettings.save()
+    has_unsaved = false
+
+func is_saved() -> bool:
+    return not has_unsaved

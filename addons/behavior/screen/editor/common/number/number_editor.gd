@@ -11,6 +11,10 @@ var suffix: String = '':
 
 
 func _ready() -> void:
+    super._ready()
+    if _is_ghost:
+        return
+
     # NOTE: Slider will be the main owner of range settings
     %Slider.share(%SpinBox)
 

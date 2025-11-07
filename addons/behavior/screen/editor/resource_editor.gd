@@ -14,6 +14,13 @@ var is_saved: bool = true
 
 
 func _ready() -> void:
+    # print('ready %s with parent %s' % [get_script().resource_path.get_file(), get_parent().name])
+    # NOTE: When the editor opens, it for some reason loads up the old UI
+    #       nodes but in a weird SubViewport node and without any state?
+    #       Stupid Godot tbh. Check if my parent is named "@SubViewport@".
+    if get_parent().name.begins_with('@SubViewport@'):
+        return
+
     if not get_resource():
         push_error('Must have a resource before adding to scene (%s)!' % get_script().resource_path)
         return

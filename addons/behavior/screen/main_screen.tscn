@@ -6,7 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://bwnd7nt53uv48" path="res://addons/behavior/screen/project_settings/project_settings.tscn" id="3_21dad"]
 [ext_resource type="PackedScene" uid="uid://dmwmompdaabqp" path="res://addons/behavior/screen/editor/editor.tscn" id="4_21dad"]
 
-[node name="MainScreen" type="MarginContainer"]
+[node name="BehaviorMainScreen" type="MarginContainer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

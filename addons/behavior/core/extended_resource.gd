@@ -20,7 +20,7 @@ var base_overrides: Dictionary:
 ## Must be called to properly initialize the resource properties from its base.
 ## It is safe to call this when no base is defined.
 func _on_load(path: String) -> void:
-    print('_on_load called for "%s" at path "%s"' % [resource_name, path])
+    # print('_on_load called for "%s" at path "%s"' % [resource_name, path])
 
     if not base:
         return

@@ -6,6 +6,10 @@ var type: Variant.Type
 
 
 func _ready() -> void:
+    super._ready()
+    if _is_ghost:
+        return
+
     %ButtonAddElement.icon = get_theme_icon(&'Add', &'EditorIcons')
     %ButtonAddElement.pressed.connect(_add_element)
 

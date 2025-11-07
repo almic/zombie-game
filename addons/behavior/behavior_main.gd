@@ -49,3 +49,24 @@ func _exit_tree() -> void:
 func _make_visible(visible):
     if main_screen:
         main_screen.visible = visible
+
+func _get_window_layout(configuration: ConfigFile) -> void:
+    if main_screen:
+        main_screen.save_state(configuration)
+
+func _set_window_layout(configuration: ConfigFile) -> void:
+    if main_screen:
+        main_screen.load_state(configuration)
+
+func _get_unsaved_status(for_scene: String) -> String:
+    if not for_scene.is_empty():
+        return ''
+
+    if main_screen:
+        return main_screen.get_unsaved_status()
+
+    return ''
+
+func _save_external_data() -> void:
+    if main_screen and not main_screen.is_saved():
+        main_screen.save_all()

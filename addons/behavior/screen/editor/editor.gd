@@ -2,6 +2,8 @@
 extends HSplitContainer
 
 
+const SECTION_EDITOR = &'Editor'
+
 const THEME = preload("uid://d0tmanljmd1ao")
 const CREATE = preload("uid://cd6347u3w4lsf")
 
@@ -46,8 +48,21 @@ var grab_focus_block: bool = false
 # Used to ensure only 1 list save check each call
 var _run_check_list: bool = false
 
+# If the node is a "ghost"
+var _is_ghost: bool = true
+
 
 func _ready() -> void:
+    # NOTE: Godot for some reason creates copies on start up and puts them in
+    #       weird SubViewports, so check that my true parent is legit and otherwise
+    #       skip everything else
+    if get_parent().get_parent().name == &'MainScreen':
+        # print('editor.gd is ready! path: %s' % str(get_path()))
+        _is_ghost = false
+    else:
+        # print('ghost editor.gd !')
+        return
+
     %LineEditFilter.right_icon = get_theme_icon(&'Search', &'EditorIcons')
     %LineEditFilter.text_changed.connect(on_filter_text_changed)
 
@@ -67,8 +82,65 @@ func _ready() -> void:
 
     %ButtonMenu.pressed.connect(goto_menu.emit)
 
+func save_state(config: ConfigFile) -> void:
+    if _is_ghost:
+        return
+
+    # print('saving editor state')
+    var resource_paths: PackedStringArray
+    var open_count: int = opened.size()
+    var total: int = 0
+    var i: int = 0
+
+    resource_paths.resize(open_count)
+    while i < open_count:
+        var path: String = opened[i].resource.resource_path
+        if path.is_absolute_path():
+            resource_paths[total] = path
+            total += 1
+        i += 1
+
+    if total < open_count:
+        resource_paths.resize(total)
+
+    config.set_value(SECTION_EDITOR, 'opened', resource_paths)
+    if current_item:
+        var path: String = current_item.resource.resource_path
+        if path.is_absolute_path():
+            config.set_value(SECTION_EDITOR, 'current', path)
+
+
+func load_state(config: ConfigFile) -> void:
+    if _is_ghost:
+        return
+
+    # print('loading editor state, path: %s' % str(get_path()))
+    var last_opened = config.get_value(SECTION_EDITOR, 'opened', PackedStringArray())
+    if last_opened is PackedStringArray:
+        for path in last_opened:
+            var resource: Resource = ResourceLoader.load(path)
+            if not is_instance_of(resource, BehaviorExtendedResource):
+                continue
+
+            var item: ResourceItem = get_or_add_item(resource)
+            if not item:
+                continue
+
+            open_item(item, false)
+
+    var last_active = config.get_value(SECTION_EDITOR, 'current', "")
+    if last_active is String:
+        var resource: Resource = ResourceLoader.load(last_active)
+        if is_instance_of(resource, BehaviorExtendedResource):
+            var item: ResourceItem = get_or_add_item(resource)
+            if item:
+                open_item(item)
+
 
 func edit(res: Resource) -> void:
+    if _is_ghost:
+        return
+
     var item: ResourceItem = get_or_add_item(res)
 
     if item == null:
@@ -77,6 +149,9 @@ func edit(res: Resource) -> void:
     open_item(item)
 
 func select_item(item: ResourceItem) -> void:
+    if _is_ghost:
+        return
+
     if item == current_item:
         return
 
@@ -140,6 +215,9 @@ func select_item(item: ResourceItem) -> void:
 ## Ensures a resource is in the "all items" list. This does not open or select
 ## the item. This is mainly responsible for instancing a ResourceItem
 func get_or_add_item(resource: Resource) -> ResourceItem:
+    if _is_ghost:
+        return null
+
     for item in all_items:
         if item.resource == resource:
             return item
@@ -443,7 +521,7 @@ func close_item(item: ResourceItem, select_next: bool = true) -> void:
 
 func save_resource() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well
-    if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
+    if is_visible_in_tree() and Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
         EditorInterface.save_scene()
 
     if not current_item:
@@ -460,6 +538,26 @@ func save_resource() -> void:
         var msg: String = 'Failed to save resource "%s"! Error: %d' % [current_item.resource.resource_path, err]
         toast(msg, EditorToaster.SEVERITY_ERROR)
         push_error(msg)
+
+func save_all() -> void:
+    if opened.is_empty():
+        return
+
+    var saved: int = 0
+    var failed: PackedStringArray
+    for item in opened:
+        var err: Error = ResourceSaver.save(item.resource)
+        if err == OK:
+            item.editor.on_save()
+            saved += 1
+        else:
+            failed.append(item.resource.resource_path)
+
+    if saved:
+        toast('Saved %d Behavior resources!' % saved)
+
+    if not failed.is_empty():
+        push_error('Failed to save %d Behavior resources!\n%s' % [failed.size(), '\n'.join(failed)])
 
 func show_popup_menu(idx: int) -> void:
     if not popup_menu:
@@ -556,6 +654,18 @@ func _check_saved() -> void:
         else:
             %ItemList.set_item_icon_modulate(i, Color(1, 1, 1, 1))
 
+func is_saved() -> bool:
+    for item in opened:
+        if not item.editor.is_saved:
+            return false
+    return true
+
+func get_unsaved() -> PackedStringArray:
+    var unsaved: PackedStringArray
+    for item in opened:
+        if not item.editor.is_saved:
+            unsaved.append(item.resource.resource_path)
+    return unsaved
 
 static func toast(
         message: String,

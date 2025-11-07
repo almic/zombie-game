@@ -18,8 +18,9 @@ var _btn_hearing_extend: Button
 
 
 func _ready() -> void:
+    super._ready()
+
     if not resource:
-        push_error('Must have a resource before adding to scene!')
         return
 
     setup_settings(%VisionSettings, &'vision')
@@ -31,6 +32,9 @@ func _ready() -> void:
 func _set_resource(resource: BehaviorExtendedResource) -> void:
     if resource is BehaviorMindSettings:
         self.resource = resource
+
+func _get_resource() -> BehaviorExtendedResource:
+    return resource
 
 func on_save() -> void:
     super.on_save()

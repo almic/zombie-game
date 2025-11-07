@@ -13,8 +13,18 @@ signal saved()
 var is_saved: bool = true
 
 
+func _ready() -> void:
+    if not get_resource():
+        push_error('Must have a resource before adding to scene (%s)!' % get_script().resource_path)
+        return
+
 ## Sets the resource for this editor
 @abstract func _set_resource(resource: BehaviorExtendedResource) -> void
+
+''
+
+## Get the resource of this editor
+@abstract func _get_resource() -> BehaviorExtendedResource
 
 ''
 
@@ -23,6 +33,9 @@ func set_resource(resource: BehaviorExtendedResource) -> void:
         push_error('Resource cannot be set after the editor is added to the scene!')
         return
     _set_resource(resource)
+
+func get_resource() -> BehaviorExtendedResource:
+    return _get_resource()
 
 func on_change() -> void:
     if not is_saved:

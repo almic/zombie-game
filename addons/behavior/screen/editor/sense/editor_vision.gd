@@ -6,8 +6,9 @@ var resource: BehaviorSenseVisionSettings
 
 
 func _ready() -> void:
+    super._ready()
+
     if not resource:
-        push_error('Must have a resource before adding to scene!')
         return
 
     for prop in resource.get_property_list():
@@ -28,3 +29,6 @@ func _ready() -> void:
 func _set_resource(resource: BehaviorExtendedResource) -> void:
     if resource is BehaviorSenseVisionSettings:
         self.resource = resource
+
+func _get_resource() -> BehaviorExtendedResource:
+    return resource

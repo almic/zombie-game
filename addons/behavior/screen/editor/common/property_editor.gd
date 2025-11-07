@@ -2,9 +2,13 @@
 class_name BehaviorPropertyEditor extends Control
 
 
-# TODO: put editor scenes here
-const NUMBER_EDITOR = preload("uid://xafwseh7radi")
-const ARRAY_EDITOR = preload("uid://do33q3toxspah")
+static var NUMBER_EDITOR: PackedScene
+static var ARRAY_EDITOR: PackedScene
+
+static func _static_init() -> void:
+    # TODO: put editor scenes here
+    NUMBER_EDITOR = load("uid://xafwseh7radi")
+    ARRAY_EDITOR = load("uid://do33q3toxspah")
 
 
 ## Emitted when changing the value
@@ -14,6 +18,8 @@ signal changed()
 var resource: BehaviorExtendedResource
 var property: Dictionary
 var on_changed_func: Callable
+
+var _is_ghost: bool = true
 
 
 ## Create property editors for basic resource exports. Does not modify the
@@ -50,6 +56,12 @@ static func get_editor_for_property(
         editor.on_changed_func = on_changed_func
     return editor
 
+func _ready() -> void:
+    # print('ready %s at path %s' % [get_script().resource_path.get_file(), str(get_path())])
+    if get_parent().name.begins_with('@SubViewport@'):
+        # AHHHH
+        return
+    _is_ghost = false
 
 func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> void:
     resource = res

@@ -7380,6 +7380,19 @@ size = Vector3(30, 6, 30)
 material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
+[node name="Church" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -273, 2, -697.8)
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+metadata/_edit_lock_ = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/Special/Church"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+size = Vector3(15, 6, 30)
+material = ExtResource("53_64map")
+metadata/_edit_lock_ = true
+
 [node name="FireStation" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79.3, 2, -325.5)
 use_collision = true

@@ -39,10 +39,13 @@ func _get_resource() -> BehaviorExtendedResource:
 func on_save() -> void:
     super.on_save()
 
-    if %VisionSettings.expandable:
-        %VisionSettings.expandable.on_save()
-    if %HearingSettings.expandable:
-        %HearingSettings.expandable.on_save()
+    var editor: BehaviorResourceEditor = %VisionEditorContainer.get_child(0)
+    if editor:
+        editor.on_save()
+
+    editor = %HearingEditorContainer.get_child(0)
+    if editor:
+        editor.on_save()
 
 func setup_settings(container: ExpandableContainer, type: StringName) -> void:
     const btn_width = 80
@@ -119,8 +122,17 @@ func setup_settings(container: ExpandableContainer, type: StringName) -> void:
 
 
 func accept_editors(vision: BehaviorResourceEditor, hearing: BehaviorResourceEditor) -> void:
-    %VisionSettings.set_expandable_control(vision)
-    %HearingSettings.set_expandable_control(hearing)
+    if vision.get_parent():
+        vision.reparent(%VisionEditorContainer)
+    else:
+        %VisionEditorContainer.add_child(vision)
+    vision.visible = true
+
+    if hearing.get_parent():
+        hearing.reparent(%HearingEditorContainer)
+    else:
+        %HearingEditorContainer.add_child(hearing)
+    hearing.visible = true
 
     vision_changed = not vision.is_saved
     hearing_changed = not hearing.is_saved

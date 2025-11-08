@@ -594,8 +594,12 @@ func update_all_items() -> void:
         while i < count:
             # NOTE: Count should be 2 when the item is only referenced in 'all_items'
             #       and here (+1 when getting the ref count). Can be safely removed.
-            var ref_count: int = all_items[i].get_reference_count()
+            var item: ResourceItem = all_items[i]
+            var ref_count: int = item.get_reference_count()
             if ref_count == 2:
+                item.editor.queue_free()
+                item.editor = null
+                item.resource = null
                 all_items.remove_at(i)
                 removed = true
                 count -= 1

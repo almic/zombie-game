@@ -51,6 +51,10 @@ icon_visible = true
 icon_separation = 8
 metadata/_custom_type_script = "uid://wupervkwvv0q"
 
+[node name="VisionEditorContainer" type="MarginContainer" parent="VBoxContainer/Senses/VBoxContainer/VisionSettings"]
+unique_name_in_owner = true
+layout_mode = 2
+
 [node name="HearingSettings" type="VBoxContainer" parent="VBoxContainer/Senses/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -61,3 +65,7 @@ script = ExtResource("3_rylcm")
 icon_visible = true
 icon_separation = 8
 metadata/_custom_type_script = "uid://wupervkwvv0q"
+
+[node name="HearingEditorContainer" type="MarginContainer" parent="VBoxContainer/Senses/VBoxContainer/HearingSettings"]
+unique_name_in_owner = true
+layout_mode = 2

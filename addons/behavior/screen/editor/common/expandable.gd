@@ -15,6 +15,10 @@ var expandable: Control
 var is_expanded: bool = true:
     set = set_expanded
 
+@export
+var allow_interaction: bool = true:
+    set = set_interaction
+
 var is_hovering: bool = false:
     set = set_hovering
 
@@ -36,6 +40,9 @@ var icon_visible: bool:
 var icon_separation: int:
     set = set_icon_separation
 
+@export
+var title_theme_variation: StringName = &''
+
 
 func _ready() -> void:
     focus_mode = Control.FOCUS_ALL
@@ -44,8 +51,6 @@ func _ready() -> void:
     title_panel = PanelContainer.new()
     title_panel.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
     title_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-    #title_panel.focus_mode = Control.FOCUS_ALL
-    #title_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 
     title_bar = HBoxContainer.new()
     icon = TextureRect.new()
@@ -61,10 +66,10 @@ func _ready() -> void:
 
     # Search first child and make it the expandable
     if not expandable and get_child_count() > 0:
-        expandable = get_child(0)
+        set_expandable_control(get_child(0))
     else:
         # Force an update
-        expandable = expandable
+        set_expandable_control(expandable)
 
     if not icon_fold:
         icon_fold = get_theme_icon(&'GuiTreeArrowDown', &'EditorIcons')
@@ -76,6 +81,9 @@ func _ready() -> void:
     update_icon()
 
 func _gui_input(event: InputEvent) -> void:
+    if not allow_interaction:
+        return
+
     if event is InputEventMouseMotion:
         if title_panel.get_rect().has_point(event.position):
             if not is_hovering:
@@ -107,13 +115,26 @@ func _notification(what: int) -> void:
 
 func _draw() -> void:
     if is_expanded and expandable:
-        var type: StringName = "ExpandableContainer"
+        var type: StringName = &'ExpandableContainer'
         if not theme_type_variation.is_empty():
             type = theme_type_variation
-        draw_style_box(
-                get_theme_stylebox('background', type),
-                Rect2(0, title_panel.size.y, size.x, expandable.size.y)
-        )
+
+        var stylebox: StyleBox = get_theme_stylebox(&'background', type)
+
+        # Use content margins to shift the expanded panel box
+        var rect: Rect2 = Rect2(0, title_panel.size.y, size.x, size.y - title_panel.size.y)
+        if stylebox.content_margin_top > 0:
+            rect.position.y += stylebox.content_margin_top
+            rect.size.y -= stylebox.content_margin_top
+        if stylebox.content_margin_bottom > 0:
+            rect.size.y -= stylebox.content_margin_bottom
+        if stylebox.content_margin_left > 0:
+            rect.position.x += stylebox.content_margin_left
+            rect.size.x -= stylebox.content_margin_left
+        if stylebox.content_margin_right > 0:
+            rect.size.x -= stylebox.content_margin_right
+
+        draw_style_box(stylebox, rect)
 
 
 func update_icon() -> void:
@@ -137,8 +158,8 @@ func set_hovering(hovering: bool) -> void:
     is_hovering = hovering
 
     var type: StringName = &'FoldableContainer'
-    if not theme_type_variation.is_empty():
-        type = theme_type_variation
+    if not title_theme_variation.is_empty():
+        type = title_theme_variation
 
     var style: StyleBox
     if is_hovering:
@@ -155,6 +176,11 @@ func set_hovering(hovering: bool) -> void:
     style.content_margin_left = 8
     title_panel.add_theme_stylebox_override(&'panel', style)
 
+func set_interaction(allowed: bool) -> void:
+    allow_interaction = allowed
+    if is_hovering:
+        is_hovering = false
+        queue_redraw()
 
 func set_title_control(control: Control) -> void:
     if title:

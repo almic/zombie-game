@@ -1,6 +1,11 @@
 @tool
 extends BehaviorResourceEditor
 
+static var PROPERTIES: PackedStringArray = [
+    'target_groups',
+    'min_loudness',
+    'max_distance',
+]
 
 var resource: BehaviorSenseHearingSettings
 
@@ -11,21 +16,10 @@ func _ready() -> void:
     if not resource:
         return
 
-    for prop in resource.get_property_list():
-        var editor: BehaviorPropertyEditor
-        if prop.name == 'min_loudness':
-            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
-        elif prop.name == 'max_distance':
-            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
-        elif prop.name == 'target_groups':
-            editor = BehaviorPropertyEditor.get_editor_for_property(resource, prop)
-        else:
-            continue
-        editor.changed.connect(on_change)
-
-
-
-        %Properties.add_child(editor)
+    var editors := get_property_editors(resource, PROPERTIES, on_change)
+    for editor in editors:
+        var container: ExpandableContainer = make_property_override_container(editor)
+        %Properties.add_child(container)
 
 
 func _set_resource(resource: BehaviorExtendedResource) -> void:

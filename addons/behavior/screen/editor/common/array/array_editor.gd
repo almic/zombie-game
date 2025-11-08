@@ -4,6 +4,12 @@ class_name BehaviorPropertyEditorArray extends BehaviorPropertyEditor
 
 var type: Variant.Type
 
+var line_edit_variation: StringName = &'':
+    set = set_line_edit_variation
+
+var spinbox_variation: StringName = &'':
+    set = set_spinbox_variation
+
 
 func _ready() -> void:
     super._ready()
@@ -18,6 +24,19 @@ func _ready() -> void:
     for elem in array:
         _add_element(elem)
 
+
+func set_line_edit_variation(variation: StringName) -> void:
+    line_edit_variation = variation
+    for line_edit in find_children('', 'LineEdit'):
+        if line_edit is LineEdit:
+            line_edit.theme_type_variation = line_edit_variation
+
+func set_spinbox_variation(variation: StringName) -> void:
+    spinbox_variation = variation
+    for spinbox in find_children('', 'SpinBox'):
+        if spinbox is SpinBox:
+            spinbox.theme_type_variation = spinbox_variation
+
 func _add_element(initial: Variant = null) -> void:
     var elem: HBoxContainer = HBoxContainer.new()
     var index: int = %Elements.get_child_count()
@@ -25,6 +44,7 @@ func _add_element(initial: Variant = null) -> void:
     var control: Control
     if type == TYPE_STRING or type == TYPE_STRING_NAME:
         var line_edit: LineEdit = LineEdit.new()
+        line_edit.theme_type_variation = line_edit_variation
         if initial != null:
             line_edit.text = initial
         else:
@@ -56,6 +76,8 @@ func _add_element(initial: Variant = null) -> void:
         line_edit.text_changed.connect(_on_control_modified.bind(control, line_edit))
     elif type == TYPE_INT or type == TYPE_FLOAT:
         var spin_box: SpinBox = SpinBox.new()
+        spin_box.theme_type_variation = spinbox_variation
+        spin_box.get_line_edit().theme_type_variation = line_edit_variation
 
         if type == TYPE_INT:
             spin_box.rounded = true
@@ -163,4 +185,5 @@ func _remove_element(index: int, element: Control) -> void:
         return
 
     %Elements.remove_child(element)
+    element.queue_free()
     %LabelSize.text = str(%Elements.get_child_count())

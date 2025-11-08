@@ -40,8 +40,10 @@ static func get_editor_for_property(
     var editor: BehaviorPropertyEditor
     if type == TYPE_INT or type == TYPE_FLOAT:
         editor = NUMBER_EDITOR.instantiate()
+        editor.set_line_edit_variation(&'LineEditMono')
     elif type == TYPE_ARRAY:
         editor = ARRAY_EDITOR.instantiate()
+        editor.set_line_edit_variation(&'LineEditMono')
     else:
         push_error('No editor for type (%d)!' % type)
         return

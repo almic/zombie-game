@@ -32,6 +32,9 @@ func set_suffix(suf: String) -> void:
     suffix = suf
     %SpinBox.suffix = suffix
 
+func set_line_edit_variation(variation: StringName) -> void:
+    %SpinBox.get_line_edit().theme_type_variation = variation
+
 func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> void:
     super(res, info)
     var hint = info.hint

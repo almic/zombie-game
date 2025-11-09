@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dfu7q11sy44hk"]
+[gd_scene load_steps=3 format=3 uid="uid://dfu7q11sy44hk"]
 
 [ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_vgs5r"]
 [ext_resource type="Script" uid="uid://d3jecvttbspyw" path="res://addons/behavior/screen/editor/mind/editor_mind.gd" id="2_ksoh3"]
-[ext_resource type="Script" uid="uid://wupervkwvv0q" path="res://addons/behavior/screen/editor/common/expandable.gd" id="3_rylcm"]
 
 [node name="MindEditor" type="MarginContainer"]
 anchors_preset = 15
@@ -16,56 +15,30 @@ script = ExtResource("2_ksoh3")
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 layout_mode = 2
 
-[node name="Senses" type="MarginContainer" parent="VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 8
 theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 8
 theme_override_constants/margin_bottom = 8
 
-[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/Senses"]
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/Senses/VBoxContainer"]
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 
-[node name="Label" type="Label" parent="VBoxContainer/Senses/VBoxContainer/MarginContainer"]
+[node name="Label" type="Label" parent="VBoxContainer/MarginContainer/VBoxContainer/MarginContainer"]
 layout_mode = 2
 theme_type_variation = &"HeaderSmall"
 text = "Senses"
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer/Senses/VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="VisionSettings" type="VBoxContainer" parent="VBoxContainer/Senses/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-focus_mode = 2
-mouse_filter = 0
-theme_override_constants/separation = 0
-script = ExtResource("3_rylcm")
-icon_visible = true
-icon_separation = 8
-metadata/_custom_type_script = "uid://wupervkwvv0q"
-
-[node name="VisionEditorContainer" type="MarginContainer" parent="VBoxContainer/Senses/VBoxContainer/VisionSettings"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="HearingSettings" type="VBoxContainer" parent="VBoxContainer/Senses/VBoxContainer"]
-unique_name_in_owner = true
-layout_mode = 2
-focus_mode = 2
-mouse_filter = 0
-theme_override_constants/separation = 0
-script = ExtResource("3_rylcm")
-icon_visible = true
-icon_separation = 8
-metadata/_custom_type_script = "uid://wupervkwvv0q"
-
-[node name="HearingEditorContainer" type="MarginContainer" parent="VBoxContainer/Senses/VBoxContainer/HearingSettings"]
+[node name="SubResources" type="VBoxContainer" parent="VBoxContainer/MarginContainer/VBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2

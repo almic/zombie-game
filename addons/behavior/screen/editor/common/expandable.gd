@@ -33,11 +33,11 @@ var icon_show: Texture2D:
         update_icon()
 
 @export
-var icon_visible: bool:
+var icon_visible: bool = true:
     set = set_icon_visible, get = get_icon_visible
 
 @export_range(0, 1, 1, 'or_greater')
-var icon_separation: int:
+var icon_separation: int = 8:
     set = set_icon_separation
 
 @export

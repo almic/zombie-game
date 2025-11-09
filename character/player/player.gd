@@ -133,8 +133,8 @@ var ammo_bank: Dictionary = {}
 
 ## The vehicle currently controlled by the player
 var current_vehicle: JoltVehicle = null
-## Delay for exiting a vehicle after entering it
-var _vehicle_exit_delay: float = 0.0
+## The action which must be released to allow entering / exiting a vehicle
+var _vehicle_enter_exit_action: GUIDEAction = null
 
 
 ## If we are aiming
@@ -271,6 +271,13 @@ func _process(delta: float) -> void:
 
     _handle_input = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 
+    # Check vehicle enter/exit input is released first
+    if (
+            _vehicle_enter_exit_action
+        and _vehicle_enter_exit_action.is_completed()
+    ):
+        _vehicle_enter_exit_action = null
+
     # Test interactions before everything else, so they appear to occur with
     # the frame the player sees right now
     if _handle_input and interact.is_triggered():
@@ -387,11 +394,9 @@ func update_first_person(delta: float) -> void:
     update_first_person_camera(delta)
 
 func update_vehicle(delta: float) -> void:
-    if _vehicle_exit_delay > 0.0:
-        _vehicle_exit_delay -= delta
-
-    if _handle_input and (not _vehicle_exit_delay > 0.0) and exit_vehicle.is_triggered():
+    if _handle_input and (not _vehicle_enter_exit_action) and exit_vehicle.is_triggered():
         global_position = current_vehicle.get_exit_position()
+        _vehicle_enter_exit_action = interact
         show_self(true)
 
         current_vehicle = null
@@ -924,8 +929,11 @@ func select_weapon(slot: int) -> void:
 
 func interact_with(object: Object) -> void:
     if object is JoltVehicle:
+        if _vehicle_enter_exit_action:
+            return
+
         current_vehicle = object
-        _vehicle_exit_delay = 1.0
+        _vehicle_enter_exit_action = exit_vehicle
 
         # Disable and hide self
         show_self(false)
@@ -1073,13 +1081,11 @@ func connect_hurtboxes() -> void:
 
 func show_self(yes: bool = true) -> void:
     if yes:
+        visible = true
         collider.disabled = false
-        collider.visible = true
         weapon_node.process_mode = Node.PROCESS_MODE_INHERIT
-        flashlight.visible = true
         return
 
+    visible = false
     collider.disabled = true
-    collider.visible = false
     weapon_node.process_mode = Node.PROCESS_MODE_DISABLED
-    flashlight.visible = false

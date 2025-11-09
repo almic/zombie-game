@@ -1,10 +1,15 @@
 @abstract
 @tool
-class_name BehaviorResourceEditor extends Control
+class_name BehaviorResourceEditor extends BehaviorBaseEditor
 
 
-## Emitted when a value is modified in this editor, or in a sub editor
-signal changed()
+## Maps class names to editor scenes
+static var RESOURCE_EDITORS: Dictionary[StringName, PackedScene] = {
+        &'BehaviorMindSettings': load("uid://dfu7q11sy44hk"),
+        &'BehaviorSenseVisionSettings': load("uid://dh5k5n1pp0xmg"),
+        &'BehaviorSenseHearingSettings': load("uid://b7bxudl0ogo2i"),
+}
+
 
 ## Emitted when this editor is marked as saved
 signal saved()
@@ -14,11 +19,8 @@ var is_saved: bool = true
 
 
 func _ready() -> void:
-    # print('ready %s with parent %s' % [get_script().resource_path.get_file(), get_parent().name])
-    # NOTE: When the editor opens, it for some reason loads up the old UI
-    #       nodes but in a weird SubViewport node and without any state?
-    #       Stupid Godot tbh. Check if my parent is named "@SubViewport@".
-    if get_parent().name.begins_with('@SubViewport@'):
+    super._ready()
+    if _is_ghost:
         return
 
     if not get_resource():
@@ -44,6 +46,16 @@ func set_resource(resource: BehaviorExtendedResource) -> void:
 func get_resource() -> BehaviorExtendedResource:
     return _get_resource()
 
+
+## Get the property names of sub resources
+func get_sub_resource_names() -> PackedStringArray:
+    return PackedStringArray()
+
+## Accepts the sub resource editors for display, will be in the same order as
+## requested by get_sub_resource_names()
+func accept_editors(editors: Array[BehaviorResourceEditor]) -> void:
+    pass
+
 func on_change() -> void:
     if not is_saved:
         return
@@ -57,6 +69,17 @@ func on_save() -> void:
 
     is_saved = true
     saved.emit()
+
+
+static func get_editor_for_resource(
+        resource: BehaviorExtendedResource
+) -> BehaviorResourceEditor:
+    var packed: PackedScene = RESOURCE_EDITORS.get(resource.get_script().get_global_name())
+    if not packed:
+        return null
+
+    return packed.instantiate() as BehaviorResourceEditor
+
 
 static func get_property_editors(
         resource: BehaviorExtendedResource,
@@ -77,7 +100,6 @@ static func make_property_override_container(
 ) -> ExpandableContainer:
     var container: ExpandableContainer = ExpandableContainer.new()
     container.set_expandable_separation(0)
-    container.icon_separation = 8
     container.icon_visible = false
     container.allow_interaction = false
     container.theme_type_variation = &'ExpandableTransparent'
@@ -127,7 +149,7 @@ static func make_property_override_container(
         title_bar.add_child(property_name)
 
     title_bar.tooltip_text = ' %s ' % editor.property.name
-    container.set_title_control(title_bar)
+    title_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
     var margins: MarginContainer = MarginContainer.new()
     margins.add_theme_constant_override(&'margin_top', 8)
@@ -137,5 +159,93 @@ static func make_property_override_container(
 
     margins.add_child(editor)
 
+    container.set_title_control(title_bar)
     container.set_expandable_control(margins)
+
+    return container
+
+static func make_sub_resource_override_container(
+    resource: BehaviorExtendedResource,
+    property_name: StringName,
+) -> ExpandableContainer:
+    const btn_width = 80
+    const min_height = 40
+
+    var sub_resource: BehaviorExtendedResource = resource.get(property_name)
+
+    var container: ExpandableContainer = ExpandableContainer.new()
+    container.set_expandable_separation(0)
+
+    var title_bar: Control
+
+    var label: LineEdit = LineEdit.new()
+    label.theme_type_variation = &'LabelMono'
+    label.editable = false
+    label.expand_to_text_length = true
+    label.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN | Control.SIZE_EXPAND
+    label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+    if sub_resource.resource_scene_unique_id.is_empty():
+        label.text = sub_resource.resource_path.get_file()
+        label.placeholder_text = 'Unknown Resource'
+    else:
+        label.placeholder_text = 'Sub Resource'
+
+    var btn_extend: Button = Button.new()
+
+    title_bar = HBoxContainer.new()
+    title_bar.alignment = BoxContainer.ALIGNMENT_BEGIN
+    title_bar.add_theme_constant_override('separation', 8)
+    title_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    title_bar.tooltip_text = property_name
+
+    var title: Label = Label.new()
+    title.text = property_name.capitalize()
+    title.custom_minimum_size.y = min_height
+    title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+    var override_button: CheckButton
+    if resource.base:
+        override_button = CheckButton.new()
+        # TODO: button things
+
+    var button_bar: HBoxContainer = HBoxContainer.new()
+    button_bar.alignment = BoxContainer.ALIGNMENT_END
+    button_bar.add_theme_constant_override('separation', 8)
+    button_bar.size_flags_horizontal = Control.SIZE_SHRINK_END
+    button_bar.mouse_filter = Control.MOUSE_FILTER_STOP
+
+    # New button
+    var btn_new: Button = Button.new()
+    btn_new.text = 'New'
+    btn_new.custom_minimum_size.x = btn_width
+    btn_new.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+    # Extend / Save As button
+    btn_extend.custom_minimum_size.x = btn_width
+    btn_extend.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+    # Load button
+    var btn_load: Button = Button.new()
+    btn_load.text = 'Load'
+    btn_load.custom_minimum_size.x = btn_width
+    btn_load.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+    # Final layout
+    button_bar.add_spacer(true)
+    button_bar.add_child(btn_extend)
+    button_bar.add_child(btn_load)
+    button_bar.add_child(btn_new)
+    button_bar.add_spacer(false)
+
+    if override_button:
+        title_bar.add_child(override_button)
+
+    title_bar.add_child(title)
+    title_bar.add_child(label)
+    title_bar.add_child(button_bar)
+
+    container.set_title_control(title_bar)
+
     return container

@@ -7,10 +7,6 @@ const SECTION_EDITOR = &'Editor'
 const THEME = preload("uid://d0tmanljmd1ao")
 const CREATE = preload("uid://cd6347u3w4lsf")
 
-const EDITOR_MIND = preload("uid://dfu7q11sy44hk")
-const EDITOR_VISION = preload("uid://dh5k5n1pp0xmg")
-const EDITOR_HEARING = preload("uid://b7bxudl0ogo2i")
-
 const LIST_ITEM = &'bhvr_editor_list_item'
 
 
@@ -30,6 +26,14 @@ class ResourceItem:
         self.resource = resource
         self.editor = editor
         children = []
+
+    func get_children_editors() -> Array[BehaviorResourceEditor]:
+        var result: Array[BehaviorResourceEditor] = []
+        var count: int = children.size()
+        result.resize(count)
+        for i in range(count):
+            result[i] = children[i].editor
+        return result
 
 
 ## Emitted when traveling to behavior menu
@@ -187,11 +191,8 @@ func select_item(item: ResourceItem) -> void:
         %Editors.add_child(current_item.editor)
     current_item.editor.visible = true
 
-    if current_item.resource is BehaviorMindSettings:
-        var resource: BehaviorMindSettings = current_item.resource as BehaviorMindSettings
-        var vision := get_or_add_item(resource.sense_vision)
-        var hearing := get_or_add_item(resource.sense_hearing)
-        current_item.editor.accept_editors(vision.editor, hearing.editor)
+    if not current_item.children.is_empty():
+        current_item.editor.accept_editors(current_item.get_children_editors())
 
     if not grab_focus_block:
         current_item.editor.grab_focus()
@@ -222,26 +223,18 @@ func get_or_add_item(resource: Resource) -> ResourceItem:
         if item.resource == resource:
             return item
 
-    var editor: BehaviorResourceEditor
-    var children: Array[ResourceItem]
-    if resource is BehaviorMindSettings:
-        editor = EDITOR_MIND.instantiate()
-        var vision := get_or_add_item(resource.sense_vision)
-        var hearing := get_or_add_item(resource.sense_hearing)
-        children = [vision, hearing]
-    elif resource is BehaviorSenseVisionSettings:
-        editor = EDITOR_VISION.instantiate()
-    elif resource is BehaviorSenseHearingSettings:
-        editor = EDITOR_HEARING.instantiate()
-    # TODO: add other editor types
-    # elif res is ... :
-    else:
+    var editor: BehaviorResourceEditor = BehaviorResourceEditor.get_editor_for_resource(resource)
+    if not editor:
         push_error('Unknown resource type "%s"!' % (resource.get_script() as Script).get_global_name())
         return null
 
     editor.focus_mode = Control.FOCUS_ALL
     editor.visible = false
     editor.set_resource(resource)
+
+    var children: Array[ResourceItem]
+    for sub_resource_name in editor.get_sub_resource_names():
+        children.append(get_or_add_item(resource.get(sub_resource_name)))
 
     var item: ResourceItem = ResourceItem.new(resource, editor)
     item.children.append_array(children)

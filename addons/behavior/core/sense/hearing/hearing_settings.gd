@@ -1,3 +1,4 @@
+@tool
 class_name BehaviorSenseHearingSettings extends BehaviorSenseSettings
 
 

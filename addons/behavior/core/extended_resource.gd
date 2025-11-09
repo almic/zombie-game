@@ -7,14 +7,12 @@ class_name BehaviorExtendedResource extends Resource
 ## The base of this resource. When created, copies all property values from the
 ## base that are not overwritten here.
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
-var base: BehaviorExtendedResource:
-    set = set_base
+var base: BehaviorExtendedResource
 
 
 ## Maps overwritten properties to their values.
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
-var base_overrides: Dictionary:
-    set = set_overrides
+var base_overrides: Dictionary
 
 
 ## Must be called to properly initialize the resource properties from its base.
@@ -25,9 +23,9 @@ func _on_load(path: String) -> void:
     if not base:
         return
 
-    # Ensure setters run which do some validation
-    base = base
-    base_overrides = base_overrides
+    # Run set method which does some validation
+    set_base(base)
+    set_overrides(base_overrides)
 
     # Copy values from base, set values from override
     var props: Array[Dictionary] = base.get_property_list()
@@ -43,7 +41,6 @@ func _on_load(path: String) -> void:
             continue
 
         set(prop.name, base.get(prop.name))
-
 
 func set_base(new_base: BehaviorExtendedResource) -> void:
     if new_base == null:
@@ -68,10 +65,10 @@ func set_overrides(overrides: Dictionary) -> void:
     # Check that all overrides are real property names
     var my_props: Array[Dictionary] = get_property_list()
     var my_prop_names: Array[StringName] = []
-    my_prop_names.resize(my_props.size())
-    var i: int = 0
-    for prop in my_props:
-        my_prop_names[i] = prop.name
+    var count: int = my_props.size()
+    my_prop_names.resize(count)
+    for i in range(count):
+        my_prop_names[i] = my_props[i].name
         i += 1
 
     for prop in overrides:
@@ -82,7 +79,7 @@ func set_overrides(overrides: Dictionary) -> void:
     base_overrides = overrides
 
 
-func override(name: String, value: Variant) -> void:
+func override(name: StringName, value: Variant) -> void:
     if value == null:
         print('deleting override: ' + name)
         base_overrides.erase(name)

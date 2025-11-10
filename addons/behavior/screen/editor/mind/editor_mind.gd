@@ -5,15 +5,6 @@ extends BehaviorResourceEditor
 var resource: BehaviorMindSettings
 
 
-func _ready() -> void:
-    super._ready()
-    if _is_ghost:
-        return
-
-    for sub_resource_name in get_sub_resource_names():
-        var container: ExpandableContainer = make_sub_resource_override_container(resource, sub_resource_name)
-        %SubResources.add_child(container)
-
 func _set_resource(resource: BehaviorExtendedResource) -> void:
     if resource is BehaviorMindSettings:
         self.resource = resource
@@ -37,10 +28,16 @@ func get_sub_resource_names() -> PackedStringArray:
     ]
 
 func accept_editors(editors: Array[BehaviorResourceEditor]) -> void:
+    var sub_resource_names := get_sub_resource_names()
     var i: int = 0
     for e in editors:
         connect_editor(e)
-        var container: ExpandableContainer = %SubResources.get_child(i) as ExpandableContainer
+        var container: ExpandableContainer
+        if i < %SubResources.get_child_count():
+            container = %SubResources.get_child(i) as ExpandableContainer
+        else:
+            container = make_sub_resource_override_container(resource, sub_resource_names[i])
+            %SubResources.add_child(container)
         container.set_expandable_control(e)
         i += 1
 

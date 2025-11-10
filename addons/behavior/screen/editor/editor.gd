@@ -1,5 +1,5 @@
 @tool
-extends HSplitContainer
+class_name BehaviorMainEditor extends HSplitContainer
 
 
 const SECTION_EDITOR = &'Editor'
@@ -10,19 +10,26 @@ const CREATE = preload("uid://cd6347u3w4lsf")
 const LIST_ITEM = &'bhvr_editor_list_item'
 
 
+static var INSTANCE: BehaviorMainEditor = null
+
+
 enum Menu {
     CLOSE = 1,
 }
 
+
 class ResourceItem:
-    var resource: Resource
+    var resource: BehaviorExtendedResource
     var editor: BehaviorResourceEditor
 
     ## Child items, this list is just meant to keep a reference. Should not be
     ## used to access the child items.
     var children: Array[ResourceItem]
 
-    func _init(resource: Resource, editor: BehaviorResourceEditor = null):
+    func _init(
+            resource: BehaviorExtendedResource,
+            editor: BehaviorResourceEditor = null
+    ):
         self.resource = resource
         self.editor = editor
         children = []
@@ -34,6 +41,13 @@ class ResourceItem:
         for i in range(count):
             result[i] = children[i].editor
         return result
+
+    func update_children() -> void:
+        children = []
+        for sub_resource_name in editor.get_sub_resource_names():
+            children.append(
+                BehaviorMainEditor.INSTANCE.get_or_add_item(resource.get(sub_resource_name))
+            )
 
 
 ## Emitted when traveling to behavior menu
@@ -52,6 +66,9 @@ var grab_focus_block: bool = false
 # Used to ensure only 1 list save check each call
 var _run_check_list: bool = false
 
+# Used to ensure only 1 all_items check each call
+var _run_all_items: bool = false
+
 # If the node is a "ghost"
 var _is_ghost: bool = true
 
@@ -66,6 +83,8 @@ func _ready() -> void:
     else:
         # print('ghost editor.gd !')
         return
+
+    INSTANCE = self
 
     %LineEditFilter.right_icon = get_theme_icon(&'Search', &'EditorIcons')
     %LineEditFilter.text_changed.connect(on_filter_text_changed)
@@ -191,9 +210,6 @@ func select_item(item: ResourceItem) -> void:
         %Editors.add_child(current_item.editor)
     current_item.editor.visible = true
 
-    if not current_item.children.is_empty():
-        current_item.editor.accept_editors(current_item.get_children_editors())
-
     if not grab_focus_block:
         current_item.editor.grab_focus()
 
@@ -215,13 +231,15 @@ func select_item(item: ResourceItem) -> void:
 
 ## Ensures a resource is in the "all items" list. This does not open or select
 ## the item. This is mainly responsible for instancing a ResourceItem
-func get_or_add_item(resource: Resource) -> ResourceItem:
+func get_or_add_item(resource: BehaviorExtendedResource) -> ResourceItem:
     if _is_ghost:
         return null
 
     for item in all_items:
         if item.resource == resource:
             return item
+
+    # print('Creating item for resource "%s"' % resource.resource_path)
 
     var editor: BehaviorResourceEditor = BehaviorResourceEditor.get_editor_for_resource(resource)
     if not editor:
@@ -232,15 +250,20 @@ func get_or_add_item(resource: Resource) -> ResourceItem:
     editor.visible = false
     editor.set_resource(resource)
 
-    var children: Array[ResourceItem]
-    for sub_resource_name in editor.get_sub_resource_names():
-        children.append(get_or_add_item(resource.get(sub_resource_name)))
-
     var item: ResourceItem = ResourceItem.new(resource, editor)
-    item.children.append_array(children)
+    item.update_children()
+    item.editor.accept_editors(item.get_children_editors())
     all_items.append(item)
 
     return item
+
+func update_item(resource: BehaviorExtendedResource) -> void:
+    for item in all_items:
+        if item.resource == resource:
+            item.update_children()
+            item.editor.accept_editors(item.get_children_editors())
+            check_all_items()
+            break
 
 func get_item_index(item: ResourceItem) -> int:
     for i in range(%ItemList.item_count):
@@ -510,7 +533,7 @@ func close_item(item: ResourceItem, select_next: bool = true) -> void:
     if not selected:
         select_item(null)
 
-    update_all_items.call_deferred()
+    check_all_items()
 
 func save_resource() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well
@@ -576,9 +599,20 @@ func show_popup_menu(idx: int) -> void:
     popup_menu.id_pressed.connect(on_popup_id_pressed.bind(idx), CONNECT_ONE_SHOT)
     popup_menu.popup()
 
-func update_all_items() -> void:
+func check_all_items() -> void:
+    _run_all_items = true
+    _check_all_items.call_deferred()
+
+func _check_all_items() -> void:
+    if not _run_all_items:
+        return
+
+    # print('Checking all items')
+    _run_all_items = false
+
     var first: bool = true
     var removed: bool = false
+    var count_removed: int = 0
     while first or removed:
         first = false
         removed = false
@@ -589,6 +623,7 @@ func update_all_items() -> void:
             #       and here (+1 when getting the ref count). Can be safely removed.
             var item: ResourceItem = all_items[i]
             var ref_count: int = item.get_reference_count()
+            # print('item "%s" has %d refs' % [item.resource.resource_path, ref_count])
             if ref_count == 2:
                 item.editor.queue_free()
                 item.editor = null
@@ -596,8 +631,10 @@ func update_all_items() -> void:
                 all_items.remove_at(i)
                 removed = true
                 count -= 1
+                # count_removed += 1
             else:
                 i += 1
+    # print('Freed %d items' % count_removed)
 
 func update_list() -> void:
 

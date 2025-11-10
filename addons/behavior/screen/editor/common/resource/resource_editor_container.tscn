@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://dh63a4nbtj3qy"]
+
+[ext_resource type="Script" uid="uid://b3bp2tsg2hesu" path="res://addons/behavior/screen/editor/common/resource/resource_editor_container.gd" id="1_sodmx"]
+[ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_t787j"]
+
+[node name="ResourceEditorContainer" type="VBoxContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 2
+mouse_filter = 0
+theme = ExtResource("1_t787j")
+theme_override_constants/separation = 0
+script = ExtResource("1_sodmx")
+metadata/_custom_type_script = "uid://wupervkwvv0q"

@@ -165,13 +165,17 @@ static func make_property_override_container(
     return container
 
 static func make_sub_resource_override_container(
-    resource: BehaviorExtendedResource,
+    main_resource: BehaviorExtendedResource,
     property_name: StringName,
 ) -> ExpandableContainer:
     const btn_width = 80
     const min_height = 40
 
-    var sub_resource: BehaviorExtendedResource = resource.get(property_name)
+    var sub_resource: BehaviorExtendedResource = main_resource.get(property_name)
+    var sub_type_name: StringName = (sub_resource.get_script() as Script).get_global_name()
+    if sub_type_name.is_empty():
+        push_error('Resource script at "%s" is missing a "class_name" declaration! Please fix!' % (sub_resource.get_script() as Script).resource_path)
+        return null
 
     var container: ExpandableContainer = ExpandableContainer.new()
     container.set_expandable_separation(0)
@@ -185,11 +189,11 @@ static func make_sub_resource_override_container(
     label.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN | Control.SIZE_EXPAND
     label.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
-    if sub_resource.resource_scene_unique_id.is_empty():
+    if sub_resource.is_sub_resource():
+        label.placeholder_text = 'Sub Resource'
+    else:
         label.text = sub_resource.resource_path.get_file()
         label.placeholder_text = 'Unknown Resource'
-    else:
-        label.placeholder_text = 'Sub Resource'
 
     var btn_extend: Button = Button.new()
 
@@ -206,7 +210,7 @@ static func make_sub_resource_override_container(
     title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
     var override_button: CheckButton
-    if resource.base:
+    if main_resource.base:
         override_button = CheckButton.new()
         # TODO: button things
 
@@ -231,6 +235,15 @@ static func make_sub_resource_override_container(
     btn_load.text = 'Load'
     btn_load.custom_minimum_size.x = btn_width
     btn_load.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    btn_load.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+    btn_load.pressed.connect(
+            _load_resource_for_property.bind(
+                main_resource,
+                container,
+                sub_type_name,
+                property_name,
+            )
+    )
 
     # Final layout
     button_bar.add_spacer(true)
@@ -249,3 +262,110 @@ static func make_sub_resource_override_container(
     container.set_title_control(title_bar)
 
     return container
+
+static func _load_resource_for_property(
+        main_resource: BehaviorExtendedResource,
+        editor_container: ExpandableContainer,
+        resource_type: StringName,
+        property_name: StringName,
+) -> void:
+    var callable: Callable = _set_resource_for_property.bind(main_resource, property_name)
+    var types: Array[StringName] = [resource_type]
+
+    # If the expandable is an editor, check if it has unsaved changes
+    var editor: BehaviorResourceEditor = editor_container.expandable as BehaviorResourceEditor
+
+    if not editor:
+        EditorInterface.popup_quick_open(callable, types)
+        return
+
+    var resource: BehaviorExtendedResource = editor.get_resource()
+    if editor.is_saved and not resource.is_sub_resource():
+        EditorInterface.popup_quick_open(callable, types)
+        return
+
+    var confirm: ConfirmationDialog = ConfirmationDialog.new()
+    confirm.theme = editor_container.theme
+    confirm.title = 'Resource has unsaved changes'
+    confirm.ok_button_text = 'Save & Load'
+
+    var btn_load: Button = confirm.add_button('Load Anyway', true, &'load')
+    if resource.is_sub_resource():
+        confirm.dialog_text = (
+            'The current resource is a sub resource, would you like to save it ' +
+            'as a new resource first?' +
+            '\n\nLoading a new resource will drop this sub resource and cannot be undone!'
+        )
+
+        confirm.confirmed.connect(
+            func():
+                var save: EditorFileDialog = EditorFileDialog.new()
+                save.access = EditorFileDialog.ACCESS_RESOURCES
+                save.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
+                save.filters = PackedStringArray(['*.tres ; Text Resource', '*.res ; Binary Resource'])
+                save.current_file = 'new_resource.tres'
+                save.file_selected.connect(
+                    func(path: String):
+                        var err: Error = ResourceSaver.save(editor.get_resource(), path, ResourceSaver.FLAG_CHANGE_PATH)
+                        if err != OK:
+                            BehaviorMainEditor.toast(
+                                'Failed to save resource to "%s": Error %d' % [path, err],
+                                EditorToaster.Severity.SEVERITY_ERROR
+                            )
+                            return
+                        BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
+                        EditorInterface.popup_quick_open(callable, types)
+                )
+                save.popup()
+        )
+    else:
+        confirm.dialog_text = (
+            'The current resource has unsaved changes, would you like to save it?' +
+            '\n\nLoading a new resource will lose any changes made since the last save!'
+        )
+        confirm.confirmed.connect(
+            func():
+                var res: BehaviorExtendedResource = editor.get_resource()
+                var err: Error = ResourceSaver.save(res)
+                if err != OK:
+                    BehaviorMainEditor.toast(
+                        'Failed to save resource "%s": Error %d' % [res.resource_name, err],
+                        EditorToaster.Severity.SEVERITY_ERROR
+                    )
+                    return
+                BehaviorMainEditor.toast('Saved resource "%s"!' % res.resource_name)
+                confirm.tree_exited.connect(
+                    EditorInterface.popup_quick_open.bind(callable, types)
+                )
+        )
+
+    confirm.custom_action.connect(
+        func(action: StringName):
+            if action != &'load':
+                return
+            confirm.queue_free()
+            confirm.tree_exited.connect(
+                EditorInterface.popup_quick_open.bind(callable, types)
+            )
+
+    )
+
+    EditorInterface.popup_dialog_centered(confirm)
+    btn_load.grab_focus() # NOTE: Select this one by default
+
+static func _set_resource_for_property(
+        path: String,
+        main_resource: BehaviorExtendedResource,
+        property_name: StringName,
+) -> void:
+    if path.is_empty():
+        return
+    var resource: BehaviorExtendedResource = ResourceLoader.load(path) as BehaviorExtendedResource
+    if not resource:
+        EditorInterface.get_editor_toaster().push_toast(
+            'Cannot load resource at path "%s"!' % path,
+            EditorToaster.SEVERITY_ERROR
+        )
+        return
+    main_resource.set(property_name, resource)
+    BehaviorMainEditor.INSTANCE.update_item(main_resource)

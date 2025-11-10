@@ -199,7 +199,8 @@ func update_dock() -> void:
 	elif slot == POS_BOTTOM:
 		state = BOTTOM
 		plugin.add_control_to_bottom_panel(self, "Terrain3D")
-		plugin.make_bottom_panel_item_visible(self)
+		# NOTE: (zombie-game) THIS IS AWFUL MAKE SURE THIS CHANGE STAYS!
+		# plugin.make_bottom_panel_item_visible(self)
 
 
 func update_layout() -> void:

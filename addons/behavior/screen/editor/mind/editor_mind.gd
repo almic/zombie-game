@@ -32,13 +32,14 @@ func accept_editors(editors: Array[BehaviorResourceEditor]) -> void:
     var i: int = 0
     for e in editors:
         connect_editor(e)
-        var container: ExpandableContainer
+        var container: BehaviorResourceEditorContainer
         if i < %SubResources.get_child_count():
-            container = %SubResources.get_child(i) as ExpandableContainer
+            container = %SubResources.get_child(i) as BehaviorResourceEditorContainer
         else:
             container = make_sub_resource_override_container(resource, sub_resource_names[i])
             %SubResources.add_child(container)
-        container.set_expandable_control(e)
+        container.set_editor(e)
+        container.set_resource_and_property(resource, sub_resource_names[i])
         i += 1
 
 func connect_editor(editor: BehaviorResourceEditor) -> void:

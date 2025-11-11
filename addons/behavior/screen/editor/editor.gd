@@ -528,13 +528,8 @@ func on_rename_resource_submitted(new_name: String) -> void:
     if not current_item:
         toast('No resource opened!', EditorToaster.SEVERITY_WARNING)
 
-    var old_name: String = current_item.resource.resource_name
     current_item.resource.resource_name = new_name
-
-    if not current_item.save(true):
-        push_error('Error renaming resource from "' + old_name + '" to "' + new_name + '"')
-        current_item.resource.resource_name = old_name
-        return
+    current_item.editor.on_change()
 
     %ResourceNameEdit.editable = false
     %ResourceNameEdit.text = current_item.resource.resource_name

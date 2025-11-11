@@ -25,6 +25,10 @@ var btn_new: Button
 func _ready() -> void:
     super._ready()
 
+    if get_parent().name.begins_with('@SubViewport@'):
+        # AHHHH
+        return
+
     label_res = LineEdit.new()
     label_res.theme_type_variation = &'LabelMono'
     label_res.editable = false

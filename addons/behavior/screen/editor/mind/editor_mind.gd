@@ -12,15 +12,6 @@ func _set_resource(resource: BehaviorExtendedResource) -> void:
 func _get_resource() -> BehaviorExtendedResource:
     return resource
 
-func on_save() -> void:
-    super.on_save()
-
-    for container in %SubResources.get_children():
-        if container is ExpandableContainer:
-            var editor = container.get_child(0)
-            if editor is BehaviorResourceEditor:
-                editor.on_save()
-
 func get_sub_resource_names() -> PackedStringArray:
     return [
         &'sense_vision',
@@ -28,10 +19,17 @@ func get_sub_resource_names() -> PackedStringArray:
     ]
 
 func accept_editors(editors: Array[BehaviorResourceEditor]) -> void:
+    # Disconnect any current editors
+    for container in %SubResources.get_children():
+        if container is BehaviorResourceEditorContainer:
+            if container.editor.changed.is_connected(on_change):
+                container.editor.changed.disconnect(on_change)
+            container.set_editor(null)
+            container.set_resource_and_property(null, &'')
+
     var sub_resource_names := get_sub_resource_names()
     var i: int = 0
     for e in editors:
-        connect_editor(e)
         var container: BehaviorResourceEditorContainer
         if i < %SubResources.get_child_count():
             container = %SubResources.get_child(i) as BehaviorResourceEditorContainer
@@ -40,13 +38,8 @@ func accept_editors(editors: Array[BehaviorResourceEditor]) -> void:
             container = make_sub_resource_override_container(resource, sub_resource_names[i])
             %SubResources.add_child(container)
         container.set_editor(e)
+        e.changed.connect(on_change)
         i += 1
-
-func connect_editor(editor: BehaviorResourceEditor) -> void:
-    if not editor.changed.is_connected(on_change):
-        editor.changed.connect(on_change)
-    if not editor.saved.is_connected(on_save):
-        editor.saved.connect(on_save)
 
 func _set_extendable(btn: Button, extendable: bool, extend_func) -> void:
     for c in btn.pressed.get_connections():

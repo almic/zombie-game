@@ -19,7 +19,7 @@ func _get_plugin_icon():
 
 
 func _handles(object: Object) -> bool:
-    return object is BehaviorMindSettings
+    return is_instance_of(object, BehaviorExtendedResource)
 
 func _edit(object: Object) -> void:
     if _handles(object):
@@ -69,4 +69,8 @@ func _get_unsaved_status(for_scene: String) -> String:
 
 func _save_external_data() -> void:
     if main_screen and not main_screen.is_saved():
+        # If CTRL+S is pressed, actually ignore this save request because Godot
+        # is stupid and should really not be calling this method from CTRL+S
+        if Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
+            return
         main_screen.save_all()

@@ -98,6 +98,8 @@ func _ready() -> void:
     update_title_bar()
 
 func get_property_resource() -> BehaviorExtendedResource:
+    if not main_resource:
+        return null
     return main_resource.get(property_name) as BehaviorExtendedResource
 
 func set_resource_and_property(resource: BehaviorExtendedResource, property: StringName) -> void:
@@ -118,10 +120,14 @@ func update_title_bar() -> void:
 
     label_title.text = property_name.capitalize()
 
-    if resource.is_sub_resource():
+    if resource and resource.is_sub_resource():
         label_res.placeholder_text = 'Sub Resource'
+        label_res.text = ''
     else:
-        label_res.text = resource.resource_path.get_file()
+        if resource:
+            label_res.text = resource.resource_path.get_file()
+        else:
+            label_res.text = ''
         label_res.placeholder_text = 'Unknown Resource'
 
 func on_load() -> void:
@@ -222,4 +228,4 @@ func on_load_resource_property(path: String) -> void:
         )
         return
     main_resource.set(property_name, resource)
-    BehaviorMainEditor.INSTANCE.update_item(main_resource)
+    BehaviorMainEditor.INSTANCE.update_item(main_resource, true)

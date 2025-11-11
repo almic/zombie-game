@@ -12,6 +12,16 @@ const LIST_ITEM = &'bhvr_editor_list_item'
 
 static var INSTANCE: BehaviorMainEditor = null
 
+static var SHORTCUT_CLOSE: Shortcut
+
+static func _static_init() -> void:
+    SHORTCUT_CLOSE = Shortcut.new()
+    var close_event: InputEventKey = InputEventKey.new()
+    close_event.keycode = KEY_W
+    close_event.ctrl_pressed = true
+    close_event.command_or_control_autoremap = true
+    SHORTCUT_CLOSE.events = [close_event]
+
 
 enum Menu {
     CLOSE = 1,
@@ -43,12 +53,36 @@ class ResourceItem:
         return result
 
     func update_children() -> void:
-        children = []
+        children.clear()
         for sub_resource_name in editor.get_sub_resource_names():
             children.append(
                 BehaviorMainEditor.INSTANCE.get_or_add_item(resource.get(sub_resource_name))
             )
 
+    ## Saves the resource and updates the editor. If the resource failed to save,
+    ## it returns 0. If the resource saved, it returns 1 + the number of children
+    ## that also saved. Any children that fail to save will show error messages.
+    func save(force: bool = false) -> int:
+        var to_save: Array[ResourceItem] = [self]
+        var checked: Array[ResourceItem] = []
+        var saved: int = 0
+        while not to_save.is_empty():
+            var item: ResourceItem = to_save.pop_front()
+            checked.append(item)
+
+            if force or not item.editor.is_saved:
+                if not BehaviorMainEditor.save_resource(item.resource):
+                    continue
+
+                item.editor.on_save()
+                saved += 1
+
+            for child in item.children:
+                if child.editor.is_saved or checked.has(child) or to_save.has(child):
+                    continue
+                to_save.append(child)
+
+        return saved
 
 ## Emitted when traveling to behavior menu
 signal goto_menu()
@@ -71,6 +105,9 @@ var _run_all_items: bool = false
 
 # If the node is a "ghost"
 var _is_ghost: bool = true
+
+# If the close shortcut can be triggered
+var _close_ready: bool = true
 
 
 func _ready() -> void:
@@ -99,11 +136,24 @@ func _ready() -> void:
     %ButtonRename.pressed.connect(on_rename_resource)
     %ResourceNameEdit.text_submitted.connect(on_rename_resource_submitted)
 
-    %ButtonSave.pressed.connect(save_resource)
+    %ButtonSave.pressed.connect(save_current)
 
     %ButtonNew.pressed.connect(create_resource)
 
     %ButtonMenu.pressed.connect(goto_menu.emit)
+
+func _shortcut_input(event: InputEvent) -> void:
+    if not is_visible_in_tree():
+        return
+
+    if SHORTCUT_CLOSE.matches_event(event):
+        if event.is_pressed():
+            if _close_ready and current_item != null:
+                _close_ready = false
+                accept_event()
+                request_close_item(current_item)
+        else:
+            _close_ready = true
 
 func save_state(config: ConfigFile) -> void:
     if _is_ghost:
@@ -141,7 +191,7 @@ func load_state(config: ConfigFile) -> void:
     var last_opened = config.get_value(SECTION_EDITOR, 'opened', PackedStringArray())
     if last_opened is PackedStringArray:
         for path in last_opened:
-            var resource: Resource = ResourceLoader.load(path)
+            var resource: Resource = ResourceLoader.load(path, '', ResourceLoader.CACHE_MODE_REPLACE)
             if not is_instance_of(resource, BehaviorExtendedResource):
                 continue
 
@@ -164,7 +214,7 @@ func edit(res: Resource) -> void:
     if _is_ghost:
         return
 
-    var item: ResourceItem = get_or_add_item(res)
+    var item: ResourceItem = get_or_add_item(res, true)
 
     if item == null:
         return
@@ -203,6 +253,9 @@ func select_item(item: ResourceItem) -> void:
     %ResourceNameEdit.editable = false
     %ResourceNameEdit.text = current_item.resource.resource_name
 
+    # Give editor any child editors
+    current_item.editor.accept_editors(current_item.get_children_editors())
+
     # Ensure the editor is on the main window
     if current_item.editor.get_parent():
         current_item.editor.reparent(%Editors, false)
@@ -215,7 +268,7 @@ func select_item(item: ResourceItem) -> void:
 
     # Select from list (if not selected)
     var selected: PackedInt32Array = %ItemList.get_selected_items()
-    if not selected.is_empty() and current_item == %ItemList.get_item_metadata(selected[0]):
+    if not selected.is_empty() and current_item == %ItemList.get_item_metadata(selected[0]).get_ref():
         return
 
     var idx: int = get_item_index(current_item)
@@ -227,17 +280,21 @@ func select_item(item: ResourceItem) -> void:
     idx = add_to_item_list(item)
     move_item(idx, 0)
     %ItemList.select(0)
+    check_saved()
 
 
 ## Ensures a resource is in the "all items" list. This does not open or select
 ## the item. This is mainly responsible for instancing a ResourceItem
-func get_or_add_item(resource: BehaviorExtendedResource) -> ResourceItem:
+func get_or_add_item(resource: BehaviorExtendedResource, reload: bool = false) -> ResourceItem:
     if _is_ghost:
         return null
 
     for item in all_items:
         if item.resource == resource:
             return item
+
+    if reload:
+        resource = ResourceLoader.load(resource.resource_path, '', ResourceLoader.CACHE_MODE_REPLACE)
 
     # print('Creating item for resource "%s"' % resource.resource_path)
 
@@ -257,17 +314,19 @@ func get_or_add_item(resource: BehaviorExtendedResource) -> ResourceItem:
 
     return item
 
-func update_item(resource: BehaviorExtendedResource) -> void:
+func update_item(resource: BehaviorExtendedResource, mark_changed: bool = false) -> void:
     for item in all_items:
         if item.resource == resource:
             item.update_children()
             item.editor.accept_editors(item.get_children_editors())
+            if mark_changed:
+                item.editor.on_change()
             check_all_items()
             break
 
 func get_item_index(item: ResourceItem) -> int:
     for i in range(%ItemList.item_count):
-        if item == %ItemList.get_item_metadata(i):
+        if item == %ItemList.get_item_metadata(i).get_ref():
             return i
     return -1
 
@@ -287,7 +346,7 @@ func on_drag_start(at: Vector2) -> Variant:
         return null
 
     var idx: int = %ItemList.get_selected_items()[0]
-    var item: ResourceItem = %ItemList.get_item_metadata(idx)
+    var item: ResourceItem = %ItemList.get_item_metadata(idx).get_ref()
 
     var preview: PanelContainer = PanelContainer.new()
     preview.theme = THEME
@@ -341,7 +400,7 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
 
     if str(d.get('type')) == 'files':
         if %ItemList.item_count > 0:
-            new_idx = opened.find(%ItemList.get_item_metadata(new_idx))
+            new_idx = opened.find(%ItemList.get_item_metadata(new_idx).get_ref())
             if new_idx == -1:
                 push_error('Unable to find original item index when dropping files!')
                 new_idx = 0
@@ -354,7 +413,7 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
             if not ResourceLoader.exists(file, 'Resource'):
                 continue
 
-            var res: Resource = ResourceLoader.load(file)
+            var res: Resource = ResourceLoader.load(file, '', ResourceLoader.CACHE_MODE_REPLACE)
             if not res:
                 push_error('Failed to load resource "%s" from file drop!' % file)
                 continue
@@ -380,6 +439,7 @@ func on_drag_end(at: Vector2, data: Variant) -> void:
 
         if last_item:
             select_item(last_item)
+        check_saved()
 
         return
 
@@ -388,7 +448,7 @@ func on_filter_text_changed(filter: String) -> void:
 
 func on_item_clicked(idx: int, at_pos: Vector2, mouse_button: int) -> void:
     if mouse_button == MouseButton.MOUSE_BUTTON_LEFT:
-        select_item(%ItemList.get_item_metadata(idx))
+        select_item(%ItemList.get_item_metadata(idx).get_ref())
         return
     elif mouse_button == MouseButton.MOUSE_BUTTON_RIGHT:
         show_popup_menu(idx)
@@ -396,18 +456,58 @@ func on_item_clicked(idx: int, at_pos: Vector2, mouse_button: int) -> void:
 
 func on_item_selected(idx: int) -> void:
     grab_focus_block = !Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) # Quote: "amazing hack, simply amazing"
-    select_item(%ItemList.get_item_metadata(idx))
+    select_item(%ItemList.get_item_metadata(idx).get_ref())
     grab_focus_block = false
 
 func on_popup_id_pressed(id: int, item_idx: int) -> void:
     if item_idx < 0 or item_idx >= %ItemList.item_count:
         return
 
-    var item: ResourceItem = %ItemList.get_item_metadata(item_idx)
+    var item: ResourceItem = %ItemList.get_item_metadata(item_idx).get_ref()
     if id == Menu.CLOSE:
-        # TODO: check if not saved and ask to save
+        request_close_item(item)
+        return
+
+func request_close_item(item: ResourceItem) -> void:
+    if item.editor.is_saved:
         close_item(item)
         return
+
+    var confirm: AcceptDialog = AcceptDialog.new()
+    confirm.theme = self.theme
+    confirm.title = 'Resource has unsaved changes'
+    confirm.ok_button_text = 'Save & Close'
+
+    confirm.dialog_text = (
+            'This resource has been modified since it was last saved:\n\n' +
+            item.resource.resource_path + '\n\n' +
+            'Would you like to save it?'
+    )
+
+    confirm.add_button('Close Anyway', false, &'close')
+    confirm.add_cancel_button('Cancel')
+
+    confirm.confirmed.connect(
+        func():
+            confirm.queue_free()
+            var res_name: String = item.resource.resource_name
+            if res_name.is_empty():
+                res_name = item.resource.resource_path
+            if item.save(true):
+                confirm.tree_exited.connect(close_item.bind(item))
+                return
+    )
+
+    confirm.custom_action.connect(
+        func(action: StringName):
+            if action == &'close':
+                confirm.queue_free()
+                confirm.tree_exited.connect(close_item.bind(item))
+    )
+
+    confirm.canceled.connect(confirm.queue_free)
+
+    EditorInterface.popup_dialog_centered(confirm)
 
 func on_rename_resource() -> void:
     if not current_item:
@@ -431,9 +531,8 @@ func on_rename_resource_submitted(new_name: String) -> void:
     var old_name: String = current_item.resource.resource_name
     current_item.resource.resource_name = new_name
 
-    var err: Error = ResourceSaver.save(current_item.resource)
-    if err:
-        push_error('Error renaming resource from "' + old_name + '" to "' + new_name + '": ' + str(err))
+    if not current_item.save(true):
+        push_error('Error renaming resource from "' + old_name + '" to "' + new_name + '"')
         current_item.resource.resource_name = old_name
         return
 
@@ -445,7 +544,7 @@ func add_to_item_list(item: ResourceItem) -> int:
     var idx: int = %ItemList.add_item(item.resource.resource_path.get_file())
     %ItemList.set_item_icon(idx, get_theme_icon("Warning", "EditorIcons"))
     %ItemList.set_item_icon_modulate(idx, Color(0, 0, 0, 0))
-    %ItemList.set_item_metadata(idx, item)
+    %ItemList.set_item_metadata(idx, weakref(item))
     return idx
 
 func create_resource() -> void:
@@ -478,8 +577,8 @@ func move_item(from: int, to: int) -> void:
     if %ItemList.item_count < 2:
         return
 
-    var item_from: ResourceItem = %ItemList.get_item_metadata(from)
-    var item_to: ResourceItem = %ItemList.get_item_metadata(to)
+    var item_from: ResourceItem = %ItemList.get_item_metadata(from).get_ref()
+    var item_to: ResourceItem = %ItemList.get_item_metadata(to).get_ref()
 
     if not item_from or not item_to:
         return
@@ -523,57 +622,54 @@ func close_item(item: ResourceItem, select_next: bool = true) -> void:
         %ItemList.remove_item(idx)
 
     var selected: bool = false
-    if select_next:
+    if select_next and %ItemList.item_count > 0:
+        selected = true
         var items: PackedInt32Array = %ItemList.get_selected_items()
-        if items.size() > 0:
-            var next: int = clampi(items[0] - 1, 0, %ItemList.item_count - 1)
-            select_item(%ItemList.get_item_metadata(next))
-            selected = true
+        if items.is_empty():
+            # Try to pick the new item at the same index
+            var next: int = clampi(idx, 0, %ItemList.item_count - 1)
+            select_item(%ItemList.get_item_metadata(next).get_ref())
 
     if not selected:
         select_item(null)
 
     check_all_items()
 
-func save_resource() -> void:
+func save_current() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well
-    if is_visible_in_tree() and Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL):
+    var shortcut_used: bool = Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL)
+
+    if shortcut_used:
+        if not is_visible_in_tree():
+            # Do not save from CTRL+S if the window is not visible
+            return
         EditorInterface.save_scene()
 
     if not current_item:
-        toast('No opened behavior resource to save.')
+        toast('No opened behavior resource to save.', EditorToaster.SEVERITY_WARNING)
 
-    var err: Error = ResourceSaver.save(current_item.resource)
+    current_item.save(shortcut_used)
+
+static func save_resource(resource: BehaviorExtendedResource, show_toast: bool = true) -> bool:
+    var err: Error = ResourceSaver.save(resource)
     if err == OK:
-        current_item.editor.on_save()
-        var res_name: String = current_item.resource.resource_name
-        if res_name.is_empty():
-            res_name = current_item.resource.resource_path
-        toast('Saved resource "%s"!' % res_name)
-    else:
-        var msg: String = 'Failed to save resource "%s"! Error: %d' % [current_item.resource.resource_path, err]
+        if show_toast:
+            var res_name: String = resource.resource_name
+            if res_name.is_empty():
+                res_name = resource.resource_path
+            toast('Saved resource "%s"!' % res_name)
+        return true
+
+    if show_toast:
+        var msg: String = 'Failed to save resource "%s"! Error: %d' % [resource.resource_path, err]
         toast(msg, EditorToaster.SEVERITY_ERROR)
         push_error(msg)
 
+    return false
+
 func save_all() -> void:
-    if opened.is_empty():
-        return
-
-    var saved: int = 0
-    var failed: PackedStringArray
     for item in opened:
-        var err: Error = ResourceSaver.save(item.resource)
-        if err == OK:
-            item.editor.on_save()
-            saved += 1
-        else:
-            failed.append(item.resource.resource_path)
-
-    if saved:
-        toast('Saved %d Behavior resources!' % saved)
-
-    if not failed.is_empty():
-        push_error('Failed to save %d Behavior resources!\n%s' % [failed.size(), '\n'.join(failed)])
+        item.save(true)
 
 func show_popup_menu(idx: int) -> void:
     if not popup_menu:
@@ -610,9 +706,10 @@ func _check_all_items() -> void:
     # print('Checking all items')
     _run_all_items = false
 
+    # print('current_item = ' + str(current_item))
     var first: bool = true
     var removed: bool = false
-    var count_removed: int = 0
+    # var count_removed: int = 0
     while first or removed:
         first = false
         removed = false
@@ -623,8 +720,8 @@ func _check_all_items() -> void:
             #       and here (+1 when getting the ref count). Can be safely removed.
             var item: ResourceItem = all_items[i]
             var ref_count: int = item.get_reference_count()
-            # print('item "%s" has %d refs' % [item.resource.resource_path, ref_count])
             if ref_count == 2:
+                # print('freed item "%s"' % item.resource.resource_path)
                 item.editor.queue_free()
                 item.editor = null
                 item.resource = null
@@ -633,6 +730,7 @@ func _check_all_items() -> void:
                 count -= 1
                 # count_removed += 1
             else:
+                # print('item "%s" has %d refs' % [item.resource.resource_path, ref_count])
                 i += 1
     # print('Freed %d items' % count_removed)
 
@@ -670,6 +768,7 @@ func update_list() -> void:
         var idx: int = add_to_item_list(item)
         if item == current_item:
             %ItemList.select(idx)
+    check_saved()
 
 func check_saved() -> void:
     _run_check_list = true
@@ -682,7 +781,7 @@ func _check_saved() -> void:
     _run_check_list = false
 
     for i in range(%ItemList.item_count):
-        var item: ResourceItem = %ItemList.get_item_metadata(i)
+        var item: ResourceItem = %ItemList.get_item_metadata(i).get_ref()
         if item.editor.is_saved:
             %ItemList.set_item_icon_modulate(i, Color(0, 0, 0, 0))
         else:

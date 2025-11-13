@@ -109,21 +109,21 @@ static func make_property_override_container(
     container.title_theme_variation = &'ExpandableNoBorder'
 
     var title_bar: Control
+
+    var property_name: Label = Label.new()
+    property_name.theme_type_variation = &'LabelMono'
+    property_name.text = editor.property.name.capitalize()
+
     if editor.resource.base:
         title_bar = VBoxContainer.new()
 
         var property_header: HBoxContainer = HBoxContainer.new()
 
-        var property_name: Label = Label.new()
-        property_name.theme_type_variation = &'LabelMono'
-        property_name.text = editor.property.name.capitalize()
-
         var override_button: CheckButton = CheckButton.new()
-        override_button.text = 'Override'
         # TODO: button things
 
-        property_header.add_child(property_name)
         property_header.add_child(override_button)
+        property_header.add_child(property_name)
 
         var base_default: HBoxContainer = HBoxContainer.new()
         var base_default_label: Label = Label.new()
@@ -131,10 +131,18 @@ static func make_property_override_container(
         base_default_label.theme_type_variation = &'TransparentLabel'
 
         var base_default_value: Label = Label.new()
-        base_default_value.text = str()
+        base_default_value.text = str(editor.resource.base.get(editor.property.name))
+        editor.resource.base.property_changed.connect(
+            func(property_name: String, value: Variant):
+                if property_name != editor.property.name:
+                    return
+                base_default_value.text = str(value)
+        )
+
         base_default_value.theme_type_variation = &'LabelMono'
 
         base_default.add_child(base_default_label)
+        base_default.add_child(base_default_value)
 
         title_bar.add_child(property_header)
         title_bar.add_child(base_default)
@@ -144,10 +152,6 @@ static func make_property_override_container(
         title_bar.add_theme_constant_override(&'margin_bottom', 4)
         title_bar.add_theme_constant_override(&'margin_left', 8)
         title_bar.add_theme_constant_override(&'margin_right', 8)
-
-        var property_name: Label = Label.new()
-        property_name.theme_type_variation = &'LabelMono'
-        property_name.text = editor.property.name.capitalize()
 
         title_bar.add_child(property_name)
 

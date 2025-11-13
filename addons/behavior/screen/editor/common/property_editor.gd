@@ -80,3 +80,5 @@ func default_on_changed_array(value: Variant, index: int) -> void:
             array.append(value)
         else:
             array[index] = value
+    # Write back for property updates
+    resource.set(property.name, array)

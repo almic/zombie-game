@@ -114,3 +114,17 @@ func is_sub_resource() -> bool:
     if resource_scene_unique_id.is_empty():
         return false
     return resource_path.ends_with(resource_scene_unique_id)
+
+static func get_script_from_name(name: StringName) -> GDScript:
+    for clss in ProjectSettings.get_global_class_list():
+        if clss.class != name:
+            continue
+        if clss.path.is_empty():
+            push_error('Class "%s" has no path?' % name)
+            return null
+        var script: GDScript = ResourceLoader.load(clss.path) as GDScript
+        if not script:
+            push_error('Failed to load class "%s" from "%s" as GDScript type!' % [name, clss.path])
+            return null
+        return script
+    return null

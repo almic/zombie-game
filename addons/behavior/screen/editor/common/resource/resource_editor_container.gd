@@ -63,11 +63,14 @@ func _ready() -> void:
     btn_new.text = 'New'
     btn_new.custom_minimum_size.x = BUTTON_WIDTH
     btn_new.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    btn_new.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+    btn_new.pressed.connect(on_new)
 
     # Extend / Save As button
     btn_extend = Button.new()
     btn_extend.custom_minimum_size.x = BUTTON_WIDTH
     btn_extend.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    btn_extend.action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
 
     # Load button
     btn_load = Button.new()
@@ -162,7 +165,7 @@ func on_load() -> void:
         confirm.dialog_text = (
             'The current resource is a sub resource, would you like to save it ' +
             'as a new resource first?' +
-            '\n\nLoading a new resource will drop this sub resource and cannot be undone!'
+            '\n\nLoading a new resource will discard this sub resource and cannot be undone!'
         )
 
         confirm.confirmed.connect(
@@ -189,7 +192,7 @@ func on_load() -> void:
     else:
         confirm.dialog_text = (
             'The current resource has unsaved changes, would you like to save it?' +
-            '\n\nLoading a new resource will lose any changes made since the last save!'
+            '\n\nLoading a new resource will discard any changes made since the last save!'
         )
         confirm.confirmed.connect(
             func():
@@ -211,7 +214,6 @@ func on_load() -> void:
                 return
             confirm.queue_free()
             confirm.tree_exited.connect(popup)
-
     )
 
     EditorInterface.popup_dialog_centered(confirm)
@@ -229,3 +231,152 @@ func on_load_resource_property(path: String) -> void:
         return
     main_resource.set(property_name, resource)
     BehaviorMainEditor.INSTANCE.update_item(main_resource, true)
+
+func on_new() -> void:
+    var property_info: Dictionary = main_resource.get_property_info(property_name)
+    var type_name: StringName = property_info.class_name
+    var resource_script: GDScript = BehaviorExtendedResource.get_script_from_name(type_name)
+
+    if not resource_script:
+        push_error('Cannot create instances of type "%s", unable to get GDScript base!' % type_name)
+        return
+
+    var popup: Callable = on_new_resource_property.bind(resource_script)
+
+    if not editor:
+        popup.call()
+        return
+
+    var resource: BehaviorExtendedResource = get_property_resource()
+
+    if editor.is_saved and not resource.is_sub_resource():
+        popup.call()
+        return
+
+    var confirm: ConfirmationDialog = ConfirmationDialog.new()
+    confirm.theme = self.theme
+    confirm.title = 'Resource has unsaved changes'
+    confirm.ok_button_text = 'Save'
+
+    var discard_button: Button = confirm.add_button('Discard Changes', true, &'discard')
+    if resource.is_sub_resource():
+        confirm.dialog_text = (
+            'The current resource is a sub resource, would you like to save it ' +
+            'as a new resource first?' +
+            '\n\nCreating a new resource will discard this sub resource and cannot be undone!'
+        )
+
+        confirm.confirmed.connect(
+            func():
+                var save: EditorFileDialog = EditorFileDialog.new()
+                save.access = EditorFileDialog.ACCESS_RESOURCES
+                save.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
+                save.filters = PackedStringArray(['*.tres ; Text Resource', '*.res ; Binary Resource'])
+                save.current_file = 'new_resource.tres'
+                save.file_selected.connect(
+                    func(path: String):
+                        var err: Error = ResourceSaver.save(editor.get_resource(), path, ResourceSaver.FLAG_CHANGE_PATH)
+                        if err == OK:
+                            BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
+                            popup.call()
+                        else:
+                            BehaviorMainEditor.toast(
+                                'Failed to save resource to "%s": Error %d' % [path, err],
+                                EditorToaster.Severity.SEVERITY_ERROR
+                            )
+                )
+                save.popup()
+        )
+    else:
+        confirm.dialog_text = (
+            'The current resource has unsaved changes, would you like to save it?' +
+            '\n\nCreating a new resource will discard any changes made since the last save!'
+        )
+        confirm.confirmed.connect(
+            func():
+                var res: BehaviorExtendedResource = editor.get_resource()
+                var err: Error = ResourceSaver.save(res)
+                if err == OK:
+                    BehaviorMainEditor.toast('Saved resource "%s"!' % res.resource_name)
+                    confirm.tree_exited.connect(popup)
+                else:
+                    BehaviorMainEditor.toast(
+                        'Failed to save resource "%s": Error %d' % [res.resource_name, err],
+                        EditorToaster.Severity.SEVERITY_ERROR
+                    )
+        )
+
+    confirm.custom_action.connect(
+        func(action: StringName):
+            if action != &'discard':
+                return
+            confirm.queue_free()
+            confirm.tree_exited.connect(popup)
+    )
+
+    EditorInterface.popup_dialog_centered(confirm)
+    discard_button.grab_focus() # NOTE: Select this one by default
+
+func on_new_resource_property(type_script: GDScript) -> void:
+    var new_resource: BehaviorExtendedResource = type_script.new() as BehaviorExtendedResource
+    if not new_resource:
+        push_error('Failed to create new resource type "%s"!' % type_script.get_global_name())
+        return
+
+    var set_new_resource: Callable = (
+        func():
+            main_resource.set(property_name, new_resource)
+            new_resource._on_load(new_resource.resource_path)
+            BehaviorMainEditor.INSTANCE.update_item(main_resource, true)
+    )
+
+    var save_or_sub: AcceptDialog = AcceptDialog.new()
+    save_or_sub.title = 'Save as external, or use as sub-resource?'
+    save_or_sub.dialog_text = (
+            'Would you like to save this resource now as an external resource, ' +
+            'or use it as a sub-resource that is stored within the parent resource?' +
+            '\n\nChoosing cancel will NOT create a new resource, keeping the current resource.'
+    )
+    save_or_sub.get_label().custom_minimum_size.x = 400
+    save_or_sub.get_label().autowrap_mode = TextServer.AUTOWRAP_WORD
+    save_or_sub.ok_button_text = 'Save External'
+    save_or_sub.add_button('Use Sub-Resource', false, &'sub')
+    save_or_sub.add_cancel_button('Cancel')
+
+    save_or_sub.confirmed.connect(
+        func():
+            save_or_sub.queue_free()
+            var save_dialog: EditorFileDialog = EditorFileDialog.new()
+            save_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+            save_dialog.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
+            save_dialog.filters = PackedStringArray(['*.tres ; Text Resource', '*.res ; Binary Resource'])
+            save_dialog.current_file = 'new_resource.tres'
+            save_dialog.file_selected.connect(
+                func(path: String):
+                    new_resource.take_over_path(path)
+                    var err: Error = ResourceSaver.save(new_resource)
+                    if err == OK:
+                        BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
+                    else:
+                        BehaviorMainEditor.toast(
+                            'Failed to save resource to "%s": Error %d' % [path, err],
+                            EditorToaster.Severity.SEVERITY_ERROR
+                        )
+                    set_new_resource.call()
+            )
+            save_or_sub.tree_exited.connect(save_dialog.popup)
+    )
+    save_or_sub.custom_action.connect(
+        func(action: StringName):
+            if action != &'sub':
+                return
+
+            save_or_sub.queue_free()
+            # Immitate Godot's name system
+            var sub_id: String = type_script.get_global_name() + '_' + Resource.generate_scene_unique_id()
+            new_resource.resource_scene_unique_id = sub_id
+            new_resource.resource_path = main_resource.resource_path + '::' + sub_id
+            set_new_resource.call()
+    )
+
+    EditorInterface.popup_dialog_centered(save_or_sub)

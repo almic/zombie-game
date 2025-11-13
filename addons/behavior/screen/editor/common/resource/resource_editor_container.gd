@@ -126,12 +126,34 @@ func update_title_bar() -> void:
     if resource and resource.is_sub_resource():
         label_res.placeholder_text = 'Sub Resource'
         label_res.text = ''
+
+        btn_extend.text = 'Save As'
+        btn_extend.tooltip_text = (
+                'Save this sub-resource as an external resource.' +
+                '\nExternal resources can be loaded and shared with many resources.'
+        )
+
+        if btn_extend.pressed.is_connected(on_extend):
+            btn_extend.pressed.disconnect(on_extend)
+        if not btn_extend.pressed.is_connected(on_save_as):
+            btn_extend.pressed.connect(on_save_as)
     else:
         if resource:
             label_res.text = resource.resource_path.get_file()
         else:
             label_res.text = ''
         label_res.placeholder_text = 'Unknown Resource'
+
+        btn_extend.text = 'Extend'
+        btn_extend.tooltip_text = (
+                'Extend this resource to inherit its values.' +
+                '\nExtended resources use overrides to modify attributes from a parent.'
+        )
+
+        if btn_extend.pressed.is_connected(on_save_as):
+            btn_extend.pressed.disconnect(on_save_as)
+        if not btn_extend.pressed.is_connected(on_extend):
+            btn_extend.pressed.connect(on_extend)
 
 func on_load() -> void:
     var resource: BehaviorExtendedResource = get_property_resource()
@@ -178,14 +200,14 @@ func on_load() -> void:
                 save.file_selected.connect(
                     func(path: String):
                         var err: Error = ResourceSaver.save(editor.get_resource(), path, ResourceSaver.FLAG_CHANGE_PATH)
-                        if err != OK:
+                        if err == OK:
+                            BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
+                            popup.call()
+                        else:
                             BehaviorMainEditor.toast(
                                 'Failed to save resource to "%s": Error %d' % [path, err],
                                 EditorToaster.Severity.SEVERITY_ERROR
                             )
-                            return
-                        BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
-                        popup.call()
                 )
                 save.popup()
         )
@@ -198,14 +220,14 @@ func on_load() -> void:
             func():
                 var res: BehaviorExtendedResource = editor.get_resource()
                 var err: Error = ResourceSaver.save(res)
-                if err != OK:
+                if err == OK:
+                    BehaviorMainEditor.toast('Saved resource "%s"!' % res.resource_name)
+                    confirm.tree_exited.connect(popup)
+                else:
                     BehaviorMainEditor.toast(
                         'Failed to save resource "%s": Error %d' % [res.resource_name, err],
                         EditorToaster.Severity.SEVERITY_ERROR
                     )
-                    return
-                BehaviorMainEditor.toast('Saved resource "%s"!' % res.resource_name)
-                confirm.tree_exited.connect(popup)
         )
 
     confirm.custom_action.connect(
@@ -317,11 +339,13 @@ func on_new() -> void:
     EditorInterface.popup_dialog_centered(confirm)
     discard_button.grab_focus() # NOTE: Select this one by default
 
-func on_new_resource_property(type_script: GDScript) -> void:
+func on_new_resource_property(type_script: GDScript, base: BehaviorExtendedResource = null) -> void:
     var new_resource: BehaviorExtendedResource = type_script.new() as BehaviorExtendedResource
     if not new_resource:
         push_error('Failed to create new resource type "%s"!' % type_script.get_global_name())
         return
+
+    new_resource.base = base
 
     var set_new_resource: Callable = (
         func():
@@ -380,3 +404,93 @@ func on_new_resource_property(type_script: GDScript) -> void:
     )
 
     EditorInterface.popup_dialog_centered(save_or_sub)
+
+func on_save_as() -> void:
+    if not editor:
+        push_error('No editor, cannot save the sub-resource!')
+        return
+
+    var resource: BehaviorExtendedResource = editor.get_resource()
+    if not resource:
+        push_error('No resource in the editor, cannot save the sub-resource!')
+        return
+
+    var save: EditorFileDialog = EditorFileDialog.new()
+    save.access = EditorFileDialog.ACCESS_RESOURCES
+    save.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
+    save.filters = PackedStringArray(['*.tres ; Text Resource', '*.res ; Binary Resource'])
+    save.current_file = 'new_resource.tres'
+    save.file_selected.connect(
+        func(path: String):
+            resource.take_over_path(path)
+            var err: Error = ResourceSaver.save(resource)
+            if err == OK:
+                BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
+                update_title_bar()
+            else:
+                BehaviorMainEditor.toast(
+                    'Failed to save resource to "%s": Error %d' % [path, err],
+                    EditorToaster.Severity.SEVERITY_ERROR
+                )
+    )
+    save.popup()
+
+func on_extend() -> void:
+    var property_info: Dictionary = main_resource.get_property_info(property_name)
+    var type_name: StringName = property_info.class_name
+    var resource_script: GDScript = BehaviorExtendedResource.get_script_from_name(type_name)
+
+    if not resource_script:
+        push_error('Cannot create instances of type "%s", unable to get GDScript base!' % type_name)
+        return
+
+    var resource: BehaviorExtendedResource = get_property_resource()
+    if not resource:
+        push_error('Cannot extend resource, current resource is null!')
+        return
+
+    if resource.is_sub_resource():
+        push_error('Cannot extend a sub-resource! This is a bug!')
+        return
+
+    var popup: Callable = on_new_resource_property.bind(resource_script, resource)
+
+    if (not editor) or editor.is_saved:
+        popup.call()
+        return
+
+    var confirm: ConfirmationDialog = ConfirmationDialog.new()
+    confirm.theme = self.theme
+    confirm.title = 'Resource has unsaved changes'
+    confirm.ok_button_text = 'Save'
+
+    var discard_button: Button = confirm.add_button('Discard Changes', true, &'discard')
+
+    confirm.dialog_text = (
+        'The current resource has unsaved changes, would you like to save it?' +
+        '\n\nExtending this resource will discard any changes made since the last save!'
+    )
+    confirm.confirmed.connect(
+        func():
+            var res: BehaviorExtendedResource = editor.get_resource()
+            var err: Error = ResourceSaver.save(res)
+            if err == OK:
+                BehaviorMainEditor.toast('Saved resource "%s"!' % res.resource_name)
+                confirm.tree_exited.connect(popup)
+            else:
+                BehaviorMainEditor.toast(
+                    'Failed to save resource "%s": Error %d' % [res.resource_name, err],
+                    EditorToaster.Severity.SEVERITY_ERROR
+                )
+    )
+
+    confirm.custom_action.connect(
+        func(action: StringName):
+            if action != &'discard':
+                return
+            confirm.queue_free()
+            confirm.tree_exited.connect(popup)
+    )
+
+    EditorInterface.popup_dialog_centered(confirm)
+    discard_button.grab_focus() # NOTE: Select this one by default

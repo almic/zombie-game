@@ -57,7 +57,6 @@ func set_base(new_base: BehaviorExtendedResource) -> void:
         return
 
     base = new_base
-    _on_load(resource_path)
 
 func set_overrides(overrides: Dictionary) -> void:
     # Check that all overrides are real property names

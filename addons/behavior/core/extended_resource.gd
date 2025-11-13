@@ -4,6 +4,10 @@
 class_name BehaviorExtendedResource extends Resource
 
 
+## Emitted when a base property is changed
+signal property_changed(name: StringName, value: Variant)
+
+
 ## The base of this resource. When created, copies all property values from the
 ## base that are not overwritten here.
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
@@ -79,6 +83,7 @@ func override(name: StringName, value: Variant) -> void:
 # NOTE: This method favors anything present in 'base_overrides', even if it is
 #       not a real property or this has no base.
 func _get(property: StringName) -> Variant:
+    # print('"%s" > get "%s"' % [resource_path, property])
     if base_overrides.has(property):
         return base_overrides.get(property)
 
@@ -92,11 +97,18 @@ func _get(property: StringName) -> Variant:
 func _set(property: StringName, value: Variant) -> bool:
     # Check for override property
     if base_properties.has(property):
+        # print('"%s" > set "%s" to: %s' %[resource_path, property, str(value)])
         if base:
             override(property, value)
             emit_changed()
+            if value == null:
+                property_changed.emit(property, base.get(property))
+            else:
+                property_changed.emit(property, value)
             return true
+
         emit_changed.call_deferred()
+        property_changed.emit.bind(property, value).call_deferred()
     return false
 
 ## Returns the property info from 'get_property_list()'

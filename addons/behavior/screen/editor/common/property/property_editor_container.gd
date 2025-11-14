@@ -29,6 +29,8 @@ func _ready() -> void:
 
     btn_override = CheckButton.new()
     btn_override.toggled.connect(on_override_toggle)
+    btn_override.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    btn_override.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 
     label_property = Label.new()
     label_property.theme_type_variation = &'LabelMono'

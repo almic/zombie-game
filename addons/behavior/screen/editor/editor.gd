@@ -142,6 +142,9 @@ func _ready() -> void:
 
     %ButtonMenu.pressed.connect(goto_menu.emit)
 
+    %ExtendsContainer.visible = false
+    %ButtonContainer.size_flags_horizontal = SIZE_EXPAND_FILL
+
 func _shortcut_input(event: InputEvent) -> void:
     if not is_visible_in_tree():
         return
@@ -240,6 +243,8 @@ func select_item(item: ResourceItem) -> void:
         %ResourceNameEdit.visible = false
         %ButtonRename.visible = false
         %ButtonSave.visible = false
+        %ExtendsContainer.visible = false
+        %ButtonContainer.size_flags_horizontal = SIZE_EXPAND_FILL
         return
 
     %NoItem.visible = false
@@ -252,6 +257,14 @@ func select_item(item: ResourceItem) -> void:
     %ResourceNameEdit.visible = true
     %ResourceNameEdit.editable = false
     %ResourceNameEdit.text = current_item.resource.resource_name
+
+    if current_item.resource.base:
+        %ExtendsContainer.visible = true
+        %ButtonContainer.size_flags_horizontal = SIZE_FILL
+        %LabelExtends.text = current_item.resource.base.resource_path.get_file()
+    else:
+        %ExtendsContainer.visible = false
+        %ButtonContainer.size_flags_horizontal = SIZE_EXPAND_FILL
 
     # Give editor any child editors
     current_item.editor.accept_editors(current_item.get_children_editors())

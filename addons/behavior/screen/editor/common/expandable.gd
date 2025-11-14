@@ -146,8 +146,10 @@ func update_icon() -> void:
 func set_expanded(expanded: bool) -> void:
     is_expanded = expanded
     is_hovering = is_hovering # NOTE: trigger stylebox update
-    update_icon()
-    queue_redraw()
+
+    if is_node_ready():
+        update_icon()
+        queue_redraw()
 
     if not expandable:
         return
@@ -156,6 +158,9 @@ func set_expanded(expanded: bool) -> void:
 
 func set_hovering(hovering: bool) -> void:
     is_hovering = hovering
+
+    if not is_node_ready():
+        return
 
     var type: StringName = &'FoldableContainer'
     if not title_theme_variation.is_empty():

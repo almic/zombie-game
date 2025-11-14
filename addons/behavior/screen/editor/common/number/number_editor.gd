@@ -10,6 +10,9 @@ var suffix: String = '':
     set = set_suffix
 
 
+var editor: EditorProperty = null
+
+
 func _ready() -> void:
     super._ready()
     if _is_ghost:
@@ -18,6 +21,21 @@ func _ready() -> void:
     # NOTE: Slider will be the main owner of range settings
     %Slider.share(%SpinBox)
 
+
+func update_override(restore: bool) -> void:
+    %Slider.editable = not disabled
+    %SpinBox.editable = not disabled
+
+    if editor:
+        editor.read_only = disabled
+        if disabled:
+            editor.set_object_and_property(null, &'')
+        else:
+            editor.set_object_and_property(resource, property.name)
+            editor.update_property()
+
+    if restore:
+        get_range().set_value_no_signal(resource.get(property.name))
 
 func get_range() -> Range:
     return %Slider
@@ -64,7 +82,7 @@ func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> v
         show_slider = false
         show_spinner = false
 
-        var editor: EditorProperty = EditorInspector.instantiate_property_editor(
+        editor = EditorInspector.instantiate_property_editor(
                 # NOTE: the passed object and name are actually 100% ignored
                 #       because we MUST call 'set_object_and_property' later,
                 #       otherwise it claims the object was Nil (stupid)
@@ -114,6 +132,9 @@ func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> v
 
 
 func _value_changed(value: float) -> void:
+    if disabled:
+        return
+
     if on_changed_func.is_valid():
         on_changed_func.call(value)
     changed.emit()
@@ -132,6 +153,9 @@ func _on_editor_property_changed(
     _value_changed(float(value))
 
 func _radians_as_degrees(value: float) -> void:
+    if disabled:
+        return
+
     value = deg_to_rad(value)
     resource.set(property.name, value)
     _value_changed(value)

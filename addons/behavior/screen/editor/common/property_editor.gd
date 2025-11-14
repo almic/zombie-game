@@ -1,3 +1,4 @@
+@abstract
 @tool
 class_name BehaviorPropertyEditor extends BehaviorBaseEditor
 
@@ -15,6 +16,10 @@ var resource: BehaviorExtendedResource
 var property: Dictionary
 var on_changed_func: Callable
 
+var disabled: bool = false
+var _is_override: bool = false
+var _override_cache: Variant = null
+var _was_null: bool = false
 
 ## Create property editors for basic resource exports. Does not modify the
 ## original resource. Value updates are passed to the provided callable.
@@ -52,14 +57,49 @@ static func get_editor_for_property(
         editor.on_changed_func = on_changed_func
     return editor
 
+
+## Called when the editor should update override state. If the UI should be
+## refreshed to show the current property value, 'restore' will be true.
+@abstract func update_override(restore: bool) -> void
+
+''
+
+
 func set_resource_property(res: BehaviorExtendedResource, info: Dictionary) -> void:
     resource = res
     property = info
 
+func set_override(value: bool) -> void:
+    if value == _is_override:
+        return
+
+    _is_override = value
+    disabled = not _is_override
+
+    if _is_override:
+        if _override_cache == null and (not _was_null):
+            # Load the current base value
+            resource.set(property.name, resource.base.get(property.name))
+        else:
+            resource.set(property.name, _override_cache)
+            _override_cache = null
+    else:
+        _override_cache = resource.get(property.name)
+        _was_null = (_override_cache == null)
+        resource.override(property.name, null)
+
+    update_override(_is_override)
+    changed.emit()
+
 func default_on_changed(value: Variant) -> void:
+    if disabled:
+        return
     resource.set(property.name, value)
 
 func default_on_changed_array(value: Variant, index: int) -> void:
+    if disabled:
+        return
+
     var array: Array = resource.get(property.name)
     # Deleting element
     if value == null:

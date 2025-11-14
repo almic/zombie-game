@@ -10,6 +10,10 @@ var line_edit_variation: StringName = &'':
 var spinbox_variation: StringName = &'':
     set = set_spinbox_variation
 
+var _edit_controls: Array[Control] = []
+
+var value_cache: Array = []
+
 
 func _ready() -> void:
     super._ready()
@@ -19,10 +23,31 @@ func _ready() -> void:
     %ButtonAddElement.icon = get_theme_icon(&'Add', &'EditorIcons')
     %ButtonAddElement.pressed.connect(_add_element)
 
+    build_array()
+
+func build_array() -> void:
     var array: Array = resource.get(property.name)
     type = array.get_typed_builtin()
     for elem in array:
         _add_element(elem)
+
+func update_override(restore: bool) -> void:
+    %ButtonAddElement.disabled = disabled
+
+    for control in _edit_controls:
+        if control is LineEdit:
+            control.editable = not disabled
+        elif control is SpinBox:
+            control.editable = not disabled
+        elif control is Button:
+            control.disabled = disabled
+
+    if restore:
+        for child in %Elements.get_children():
+            %Elements.remove_child(child)
+            child.queue_free()
+
+        build_array()
 
 
 func set_line_edit_variation(variation: StringName) -> void:
@@ -74,6 +99,7 @@ func _add_element(initial: Variant = null) -> void:
             control = line_edit
 
         line_edit.text_changed.connect(_on_control_modified.bind(control, line_edit))
+        _edit_controls.append(line_edit)
     elif type == TYPE_INT or type == TYPE_FLOAT:
         var spin_box: SpinBox = SpinBox.new()
         spin_box.theme_type_variation = spinbox_variation
@@ -92,6 +118,7 @@ func _add_element(initial: Variant = null) -> void:
             _on_element_modified(initial, index, spin_box)
         control = spin_box
         spin_box.value_changed.connect(_on_control_modified.bind(control, spin_box))
+        _edit_controls.append(spin_box)
     else:
         push_error('Unsupported element type (%d)!' % type)
         return
@@ -108,6 +135,7 @@ func _add_element(initial: Variant = null) -> void:
     )
     btn_delete.custom_minimum_size = Vector2(min_size, min_size)
     btn_delete.pressed.connect(_on_element_delete.bind(elem))
+    _edit_controls.append(btn_delete)
 
     elem.add_child(control)
     elem.add_child(btn_delete)
@@ -116,6 +144,9 @@ func _add_element(initial: Variant = null) -> void:
     %LabelSize.text = str(%Elements.get_child_count())
 
 func _on_element_modified(value: Variant, index: int, control: Control) -> void:
+    if disabled:
+        return
+
     var old_size: int = resource.get(property.name).size()
     if on_changed_func.is_valid():
         on_changed_func.call(value, index)
@@ -138,9 +169,15 @@ func _on_element_modified(value: Variant, index: int, control: Control) -> void:
         control.set_value_no_signal(new_value)
 
 func _on_control_modified(value: Variant, base: Control, editor: Control) -> void:
+    if disabled:
+        return
+
     _on_element_modified(value, base.get_parent().get_index(), editor)
 
 func _on_element_delete(element: Control) -> void:
+    if disabled:
+        return
+
     var index: int = element.get_index()
     if Input.is_physical_key_pressed(KEY_SHIFT):
         _remove_element(index, element)
@@ -174,6 +211,9 @@ func _on_element_delete(element: Control) -> void:
     EditorInterface.popup_dialog_centered(confirm)
 
 func _remove_element(index: int, element: Control) -> void:
+    if disabled:
+        return
+
     var expected_size: int = resource.get(property.name).size() - 1
     # NOTE: it is important that change function causes the array to resize down 1
     if on_changed_func.is_valid():
@@ -185,5 +225,10 @@ func _remove_element(index: int, element: Control) -> void:
         return
 
     %Elements.remove_child(element)
+    var to_erase: Array[Control] = [element]
+    while not to_erase.is_empty():
+        var e: Control = to_erase.pop_front()
+        to_erase.append_array(e.get_children(true))
+        _edit_controls.erase(e)
     element.queue_free()
     %LabelSize.text = str(%Elements.get_child_count())

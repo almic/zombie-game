@@ -115,12 +115,27 @@ static func make_property_override_container(
     property_name.text = editor.property.name.capitalize()
 
     if editor.resource.base:
+        var is_override: bool = editor.resource.base_overrides.has(editor.property.name)
+
+        container.is_expanded = is_override
+        editor._is_override = is_override
+
         title_bar = VBoxContainer.new()
 
         var property_header: HBoxContainer = HBoxContainer.new()
 
         var override_button: CheckButton = CheckButton.new()
-        # TODO: button things
+        override_button.set_pressed_no_signal(is_override)
+
+        var override_func: Callable = (
+            func(enabled: bool, container: ExpandableContainer, editor: BehaviorPropertyEditor):
+                editor.set_override(enabled)
+
+                if not container.is_expanded:
+                    container.is_expanded = true
+                    return
+        )
+        override_button.toggled.connect(override_func.bind(container, editor))
 
         property_header.add_child(override_button)
         property_header.add_child(property_name)
@@ -132,11 +147,20 @@ static func make_property_override_container(
 
         var base_default_value: Label = Label.new()
         base_default_value.text = str(editor.resource.base.get(editor.property.name))
-        editor.resource.base.property_changed.connect(
-            func(property_name: String, value: Variant):
-                if property_name != editor.property.name:
+
+        var update_text_func: Callable = (
+            func(
+                    property_name: StringName,
+                    value: Variant,
+                    target: StringName,
+                    label: Label
+            ) -> void:
+                if property_name != target:
                     return
-                base_default_value.text = str(value)
+                label.text = str(value)
+        )
+        editor.resource.base.property_changed.connect(
+                update_text_func.bind(editor.property.name, base_default_value)
         )
 
         base_default_value.theme_type_variation = &'LabelMono'

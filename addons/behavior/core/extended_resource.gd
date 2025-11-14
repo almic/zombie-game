@@ -20,10 +20,15 @@ var base_overrides: Dictionary
 ## Cache of the properties that can be overridden by this resource
 var base_properties: Array[StringName]
 
+## Track the loading phase of the resource to prevent property override
+var _loading: bool = true
+
 
 ## Must be called to properly initialize the resource properties from its base.
 ## It is safe to call this when no base is defined.
 func _on_load(path: String) -> void:
+    _loading = false
+
     # print('_on_load called for "%s" at path "%s"' % [resource_name, path])
     base_properties = []
     var writing_cache: bool = false
@@ -77,12 +82,15 @@ func override(name: StringName, value: Variant) -> void:
         base_overrides.erase(name)
         return
 
-    print('setting override "%s" = %s' % [name, str(value)])
+    # print('setting override "%s" = %s' % [name, str(value)])
     base_overrides.set(name, value)
 
 # NOTE: This method favors anything present in 'base_overrides', even if it is
 #       not a real property or this has no base.
 func _get(property: StringName) -> Variant:
+    if _loading:
+        return null
+
     # print('"%s" > get "%s"' % [resource_path, property])
     if base_overrides.has(property):
         return base_overrides.get(property)
@@ -95,6 +103,9 @@ func _get(property: StringName) -> Variant:
 # NOTE: This method simply checks if a property should be added to the override
 #       set, it will always return false so that default behavior is not lost.
 func _set(property: StringName, value: Variant) -> bool:
+    if _loading:
+        return false
+
     # Check for override property
     if base_properties.has(property):
         # print('"%s" > set "%s" to: %s' %[resource_path, property, str(value)])

@@ -28,8 +28,9 @@ func _ready() -> void:
         edit_containers.append(container)
         %Properties.add_child(container)
 
-func _exit_tree() -> void:
-    disconnect_editors()
+func _notification(what: int) -> void:
+    if what == NOTIFICATION_PREDELETE:
+        delete_editors()
 
 func _set_resource(resource: BehaviorExtendedResource) -> void:
     if resource is BehaviorSenseVisionSettings:
@@ -38,9 +39,9 @@ func _set_resource(resource: BehaviorExtendedResource) -> void:
 func _get_resource() -> BehaviorExtendedResource:
     return resource
 
-func disconnect_editors() -> void:
+func delete_editors() -> void:
     for container in edit_containers:
-        if container.editor.changed.is_connected(on_change):
+        if container.editor and container.editor.changed.is_connected(on_change):
             container.editor.changed.disconnect(on_change)
         container.set_editor(null)
         container.set_resource_and_property(null, &'')

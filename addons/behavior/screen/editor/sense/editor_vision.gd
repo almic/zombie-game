@@ -10,6 +10,7 @@ static var PROPERTIES: PackedStringArray = [
 ]
 
 var resource: BehaviorSenseVisionSettings
+var edit_containers: Array[BehaviorPropertyEditorContainer]
 
 
 func _ready() -> void:
@@ -18,11 +19,17 @@ func _ready() -> void:
     if not resource:
         return
 
-    var editors := get_property_editors(resource, PROPERTIES, on_change)
-    for editor in editors:
-        var container: ExpandableContainer = make_property_override_container(editor)
+    for property in resource.get_property_list():
+        if not PROPERTIES.has(property.name):
+            continue
+
+        var container: BehaviorPropertyEditorContainer = make_property_editor_container(resource, property)
+        container.editor.changed.connect(on_change)
+        edit_containers.append(container)
         %Properties.add_child(container)
 
+func _exit_tree() -> void:
+    disconnect_editors()
 
 func _set_resource(resource: BehaviorExtendedResource) -> void:
     if resource is BehaviorSenseVisionSettings:
@@ -30,3 +37,10 @@ func _set_resource(resource: BehaviorExtendedResource) -> void:
 
 func _get_resource() -> BehaviorExtendedResource:
     return resource
+
+func disconnect_editors() -> void:
+    for container in edit_containers:
+        if container.editor.changed.is_connected(on_change):
+            container.editor.changed.disconnect(on_change)
+        container.set_editor(null)
+        container.set_resource_and_property(null, &'')

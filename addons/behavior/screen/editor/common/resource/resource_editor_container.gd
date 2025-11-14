@@ -15,6 +15,8 @@ var property_name: StringName
 
 var label_title: Label
 var label_res: LineEdit
+var label_extends: LineEdit
+var hbox_extends: HBoxContainer
 var sep_override: Control
 var btn_override: CheckButton
 var btn_extend: Button
@@ -45,8 +47,31 @@ func _ready() -> void:
 
     label_title = Label.new()
     label_title.custom_minimum_size.y = MIN_HEIGHT
-    label_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     label_title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+    var label_extend_text: Label = Label.new()
+    label_extend_text.text = 'Extends'
+    label_extend_text.theme_type_variation = &'TransparentLabel'
+    label_extend_text.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+    label_extend_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+
+    label_extends = LineEdit.new()
+    label_extends.theme_type_variation = &'LabelMono'
+    label_extends.editable = false
+    label_extends.expand_to_text_length = true
+    label_extends.placeholder_text = 'Unknown Resource'
+    label_extends.custom_minimum_size.x = 150
+    label_extends.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+
+    hbox_extends = HBoxContainer.new()
+    hbox_extends.visible = false
+    hbox_extends.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+    hbox_extends.add_child(label_extend_text)
+    hbox_extends.add_child(label_extends)
+
+    var spacer: Control = hbox_extends.add_spacer(false)
+    spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
     var button_bar: HBoxContainer = HBoxContainer.new()
     button_bar.alignment = BoxContainer.ALIGNMENT_END
@@ -57,6 +82,8 @@ func _ready() -> void:
     # Override toggle button
     btn_override = CheckButton.new()
     btn_override.visible = false
+    btn_override.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+    btn_override.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
     # TODO: button things
 
     # New button
@@ -94,6 +121,7 @@ func _ready() -> void:
     title.add_child(btn_override)
     title.add_child(label_title)
     title.add_child(label_res)
+    title.add_child(hbox_extends)
     title.add_child(button_bar)
 
     # NOTE: what the fuck how does this work
@@ -145,6 +173,14 @@ func update_title_bar() -> void:
         else:
             label_res.text = ''
         label_res.placeholder_text = 'Unknown Resource'
+
+        if resource and resource.base:
+            label_res.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+            hbox_extends.visible = true
+            label_extends.text = resource.base.resource_path.get_file()
+        else:
+            label_res.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN | Control.SIZE_EXPAND
+            hbox_extends.visible = false
 
         btn_extend.text = 'Extend'
         btn_extend.tooltip_text = (

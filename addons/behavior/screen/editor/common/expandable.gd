@@ -188,7 +188,7 @@ func set_interaction(allowed: bool) -> void:
         queue_redraw()
 
 func set_title_control(control: Control) -> void:
-    if title:
+    if title and title_bar and title.get_parent() == title_bar:
         title_bar.remove_child(title)
 
     title = control

@@ -4,6 +4,7 @@ class_name BehaviorResourceEditor extends BehaviorBaseEditor
 
 
 const RESOURCE_EDITOR_CONTAINER = preload("uid://dh63a4nbtj3qy")
+const PROPERTY_EDITOR_CONTAINER = preload("uid://51hfem37wopv")
 
 
 ## Maps class names to editor scenes
@@ -98,104 +99,17 @@ static func get_property_editors(
         editors.append(editor)
     return editors
 
-static func make_property_override_container(
-        editor: BehaviorPropertyEditor
-) -> ExpandableContainer:
-    var container: ExpandableContainer = ExpandableContainer.new()
-    container.set_expandable_separation(0)
-    container.icon_visible = false
-    container.allow_interaction = false
-    container.theme_type_variation = &'ExpandableTransparent'
-    container.title_theme_variation = &'ExpandableNoBorder'
-
-    var title_bar: Control
-
-    var property_name: Label = Label.new()
-    property_name.theme_type_variation = &'LabelMono'
-    property_name.text = editor.property.name.capitalize()
-
-    if editor.resource.base:
-        var is_override: bool = editor.resource.base_overrides.has(editor.property.name)
-
-        container.is_expanded = is_override
-        editor._is_override = is_override
-
-        title_bar = VBoxContainer.new()
-
-        var property_header: HBoxContainer = HBoxContainer.new()
-
-        var override_button: CheckButton = CheckButton.new()
-        override_button.set_pressed_no_signal(is_override)
-
-        var override_func: Callable = (
-            func(enabled: bool, container: ExpandableContainer, editor: BehaviorPropertyEditor):
-                editor.set_override(enabled)
-
-                if not container.is_expanded:
-                    container.is_expanded = true
-                    return
-        )
-        override_button.toggled.connect(override_func.bind(container, editor))
-
-        property_header.add_child(override_button)
-        property_header.add_child(property_name)
-
-        var base_default: HBoxContainer = HBoxContainer.new()
-        var base_default_label: Label = Label.new()
-        base_default_label.text = 'Base Value:'
-        base_default_label.theme_type_variation = &'TransparentLabel'
-
-        var base_default_value: Label = Label.new()
-        base_default_value.text = str(editor.resource.base.get(editor.property.name))
-
-        var update_text_func: Callable = (
-            func(
-                    property_name: StringName,
-                    value: Variant,
-                    target: StringName,
-                    label: Label
-            ) -> void:
-                if property_name != target:
-                    return
-                label.text = str(value)
-        )
-        editor.resource.base.property_changed.connect(
-                update_text_func.bind(editor.property.name, base_default_value)
-        )
-
-        base_default_value.theme_type_variation = &'LabelMono'
-
-        base_default.add_child(base_default_label)
-        base_default.add_child(base_default_value)
-
-        title_bar.add_child(property_header)
-        title_bar.add_child(base_default)
-    else:
-        title_bar = MarginContainer.new()
-        title_bar.add_theme_constant_override(&'margin_top', 4)
-        title_bar.add_theme_constant_override(&'margin_bottom', 4)
-        title_bar.add_theme_constant_override(&'margin_left', 8)
-        title_bar.add_theme_constant_override(&'margin_right', 8)
-
-        title_bar.add_child(property_name)
-
-    title_bar.tooltip_text = ' %s ' % editor.property.name
-    title_bar.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-    var margins: MarginContainer = MarginContainer.new()
-    margins.add_theme_constant_override(&'margin_top', 8)
-    margins.add_theme_constant_override(&'margin_bottom', 8)
-    margins.add_theme_constant_override(&'margin_left', 8)
-    margins.add_theme_constant_override(&'margin_right', 8)
-
-    margins.add_child(editor)
-
-    container.set_title_control(title_bar)
-    container.set_expandable_control(margins)
-
+static func make_property_editor_container(
+        resource: BehaviorExtendedResource,
+        property: Dictionary,
+) -> BehaviorPropertyEditorContainer:
+    var container: BehaviorPropertyEditorContainer = PROPERTY_EDITOR_CONTAINER.instantiate()
+    container.set_resource_and_property(resource, property.name)
+    var editor: BehaviorPropertyEditor = BehaviorPropertyEditor.get_editor_for_property(resource, property)
+    container.set_editor(editor)
     return container
 
-static func make_sub_resource_override_container(
+static func make_resource_editor_container(
     main_resource: BehaviorExtendedResource,
     property_name: StringName,
 ) -> BehaviorResourceEditorContainer:

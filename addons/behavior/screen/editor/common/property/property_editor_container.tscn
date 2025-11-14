@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://51hfem37wopv"]
+
+[ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_1m7hi"]
+[ext_resource type="Script" uid="uid://be4xgw2kssda7" path="res://addons/behavior/screen/editor/common/property/property_editor_container.gd" id="1_1oavy"]
+
+[node name="PropertyEditorContainer" type="VBoxContainer"]
+focus_mode = 2
+mouse_filter = 0
+theme = ExtResource("1_1m7hi")
+theme_type_variation = &"ExpandableTransparent"
+script = ExtResource("1_1oavy")
+is_expanded = false
+allow_interaction = false
+icon_visible = false
+title_theme_variation = &"ExpandableNoBorder"
+metadata/_custom_type_script = "uid://be4xgw2kssda7"

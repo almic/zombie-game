@@ -24,6 +24,9 @@ var base_properties: Array[StringName]
 var _loading: bool = true
 
 
+func _reset_state() -> void:
+    _loading = true
+
 ## Must be called to properly initialize the resource properties from its base.
 ## It is safe to call this when no base is defined.
 func _on_load(path: String) -> void:

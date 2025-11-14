@@ -32,6 +32,11 @@ func _ready() -> void:
     %ButtonMenu.pressed.connect(goto_menu.emit)
 
     ProjectSettings.settings_changed.connect(refresh_groups)
+    tree_exiting.connect((
+        func():
+            if ProjectSettings.settings_changed.is_connected(refresh_groups):
+                ProjectSettings.settings_changed.disconnect(refresh_groups)
+    ), CONNECT_ONE_SHOT)
     refresh_groups()
 
 

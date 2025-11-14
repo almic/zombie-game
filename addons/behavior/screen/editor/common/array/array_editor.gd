@@ -45,6 +45,7 @@ func update_override(restore: bool) -> void:
     if restore:
         for child in %Elements.get_children():
             %Elements.remove_child(child)
+            _erase_controls(child)
             child.queue_free()
 
         build_array()
@@ -225,10 +226,14 @@ func _remove_element(index: int, element: Control) -> void:
         return
 
     %Elements.remove_child(element)
-    var to_erase: Array[Control] = [element]
+    _erase_controls(element)
+    element.queue_free()
+    %LabelSize.text = str(%Elements.get_child_count())
+
+## Iterate through all children and remove them from the edit control list
+func _erase_controls(parent: Control) -> void:
+    var to_erase: Array[Control] = [parent]
     while not to_erase.is_empty():
         var e: Control = to_erase.pop_front()
         to_erase.append_array(e.get_children(true))
         _edit_controls.erase(e)
-    element.queue_free()
-    %LabelSize.text = str(%Elements.get_child_count())

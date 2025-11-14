@@ -36,6 +36,7 @@ func _ready() -> void:
     label_res.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN | Control.SIZE_EXPAND
     label_res.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 
+    # NOTE: this set will child it to the title_bar
     title = HBoxContainer.new()
     title.alignment = BoxContainer.ALIGNMENT_BEGIN
     title.add_theme_constant_override('separation', 8)
@@ -96,6 +97,7 @@ func _ready() -> void:
     title.add_child(button_bar)
 
     # NOTE: what the fuck how does this work
+    # NOTE: Figured it out, I wrote some magic setter. Godot is insane (in a half-good way)
     # title_bar.add_child(title)
 
     update_title_bar()

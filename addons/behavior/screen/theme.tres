@@ -1,4 +1,6 @@
-[gd_resource type="Theme" load_steps=109 format=3 uid="uid://d0tmanljmd1ao"]
+[gd_resource type="Theme" load_steps=124 format=3 uid="uid://d0tmanljmd1ao"]
+
+[ext_resource type="FontFile" uid="uid://bybftiog3uc0n" path="res://font/Yrsa-VariableFont_wght.ttf" id="1_8r66t"]
 
 [sub_resource type="SystemFont" id="SystemFont_0d5qu"]
 font_names = PackedStringArray("Sans-Serif")
@@ -66,6 +68,93 @@ corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="DPITexture" id="DPITexture_lh3ja"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".75\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\"/></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_qg5lj"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".37\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\" fill-opacity=\".5\"/></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_shg1u"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".37\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\" fill-opacity=\".5\"/></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_1oj7c"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#fff\" fill-opacity=\".75\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#1a1a1a\"/></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_4wsu4"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".5\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_pytki"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".25\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"8\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_ejaig"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".25\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
+"
+
+[sub_resource type="DPITexture" id="DPITexture_6pxoy"]
+_source = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"16\"><g fill-opacity=\".5\"><rect width=\"30\" height=\"14\" x=\"1\" y=\"1\" fill=\"#1a1a1a\" rx=\"7\"/><circle cx=\"24\" cy=\"8\" r=\"5\" fill=\"#fff\"/></g></svg>
+"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_81mna"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hf6wh"]
+bg_color = Color(1, 1, 1, 0.75)
+draw_center = false
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+corner_radius_top_left = 7
+corner_radius_top_right = 7
+corner_radius_bottom_right = 7
+corner_radius_bottom_left = 7
+corner_detail = 5
+expand_margin_left = 4.0
+expand_margin_top = 3.0
+expand_margin_right = 4.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ix7ro"]
+bg_color = Color(0.8784314, 1, 1, 0.2509804)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5q57b"]
+bg_color = Color(0.5019608, 1, 1, 0.3137255)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_inv66"]
+content_margin_left = 1.0
+content_margin_right = 1.0
+bg_color = Color(0.5019608, 1, 1, 0.15686275)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a8llg"]
+content_margin_left = 1.0
+content_margin_right = 1.0
+bg_color = Color(0, 1, 1, 0.1882353)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 corner_detail = 5
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hefsy"]
@@ -863,6 +952,34 @@ Button/styles/normal = SubResource("StyleBoxFlat_qg5lj")
 Button/styles/pressed = SubResource("StyleBoxFlat_shg1u")
 ButtonLarge/base_type = &"Button"
 ButtonLarge/font_sizes/font_size = 18
+CheckButton/colors/button_checked_color = Color(0.7529412, 1, 1, 0.7529412)
+CheckButton/colors/button_unchecked_color = Color(0.7529412, 1, 1, 0.7529412)
+CheckButton/colors/font_color = Color(0.875, 0.875, 0.875, 1)
+CheckButton/colors/font_disabled_color = Color(0.875, 0.875, 0.875, 0.5)
+CheckButton/colors/font_focus_color = Color(0.95, 0.95, 0.95, 1)
+CheckButton/colors/font_hover_color = Color(0.95, 0.95, 0.95, 1)
+CheckButton/colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+CheckButton/colors/font_outline_color = Color(0, 0, 0, 1)
+CheckButton/colors/font_pressed_color = Color(1, 1, 1, 1)
+CheckButton/constants/check_v_offset = 0
+CheckButton/constants/h_separation = 4
+CheckButton/constants/outline_size = 0
+CheckButton/font_sizes/font_size = 16
+CheckButton/fonts/font = ExtResource("1_8r66t")
+CheckButton/icons/checked = SubResource("DPITexture_lh3ja")
+CheckButton/icons/checked_disabled = SubResource("DPITexture_qg5lj")
+CheckButton/icons/checked_disabled_mirrored = SubResource("DPITexture_shg1u")
+CheckButton/icons/checked_mirrored = SubResource("DPITexture_1oj7c")
+CheckButton/icons/unchecked = SubResource("DPITexture_4wsu4")
+CheckButton/icons/unchecked_disabled = SubResource("DPITexture_pytki")
+CheckButton/icons/unchecked_disabled_mirrored = SubResource("DPITexture_ejaig")
+CheckButton/icons/unchecked_mirrored = SubResource("DPITexture_6pxoy")
+CheckButton/styles/disabled = SubResource("StyleBoxEmpty_81mna")
+CheckButton/styles/focus = SubResource("StyleBoxFlat_hf6wh")
+CheckButton/styles/hover = SubResource("StyleBoxFlat_ix7ro")
+CheckButton/styles/hover_pressed = SubResource("StyleBoxFlat_5q57b")
+CheckButton/styles/normal = SubResource("StyleBoxFlat_inv66")
+CheckButton/styles/pressed = SubResource("StyleBoxFlat_a8llg")
 DarkLabel/base_type = &"Label"
 DarkLabel/colors/font_color = Color(0.7529412, 0.7529412, 0.7529412, 1)
 DarkLabel/styles/normal = SubResource("StyleBoxFlat_hefsy")

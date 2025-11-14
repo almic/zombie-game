@@ -34,6 +34,7 @@ func _ready() -> void:
     label_property.theme_type_variation = &'LabelMono'
 
     hbox_property = HBoxContainer.new()
+    hbox_property.add_theme_constant_override(&'separation', 8)
     hbox_property.add_child(btn_override)
     hbox_property.add_child(label_property)
 

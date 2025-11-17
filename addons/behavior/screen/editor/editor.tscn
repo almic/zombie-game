@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dmwmompdaabqp"]
+[gd_scene load_steps=12 format=3 uid="uid://dmwmompdaabqp"]
 
 [ext_resource type="Script" uid="uid://dw2db5uca28dk" path="res://addons/behavior/screen/editor/editor.gd" id="1_dht7n"]
 [ext_resource type="Theme" uid="uid://d0tmanljmd1ao" path="res://addons/behavior/screen/theme.tres" id="1_mqvbe"]
@@ -31,6 +31,15 @@ unicode = 110
 
 [sub_resource type="Shortcut" id="Shortcut_47uql"]
 events = [SubResource("InputEventKey_6uchm")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_mqvbe"]
+device = -1
+ctrl_pressed = true
+keycode = 79
+unicode = 111
+
+[sub_resource type="Shortcut" id="Shortcut_5e7se"]
+events = [SubResource("InputEventKey_mqvbe")]
 
 [node name="Editor" type="HSplitContainer"]
 anchors_preset = 15
@@ -128,7 +137,7 @@ tooltip_text = "Change the name of this resource. The name is used for display i
 
 NOTE: This is NOT related to the file path of the resource."
 focus_neighbor_left = NodePath("../ResourceNameEdit")
-focus_neighbor_right = NodePath("../../ButtonContainer/ButtonSave")
+focus_neighbor_right = NodePath("../../ButtonContainer/ButtonExtend")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_6uchm")
@@ -167,12 +176,24 @@ size_flags_vertical = 3
 theme_override_constants/separation = 8
 alignment = 2
 
+[node name="ButtonExtend" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+tooltip_text = "Extend the current resource to inherit its values.
+Extended resources use overrides to modify attributes from a parent."
+focus_neighbor_left = NodePath("../../ResourceNameContainer/ButtonRename")
+focus_neighbor_right = NodePath("../ButtonSave")
+theme_type_variation = &"ButtonLarge"
+action_mode = 0
+text = "Extend"
+
 [node name="ButtonSave" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 tooltip_text = "Save the current resource"
-focus_neighbor_left = NodePath("../../ResourceNameContainer/ButtonRename")
+focus_neighbor_left = NodePath("../ButtonExtend")
 focus_neighbor_right = NodePath("../ButtonNew")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
@@ -185,11 +206,23 @@ custom_minimum_size = Vector2(80, 0)
 layout_mode = 2
 tooltip_text = "Create a new behavior resource"
 focus_neighbor_left = NodePath("../ButtonSave")
-focus_neighbor_right = NodePath("../ButtonMenu")
+focus_neighbor_right = NodePath("../ButtonOpen")
 theme_type_variation = &"ButtonLarge"
 action_mode = 0
 shortcut = SubResource("Shortcut_47uql")
 text = "New"
+
+[node name="ButtonOpen" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+layout_mode = 2
+tooltip_text = "Open an existing behavior resource"
+focus_neighbor_left = NodePath("../ButtonNew")
+focus_neighbor_right = NodePath("../ButtonMenu")
+theme_type_variation = &"ButtonLarge"
+action_mode = 0
+shortcut = SubResource("Shortcut_5e7se")
+text = "Open"
 
 [node name="ButtonMenu" type="Button" parent="Main/MarginContainer/HeaderBar/ButtonContainer"]
 unique_name_in_owner = true

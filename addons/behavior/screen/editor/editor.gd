@@ -136,14 +136,21 @@ func _ready() -> void:
     %ButtonRename.pressed.connect(on_rename_resource)
     %ResourceNameEdit.text_submitted.connect(on_rename_resource_submitted)
 
+    %ButtonExtend.pressed.connect(extend_current)
+
     %ButtonSave.pressed.connect(save_current)
 
     %ButtonNew.pressed.connect(create_resource)
+
+    %ButtonOpen.pressed.connect(open_resource)
 
     %ButtonMenu.pressed.connect(goto_menu.emit)
 
     %ExtendsContainer.visible = false
     %ButtonContainer.size_flags_horizontal = SIZE_EXPAND_FILL
+
+    # Update UI as if nothing was selected
+    select_item(null)
 
 func _shortcut_input(event: InputEvent) -> void:
     if not is_visible_in_tree():
@@ -194,6 +201,9 @@ func load_state(config: ConfigFile) -> void:
     var last_opened = config.get_value(SECTION_EDITOR, 'opened', PackedStringArray())
     if last_opened is PackedStringArray:
         for path in last_opened:
+            if path.is_empty():
+                continue
+
             var resource: Resource = ResourceLoader.load(path, '', ResourceLoader.CACHE_MODE_REPLACE)
             if not is_instance_of(resource, BehaviorExtendedResource):
                 continue
@@ -205,7 +215,7 @@ func load_state(config: ConfigFile) -> void:
             open_item(item, false)
 
     var last_active = config.get_value(SECTION_EDITOR, 'current', "")
-    if last_active is String:
+    if last_active is String and (not last_active.is_empty()):
         var resource: Resource = ResourceLoader.load(last_active)
         if is_instance_of(resource, BehaviorExtendedResource):
             var item: ResourceItem = get_or_add_item(resource)
@@ -228,7 +238,7 @@ func select_item(item: ResourceItem) -> void:
     if _is_ghost:
         return
 
-    if item == current_item:
+    if item != null and item == current_item:
         return
 
     if current_item:
@@ -243,6 +253,7 @@ func select_item(item: ResourceItem) -> void:
         %ResourceNameEdit.visible = false
         %ButtonRename.visible = false
         %ButtonSave.visible = false
+        %ButtonExtend.visible = false
         %ExtendsContainer.visible = false
         %ButtonContainer.size_flags_horizontal = SIZE_EXPAND_FILL
         return
@@ -252,6 +263,7 @@ func select_item(item: ResourceItem) -> void:
     %ButtonRename.visible = true
     %ButtonRename.text = "Rename"
 
+    %ButtonExtend.visible = true
     %ButtonSave.visible = true
 
     %ResourceNameEdit.visible = true
@@ -577,6 +589,18 @@ func create_resource() -> void:
 
     EditorInterface.popup_dialog_centered(popup)
 
+func open_resource() -> void:
+    EditorInterface.popup_quick_open((
+        func(path: String):
+            if path.is_empty():
+                return
+            var res: BehaviorExtendedResource = ResourceLoader.load(path)
+            if not res:
+                push_error('Failed to open resource at "%s" for editing!' % path)
+                return
+            edit(res)
+    ), [&'BehaviorExtendedResource'])
+
 func move_item(from: int, to: int) -> void:
     if from == to:
         return
@@ -643,6 +667,46 @@ func close_item(item: ResourceItem, select_next: bool = true) -> void:
 
     check_all_items()
 
+func extend_current() -> void:
+    if not current_item:
+        toast('No opened behavior resource to extend.', EditorToaster.SEVERITY_WARNING)
+        return
+
+    var script_type: GDScript = current_item.resource.get_script() as GDScript
+    if not script_type:
+        push_error('Failed to extend resource, could not get resource script!')
+        return
+
+    var extended_resource: BehaviorExtendedResource = script_type.new() as BehaviorExtendedResource
+    if not extended_resource:
+        push_error('Failed to create new resource from base type!')
+        return
+
+    extended_resource.base = current_item.resource
+
+    var save_dialog: EditorFileDialog = EditorFileDialog.new()
+    save_dialog.access = EditorFileDialog.ACCESS_RESOURCES
+    save_dialog.file_mode = EditorFileDialog.FILE_MODE_SAVE_FILE
+    save_dialog.filters = PackedStringArray(['*.tres ; Text Resource', '*.res ; Binary Resource'])
+    save_dialog.current_file = 'extended_resource.tres'
+    save_dialog.file_selected.connect(
+        func(path: String):
+            if path.is_empty():
+                return
+            extended_resource.take_over_path(path)
+            var err: Error = ResourceSaver.save(extended_resource)
+            if err == OK:
+                BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
+            else:
+                BehaviorMainEditor.toast(
+                    'Failed to save resource to "%s": Error %d' % [path, err],
+                    EditorToaster.Severity.SEVERITY_ERROR
+                )
+            edit(extended_resource)
+    )
+    save_dialog.popup()
+
+
 func save_current() -> void:
     # Check if CTRL+S is pressed, then save the current scene as well
     var shortcut_used: bool = Input.is_key_pressed(KEY_S) and Input.is_key_pressed(KEY_CTRL)
@@ -655,6 +719,7 @@ func save_current() -> void:
 
     if not current_item:
         toast('No opened behavior resource to save.', EditorToaster.SEVERITY_WARNING)
+        return
 
     current_item.save(shortcut_used)
 

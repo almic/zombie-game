@@ -79,6 +79,12 @@ func set_overrides(overrides: Dictionary) -> void:
 
     base_overrides = overrides
 
+func has_override(name: StringName) -> bool:
+    return base_overrides.has(name)
+
+func get_override(name: StringName) -> Variant:
+    return base_overrides.get(name)
+
 func override(name: StringName, value: Variant) -> void:
     if value == null:
         print('deleting override: ' + name)
@@ -95,8 +101,8 @@ func _get(property: StringName) -> Variant:
         return null
 
     # print('"%s" > get "%s"' % [resource_path, property])
-    if base_overrides.has(property):
-        return base_overrides.get(property)
+    if has_override(property):
+        return get_override(property)
 
     if base and base_properties.has(property):
         return base.get(property)

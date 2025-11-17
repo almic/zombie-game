@@ -102,7 +102,7 @@ func set_editor(e: BehaviorPropertyEditor) -> void:
     else:
         margins_editor.add_child(editor)
 
-    editor._is_override = main_resource.base_overrides.has(property_name)
+    editor._is_override = main_resource.has_override(property_name)
 
 func update_title_bar() -> void:
     if not is_node_ready():
@@ -112,7 +112,7 @@ func update_title_bar() -> void:
     label_property.text = property_name.capitalize()
 
     if main_resource and main_resource.base:
-        var is_override: bool = main_resource.base_overrides.has(property_name)
+        var is_override: bool = main_resource.has_override(property_name)
 
         btn_override.visible = true
         btn_override.set_pressed_no_signal(is_override)

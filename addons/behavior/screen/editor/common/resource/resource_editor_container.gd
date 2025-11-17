@@ -335,6 +335,8 @@ func on_new() -> void:
                 save.current_file = 'new_resource.tres'
                 save.file_selected.connect(
                     func(path: String):
+                        if path.is_empty():
+                            return
                         var err: Error = ResourceSaver.save(editor.get_resource(), path, ResourceSaver.FLAG_CHANGE_PATH)
                         if err == OK:
                             BehaviorMainEditor.toast('Saved resource to "%s"!' % path)
@@ -415,6 +417,8 @@ func on_new_resource_property(type_script: GDScript, base: BehaviorExtendedResou
             save_dialog.current_file = 'new_resource.tres'
             save_dialog.file_selected.connect(
                 func(path: String):
+                    if path.is_empty():
+                        return
                     new_resource.take_over_path(path)
                     var err: Error = ResourceSaver.save(new_resource)
                     if err == OK:
@@ -460,6 +464,8 @@ func on_save_as() -> void:
     save.current_file = 'new_resource.tres'
     save.file_selected.connect(
         func(path: String):
+            if path.is_empty():
+                return
             resource.take_over_path(path)
             var err: Error = ResourceSaver.save(resource)
             if err == OK:

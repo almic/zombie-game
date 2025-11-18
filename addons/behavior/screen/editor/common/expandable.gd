@@ -34,7 +34,7 @@ var icon_show: Texture2D:
 
 @export
 var icon_visible: bool = true:
-    set = set_icon_visible, get = get_icon_visible
+    set = set_icon_visible
 
 @export_range(0, 1, 1, 'or_greater')
 var icon_separation: int = 8:
@@ -112,7 +112,6 @@ func _notification(what: int) -> void:
         if is_hovering:
             is_hovering = false
 
-
 func _draw() -> void:
     if is_expanded and expandable:
         var type: StringName = &'ExpandableContainer'
@@ -138,6 +137,10 @@ func _draw() -> void:
 
 
 func update_icon() -> void:
+    if not icon:
+        return
+
+    icon.visible = icon_visible
     if is_expanded:
         icon.texture = icon_fold
     else:
@@ -215,18 +218,13 @@ func set_expandable_control(control: Control) -> void:
         move_child(expandable, 0)
 
 func set_expandable_separation(separation: int) -> void:
-    add_theme_constant_override('separation', separation)
+    add_theme_constant_override(&'separation', separation)
 
 func set_icon_separation(separation: int) -> void:
     icon_separation = separation
     if title_bar:
-        title_bar.add_theme_constant_override('separation', separation)
+        title_bar.add_theme_constant_override(&'separation', separation)
 
 func set_icon_visible(value: bool) -> void:
-    if not icon:
-        ready.connect((func(): icon.visible = value), CONNECT_ONE_SHOT)
-        return
-    icon.visible = value
-
-func get_icon_visible() -> bool:
-    return icon.visible
+    icon_visible = value
+    update_icon()

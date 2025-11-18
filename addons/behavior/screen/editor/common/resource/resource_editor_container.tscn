@@ -14,4 +14,7 @@ mouse_filter = 0
 theme = ExtResource("1_t787j")
 theme_override_constants/separation = 0
 script = ExtResource("1_sodmx")
+is_expanded = false
+allow_interaction = false
+icon_visible = false
 metadata/_custom_type_script = "uid://wupervkwvv0q"

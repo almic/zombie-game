@@ -43,7 +43,7 @@ func _ready() -> void:
     title.alignment = BoxContainer.ALIGNMENT_BEGIN
     title.add_theme_constant_override('separation', 8)
     title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-    title.tooltip_text = property_name
+    title.tooltip_text = ' ' + property_name + ' '
 
     label_title = Label.new()
     label_title.custom_minimum_size.y = MIN_HEIGHT
@@ -84,7 +84,7 @@ func _ready() -> void:
     btn_override.visible = false
     btn_override.size_flags_vertical = Control.SIZE_SHRINK_CENTER
     btn_override.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-    # TODO: button things
+    btn_override.toggled.connect(on_override_toggle)
 
     # New button
     btn_new = Button.new()
@@ -139,7 +139,8 @@ func set_resource_and_property(resource: BehaviorExtendedResource, property: Str
     main_resource = resource
     property_name = property
 
-    update_title_bar()
+    if main_resource:
+        update_title_bar()
 
 func set_editor(editor: BehaviorResourceEditor) -> void:
     self.editor = editor
@@ -153,6 +154,27 @@ func update_title_bar() -> void:
 
     label_title.text = property_name.capitalize()
 
+    var has_base: bool = main_resource and main_resource.base
+    var is_override: bool = has_base and main_resource.has_override(property_name)
+
+    if has_base:
+        btn_override.visible = true
+        btn_extend.visible = is_override
+        btn_load.visible = is_override
+        btn_new.visible = is_override
+
+        if is_override and not allow_interaction:
+            allow_interaction = true
+            icon_visible = true
+        elif (not is_override) and allow_interaction:
+            allow_interaction = false
+            icon_visible = false
+
+    elif not allow_interaction:
+        allow_interaction = true
+        icon_visible = true
+        is_expanded = true
+
     if resource and resource.is_sub_resource():
         label_res.placeholder_text = 'Sub Resource'
         label_res.text = ''
@@ -165,8 +187,10 @@ func update_title_bar() -> void:
 
         if btn_extend.pressed.is_connected(on_extend):
             btn_extend.pressed.disconnect(on_extend)
-        if not btn_extend.pressed.is_connected(on_save_as):
+
+        if ((not has_base) or is_override) and (not btn_extend.pressed.is_connected(on_save_as)):
             btn_extend.pressed.connect(on_save_as)
+
     else:
         if resource:
             label_res.text = resource.resource_path.get_file()
@@ -190,7 +214,8 @@ func update_title_bar() -> void:
 
         if btn_extend.pressed.is_connected(on_save_as):
             btn_extend.pressed.disconnect(on_save_as)
-        if not btn_extend.pressed.is_connected(on_extend):
+
+        if ((not has_base) or is_override) and (not btn_extend.pressed.is_connected(on_extend)):
             btn_extend.pressed.connect(on_extend)
 
 func on_load() -> void:
@@ -301,7 +326,7 @@ func on_new() -> void:
         push_error('Cannot create instances of type "%s", unable to get GDScript base!' % type_name)
         return
 
-    var popup: Callable = on_new_resource_property.bind(resource_script)
+    var popup: Callable = on_new_resource.bind(resource_script)
 
     if not editor:
         popup.call()
@@ -379,14 +404,19 @@ func on_new() -> void:
     EditorInterface.popup_dialog_centered(confirm)
     discard_button.grab_focus() # NOTE: Select this one by default
 
-func on_new_resource_property(type_script: GDScript, base: BehaviorExtendedResource = null) -> void:
+func on_new_resource(
+        type_script: GDScript,
+        base: BehaviorExtendedResource = null
+) -> void:
     var new_resource: BehaviorExtendedResource = type_script.new() as BehaviorExtendedResource
     if not new_resource:
         push_error('Failed to create new resource type "%s"!' % type_script.get_global_name())
         return
 
     new_resource.base = base
+    on_set_new_resource(new_resource)
 
+func on_set_new_resource(new_resource: BehaviorExtendedResource) -> void:
     var set_new_resource: Callable = (
         func():
             main_resource.set(property_name, new_resource)
@@ -439,7 +469,7 @@ func on_new_resource_property(type_script: GDScript, base: BehaviorExtendedResou
 
             save_or_sub.queue_free()
             # Immitate Godot's name system
-            var sub_id: String = type_script.get_global_name() + '_' + Resource.generate_scene_unique_id()
+            var sub_id: String = (new_resource.get_script() as Script).get_global_name() + '_' + Resource.generate_scene_unique_id()
             new_resource.resource_scene_unique_id = sub_id
             new_resource.resource_path = main_resource.resource_path + '::' + sub_id
             set_new_resource.call()
@@ -497,7 +527,7 @@ func on_extend() -> void:
         push_error('Cannot extend a sub-resource! This is a bug!')
         return
 
-    var popup: Callable = on_new_resource_property.bind(resource_script, resource)
+    var popup: Callable = on_new_resource.bind(resource_script, resource)
 
     if (not editor) or editor.is_saved:
         popup.call()
@@ -538,3 +568,42 @@ func on_extend() -> void:
 
     EditorInterface.popup_dialog_centered(confirm)
     discard_button.grab_focus() # NOTE: Select this one by default
+
+func on_override_toggle(enabled: bool) -> void:
+    var property_info: Dictionary = main_resource.get_property_info(property_name)
+    var type_name: StringName = property_info.class_name
+    var resource_script: GDScript = BehaviorExtendedResource.get_script_from_name(type_name)
+
+    if not resource_script:
+        push_error('Cannot create instances of type "%s", unable to get GDScript base!' % type_name)
+        return
+
+    var resource: BehaviorExtendedResource = get_property_resource()
+    if not resource:
+        push_error('Cannot extend resource, current resource is null!')
+        return
+
+    if not resource.is_sub_resource():
+        var copy_or_extend: AcceptDialog = AcceptDialog.new()
+        copy_or_extend.title = 'Override Resource'
+        copy_or_extend.dialog_text = (
+                'Would you like to extend the current resource or copy its values?\n'
+                + 'Extending will create a blank resource that inherits all the '
+                + 'values from the current resource. Copying will perform a shallow '
+                + 'copy of all the base properties.'
+        )
+        copy_or_extend.ok_button_text = 'Extend'
+        copy_or_extend.add_button('Copy', false, &'copy')
+        copy_or_extend.confirmed.connect(
+            func():
+                pass
+        )
+        copy_or_extend.custom_action.connect(
+            func(action: StringName):
+                if action != &'copy':
+                    return
+                pass
+        )
+        EditorInterface.popup_dialog_centered(copy_or_extend)
+    else:
+        pass

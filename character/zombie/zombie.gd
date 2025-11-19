@@ -146,8 +146,10 @@ var _attack_target: Node3D = null
 var _attack_timer: float = 0
 
 
-## The sign encodes the direction, - is clockwise, + is counter-clockwise
-var _rotation_velocity: float = 0
+## Rotation accelerator
+var _rotation_accel: Accelerator = Accelerator.new(
+    rotate_acceleration, rotate_decceleration, rotate_stop_time, rotate_top_speed
+)
 
 
 func _ready() -> void:
@@ -439,7 +441,7 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
 func update_rotation(delta: float, direction: Vector3) -> void:
     # No requested direction, maintain current direction
     if direction.is_zero_approx():
-        _rotation_velocity = 0
+        _rotation_accel.velocity = 0
         return
 
     # NOTE: for development, should be removed later
@@ -449,41 +451,17 @@ func update_rotation(delta: float, direction: Vector3) -> void:
 
     # Nearly facing the right direction
     if is_equal_approx(basis.z.dot(direction), 1):
-        if is_zero_approx(_rotation_velocity):
+        if is_zero_approx(_rotation_accel.velocity):
             return
 
-        _rotation_velocity = 0
+        _rotation_accel.velocity = 0
         rotate_y(direction.signed_angle_to(basis.z, -Vector3.UP))
         return
 
     # Turn to face current direction of motion
     var rads_to_go: float = direction.signed_angle_to(basis.z, -Vector3.UP)
-    var rate: float = 0
-    if is_zero_approx(_rotation_velocity):
-        # Simply accelerate
-        rate = rotate_acceleration
-    elif not is_equal_approx(signf(rads_to_go), signf(_rotation_velocity)):
-        # Turning the wrong way, use decceleration speed
-        rate = rotate_decceleration
-    else:
-        # 1. Can we start deccelerating now and still reach the target, and
-        # 2. if we did, will we reach it in no more than "stop" seconds?
-        var time: float = absf(_rotation_velocity) / rotate_decceleration
-        var time_needed: float = 2 * rads_to_go / _rotation_velocity * delta
-
-        if time >= time_needed and time_needed <= rotate_stop_time:
-            # start slowing down
-            rate = -rotate_decceleration
-        else:
-            rate = rotate_acceleration
-
-    # Accelerate to top speed
-    _rotation_velocity = clampf(
-        _rotation_velocity + rate * delta * signf(rads_to_go),
-        -rotate_top_speed, rotate_top_speed
-    )
-
-    rotate_y(_rotation_velocity)
+    _rotation_accel.update(delta, rads_to_go)
+    rotate_y(_rotation_accel.velocity)
 
 
 func anim_goto(

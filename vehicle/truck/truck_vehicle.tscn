@@ -26,9 +26,10 @@ inner_radius = 0.13
 outer_radius = 0.44
 
 [node name="TruckVehicle" type="JoltVehicle" node_paths=PackedStringArray("exit_position", "camera_target")]
+physics_interpolation_mode = 1
 collision_layer = 64
 collision_mask = 112
-mass = 2250.0
+mass = 2200.0
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.5, 0.29)
 continuous_cd = true
@@ -37,6 +38,9 @@ settings = ExtResource("1_xwacg")
 script = ExtResource("2_bupvu")
 exit_position = NodePath("ExitPoint")
 camera_target = NodePath("CameraTarget")
+forward_accel_enabled = false
+dbg_enable = true
+dbg_show_wheel_slip = true
 
 [node name="body_shape" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1044, 0)

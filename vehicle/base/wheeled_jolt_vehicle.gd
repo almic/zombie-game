@@ -9,7 +9,7 @@ class_name WheeledJoltVehicle extends JoltVehicle
 
 @export_subgroup('Acceleration', 'forward')
 
-@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
 var forward_accel_enabled: bool = true
 
 ## Rate that forward input accelerates to target input. The input range is -1.0
@@ -25,7 +25,7 @@ var forward_deccel_rate: float = 1.0
 ## The maximum rate that forward input can change per second. Set to zero to
 ## disable the limit.
 @export_range(0.0, 1.0, 0.001, 'or_greater', 'suffix:u/s')
-var forward_max_rate: float = 0.01
+var forward_max_rate: float = 0.001
 
 ## Time of decceleration when nearing the target input. Set to zero to disable
 ## decceleration.
@@ -59,6 +59,14 @@ var steer_max_rate: float = 0.2
 var steer_stop_time: float = 0.2
 
 
+@export_group("Debug", "dbg")
+
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+var dbg_enable: bool = false
+
+@export var dbg_show_wheel_slip: bool = false
+
+
 var _forward: float = 0
 var _right: float = 0
 var _brake: float = 0
@@ -73,6 +81,7 @@ var _value_right: float = 0
 var _accel_right: Accelerator = Accelerator.new(
     steer_accel_rate, steer_deccel_rate, steer_stop_time, steer_max_rate
 )
+
 
 func forward(value: float) -> void:
     _forward = clampf(value, -1.0, 1.0)
@@ -100,6 +109,23 @@ func _physics_process(delta: float) -> void:
     if not controller:
         _reset()
         return
+
+    if dbg_enable:
+        if dbg_show_wheel_slip:
+            var wheel_infos: Array[Dictionary] = controller.get_wheel_info()
+            var i: int = 0
+            for wheel in wheel_nodes:
+
+                if wheel is MeshInstance3D:
+                    var info: Dictionary = wheel_infos[i]
+                    var mat: StandardMaterial3D = wheel.mesh.surface_get_material(0) as StandardMaterial3D
+                    if not info['has_contact']:
+                        mat.albedo_color = Color(0.0, 0.0, 1.0)
+                    elif info['slip_long'] > 0.1:
+                        mat.albedo_color = Color(1.0, 0.0, 0.0)
+                    else:
+                        mat.albedo_color = Color(remap(info['slip_long'], 0.0, 0.1, 0.0, 1.0), 1.0, 0.0)
+                i += 1
 
     var input_forward = _forward
     var input_right = _right
@@ -157,10 +183,10 @@ func _physics_process(delta: float) -> void:
         input_right = _value_right
 
     if not (
-            is_zero_approx(input_forward)
+            is_zero_approx(_forward)
         and is_zero_approx(input_right)
-        and is_zero_approx(input_brake)
-        and is_zero_approx(input_handbrake)
+        and is_zero_approx(_brake)
+        and is_zero_approx(_handbrake)
     ):
         # Wake up when input is received
         sleeping = false
@@ -168,11 +194,14 @@ func _physics_process(delta: float) -> void:
     controller.set_driver_input(
             input_forward,
             input_right,
-            input_brake,
-            input_handbrake
+            _brake,
+            _handbrake
     )
-    if not is_equal_approx(input_forward, _forward):
-        print('forward: ' + str(input_forward))
-    if not is_equal_approx(input_right, _right):
-        print('right:   ' + str(input_right))
+    if not is_equal_approx(_forward, input_forward):
+        print('Forward: %f' % input_forward)
+    if not is_zero_approx(_forward) and controller.is_any_driven_wheel_slipping():
+        print('slipping!')
+    #if not is_zero_approx(input_forward):
+        #print(controller.get_current_gear())
+        #print(controller.get_current_rpm())
     _reset()

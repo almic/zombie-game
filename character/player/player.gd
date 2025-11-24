@@ -84,6 +84,25 @@ var look_aim_return_time: float = 0.22
 @export var weapon_aim_position: Vector3 = Vector3.ZERO
 
 
+@export_group("Driving")
+
+@export_subgroup("Forward", "drive_forward")
+
+## If forward input acceleration is applied. This can smooth out sliding when
+## accelerating from stand-still on a keyboard.
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
+var drive_forward_enable: bool = false
+
+## Rate of forward input acceleration when driving
+@export_range(0.001, 2.0, 0.001)
+var drive_forward_acceleration: float = 0.5
+
+## Constant forward input reset speed when not applying input, or target input
+## opposes the current input
+@export_range(0.001, 2.0, 0.001)
+var drive_forward_reset_speed: float = 2.0
+
+
 @export_group("Controls")
 
 @export_subgroup("First Person")
@@ -103,6 +122,7 @@ var look_aim_return_time: float = 0.22
 @export var reload: GUIDEAction
 @export var unload: GUIDEAction
 @export var switch_ammo: GUIDEAction
+
 
 @export_subgroup("Vehicle")
 
@@ -145,6 +165,10 @@ var ammo_bank: Dictionary = {}
 var current_vehicle: JoltVehicle = null
 ## The action which must be released to allow entering / exiting a vehicle
 var _vehicle_enter_exit_action: GUIDEAction = null
+## Current forward input
+var _vehicle_forward_input: float = 0.0
+## Current forward input speed
+var _vehicle_forward_input_speed: float = 0.0
 
 
 ## If we are aiming
@@ -417,13 +441,50 @@ func update_vehicle(delta: float) -> void:
     # Keep player body attached to the vehicle
     global_position = current_vehicle.global_position
 
-    if accelerate.is_triggered():
-        if current_vehicle is WheeledJoltVehicle:
-            current_vehicle.forward(1)
+    if drive_forward_enable:
+        if accelerate.is_triggered() or reverse.is_triggered():
+            var t: float = 1.0
+            if not accelerate.is_triggered():
+                t = -1.0
 
-    if reverse.is_triggered():
-        if current_vehicle is WheeledJoltVehicle:
-            current_vehicle.forward(-1)
+            if (not is_zero_approx(_vehicle_forward_input)) and signf(_vehicle_forward_input) != t:
+                _vehicle_forward_input += t * drive_forward_reset_speed * delta
+
+                if signf(_vehicle_forward_input) == t or is_zero_approx(_vehicle_forward_input):
+                    _vehicle_forward_input = 0.0
+
+            if _vehicle_forward_input == 0.0:
+                _vehicle_forward_input_speed = 0.0
+
+            if _vehicle_forward_input != t:
+                _vehicle_forward_input_speed += drive_forward_acceleration * delta
+                _vehicle_forward_input += t * _vehicle_forward_input_speed * delta
+                if abs(_vehicle_forward_input) > abs(t):
+                    _vehicle_forward_input = t
+        elif _vehicle_forward_input != 0.0:
+            _vehicle_forward_input_speed = 0.0
+
+            var dir: float = signf(_vehicle_forward_input)
+            _vehicle_forward_input -= dir * drive_forward_reset_speed * delta
+            if dir > 0.0:
+                _vehicle_forward_input = maxf(0.0, _vehicle_forward_input)
+            else:
+                _vehicle_forward_input = minf(0.0, _vehicle_forward_input)
+
+            if is_zero_approx(_vehicle_forward_input):
+                _vehicle_forward_input = 0.0
+
+        if _vehicle_forward_input != 0.0:
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.forward(_vehicle_forward_input)
+                #print(_vehicle_forward_input)
+    else:
+        if accelerate.is_triggered():
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.forward(1)
+        if reverse.is_triggered():
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.forward(-1)
 
     if steer.is_triggered():
         if current_vehicle is WheeledJoltVehicle:

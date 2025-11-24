@@ -197,10 +197,10 @@ func _physics_process(delta: float) -> void:
             _brake,
             _handbrake
     )
-    if not is_equal_approx(_forward, input_forward):
-        print('Forward: %f' % input_forward)
-    if not is_zero_approx(_forward) and controller.is_any_driven_wheel_slipping():
-        print('slipping!')
+    #if not is_equal_approx(_forward, input_forward):
+        #print('Forward: %f' % input_forward)
+    #if not is_zero_approx(_forward) and controller.is_any_driven_wheel_slipping():
+        #print('slipping!')
     #if not is_zero_approx(input_forward):
         #print(controller.get_current_gear())
         #print(controller.get_current_rpm())

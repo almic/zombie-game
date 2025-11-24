@@ -106,13 +106,23 @@ var look_aim_return_time: float = 0.22
 
 @export_subgroup("Vehicle")
 
+## Input to accelerate the engine
 @export var accelerate: GUIDEAction
-@export var brake_reverse: GUIDEAction
+## Input to accelerate in reverse only
+@export var reverse: GUIDEAction
+## Input for any vehicle direction, tank controls
 @export var drive: GUIDEAction
+## Toggle headlights
 @export var headlights: GUIDEAction
+## Blast horn
 @export var horn: GUIDEAction
+## Steer left and right, as if with a wheel
 @export var steer: GUIDEAction
+## Button to leave vehicle
 @export var exit_vehicle: GUIDEAction
+## Input to apply brakes
+@export var brake: GUIDEAction
+## Input to apply handbrake, typically locking rear wheels with high torque
 @export var handbrake: GUIDEAction
 
 
@@ -408,30 +418,20 @@ func update_vehicle(delta: float) -> void:
     global_position = current_vehicle.global_position
 
     if accelerate.is_triggered():
-        if (
-                current_vehicle.linear_velocity.dot(current_vehicle.global_basis.z) < 0.0
-                and current_vehicle.linear_velocity.length_squared() > 0.04
-        ):
-            if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.brake(1)
-        else:
-            if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.forward(1)
+        if current_vehicle is WheeledJoltVehicle:
+            current_vehicle.forward(1)
 
-    if brake_reverse.is_triggered():
-        if (
-                current_vehicle.linear_velocity.dot(current_vehicle.global_basis.z) > 0.08
-                and current_vehicle.linear_velocity.length_squared() > 0.04
-        ):
-            if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.brake(1)
-        else:
-            if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.forward(-1)
+    if reverse.is_triggered():
+        if current_vehicle is WheeledJoltVehicle:
+            current_vehicle.forward(-1)
 
     if steer.is_triggered():
         if current_vehicle is WheeledJoltVehicle:
             current_vehicle.steer(steer.value_axis_1d)
+
+    if brake.is_triggered():
+        if current_vehicle is WheeledJoltVehicle:
+            current_vehicle.brake(1)
 
     if handbrake.is_triggered():
         if current_vehicle is WheeledJoltVehicle:

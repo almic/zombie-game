@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=39 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_otwb2"]
@@ -24,10 +24,11 @@
 [ext_resource type="Resource" uid="uid://c2rpnfawllvdb" path="res://data/input/actions/vehicle/drive.tres" id="19_4u7af"]
 [ext_resource type="Resource" uid="uid://myiwmguaq6ih" path="res://data/input/actions/vehicle/accelerate.tres" id="20_7gte1"]
 [ext_resource type="Texture2D" uid="uid://coxs2jiel83vg" path="res://textures/light_func/flashlight_function.png" id="20_aph6w"]
-[ext_resource type="Resource" uid="uid://bq47bbreu8wai" path="res://data/input/actions/vehicle/brake_reverse.tres" id="21_k6mlu"]
+[ext_resource type="Resource" uid="uid://bq47bbreu8wai" path="res://data/input/actions/vehicle/reverse.tres" id="21_k6mlu"]
 [ext_resource type="Resource" uid="uid://1oc4rk1h4uql" path="res://data/input/actions/vehicle/headlights.tres" id="22_r212m"]
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="23_8bmvw"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="24_7gte1"]
+[ext_resource type="Resource" uid="uid://bx65n4acr2l34" path="res://data/input/actions/vehicle/brake.tres" id="25_2pong"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="25_k6mlu"]
 [ext_resource type="Resource" uid="uid://ct8dfxgfcsl58" path="res://audio/sound/footsteps/movement_default.tres" id="26_8bmvw"]
 [ext_resource type="Resource" uid="uid://d4ynu0va0f30" path="res://data/input/actions/vehicle/handbrake.tres" id="26_r212m"]
@@ -76,12 +77,13 @@ reload = ExtResource("10_muf2e")
 unload = ExtResource("12_pedpu")
 switch_ammo = ExtResource("11_jo6ux")
 accelerate = ExtResource("20_7gte1")
-brake_reverse = ExtResource("21_k6mlu")
+reverse = ExtResource("21_k6mlu")
 drive = ExtResource("19_4u7af")
 headlights = ExtResource("22_r212m")
 horn = ExtResource("23_8bmvw")
 steer = ExtResource("24_7gte1")
 exit_vehicle = ExtResource("25_k6mlu")
+brake = ExtResource("25_2pong")
 handbrake = ExtResource("26_r212m")
 movement_sound_map = ExtResource("26_8bmvw")
 sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]

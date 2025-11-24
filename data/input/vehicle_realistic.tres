@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=39 format=3 uid="uid://codpo6l5xn1m8"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=43 format=3 uid="uid://codpo6l5xn1m8"]
 
 [ext_resource type="Script" uid="uid://cpplm41b5bt6m" path="res://addons/guide/guide_action_mapping.gd" id="1_si4e3"]
 [ext_resource type="Resource" uid="uid://myiwmguaq6ih" path="res://data/input/actions/vehicle/accelerate.tres" id="2_1f07l"]
@@ -7,13 +7,14 @@
 [ext_resource type="Script" uid="uid://cw71o87tvdx3q" path="res://addons/guide/inputs/guide_input_key.gd" id="4_y6uqt"]
 [ext_resource type="Script" uid="uid://bl8rjl4oaldje" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_fdcy7"]
 [ext_resource type="Script" uid="uid://x74mnwgr08a7" path="res://addons/guide/triggers/guide_trigger.gd" id="6_qh32l"]
-[ext_resource type="Resource" uid="uid://bq47bbreu8wai" path="res://data/input/actions/vehicle/brake_reverse.tres" id="7_67ult"]
+[ext_resource type="Resource" uid="uid://bq47bbreu8wai" path="res://data/input/actions/vehicle/reverse.tres" id="7_y6uqt"]
 [ext_resource type="Resource" uid="uid://cr1jasg8psyc2" path="res://data/input/actions/vehicle/steer.tres" id="8_q3wsk"]
 [ext_resource type="Script" uid="uid://ckggy40lm0vjc" path="res://addons/guide/modifiers/guide_modifier_negate.gd" id="9_e6vif"]
 [ext_resource type="Resource" uid="uid://1oc4rk1h4uql" path="res://data/input/actions/vehicle/headlights.tres" id="10_kcp1l"]
 [ext_resource type="Resource" uid="uid://dm1806ft8lku" path="res://data/input/actions/vehicle/honk.tres" id="11_a8syp"]
 [ext_resource type="Resource" uid="uid://vbo2pukjrsij" path="res://data/input/actions/vehicle/exit.tres" id="12_s3plq"]
 [ext_resource type="Resource" uid="uid://d4ynu0va0f30" path="res://data/input/actions/vehicle/handbrake.tres" id="13_obwup"]
+[ext_resource type="Resource" uid="uid://bx65n4acr2l34" path="res://data/input/actions/vehicle/brake.tres" id="14_fdcy7"]
 
 [sub_resource type="Resource" id="Resource_1f07l"]
 script = ExtResource("4_y6uqt")
@@ -38,7 +39,7 @@ input = SubResource("Resource_5sep8")
 
 [sub_resource type="Resource" id="Resource_fndri"]
 script = ExtResource("1_si4e3")
-action = ExtResource("7_67ult")
+action = ExtResource("7_y6uqt")
 input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_j457l")])
 
 [sub_resource type="Resource" id="Resource_sgqp6"]
@@ -118,6 +119,19 @@ script = ExtResource("1_si4e3")
 action = ExtResource("13_obwup")
 input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_qh32l")])
 
+[sub_resource type="Resource" id="Resource_q3wsk"]
+script = ExtResource("4_y6uqt")
+key = 4194325
+
+[sub_resource type="Resource" id="Resource_e6vif"]
+script = ExtResource("3_obwup")
+input = SubResource("Resource_q3wsk")
+
+[sub_resource type="Resource" id="Resource_kcp1l"]
+script = ExtResource("1_si4e3")
+action = ExtResource("14_fdcy7")
+input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_e6vif")])
+
 [resource]
 script = ExtResource("2_csvu0")
-mappings = Array[ExtResource("1_si4e3")]([SubResource("Resource_rp63r"), SubResource("Resource_fndri"), SubResource("Resource_8t08j"), SubResource("Resource_766sy"), SubResource("Resource_jlhvs"), SubResource("Resource_53qbf"), SubResource("Resource_67ult")])
+mappings = Array[ExtResource("1_si4e3")]([SubResource("Resource_rp63r"), SubResource("Resource_fndri"), SubResource("Resource_8t08j"), SubResource("Resource_766sy"), SubResource("Resource_jlhvs"), SubResource("Resource_53qbf"), SubResource("Resource_67ult"), SubResource("Resource_kcp1l")])

@@ -97,10 +97,19 @@ var drive_forward_enable: bool = false
 @export_range(0.001, 2.0, 0.001)
 var drive_forward_acceleration: float = 0.5
 
+## Limit of the forward input acceleration
+@export_range(0.001, 2.0, 0.001)
+var drive_forward_acceleration_limit: float = 1.0
+
 ## Constant forward input reset speed when not applying input, or target input
 ## opposes the current input
 @export_range(0.001, 2.0, 0.001)
 var drive_forward_reset_speed: float = 2.0
+
+## In MPH, the remapping range maximum for forward input. Suited for keyboards
+## to prevent inputs too high for a given vehicle speed. Set to zero to disable.
+@export_range(0, 80, 1, 'or_greater')
+var drive_forward_input_speed_max: int = 80
 
 
 @export_group("Controls")
@@ -434,6 +443,7 @@ func update_vehicle(delta: float) -> void:
         show_self(true)
 
         current_vehicle = null
+        update_vehicle_hud()
 
         GlobalWorld.world.on_exit_vehicle()
         return
@@ -453,30 +463,44 @@ func update_vehicle(delta: float) -> void:
                 if signf(_vehicle_forward_input) == t or is_zero_approx(_vehicle_forward_input):
                     _vehicle_forward_input = 0.0
 
-            if _vehicle_forward_input == 0.0:
-                _vehicle_forward_input_speed = 0.0
-
             if _vehicle_forward_input != t:
-                _vehicle_forward_input_speed += drive_forward_acceleration * delta
+                _vehicle_forward_input_speed = minf(
+                        _vehicle_forward_input_speed + (drive_forward_acceleration * delta),
+                        drive_forward_acceleration_limit
+                )
                 _vehicle_forward_input += t * _vehicle_forward_input_speed * delta
                 if abs(_vehicle_forward_input) > abs(t):
                     _vehicle_forward_input = t
-        elif _vehicle_forward_input != 0.0:
-            _vehicle_forward_input_speed = 0.0
+        else:
+            # NOTE: slowly decay input speed, do not reset to zero
+            if _vehicle_forward_input_speed != 0.0:
+                _vehicle_forward_input_speed = maxf(
+                    _vehicle_forward_input_speed - (drive_forward_acceleration * delta * 0.33),
+                    0.0
+                )
 
-            var dir: float = signf(_vehicle_forward_input)
-            _vehicle_forward_input -= dir * drive_forward_reset_speed * delta
-            if dir > 0.0:
-                _vehicle_forward_input = maxf(0.0, _vehicle_forward_input)
-            else:
-                _vehicle_forward_input = minf(0.0, _vehicle_forward_input)
+            if _vehicle_forward_input != 0.0:
+                var dir: float = signf(_vehicle_forward_input)
+                _vehicle_forward_input -= dir * drive_forward_reset_speed * delta
+                if dir > 0.0:
+                    _vehicle_forward_input = maxf(0.0, _vehicle_forward_input)
+                else:
+                    _vehicle_forward_input = minf(0.0, _vehicle_forward_input)
 
-            if is_zero_approx(_vehicle_forward_input):
-                _vehicle_forward_input = 0.0
+                if is_zero_approx(_vehicle_forward_input):
+                    _vehicle_forward_input = 0.0
 
         if _vehicle_forward_input != 0.0:
             if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.forward(_vehicle_forward_input)
+                var input: float = _vehicle_forward_input
+                if drive_forward_input_speed_max > 0:
+                    input = remap(
+                            input,
+                            0.0, 1.0,
+                            0.0, minf(1.0, (current_vehicle.get_mph() + 1.0) / drive_forward_input_speed_max)
+                    )
+                    print(input)
+                current_vehicle.forward(input)
                 #print(_vehicle_forward_input)
     else:
         if accelerate.is_triggered():
@@ -499,6 +523,7 @@ func update_vehicle(delta: float) -> void:
             current_vehicle.handbrake(1)
 
     update_vehicle_camera(delta)
+    update_vehicle_hud()
 
 func update_vehicle_camera(_delta: float) -> void:
     const follow_distance: float = 5.0
@@ -1018,6 +1043,9 @@ func set_score(value: int) -> void:
 
 func update_weapon_hud() -> void:
     get_tree().call_group('hud', 'update_weapon_hud', weapon_node.weapon_type)
+
+func update_vehicle_hud() -> void:
+    get_tree().call_group('hud', 'update_vehicle_hud', current_vehicle)
 
 func pickup_item(item: Pickup) -> void:
     if item.item_type is WeaponResource:

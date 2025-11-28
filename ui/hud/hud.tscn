@@ -17,7 +17,7 @@ bg_color = Color(1, 0.258138, 0.322135, 1)
 shader = ExtResource("5_1v5rv")
 shader_parameter/rotation = 0.349066
 shader_parameter/pivot = Vector2(0.5, 0.5)
-shader_parameter/size = Vector2(24.2742, 70)
+shader_parameter/size = Vector2(24.2741935483871, 70)
 
 [sub_resource type="LabelSettings" id="LabelSettings_7ihmi"]
 font_size = 40
@@ -49,9 +49,11 @@ corner_detail = 1
 
 [sub_resource type="SystemFont" id="SystemFont_srpbi"]
 font_names = PackedStringArray("Office Code Pro D", "Courier", "Monospace")
+subpixel_positioning = 0
 
 [sub_resource type="SystemFont" id="SystemFont_spcu4"]
 font_names = PackedStringArray("Office Code Pro D", "Courier", "Monospace")
+subpixel_positioning = 0
 
 [node name="hud" type="MarginContainer" groups=["hud"]]
 anchors_preset = 15
@@ -158,6 +160,62 @@ layout_mode = 2
 size_flags_horizontal = 0
 text = "13"
 label_settings = SubResource("LabelSettings_7ihmi")
+
+[node name="vehicle_hud" type="VBoxContainer" parent="inner_margins"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+
+[node name="speed" type="HBoxContainer" parent="inner_margins/vehicle_hud"]
+layout_mode = 2
+
+[node name="label_speed" type="Label" parent="inner_margins/vehicle_hud/speed"]
+layout_mode = 2
+text = "MPH:"
+
+[node name="gap" type="Control" parent="inner_margins/vehicle_hud/speed"]
+layout_mode = 2
+
+[node name="value_vehicle_speed" type="Label" parent="inner_margins/vehicle_hud/speed"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="gap2" type="Control" parent="inner_margins/vehicle_hud/speed"]
+layout_mode = 2
+
+[node name="value_vehicle_true_speed" type="Label" parent="inner_margins/vehicle_hud/speed"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="gear" type="HBoxContainer" parent="inner_margins/vehicle_hud"]
+layout_mode = 2
+
+[node name="label_gear" type="Label" parent="inner_margins/vehicle_hud/gear"]
+layout_mode = 2
+text = "Gear:"
+
+[node name="gap" type="Control" parent="inner_margins/vehicle_hud/gear"]
+layout_mode = 2
+
+[node name="value_vehicle_gear" type="Label" parent="inner_margins/vehicle_hud/gear"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="rpm" type="HBoxContainer" parent="inner_margins/vehicle_hud"]
+layout_mode = 2
+
+[node name="label_rpm" type="Label" parent="inner_margins/vehicle_hud/rpm"]
+layout_mode = 2
+text = "RPM:"
+
+[node name="gap" type="Control" parent="inner_margins/vehicle_hud/rpm"]
+layout_mode = 2
+
+[node name="value_vehicle_rpm" type="Label" parent="inner_margins/vehicle_hud/rpm"]
+unique_name_in_owner = true
+layout_mode = 2
 
 [node name="clock" type="HBoxContainer" parent="inner_margins"]
 layout_mode = 2

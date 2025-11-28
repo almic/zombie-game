@@ -16,6 +16,8 @@ class_name HUD extends Control
 @onready var stock_texture: TextureRect = %stock_texture
 @onready var stock_amount: Label = %stock_amount
 
+@onready var vehicle_hud: VBoxContainer = %vehicle_hud
+
 @onready var debug_bar_items: HBoxContainer = %debug_bar_items
 
 
@@ -179,6 +181,35 @@ func update_weapon_hud(weapon: WeaponResource) -> void:
         return
 
     _weapon_ui_scene.update(weapon)
+
+func update_vehicle_hud(vehicle: JoltVehicle) -> void:
+    if not vehicle:
+        vehicle_hud.visible = false
+        weapon_hud.visible = true
+    elif not vehicle_hud.visible:
+        vehicle_hud.visible = true
+        weapon_hud.visible = false
+
+    # Update every 5 physics frames
+    if Engine.get_physics_frames() % 5 != 0:
+        return
+
+    var controller: VehicleController = vehicle.get_controller()
+
+    var mph: float = controller.get_speed_mph()
+    %value_vehicle_speed.text = '%.1f' % mph
+    const ms_to_mph =  3.6 / 1.609344
+    var true_mph: float = vehicle.linear_velocity.length() * ms_to_mph
+    var diff: float = mph - true_mph
+    %value_vehicle_true_speed.text = '(%.1f ; %+.2f)' % [true_mph, diff]
+    if diff < 0.0:
+        %value_vehicle_true_speed.add_theme_color_override(&'font_color', Color.RED)
+    else:
+        %value_vehicle_true_speed.remove_theme_color_override(&'font_color')
+
+    if controller is WheeledVehicleController:
+        %value_vehicle_gear.text = str(controller.get_current_gear())
+        %value_vehicle_rpm.text = '%d' % controller.get_current_rpm()
 
 func debug_add_fps() -> void:
     var item: Control = debug_item_base.duplicate()

@@ -12,87 +12,98 @@ right_wheel = 3
 [sub_resource type="VehicleDifferentialSettings" id="VehicleDifferentialSettings_dsghi"]
 left_wheel_index = 0
 right_wheel_index = 1
-torque_ratio = 0.5
+differential_ratio = 3.73
+torque_ratio = 0.0
+open = true
 
 [sub_resource type="VehicleDifferentialSettings" id="VehicleDifferentialSettings_jdhhr"]
 left_wheel_index = 2
 right_wheel_index = 3
-torque_ratio = 0.5
+differential_ratio = 3.73
 
 [sub_resource type="Curve" id="Curve_dsghi"]
-_data = [Vector2(0, 0.8), 0.0, 0.3030303030303, 1, 1, Vector2(0.66, 1), 0.3030303030303, -0.58823529411765, 1, 1, Vector2(1, 0.8), -0.58823529411765, 0.0, 1, 1]
+_data = [Vector2(0.12, 0.62), 0.0, 1.72727272727273, 1, 1, Vector2(0.34, 1), 1.72727272727273, -0.15686274509804, 1, 1, Vector2(0.85, 0.92), -0.15686274509804, 0.0, 1, 1]
 point_count = 3
 
 [sub_resource type="VehicleEngineSettings" id="VehicleEngineSettings_02ecf"]
-max_torque = 800.0
+max_torque = 880.0
+max_rpm = 3400.0
+min_rpm = 680.0
 torque_curve = SubResource("Curve_dsghi")
 
 [sub_resource type="VehicleTransmissionSettings" id="VehicleTransmissionSettings_qxn04"]
-gear_ratios = PackedFloat32Array(2.66, 1.78, 1.3, 1, 0.74)
-reverse_gear_ratios = PackedFloat32Array(-2.9)
+gear_ratios = PackedFloat32Array(3.094, 1.809, 1.406, 1)
+reverse_gear_ratios = PackedFloat32Array(-4.48)
+up_rpm = 3300.0
+down_rpm = 1200.0
 
 [sub_resource type="WheeledVehicleControllerSettings" id="WheeledVehicleControllerSettings_hy333"]
 engine = SubResource("VehicleEngineSettings_02ecf")
 transmission = SubResource("VehicleTransmissionSettings_qxn04")
 differentials = Array[VehicleDifferentialSettings]([SubResource("VehicleDifferentialSettings_dsghi"), SubResource("VehicleDifferentialSettings_jdhhr")])
+open_differential = true
 
 [sub_resource type="WheelSettings" id="WheelSettings_xrypp"]
 position = Vector3(0.80000001192093, 0.63999998569489, 2.17199993133545)
-radius = 0.44
-width = 0.3
+radius = 0.445
+width = 0.279
 suspension_max_length = 0.35
 suspension_min_length = 0.0
-suspension_preload_length = -0.1
 spring_mode = 1
-spring_stiffness = 60.0
+spring_frequency = 1.1
+spring_stiffness = 90.0
 max_steer_angle = 0.6981317
 max_brake_torque = 2000.0
 max_hand_brake_torque = 0.0
-inertia = 1.936
+inertia = 2.35
+angular_damping = 0.02
 lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_pe5m6"]
 position = Vector3(-0.80000001192093, 0.63999998569489, 2.17199993133545)
-radius = 0.44
-width = 0.3
+radius = 0.445
+width = 0.279
 suspension_max_length = 0.35
 suspension_min_length = 0.0
-suspension_preload_length = -0.1
 spring_mode = 1
-spring_stiffness = 60.0
+spring_frequency = 1.1
+spring_stiffness = 90.0
 max_steer_angle = 0.6981317
 max_brake_torque = 2000.0
 max_hand_brake_torque = 0.0
-inertia = 1.936
+inertia = 2.35
+angular_damping = 0.02
 lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_y4srf"]
 position = Vector3(0.80000001192093, 0.63999998569489, -1.51900005340576)
-radius = 0.44
-width = 0.3
+radius = 0.445
+width = 0.279
 suspension_max_length = 0.35
 suspension_min_length = 0.0
-suspension_preload_length = -0.1
 spring_mode = 1
-spring_stiffness = 60.0
+spring_frequency = 1.1
+spring_stiffness = 90.0
 max_steer_angle = 0.0
-inertia = 1.936
+inertia = 2.35
+angular_damping = 0.02
 lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_hoh4d"]
 position = Vector3(-0.80000001192093, 0.63999998569489, -1.51900005340576)
-radius = 0.44
-width = 0.3
+radius = 0.445
+width = 0.279
 suspension_max_length = 0.35
 suspension_min_length = 0.0
-suspension_preload_length = -0.1
 spring_mode = 1
-spring_stiffness = 60.0
+spring_frequency = 1.1
+spring_stiffness = 90.0
 max_steer_angle = 0.0
-inertia = 1.936
+inertia = 2.35
+angular_damping = 0.02
 lateral_friction = ExtResource("1_dsghi")
 longitudinal_friction = ExtResource("2_jdhhr")
 

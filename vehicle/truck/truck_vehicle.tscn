@@ -23,13 +23,13 @@ albedo_texture = SubResource("GradientTexture1D_bupvu")
 [sub_resource type="TorusMesh" id="TorusMesh_xwacg"]
 material = SubResource("StandardMaterial3D_84iuc")
 inner_radius = 0.13
-outer_radius = 0.44
+outer_radius = 0.445
 
 [node name="TruckVehicle" type="JoltVehicle" node_paths=PackedStringArray("exit_position", "camera_target")]
 physics_interpolation_mode = 1
 collision_layer = 64
 collision_mask = 112
-mass = 2200.0
+mass = 2000.0
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.5, 0.29)
 continuous_cd = true
@@ -39,6 +39,7 @@ script = ExtResource("2_bupvu")
 exit_position = NodePath("ExitPoint")
 camera_target = NodePath("CameraTarget")
 dbg_enable = true
+dbg_print_zero_sixty = true
 dbg_show_wheel_slip = true
 
 [node name="body_shape" type="CollisionShape3D" parent="."]

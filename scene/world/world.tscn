@@ -316,7 +316,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 physics_interpolation_mode = 1
-transform = Transform3D(-0.50000025598719, 0, 0.86602584716725, 0, 1, 0, -0.86602584716725, 0, -0.50000025598719, -357.5, 2.466, -463.52)
+transform = Transform3D(-0.50000025598719, 0, 0.86602584716725, 0, 1, 0, -0.86602584716725, 0, -0.50000025598719, 7.31, 100, -491.51)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -696,6 +696,15 @@ top_level = true
 metadata/_edit_lock_ = true
 
 [node name="LevelBlocking" type="Node" parent="."]
+
+[node name="LongRoad" type="CSGBox3D" parent="LevelBlocking"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100, 0)
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+size = Vector3(20, 0.2, 1000)
+material = ExtResource("53_f0qux")
+metadata/_edit_lock_ = true
 
 [node name="Town" type="Node" parent="LevelBlocking"]
 
@@ -8895,4 +8904,4 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -368.0724358, 3.83, -697.232
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." instance=ExtResource("54_x6gsb")]
-transform = Transform3D(-0.0871558, 0, -0.996195, 0, 1, 0, 0.996195, 0, -0.0871558, -380.8037987, 2.2, -650.639468)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.04, 100.28, -486.2)

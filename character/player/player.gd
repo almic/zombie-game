@@ -111,8 +111,33 @@ var drive_forward_reset_speed: float = 2.0
 @export_range(0, 80, 1, 'or_greater', 'suffix:mph')
 var drive_forward_input_speed_max: int = 80
 
+## How many ticks of slip before interrupting forward input. Suited for keyboards
+## to prevent constant slip during acceleration. Set to zero to disable.
+@export_range(0, 10, 1, 'or_greater')
+var drive_forward_input_slip_rate: int = 5
+
 @export
 var drive_forward_input_curve: Curve
+
+@export_subgroup("Steering", "drive_steer")
+
+## If steer input acceleration is applied. This prevents teleporting wheels to
+## their maximum angle on a keyboard.
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
+var drive_steer_enable: bool = false
+
+## Rate of steering input acceleration when driving
+@export_range(0.001, 5.0, 0.001)
+var drive_steer_acceleration: float = 4.0
+
+## Limit of the steering input acceleration
+@export_range(0.001, 2.0, 0.001)
+var drive_steer_acceleration_limit: float = 1.5
+
+## Constant steering input reset speed when not applying input, or target input
+## opposes the current input
+@export_range(0.001, 2.0, 0.001, 'or_greater')
+var drive_steer_reset_speed: float = 1.8
 
 
 @export_group("Controls")
@@ -181,7 +206,12 @@ var _vehicle_enter_exit_action: GUIDEAction = null
 var _vehicle_forward_input: float = 0.0
 ## Current forward input speed
 var _vehicle_forward_input_speed: float = 0.0
-
+## Ticks of slip during acceleration
+var _vehicle_forward_slip_ticks: int = 0
+## Current right input
+var _vehicle_right_input: float = 0.0
+## Current right input speed
+var _vehicle_right_input_speed: float = 0.0
 
 ## If we are aiming
 var _aim_is_aiming: bool = false
@@ -463,7 +493,7 @@ func update_vehicle(delta: float) -> void:
             if (not is_zero_approx(_vehicle_forward_input)) and signf(_vehicle_forward_input) != t:
                 _vehicle_forward_input += t * drive_forward_reset_speed * delta
 
-                if signf(_vehicle_forward_input) == t or is_zero_approx(_vehicle_forward_input):
+                if signf(_vehicle_forward_input) == signf(t) or is_zero_approx(_vehicle_forward_input):
                     _vehicle_forward_input = 0.0
 
             if _vehicle_forward_input != t:
@@ -472,7 +502,7 @@ func update_vehicle(delta: float) -> void:
                         drive_forward_acceleration_limit
                 )
                 _vehicle_forward_input += t * _vehicle_forward_input_speed * delta
-                if abs(_vehicle_forward_input) > abs(t):
+                if signf(_vehicle_forward_input) == signf(t) and abs(_vehicle_forward_input) > abs(t):
                     _vehicle_forward_input = t
         else:
             # NOTE: slowly decay input speed, do not reset to zero
@@ -496,6 +526,17 @@ func update_vehicle(delta: float) -> void:
         if _vehicle_forward_input != 0.0:
             if current_vehicle is WheeledJoltVehicle:
                 var input: float = _vehicle_forward_input
+                var controller: WheeledVehicleController = current_vehicle.get_controller()
+                if (
+                            drive_forward_input_slip_rate > 0
+                        and (not current_vehicle.sleeping)
+                        and controller.is_any_driven_wheel_slipping()
+                ):
+                    _vehicle_forward_slip_ticks += 1
+                    if _vehicle_forward_slip_ticks >= drive_forward_input_slip_rate:
+                        _vehicle_forward_slip_ticks = 0
+                        input = 0
+
                 if input > 0 and drive_forward_input_speed_max > 0:
                     input = remap(
                             input,
@@ -514,9 +555,47 @@ func update_vehicle(delta: float) -> void:
             if current_vehicle is WheeledJoltVehicle:
                 current_vehicle.forward(-1)
 
-    if steer.is_triggered():
-        if current_vehicle is WheeledJoltVehicle:
-            current_vehicle.steer(steer.value_axis_1d)
+    if drive_steer_enable:
+        if steer.is_triggered():
+            var t: float = steer.value_axis_1d
+
+            if (not is_zero_approx(_vehicle_right_input)) and signf(_vehicle_right_input) != t:
+                _vehicle_right_input += t * drive_steer_reset_speed * delta
+
+                if signf(_vehicle_right_input) == signf(t) or is_zero_approx(_vehicle_right_input):
+                    _vehicle_right_input = 0.0
+
+            if _vehicle_right_input != t:
+                _vehicle_right_input_speed = minf(
+                        _vehicle_right_input_speed + (drive_steer_acceleration * delta),
+                        drive_steer_acceleration_limit
+                )
+                _vehicle_right_input += t * _vehicle_right_input_speed * delta
+                if signf(_vehicle_right_input) == signf(t) and abs(_vehicle_right_input) > abs(t):
+                    _vehicle_right_input = t
+        else:
+            # NOTE: slowly decay input speed, do not reset to zero
+            if _vehicle_right_input_speed != 0.0:
+                _vehicle_right_input_speed = 0.0
+
+            if _vehicle_right_input != 0.0:
+                var dir: float = signf(_vehicle_right_input)
+                _vehicle_right_input -= dir * drive_steer_reset_speed * delta
+                if dir > 0.0:
+                    _vehicle_right_input = maxf(0.0, _vehicle_right_input)
+                else:
+                    _vehicle_right_input = minf(0.0, _vehicle_right_input)
+
+                if is_zero_approx(_vehicle_right_input):
+                    _vehicle_right_input = 0.0
+
+        if _vehicle_right_input != 0.0:
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.steer(_vehicle_right_input)
+    else:
+        if steer.is_triggered():
+            if current_vehicle is WheeledJoltVehicle:
+                current_vehicle.steer(steer.value_axis_1d)
 
     if brake.is_triggered():
         if current_vehicle is WheeledJoltVehicle:

@@ -1,9 +1,9 @@
 [gd_resource type="JoltVehicleSettings" load_steps=14 format=3 uid="uid://dlnf4w43oiscr"]
 
-[ext_resource type="Curve" uid="uid://cdjrs2o22ddnh" path="res://vehicle/base/wheel_lateral_friction.tres" id="1_dsghi"]
 [ext_resource type="VehicleEngineSettings" uid="uid://bf2ij5t181hxy" path="res://vehicle/truck/engine_final.tres" id="1_rjrqi"]
 [ext_resource type="VehicleTransmissionSettings" uid="uid://10qaopb2ruue" path="res://vehicle/truck/transmission_final.tres" id="2_d5vh2"]
 [ext_resource type="Curve" uid="uid://c52crvahkh8g5" path="res://vehicle/base/wheel_longitudinal_friction.tres" id="2_jdhhr"]
+[ext_resource type="Curve" uid="uid://cap0gfh0xwgng" path="res://vehicle/base/wheel_lat_new.tres" id="3_rjrqi"]
 
 [sub_resource type="AntiRollBarSettings" id="AntiRollBarSettings_dsghi"]
 
@@ -16,13 +16,13 @@ left_wheel_index = 0
 right_wheel_index = 1
 differential_ratio = 4.11
 torque_ratio = 0.0
-open = true
+slip_ratio = 1.6
 
 [sub_resource type="VehicleDifferentialSettings" id="VehicleDifferentialSettings_jdhhr"]
 left_wheel_index = 2
 right_wheel_index = 3
 differential_ratio = 4.11
-open = true
+slip_ratio = 1.6
 
 [sub_resource type="WheeledVehicleControllerSettings" id="WheeledVehicleControllerSettings_hy333"]
 engine = ExtResource("1_rjrqi")
@@ -34,64 +34,68 @@ open_differential = true
 position = Vector3(0.80000001192093, 0.63999998569489, 2.17199993133545)
 radius = 0.414
 width = 0.323
-suspension_max_length = 0.35
-suspension_min_length = 0.0
+suspension_max_length = 0.4
+suspension_min_length = 0.02
 spring_mode = 1
 spring_frequency = 1.1
-spring_stiffness = 35.0
+spring_stiffness = 40.0
+spring_damping = 0.6
 max_steer_angle = 0.6981317
 max_brake_torque = 2000.0
 max_hand_brake_torque = 0.0
 inertia = 2.978
 angular_damping = 0.0
-lateral_friction = ExtResource("1_dsghi")
+lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_pe5m6"]
 position = Vector3(-0.80000001192093, 0.63999998569489, 2.17199993133545)
 radius = 0.414
 width = 0.323
-suspension_max_length = 0.35
-suspension_min_length = 0.0
+suspension_max_length = 0.4
+suspension_min_length = 0.02
 spring_mode = 1
 spring_frequency = 1.1
-spring_stiffness = 35.0
+spring_stiffness = 40.0
+spring_damping = 0.6
 max_steer_angle = 0.6981317
 max_brake_torque = 2000.0
 max_hand_brake_torque = 0.0
 inertia = 2.978
 angular_damping = 0.0
-lateral_friction = ExtResource("1_dsghi")
+lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_y4srf"]
 position = Vector3(0.80000001192093, 0.63999998569489, -1.51900005340576)
 radius = 0.414
 width = 0.323
-suspension_max_length = 0.35
-suspension_min_length = 0.0
+suspension_max_length = 0.4
+suspension_min_length = 0.02
 spring_mode = 1
 spring_frequency = 1.1
-spring_stiffness = 35.0
+spring_stiffness = 40.0
+spring_damping = 0.6
 max_steer_angle = 0.0
 inertia = 2.978
 angular_damping = 0.0
-lateral_friction = ExtResource("1_dsghi")
+lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_hoh4d"]
 position = Vector3(-0.80000001192093, 0.63999998569489, -1.51900005340576)
 radius = 0.414
 width = 0.323
-suspension_max_length = 0.35
-suspension_min_length = 0.0
+suspension_max_length = 0.4
+suspension_min_length = 0.02
 spring_mode = 1
 spring_frequency = 1.1
-spring_stiffness = 35.0
+spring_stiffness = 40.0
+spring_damping = 0.6
 max_steer_angle = 0.0
 inertia = 2.978
 angular_damping = 0.0
-lateral_friction = ExtResource("1_dsghi")
+lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [resource]

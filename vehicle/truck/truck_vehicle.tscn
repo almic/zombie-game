@@ -38,6 +38,7 @@ settings = ExtResource("1_xwacg")
 script = ExtResource("2_bupvu")
 exit_position = NodePath("ExitPoint")
 camera_target = NodePath("CameraTarget")
+dbg_enable = true
 dbg_print_zero_sixty = true
 dbg_show_wheel_slip = true
 

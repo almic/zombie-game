@@ -10,8 +10,8 @@ var lut_size: int = 512:
         if value == lut_size:
             return
         lut_size = value
-        _lut_size_changed = true
-var _lut_size_changed: bool = true
+        _create_lut = true
+var _create_lut: bool = true
 
 ## Transmittance LUT steps, computed once only when needed and retained for
 ## future frames. Since it is cached, consider using high values.
@@ -21,8 +21,8 @@ var lut_steps: int = 32:
         if value == lut_steps:
             return
         lut_steps = value
-        _lut_steps_changed = true
-var _lut_steps_changed: bool = true
+        _compute_lut = true
+var _compute_lut: bool = true
 
 ## Sky resolution. The shader actually scales the space to dedicate more texels
 ## to the horizon, so you can use low values and still get good results.
@@ -32,8 +32,8 @@ var sky_size: int = 256:
         if value == sky_size:
             return
         sky_size = value
-        _sky_size_changed = true
-var _sky_size_changed: bool = true
+        _create_sky = true
+var _create_sky: bool = true
 
 ## Sky steps, higher is slower but better looking. This has diminishing returns,
 ## so play with the value until you are happy with the FPS and quality.
@@ -88,8 +88,8 @@ var sky_uniform_set: RID:
             [sky_lut_uniform, sky_image_uniform],
         )
 
-var sky_texture: Texture2DRD = Texture2DRD.new()
-var lut_texture: Texture2DRD = Texture2DRD.new()
+var sky_texture: Texture2DRD
+var lut_texture: Texture2DRD
 
 func _init() -> void:
     effect_callback_type = EFFECT_CALLBACK_TYPE_POST_OPAQUE
@@ -177,6 +177,10 @@ func initialize_shader() -> void:
         return
 
 func create_lut() -> void:
+    if not _create_lut:
+        return
+    _create_lut = false
+
     var lut_tf: RDTextureFormat = RDTextureFormat.new()
     lut_tf.is_discardable = false # This is computed once and kept until a resize
     lut_tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
@@ -197,9 +201,14 @@ func create_lut() -> void:
         push_error("Failed to create LUT texture!")
 
     # This cleans up our old textures for us... actually kinda annoying
+    lut_texture = Texture2DRD.new()
     lut_texture.texture_rd_rid = lut
 
 func create_sky() -> void:
+    if not _create_sky:
+        return
+    _create_sky = false
+
     var sky_tf: RDTextureFormat = RDTextureFormat.new()
     # NOTE: Alpha channel is unused, but must be in the format to support sampler2d
     sky_tf.format = RenderingDevice.DATA_FORMAT_R32G32B32A32_SFLOAT
@@ -223,6 +232,7 @@ func create_sky() -> void:
         push_error("Failed to create Sky texture!")
 
     # This cleans up our old textures for us... actually kinda annoying
+    sky_texture = Texture2DRD.new()
     sky_texture.texture_rd_rid = sky
 
 func _render_callback(p_effect_callback_type: int, _render_data: RenderData) -> void:
@@ -235,26 +245,18 @@ func _render_callback(p_effect_callback_type: int, _render_data: RenderData) -> 
     ):
         return
 
-    # We only need to compute when LUT is changed
-    if _lut_size_changed:
-        create_lut()
-        _lut_size_changed = false
-        _lut_steps_changed = true # force next test to compute
+    create_lut()
+    compute_lut()
 
-    if _lut_steps_changed:
-        compute_lut()
-        print('computing lut!')
-        _lut_steps_changed = false
-
-    # Run the sky shader every frame
-    if _sky_size_changed:
-        create_sky()
-        _sky_size_changed = false
-
+    create_sky()
     compute_sky()
 
 
 func compute_lut() -> void:
+    if not _compute_lut:
+        return
+    _compute_lut = false
+
     @warning_ignore("integer_division")
     var groups: int = int(lut_size / 8)
 

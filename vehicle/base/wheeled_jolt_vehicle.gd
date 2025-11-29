@@ -96,7 +96,7 @@ func _physics_process(delta: float) -> void:
             var mph: float = linear_velocity.length() * 3.6 / 1.609344
             if _zero_sixty_timer != -1.0:
                 _zero_sixty_timer += delta
-                if _forward <= 0.0:
+                if _forward < 0.0 or _brake > 0.0:
                     GlobalWorld.print("0-%.1f: %.3fs" % [mph, _zero_sixty_timer])
                     _zero_sixty_timer = -1.0
                 elif mph >= 60.0:

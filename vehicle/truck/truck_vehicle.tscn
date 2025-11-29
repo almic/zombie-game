@@ -22,14 +22,14 @@ albedo_texture = SubResource("GradientTexture1D_bupvu")
 
 [sub_resource type="TorusMesh" id="TorusMesh_xwacg"]
 material = SubResource("StandardMaterial3D_84iuc")
-inner_radius = 0.13
-outer_radius = 0.445
+inner_radius = 0.127
+outer_radius = 0.414
 
 [node name="TruckVehicle" type="JoltVehicle" node_paths=PackedStringArray("exit_position", "camera_target")]
 physics_interpolation_mode = 1
 collision_layer = 64
 collision_mask = 112
-mass = 2000.0
+mass = 1400.0
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.5, 0.29)
 continuous_cd = true
@@ -68,24 +68,28 @@ operation = 2
 
 [node name="front_left" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, 2.1717)
+radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="front_right" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, 2.1717)
+radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="back_left" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, -1.5189)
+radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="back_right" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, -1.5189)
+radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")

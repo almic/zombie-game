@@ -1,0 +1,12 @@
+[gd_resource type="VehicleEngineSettings" load_steps=2 format=3 uid="uid://7csq5qq86hfk"]
+
+[sub_resource type="Curve" id="Curve_m0u8c"]
+_data = [Vector2(0.135, 0.842), 6.23703703703704, 0.328125, 1, 1, Vector2(0.327, 0.905), 0.328125, 0.0, 1, 1, Vector2(0.423, 0.905), 0.0, 0.49479166666667, 1, 1, Vector2(0.615, 1), 0.49479166666667, -0.36551724137931, 1, 1, Vector2(0.76, 0.947), -0.36551724137931, -0.77604166666667, 1, 1, Vector2(0.952, 0.798), -0.77604166666667, nan, 1, 1]
+point_count = 6
+
+[resource]
+resource_name = "F250 7.3L V8"
+max_torque = 644.0
+min_rpm = 800.0
+angular_damping = 0.05
+torque_curve = SubResource("Curve_m0u8c")

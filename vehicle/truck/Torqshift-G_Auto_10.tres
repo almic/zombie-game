@@ -1,0 +1,10 @@
+[gd_resource type="VehicleTransmissionSettings" format=3 uid="uid://bg8qdslroa8ll"]
+
+[resource]
+resource_name = "Torqshift-G 10-Speed Auto"
+gear_ratios = PackedFloat32Array(4.714, 2.997, 2.149, 1.769, 1.521, 1.275, 1, 0.853, 0.689, 0.636)
+reverse_gear_ratios = PackedFloat32Array(-4.885)
+up_rpm = 3900.0
+down_rpm = 1000.0
+switch_time = 0.2
+clutch_release_time = 0.2

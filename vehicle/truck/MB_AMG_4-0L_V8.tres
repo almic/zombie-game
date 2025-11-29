@@ -1,0 +1,13 @@
+[gd_resource type="VehicleEngineSettings" load_steps=2 format=3 uid="uid://cls1hi8rmisnj"]
+
+[sub_resource type="Curve" id="Curve_2ddm4"]
+_data = [Vector2(0.031, 0.471), 25.8064516129032, 3.36942675159236, 1, 1, Vector2(0.188, 1), 3.36942675159236, 0.0, 1, 1, Vector2(0.813, 1), 0.0, -2.20320855614973, 1, 1, Vector2(1, 0.588), -2.20320855614973, 0.0, 1, 1]
+point_count = 4
+
+[resource]
+resource_name = "AMG 4.0L V8 (M178)"
+max_torque = 850.0
+max_rpm = 5900.0
+min_rpm = 900.0
+angular_damping = 0.05
+torque_curve = SubResource("Curve_2ddm4")

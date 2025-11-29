@@ -1,0 +1,12 @@
+[gd_resource type="VehicleEngineSettings" load_steps=2 format=3 uid="uid://bf2ij5t181hxy"]
+
+[sub_resource type="Curve" id="Curve_yv7im"]
+_data = [Vector2(0, 0.76238830366024), 0.0, 2.24587064131353, 0, 1, Vector2(0.07758620381355, 0.93663688097606), 2.24587064131353, 0.47420139047711, 1, 1, Vector2(0.21120689809322, 1), 0.47420139047711, 0.0, 1, 1, Vector2(0.7090517282486, 1), 0.0, -0.14134851443038, 1, 1, Vector2(0.93318963050842, 0.96831844048803), -0.14134851443038, -2.21293908187648, 1, 1, Vector2(1, 0.82047116276551), -2.21293908187648, inf_neg, 1, 1]
+point_count = 6
+
+[resource]
+max_torque = 880.0
+max_rpm = 6400.0
+min_rpm = 700.0
+angular_damping = 0.02
+torque_curve = SubResource("Curve_yv7im")

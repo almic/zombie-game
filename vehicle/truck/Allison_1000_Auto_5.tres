@@ -1,0 +1,9 @@
+[gd_resource type="VehicleTransmissionSettings" format=3 uid="uid://k4yxn6tfpg3l"]
+
+[resource]
+resource_name = "Allison 1000 Autamatic 5-Speed"
+gear_ratios = PackedFloat32Array(3.094, 1.809, 1.406, 1, 0.711)
+reverse_gear_ratios = PackedFloat32Array(-4.48)
+up_rpm = 3300.0
+down_rpm = 900.0
+switch_time = 0.2

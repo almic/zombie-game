@@ -1,0 +1,9 @@
+[gd_resource type="VehicleTransmissionSettings" format=3 uid="uid://cuf7kr04x2i2m"]
+
+[resource]
+resource_name = "MB 9G-Tronic 9-Speed"
+gear_ratios = PackedFloat32Array(5.355, 3.243, 2.252, 1.636, 1.211, 1, 0.865, 0.717, 0.602)
+reverse_gear_ratios = PackedFloat32Array(-4.798)
+up_rpm = 5500.0
+down_rpm = 1000.0
+switch_time = 0.1

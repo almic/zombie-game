@@ -306,7 +306,7 @@ func _play_movement_sound(type: MovementSound, ground: GroundDetails = ground_de
 
     # Get ground group
     if is_instance_of(ground.body, Node):
-        for sound_group in GlobalWorld.Sounds.get_sound_groups(ground.body):
+        for sound_group in Sounds.get_sound_groups(ground.body):
             if movement_sound_map.has(sound_group):
                 group = sound_group
                 break

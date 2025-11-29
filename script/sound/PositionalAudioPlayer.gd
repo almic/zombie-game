@@ -91,8 +91,12 @@ func _init() -> void:
 
 
 func _ready() -> void:
+    if Engine.is_editor_hint():
+        # AAHOHEAOEHATHSNUS pt. 2
+        return
+
     for group in groups:
-        if GlobalWorld.Groups.get_group_id(group) == -1:
+        if Groups.get_group_id(group) == -1:
             push_error('Group "' + group + '" is not a global group! Did you forget to add it, or typo?')
             continue
         add_to_group(group)

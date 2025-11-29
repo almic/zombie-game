@@ -7,9 +7,7 @@ var group_nodes: Dictionary[StringName, Array] = {}
 
 const SOUND_GROUP_PREFIX = &'sound_group:'
 
-var Groups := preload("uid://cyl7gkx0y7oyu")
 var Printer := preload("uid://dao0mebio8ua7")
-var Sounds := preload("uid://bq40usjnjtfva")
 var Log: TextLog:
     set(value):
         if Log and Log.on_message.is_connected(_handle_log_message):

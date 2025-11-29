@@ -794,7 +794,7 @@ func event_add_groups(event: PackedByteArray, groups: Array[StringName]) -> void
     var size: int = groups.size()
     var ids: PackedInt32Array = []
     for group in groups:
-        var group_id: int = GlobalWorld.Groups.get_group_id(group)
+        var group_id: int = Groups.get_group_id(group)
         if group_id == -1:
             push_error('Cannot add non-global group "' + group + '" to sensory memory')
             continue

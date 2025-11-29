@@ -1,4 +1,5 @@
 ## Tracks sound history of the world
+class_name Sounds extends Object
 
 
 static var _sound_log: Array[Dictionary] = []

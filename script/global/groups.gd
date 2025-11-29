@@ -1,5 +1,7 @@
 ## Maps group names to unique indexes, help reduce processing time and memory
 ## for systems that track group names. Instead they can just pass around IDs.
+class_name Groups
+
 
 ## Maps names to their id
 static var name_to_id: Dictionary[StringName, int]

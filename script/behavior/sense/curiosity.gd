@@ -263,7 +263,7 @@ func process_sound(
             if settings.sense_type != t:
                 continue
 
-            var sound_group_id: int = GlobalWorld.Groups.get_group_id(settings.group_name)
+            var sound_group_id: int = Groups.get_group_id(settings.group_name)
             if sound_group_id == -1:
                 push_error('The target group "' + settings.group_name + '" is not a global group! Did you forget to add it, or typo?')
                 continue

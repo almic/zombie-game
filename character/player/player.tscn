@@ -1,9 +1,10 @@
-[gd_scene load_steps=39 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene load_steps=40 format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_otwb2"]
 [ext_resource type="Resource" uid="uid://3vclogxthwtf" path="res://data/player/player_health.tres" id="3_lqp71"]
 [ext_resource type="Resource" uid="uid://brfrvk8jt77dd" path="res://data/input/actions/camera/look.tres" id="3_otwb2"]
+[ext_resource type="Curve" uid="uid://bcvc3mn7b63l4" path="res://character/player/player_vehicle_forward_input_curve.tres" id="3_tkl2s"]
 [ext_resource type="Resource" uid="uid://bvdjrx6xo4ahl" path="res://data/input/actions/first_person/jump.tres" id="4_wfnr8"]
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/first_person/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
@@ -61,7 +62,8 @@ weapon_position = Vector3(0.225, -0.195, -0.605)
 camera_smooth_enabled = false
 camera_smooth_target_node = NodePath("Neck/CameraTarget")
 weapon_aim_position = Vector3(0, -0.1, -0.5)
-drive_forward_input_speed_max = 0
+drive_forward_enable = true
+drive_forward_input_curve = ExtResource("3_tkl2s")
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")

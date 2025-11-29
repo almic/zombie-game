@@ -4,7 +4,7 @@
 gear_ratios = PackedFloat32Array(5.503, 3.243, 2.252, 1.661, 1.211, 1, 0.865)
 reverse_gear_ratios = PackedFloat32Array(-4.798)
 up_rpm = 4600.0
-down_rpm = 1000.0
+down_rpm = 2500.0
 switch_time = 0.08
 switch_latency = 0.1
 clutch_release_time = 0.12

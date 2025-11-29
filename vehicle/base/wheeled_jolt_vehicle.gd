@@ -7,7 +7,7 @@ class_name WheeledJoltVehicle extends JoltVehicle
 
 @export_group("Debug", "dbg")
 
-@export_custom(PROPERTY_HINT_GROUP_ENABLE, '')
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
 var dbg_enable: bool = false
 
 ## When accelerating while stationary (sleeping), start a timer which ends once
@@ -86,10 +86,10 @@ func _physics_process(delta: float) -> void:
                     var mat: StandardMaterial3D = wheel.mesh.surface_get_material(0) as StandardMaterial3D
                     if not info['has_contact']:
                         mat.albedo_color = Color(0.0, 0.0, 1.0)
-                    elif info['slip_long'] > 0.1:
+                    elif info['slip_long'] > 0.5:
                         mat.albedo_color = Color(1.0, 0.0, 0.0)
                     else:
-                        mat.albedo_color = Color(remap(info['slip_long'], 0.0, 0.1, 0.0, 1.0), 1.0, 0.0)
+                        mat.albedo_color = Color(remap(info['slip_long'], 0.0, 0.5, 0.0, 1.0), 1.0, 0.0)
                 i += 1
 
         if dbg_print_zero_sixty:

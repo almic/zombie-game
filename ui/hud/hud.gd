@@ -186,7 +186,8 @@ func update_vehicle_hud(vehicle: JoltVehicle) -> void:
     if not vehicle:
         vehicle_hud.visible = false
         weapon_hud.visible = true
-    elif not vehicle_hud.visible:
+        return
+    if not vehicle_hud.visible:
         vehicle_hud.visible = true
         weapon_hud.visible = false
 

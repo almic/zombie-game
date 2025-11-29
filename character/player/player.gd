@@ -108,8 +108,11 @@ var drive_forward_reset_speed: float = 2.0
 
 ## In MPH, the remapping range maximum for forward input. Suited for keyboards
 ## to prevent inputs too high for a given vehicle speed. Set to zero to disable.
-@export_range(0, 80, 1, 'or_greater')
+@export_range(0, 80, 1, 'or_greater', 'suffix:mph')
 var drive_forward_input_speed_max: int = 80
+
+@export
+var drive_forward_input_curve: Curve
 
 
 @export_group("Controls")
@@ -493,15 +496,16 @@ func update_vehicle(delta: float) -> void:
         if _vehicle_forward_input != 0.0:
             if current_vehicle is WheeledJoltVehicle:
                 var input: float = _vehicle_forward_input
-                if drive_forward_input_speed_max > 0:
+                if input > 0 and drive_forward_input_speed_max > 0:
                     input = remap(
                             input,
                             0.0, 1.0,
                             0.0, minf(1.0, (current_vehicle.get_mph() + 1.0) / drive_forward_input_speed_max)
                     )
-                    print(input)
+                    input = drive_forward_input_curve.sample_baked(input)
+
+                #print(input)
                 current_vehicle.forward(input)
-                #print(_vehicle_forward_input)
     else:
         if accelerate.is_triggered():
             if current_vehicle is WheeledJoltVehicle:

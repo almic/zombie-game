@@ -628,7 +628,7 @@ func update_vehicle_camera(_delta: float) -> void:
     # Track backwards from forward to follow distance
     camera_3d.transform = camera_3d.transform.translated_local(Vector3.BACK * follow_distance)
 
-    camera_3d.global_transform = current_vehicle.camera_target.global_transform * camera_3d.transform
+    camera_3d.global_transform = camera_3d.transform.translated(current_vehicle.camera_target.global_position)
 
 
 func _physics_process(delta: float) -> void:

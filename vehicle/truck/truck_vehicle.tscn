@@ -1,8 +1,13 @@
-[gd_scene load_steps=10 format=3 uid="uid://dcwdq2tolxn0a"]
+[gd_scene load_steps=11 format=3 uid="uid://dcwdq2tolxn0a"]
 
 [ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="1_ftrpg"]
 [ext_resource type="JoltVehicleSettings" uid="uid://dlnf4w43oiscr" path="res://vehicle/truck/truck_vehicle_settings.tres" id="1_xwacg"]
 [ext_resource type="Script" uid="uid://dl2cax557cbov" path="res://vehicle/base/wheeled_jolt_vehicle.gd" id="2_bupvu"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_xwacg"]
+friction = 0.8
+bounce = 0.5
+absorbent = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wyv1k"]
 size = Vector3(1.872, 1.016, 6.01)
@@ -30,6 +35,7 @@ physics_interpolation_mode = 1
 collision_layer = 64
 collision_mask = 112
 mass = 1400.0
+physics_material_override = SubResource("PhysicsMaterial_xwacg")
 center_of_mass_mode = 1
 center_of_mass = Vector3(0, 0.62, 0.441)
 inertia = Vector3(4300, 4600, 600)
@@ -117,7 +123,7 @@ skeleton = NodePath("")
 
 [node name="CameraTarget" type="Marker3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.3, 0)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.8, 0.6)
 
 [node name="ExitPoint" type="Marker3D" parent="."]
 unique_name_in_owner = true

@@ -31,7 +31,8 @@ collision_layer = 64
 collision_mask = 112
 mass = 1400.0
 center_of_mass_mode = 1
-center_of_mass = Vector3(0, 0.5, 0.29)
+center_of_mass = Vector3(0, 0.62, 0.441)
+inertia = Vector3(4300, 4600, 600)
 continuous_cd = true
 wheel_paths = Array[NodePath]([NodePath("tire"), NodePath("tire2"), NodePath("tire3"), NodePath("tire4")])
 settings = ExtResource("1_xwacg")
@@ -46,48 +47,48 @@ dbg_show_wheel_slip = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1044, 0)
 shape = SubResource("BoxShape3D_wyv1k")
 
-[node name="cab_shape" type="CollisionShape3D" parent="body_shape"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0.87)
+[node name="cab_shape" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9544, 0.87)
 shape = SubResource("BoxShape3D_0nvtn")
 
-[node name="mesh" type="CSGCombiner3D" parent="body_shape"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9144, 0)
+[node name="mesh" type="CSGCombiner3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19, 0)
 
-[node name="body" type="CSGBox3D" parent="body_shape/mesh"]
+[node name="body" type="CSGBox3D" parent="mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9144, 0)
 size = Vector3(1.872, 1.016, 6.01)
 material = ExtResource("1_ftrpg")
 
-[node name="cab" type="CSGBox3D" parent="body_shape/mesh"]
+[node name="cab" type="CSGBox3D" parent="mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7644, 0.87)
 size = Vector3(1.63, 0.7, 1.7374)
 material = ExtResource("1_ftrpg")
 
-[node name="wheel_wells" type="CSGCombiner3D" parent="body_shape/mesh"]
+[node name="wheel_wells" type="CSGCombiner3D" parent="mesh"]
 operation = 2
 
-[node name="front_left" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
+[node name="front_left" type="CSGCylinder3D" parent="mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, 2.1717)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="front_right" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
+[node name="front_right" type="CSGCylinder3D" parent="mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, 2.1717)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="back_left" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
+[node name="back_left" type="CSGCylinder3D" parent="mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, -1.5189)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="back_right" type="CSGCylinder3D" parent="body_shape/mesh/wheel_wells"]
+[node name="back_right" type="CSGCylinder3D" parent="mesh/wheel_wells"]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, -1.5189)
 radius = 0.44
 height = 0.36
@@ -95,22 +96,22 @@ sides = 18
 material = ExtResource("1_ftrpg")
 
 [node name="tire" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.8, 0.64, 2.1717)
+transform = Transform3D(-0.01745240576565, 0.99980962276459, 0.00872387830168, 0.9998477101326, 0.01745174080133, 0.00015227585391, 0, 0.00872520636767, -0.99996197223663, 0.8024195, 0.6202949, 2.1744194)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="tire2" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.8, 0.64, 2.1717)
+transform = Transform3D(0.01745240576565, 0.99980962276459, -0.00872387830168, 0.9998477101326, -0.01745174080133, 0.00015227585391, 0, -0.00872520636767, -0.99996197223663, -0.8024195, 0.6202949, 2.1744194)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="tire3" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, 0.8, 0.64, -1.5189)
+transform = Transform3D(-0.01745240576565, 0.9998477101326, 0, 0.9998477101326, 0.01745240576565, 0, 0, 0, -1, 0.8024195, 0.6202949, -1.5214195)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
 [node name="tire4" type="MeshInstance3D" parent="."]
-transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.8, 0.64, -1.5189)
+transform = Transform3D(0.01745240576565, 0.9998477101326, 0, 0.9998477101326, -0.01745240576565, 0, 0, 0, -1, -0.8024195, 0.6202949, -1.5214195)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
@@ -121,3 +122,6 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 2.3, 0)
 [node name="ExitPoint" type="Marker3D" parent="."]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
+
+[node name="Marker3D" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.441)

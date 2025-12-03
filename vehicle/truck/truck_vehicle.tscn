@@ -31,6 +31,7 @@ inner_radius = 0.127
 outer_radius = 0.414
 
 [node name="TruckVehicle" type="JoltVehicle" node_paths=PackedStringArray("exit_position", "camera_target")]
+process_mode = 1
 physics_interpolation_mode = 1
 collision_layer = 64
 collision_mask = 112
@@ -45,6 +46,8 @@ settings = ExtResource("1_xwacg")
 script = ExtResource("2_bupvu")
 exit_position = NodePath("ExitPoint")
 camera_target = NodePath("CameraTarget")
+steer_by_wheel = true
+steer_enable_integrated = true
 dbg_enable = true
 dbg_print_zero_sixty = true
 dbg_show_wheel_slip = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=112 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=120 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
@@ -81,6 +81,7 @@
 [ext_resource type="Resource" uid="uid://da3rj8kluvsn8" path="res://scene/world/polygon2d/curb_52_sharp.tres" id="62_mcrc3"]
 [ext_resource type="Resource" uid="uid://cu1woxx6vcyr6" path="res://scene/world/polygon2d/sidewalk_220.tres" id="64_1yx4f"]
 [ext_resource type="Resource" uid="uid://c2wtc3kd0rcpc" path="res://scene/world/polygon2d/street_gutter_76.tres" id="65_6ywls"]
+[ext_resource type="Shader" uid="uid://cvbcuevc7mush" path="res://shader/simple/checker.gdshader" id="82_c4lkr"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d2i0j"]
 radius = 0.6
@@ -190,6 +191,36 @@ polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 [sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
 material = ExtResource("31_i8b61")
 size = Vector2(4096, 4096)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xxc2j"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_c4lkr"]
+material = SubResource("StandardMaterial3D_xxc2j")
+size = Vector2(0.5, 7)
+orientation = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cqpt1"]
+albedo_color = Color(0.36862746, 0.75686276, 1, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_fktp8"]
+material = SubResource("StandardMaterial3D_cqpt1")
+size = Vector2(1.5, 0.2)
+orientation = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_fs5wv"]
+material = SubResource("StandardMaterial3D_cqpt1")
+size = Vector2(0.6, 0.2)
+orientation = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cqpt1"]
+render_priority = 0
+shader = ExtResource("82_c4lkr")
+shader_parameter/size = Vector2(12, 6)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_akpx5"]
+material = SubResource("ShaderMaterial_cqpt1")
+size = Vector2(4, 2)
+orientation = 2
 
 [node name="world" type="Node3D" groups=["world"]]
 process_mode = 3
@@ -316,7 +347,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." instance=ExtResource("4_036b0")]
 physics_interpolation_mode = 1
-transform = Transform3D(-0.50000025598719, 0, 0.86602584716725, 0, 1, 0, -0.86602584716725, 0, -0.50000025598719, -290.21, 2.25, -514.87)
+transform = Transform3D(0, 0, -1.00000051197437, 0, 1, 0, 1.00000051197437, 0, 0, -145.59, 2.25, -207.11)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -8904,4 +8935,1006 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -368.0724358, 3.83, -697.232
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." instance=ExtResource("54_x6gsb")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -296.84, 3, -511.25)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -139.43, 3, -207.21)
+
+[node name="Race" type="Node" parent="."]
+
+[node name="0" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -140.74, 2.2, -219.03)
+visible = false
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/0/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/0/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="1" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -140.74, 2.2, -219.03)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="2" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -140.74, 2.2, -557)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/2/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/2/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="3" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -309.64, 2.2, -666.95)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="4" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -450.09, 2.2, -666.95)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/4/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/4/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="5" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -458.94, 2.2, -588.33)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="6" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -458.94, 2.2, -517.36)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/6/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/6/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="7" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -389.27, 2.2, -507.41)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="8" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -311.04, 2.2, -507.41)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/8"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/8/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/8/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="9" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -298.76, 2.2, -437.23)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/9"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/9/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/9/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="10" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -369.75, 2.2, -427.98)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="11" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -450.28, 2.2, -427.98)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/11"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/11/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/11/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="12" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.93969262078591, 0, -0.34202014332567, 0, 1, 0, 0.34202014332567, 0, -0.93969262078591, -457.18, 2.2, -352.38)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/12"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="13" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.76604444311898, 0, -0.64278760968654, 0, 1, 0, 0.64278760968654, 0, -0.76604444311898, -411.24, 2.2, -294.8)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/13"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="14" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -359.01, 2.2, -219.71)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/14"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/14/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/14/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="15" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -312.03, 2.2, -205.87)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/15"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/15/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/15/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="16" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300.19, 2.2, -263.79)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/16"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="17" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -299.59, 2.2, -350.66)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/17"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="18" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2.2, -457.05)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="19" type="Marker3D" parent="Race"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2.2, -579.06)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/19"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/19"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/19/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/19/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="20" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -241.09, 2.2, -586.87)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/20"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/20"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/20/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/20/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="21" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -224.91, 2.2, -519.09)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/21/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/21/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="22" type="Marker3D" parent="Race"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -153.83, 2.2, -507.3)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/22"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/22"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/22"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/22/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/22/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="23" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -141.52, 2.2, -457.99)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/23"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="24" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -141.52, 2.2, -339.15)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/24"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/24"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="25" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -141.52, 2.2, -200.11)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/25"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/25"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="26" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.64278760968654, 0, 0.76604444311898, 0, 1, 0, -0.76604444311898, 0, -0.64278760968654, -161.29, 1.86, -157.49)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/26"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="27" type="Marker3D" parent="Race"]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -221.02, 0.79, -99.5)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/27"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="28" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.96592582628907, 0, 0.25881904510252, 0, 1, 0, -0.25881904510252, 0, -0.96592582628907, -245.16, 2.74, 40.69)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/28"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/28"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="29" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.93969262078591, 0, -0.34202014332567, 0, 1, 0, 0.34202014332567, 0, -0.93969262078591, -249.8, 1.9, 152.87)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/29"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/29"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="30" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.99619469809175, 0, -0.08715574274766, 0, 1, 0, 0.08715574274766, 0, -0.99619469809175, -184.12, 6.44, 276.9)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/30"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/30"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="31" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.96592582628907, 0, 0.25881904510252, 0, 1, 0, -0.25881904510252, 0, -0.96592582628907, -214.51, 9.86, 408.57)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/31"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/31"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="32" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.93969262078591, 0, 0.34202014332567, 0, 1, 0, -0.34202014332567, 0, -0.93969262078591, -228.1, 1.94, 531.02)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/32"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/32"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/32"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/32/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/32/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="33" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.81915204428899, 0, 0.57357643635105, 0, 1, 0, -0.57357643635105, 0, -0.81915204428899, -290.6, 9.52, 616.23)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/33"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/33"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="34" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.34202014332567, 0, 0.93969262078591, 0, 1, 0, -0.93969262078591, 0, -0.34202014332567, -355.58, 17.36, 681.92)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/34"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/34"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="35" type="Marker3D" parent="Race"]
+transform = Transform3D(0.17364817766693, 0, 0.98480775301221, 0, 1, 0, -0.98480775301221, 0, 0.17364817766693, -415.77, 21.59, 669.54)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/35"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/35/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/35/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="36" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.86602540378444, 0, 0.5, 0, 1, 0, -0.5, 0, -0.86602540378444, -458.58, 22.6, 710.05)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/36"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/36"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="37" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.98480775301221, 0, 0.17364817766693, 0, 1, 0, -0.17364817766693, 0, -0.98480775301221, -493.375, 28.9, 756.5350051)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/37"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/37"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="38" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.90630778703665, 0, -0.4226182617407, 0, 1, 0, 0.4226182617407, 0, -0.90630778703665, -481.6013054, 30.45, 826.3393503)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/38"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="39" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.70710678118655, 0, -0.70710678118655, 0, 1, 0, 0.70710678118655, 0, -0.70710678118655, -443.6012079, 25.54, 877.2053037)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/39"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/39"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="40" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.34202014332567, 0, -0.93969262078591, 0, 1, 0, 0.93969262078591, 0, -0.34202014332567, -357.3734181, 24.49, 927.5253963)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/40"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/40"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/40"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/40/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/40/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="41" type="Marker3D" parent="Race"]
+transform = Transform3D(0.57357643635105, 0, -0.81915204428899, 0, 1, 0, 0.81915204428899, 0, 0.57357643635105, -293.7831879, 16.53, 902.6290931)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/41"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/41"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/41"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/41/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/41/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="42" type="Marker3D" parent="Race"]
+transform = Transform3D(0.57357643635105, 0, -0.81915204428899, 0, 1, 0, 0.81915204428899, 0, 0.57357643635105, -293.7831879, 16.53, 902.6290931)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/42"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/42"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/42"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/42/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/42/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="43" type="Marker3D" parent="Race"]
+transform = Transform3D(0.86602540378444, 0, -0.5, 0, 1, 0, 0.5, 0, 0.86602540378444, -238.6830496, 18.28, 764.8088069)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/43"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/43"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="44" type="Marker3D" parent="Race"]
+transform = Transform3D(0.76604444311898, 0, -0.64278760968654, 0, 1, 0, 0.64278760968654, 0, 0.76604444311898, -184.0198638, 3.89, 680.9159094)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/44"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/44"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="Arrow" type="MeshInstance3D" parent="Race/44"]
+transform = Transform3D(-1, 0, 0, 0, -1, 0, 0, 0, 0.05, 0, 5.03, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fktp8")
+
+[node name="point" type="MeshInstance3D" parent="Race/44/Arrow"]
+transform = Transform3D(0.70710678118655, -0.70710678118655, 0, 0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, 0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="point2" type="MeshInstance3D" parent="Race/44/Arrow"]
+transform = Transform3D(0.70710678118655, 0.70710678118655, 0, -0.70710678118655, 0.70710678118655, 0, 0, 0, 1, -0.56, -0.14, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_fs5wv")
+skeleton = NodePath("../..")
+
+[node name="45" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.64278760968654, 0, -0.76604444311898, 0, 1, 0, 0.76604444311898, 0, -0.64278760968654, -137.3959291, -0.01, 673.7025142)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/45"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/45"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="46" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.4226182617407, 0, -0.90630778703665, 0, 1, 0, 0.90630778703665, 0, -0.4226182617407, -48.1270618, 0, 732.4517667)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/46"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/46"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="47" type="Marker3D" parent="Race"]
+transform = Transform3D(-0.25881904510252, 0, -0.96592582628907, 0, 1, 0, 0.96592582628907, 0, -0.25881904510252, 98.7619737, 0, 794.5628761)
+metadata/_edit_lock_ = true
+
+[node name="post_L" type="MeshInstance3D" parent="Race/47"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="post_R" type="MeshInstance3D" parent="Race/47"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 3.5, 0)
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_c4lkr")
+
+[node name="flag" type="MeshInstance3D" parent="Race/47"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.36, 0)
+mesh = SubResource("PlaneMesh_akpx5")

@@ -38,10 +38,10 @@ collision_mask = 112
 mass = 1400.0
 physics_material_override = SubResource("PhysicsMaterial_xwacg")
 center_of_mass_mode = 1
-center_of_mass = Vector3(0, 0.62, 0.441)
+center_of_mass = Vector3(0, 0.68, 0.441)
 inertia = Vector3(4300, 4600, 600)
 continuous_cd = true
-wheel_paths = Array[NodePath]([NodePath("tire"), NodePath("tire2"), NodePath("tire3"), NodePath("tire4")])
+wheel_paths = Array[NodePath]([NodePath("wheel_FL"), NodePath("wheel_FR"), NodePath("wheel_BL"), NodePath("wheel_BR")])
 settings = ExtResource("1_xwacg")
 script = ExtResource("2_bupvu")
 exit_position = NodePath("ExitPoint")
@@ -104,22 +104,22 @@ height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="tire" type="MeshInstance3D" parent="."]
+[node name="wheel_FL" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.01745240576565, 0.99980962276459, 0.00872387830168, 0.9998477101326, 0.01745174080133, 0.00015227585391, 0, 0.00872520636767, -0.99996197223663, 0.8024195, 0.6202949, 2.1744194)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="tire2" type="MeshInstance3D" parent="."]
+[node name="wheel_FR" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.01745240576565, 0.99980962276459, -0.00872387830168, 0.9998477101326, -0.01745174080133, 0.00015227585391, 0, -0.00872520636767, -0.99996197223663, -0.8024195, 0.6202949, 2.1744194)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="tire3" type="MeshInstance3D" parent="."]
+[node name="wheel_BL" type="MeshInstance3D" parent="."]
 transform = Transform3D(-0.01745240576565, 0.9998477101326, 0, 0.9998477101326, 0.01745240576565, 0, 0, 0, -1, 0.8024195, 0.6202949, -1.5214195)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="tire4" type="MeshInstance3D" parent="."]
+[node name="wheel_BR" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.01745240576565, 0.9998477101326, 0, 0.9998477101326, -0.01745240576565, 0, 0, 0, -1, -0.8024195, 0.6202949, -1.5214195)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
@@ -133,4 +133,4 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
 
 [node name="Marker3D" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0.441)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0.441)

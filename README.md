@@ -3,8 +3,24 @@
 My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and blast zombies.
 
 
+# Build + Run
+
+0. Obtain a C++ compiler for your platform (not handled by build here)
+1. Clone custom godot repo
+2. Compile godot, custom.py should be chosen by platform? (LLVM on linux/ optional flag?)
+3. Ideally, copy into steam folder and rename files (this should be an optional flag thing)
+4. Deal with Terrain3D if it has changed, game repo contains latest builds (not handled here)
+5. Clone game repo and open in Godot
+6. (Contributing) Apply text editor settings for game. Specifically:
+    - Space indentation
+    - Trim trailing whitespace
+    - Trim trailing newlines (should be enabled by default but check anyway)
+
+
 # TODO
 
+- [ ] Fix forward input bug for vehicles. Seems to not decay forward input when
+      the button is released by the player.
 - [ ] Make zombie face position of navigation target when nav ends, otherwise
       they could fail to look fully towards the target and "miss" the goal
 - [ ] Check that chase / attack goals are navigating correctly. Looks like chase

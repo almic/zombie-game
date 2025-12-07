@@ -17,6 +17,61 @@ My first game project, an arcade-style zombie FPS. Collect weapons, ammo, and bl
     - Trim trailing newlines (should be enabled by default but check anyway)
 
 
+# Progress
+
+- July (about 4 days)
+    - Character controller
+    - Zombie ragdolls
+    - Score, death
+- August
+    - Shovel
+    - Weapon pickup
+    - Shotgun
+    - Weapon resource system, ammo system
+    - Weapon animation, reload
+    - Weapon HUD
+    - Any weapon melee
+    - Input Buffering
+    - Movement bug fixes
+    - Weapon aiming
+    - Automatic rifle
+    - Character movement
+    - Bolt rifle
+    - Revolver
+    - Double precision build
+    - Cabin modeling
+    - Flashlight
+    - Dynamic day modifications, shaders
+    - Custom auto exposure
+- September
+    - Sky shader, auto exposure
+    - Start on night vision (eye adaptation)
+    - Movement bug fixes
+    - All weapon UI
+    - Town blocking (this was a BIG thing)
+    - CSG Curve tool
+    - Jolt Vehicle added (this was a BIG thing)
+    - Godot 4.5 update
+    - Tuning truck settings
+- October
+    - Initial Zombie AI (HUGE THING)
+    - Bug fixes (small things)
+    - Character movement bug fixes
+    - AI senses, memory
+    - Footstep sounds
+    - PositionalAudioPlayer for AI senses
+    - Sound system for audio player
+    - Text log UI, commands
+    - Debug bar (FPS, ETC)
+- November
+    - Added Church building
+    - Fix flashlight and gun bug with vehicle
+    - Behavior system remake (I spent half the month on this)
+    - Vehicle input
+    - Vehicle settings tuning
+- December
+    - Vehicle steering (I love it now)
+
 # TODO
 
 - [ ] Fix forward input bug for vehicles. Seems to not decay forward input when

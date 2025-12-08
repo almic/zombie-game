@@ -6,14 +6,6 @@
 class_name WeaponNode extends Node3D
 
 
-## Result of trying to perform an action on a weapon
-enum Action {
-    BLOCKED,
-    OKAY,
-    NOT_READY
-}
-
-
 ## When the weapon state is updated, such as shooting, reloading, unloading, etc.
 signal weapon_updated()
 
@@ -72,7 +64,6 @@ var _is_recoil_rising: bool = false
 
 # Random component of recoil
 var _recoil_kick: Interpolation = Interpolation.new()
-var _recoil_kick_lock: Mutex = Mutex.new()
 
 # Vertical component of recoil
 var _recoil_rise_amount: float = 0.0
@@ -102,6 +93,11 @@ var _weapon_audio_player: PositionalAudioPlayer
 
 var melee_excluded_hurtboxes: Array[RID]
 
+var weapon_ticks: Array[Variant]
+
+var _melee_timer: float = 0.0
+var _melee_transform: Variant = null
+
 
 func _ready() -> void:
     _weapon_audio_player = PositionalAudioPlayer.new()
@@ -119,6 +115,8 @@ func _ready() -> void:
     _recoil_kick.target = Vector2.ZERO
     _recoil_recovery.current = 0.0
     _recoil_recovery.target = 0.0
+
+    weapon_ticks = []
 
     add_child(_weapon_audio_player)
 
@@ -149,14 +147,43 @@ func _process(delta: float) -> void:
         scene_transform *= sway_transform
         _weapon_scene.transform = scene_transform
 
+    if _melee_timer > 0.0:
+        _melee_timer = maxf(0.0, _melee_timer - delta)
+        if _melee_timer == 0.0:
+            _melee_transform = aim_target_transform()
+
 func _physics_process(_delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
+    var played_effects: bool = false
+    var emit_update: bool = false
+    for t in weapon_ticks:
+        if t is Transform3D:
+            if not played_effects:
+                played_effects = true
+                trigger_sound()
+                trigger_particle()
+
+            var updated: bool = on_weapon_fire(t)
+            if updated:
+                emit_update = true
+        # NOTE: cycle tick
+        elif typeof(t) == TYPE_INT and t == 1:
+            on_weapon_charged()
+
+    weapon_ticks.clear()
+
+    if emit_update:
+        weapon_updated.emit()
+
+    if _melee_transform is Transform3D:
+        on_weapon_melee(_melee_transform)
+        _melee_transform = null
+
     if _weapon_scene:
         if aim_enabled and aim_target:
             update_aim_target()
-
 
 func interpolate_aim(delta: float) -> void:
     if _weapon_aim_next_target:
@@ -204,11 +231,7 @@ func interpolate_recoil(delta: float) -> void:
             recoil_transform = recoil_transform.rotated_local(Vector3.RIGHT, _recoil_rise_amount * RECOIL_SPLIT)
             alt_recoil_transform = alt_recoil_transform.rotated_local(Vector3.RIGHT, _recoil_rise_amount * RECOIL_ALT_SPLIT)
 
-    # TODO: Left off here, just need to apply our split of kick to recoil_transform
-    #       Then pass the controller split via set_recoil_transform()
-
     # Kick recoil updates the same either way
-    _recoil_kick_lock.lock()
     if not _recoil_kick.is_done:
         var kick_amount: Vector2 = _recoil_kick.update(delta)
 
@@ -224,7 +247,6 @@ func interpolate_recoil(delta: float) -> void:
             _recoil_kick.easing = Tween.EASE_IN_OUT
             _recoil_kick.transition = Tween.TRANS_CUBIC
             _recoil_kick.set_target_delta(Vector2.ZERO, -_recoil_kick.current)
-    _recoil_kick_lock.unlock()
 
     # TODO: apply some small motion impulse effects to the camera when firing
     #       instead of just rotations. Maybe even some roll.
@@ -317,24 +339,35 @@ func switch_ammo() -> bool:
 
     return true
 
-## Updates weapon trigger, can fire
-func update_trigger(triggered: bool, delta: float) -> Action:
+## Updates weapon trigger, returns 'true' if weapon has actuated and will soon fire
+func update_trigger(triggered: bool, delta: float) -> bool:
     var mechanism: TriggerMechanism = weapon_type.trigger_mechanism
+    var actuated: bool = false
 
-    mechanism.tick(delta)
-    mechanism.update_trigger(triggered)
+    while true:
+        delta = mechanism.tick(triggered, delta)
 
-    if not mechanism.should_trigger() or not weapon_type.can_fire():
-        # NOTE: Turn off recoil rise when we stop shooting
-        if not triggered:
+        if mechanism.should_trigger() and weapon_type.can_fire():
+            _weapon_scene.goto_fire()
+            mechanism.actuated()
+            actuated = true
+        # NOTE: Turn off recoil rise when we stop triggering
+        elif not triggered:
             _is_recoil_rising = false
-        return Action.BLOCKED
 
-    if _weapon_scene.goto_fire():
-        mechanism.actuated()
-        return Action.OKAY
+        if mechanism.fire_this_tick():
+            if weapon_type.melee_is_primary:
+                weapon_ticks.append(aim_target_transform())
+            else:
+                weapon_ticks.append(weapon_projectile_transform())
 
-    return Action.NOT_READY
+        if mechanism.cycle_this_tick():
+            weapon_ticks.append(int(1))
+
+        if delta == 0.0:
+            break
+
+    return actuated
 
 ## Test if the weapon could be aiming right now
 func can_aim() -> bool:
@@ -343,48 +376,36 @@ func can_aim() -> bool:
 
     return _weapon_scene.can_aim()
 
-## The weapon should charge
-func charge() -> Action:
+## The weapon should charge, returns 'true' if the weapon will soon charge
+func charge() -> bool:
     if not weapon_type.can_charge():
-        return Action.BLOCKED
+        return false
 
-    if _weapon_scene.goto_charge():
-        return Action.OKAY
+    return _weapon_scene.goto_charge()
 
-    return Action.NOT_READY
-
-## The weapon should do a melee
-func melee() -> Action:
+## The weapon should do a melee, returns 'true' if the weapon will soon melee
+func melee() -> bool:
     if not weapon_type.can_melee():
-        return Action.BLOCKED
+        return false
 
     if _weapon_scene.goto_melee():
-        return Action.OKAY
-
-    return Action.NOT_READY
+        _melee_timer = weapon_type.melee_delay / 1000.0
+        return true
+    return false
 
 ## The weapon should reload
-func reload() -> Action:
+func reload() -> bool:
     if not weapon_type.can_reload():
-        #print('blocked!')
-        return Action.BLOCKED
+        return false
 
-    if _weapon_scene.goto_reload():
-        #print('reloading!')
-        return Action.OKAY
-
-    #print('not ready!')
-    return Action.NOT_READY
+    return _weapon_scene.goto_reload()
 
 ## The weapon should unload
-func unload() -> Action:
+func unload() -> bool:
     if not weapon_type.can_unload():
-        return Action.BLOCKED
+        return false
 
-    if _weapon_scene.goto_unload():
-        return Action.OKAY
-
-    return Action.NOT_READY
+    return _weapon_scene.goto_unload()
 
 func has_ammo_stock() -> bool:
     return not weapon_type.ammo_stock.is_empty()
@@ -419,6 +440,10 @@ func load_weapon_type(type: WeaponResource) -> void:
     _recoil_rise_speed = 0.0
     _recoil_rise_amount = 0.0
 
+    weapon_ticks.clear()
+    _melee_timer = 0.0
+    _melee_transform = null
+
     _load_weapon_scene()
     _load_particle_system()
 
@@ -446,8 +471,6 @@ func load_weapon_type(type: WeaponResource) -> void:
 
 func _load_weapon_scene() -> void:
     if _weapon_scene:
-        _weapon_scene.fired.disconnect(on_weapon_fire)
-        _weapon_scene.melee.disconnect(on_weapon_melee)
         _weapon_scene.charged.disconnect(on_weapon_charged)
         _weapon_scene.uncharged.disconnect(on_weapon_uncharged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
@@ -485,8 +508,6 @@ func _load_weapon_scene() -> void:
         _weapon_scene.set_revolver(weapon_type)
 
     _weapon_scene.global_transform = global_transform.translated(weapon_type.scene_offset)
-    _weapon_scene.fired.connect(on_weapon_fire)
-    _weapon_scene.melee.connect(on_weapon_melee)
     _weapon_scene.charged.connect(on_weapon_charged)
     _weapon_scene.uncharged.connect(on_weapon_uncharged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
@@ -525,26 +546,36 @@ func _load_particle_system() -> void:
         add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
-func on_weapon_fire() -> void:
+func on_weapon_fire(fire_transform: Transform3D) -> bool:
     if not weapon_type:
-        return
+        return false
 
+    # NOTE: Dev only, should be removed later
     if not Engine.is_in_physics_frame():
-        var err: int = get_tree().physics_frame.connect(on_weapon_fire, Object.CONNECT_ONE_SHOT)
-        if err == ERR_INVALID_PARAMETER:
-            print('bug!')
-        return
-
-    trigger_sound()
-    trigger_particle()
+        print_debug('on_weapon_fire() must only be called in the physics frame!')
+        return false
 
     # Turn on recoil rise when firing
     if weapon_type.recoil_enabled:
         _is_recoil_rising = true
 
     # NOTE: This can signal an empty weapon, which turns off recoil rise
-    if weapon_type.fire(self):
-        weapon_updated.emit()
+    var from_node: Node3D = self
+    if controller:
+        from_node = controller
+
+    var updated: bool = false
+    if weapon_type.melee_is_primary:
+        weapon_type.fire_melee(
+                from_node,
+                fire_transform,
+                melee_excluded_hurtboxes
+        )
+    else:
+        updated = weapon_type.fire_projectiles(
+                from_node,
+                fire_transform
+        )
 
     # NOTE: Always apply recoil kick
     if weapon_type.recoil_enabled:
@@ -572,7 +603,6 @@ func on_weapon_fire() -> void:
         var change: Vector2 = Vector2(-cos(angle) * distance, sin(angle) * distance)
         var max_spread: float = weapon_type.recoil_spread_max
 
-        _recoil_kick_lock.lock()
         var target: Vector2 = _recoil_kick.current
 
         # If we pass our max spread, ensure the kick pulls us back
@@ -593,21 +623,25 @@ func on_weapon_fire() -> void:
         _recoil_kick.transition = Tween.TRANS_SPRING
         _recoil_kick.set_target_delta(target, target - _recoil_kick.current)
 
-        _recoil_kick_lock.unlock()
+    return updated
 
 func on_weapon_empty() -> void:
     # NOTE: better recoil stop on the tick we empty the gun
     _is_recoil_rising = false
 
-func on_weapon_melee() -> void:
+func on_weapon_melee(melee_transform: Transform3D) -> void:
     if not weapon_type:
         return
 
     if not Engine.is_in_physics_frame():
-        get_tree().physics_frame.connect(on_weapon_melee, Object.CONNECT_ONE_SHOT)
+        print_debug('on_weapon_melee() must only be called in the physics frame!')
         return
 
-    weapon_type.fire_melee(self)
+    var from_node: Node3D = self
+    if controller:
+        from_node = controller
+
+    weapon_type.fire_melee(from_node, melee_transform, melee_excluded_hurtboxes)
 
 func on_weapon_charged() -> void:
     if not weapon_type or not weapon_type.can_charge():

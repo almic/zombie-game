@@ -17,6 +17,7 @@ var _released: bool = true
 
 
 func actuated() -> void:
+    super.actuated()
     _released = false
 
 func update_trigger(triggered: bool) -> void:
@@ -27,10 +28,14 @@ func update_trigger(triggered: bool) -> void:
         _weapon_triggered = false
 
 func should_trigger() -> bool:
-    if _weapon_triggered and is_cycled():
+    if _weapon_triggered and is_ready():
         if automatic_fire:
             return true
 
         return _released
 
     return false
+
+func reset() -> void:
+    super.reset()
+    _released = true

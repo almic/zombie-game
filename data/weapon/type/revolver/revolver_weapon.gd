@@ -81,7 +81,7 @@ func can_eject() -> bool:
 
 ## For the revolver, you can always pull the trigger when cycled
 func can_fire() -> bool:
-    return trigger_mechanism.is_cycled()
+    return trigger_mechanism.is_ready()
 
 func can_charge() -> bool:
     return not _hammer_cocked
@@ -147,7 +147,7 @@ func unload_rounds() -> void:
         _mixed_reserve.set(i, 0)
     state_updated.emit()
 
-func fire_projectiles(base: WeaponNode) -> bool:
+func fire_projectiles(from: Node3D, transform: Transform3D) -> bool:
     var updated_ammo: bool = false
     var ammo_cache: Dictionary = get_supported_ammunition()
     var type: int = _mixed_reserve[_cylinder_position]
@@ -161,11 +161,7 @@ func fire_projectiles(base: WeaponNode) -> bool:
     if not _cylinder_ammo_state[_cylinder_position]:
         push_error("Revolver is firing a dead round! Investigate!")
 
-    var node: Node3D = base
-    if base.controller:
-        node = base.controller
-
-    _do_projectile_raycast(node, ammo, base.weapon_projectile_transform())
+    _do_projectile_raycast(from, ammo, transform)
 
     _cylinder_ammo_state[_cylinder_position] = 0
     updated_ammo = true

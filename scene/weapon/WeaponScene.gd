@@ -20,9 +20,6 @@ var state_machine: AnimationNodeStateMachine
 ## For animations that change the main hand
 signal swap_hand(time: float)
 
-## Weapon has fired
-signal fired()
-
 ## Weapon has melee'd
 signal melee()
 
@@ -114,7 +111,8 @@ func _unlock_anim() -> void:
     anim_locked = false
 
 func _emit_fired() -> void:
-    fired.emit()
+    # TODO: remove this from all animation logic. Firing is timer only.
+    pass
 
 func _emit_melee() -> void:
     melee.emit()

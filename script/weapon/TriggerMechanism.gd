@@ -2,15 +2,22 @@
 class_name TriggerMechanism extends Resource
 
 
-## Weapon cycle time, minimum time between consecutive triggers
-@export var cycle_time: float = 1.0
+## Initial delay, in milliseconds, when actuated before a projectile fires
+@export_range(0, 100.0, 0.1, 'or_greater', 'suffix:ms')
+var fire_delay: float = 0
 
-## For weapon cycling
-@warning_ignore('unused_private_class_variable')
-var _weapon_cycle: float = 0
+## Weapon cycle time, in milliseconds, minimum time between consecutive triggers.
+## Set to zero to disable weapon cycling. This means the weapon must be manually
+## cycled via animations.
+@export_range(0, 500.0, 0.1, 'or_greater', 'suffix:ms')
+var cycle_time: float = 0
+
+
+var _delay_timer: float = 0
+var _cycle_timer: float = 0
+
 
 ## For weapon activation
-@warning_ignore('unused_private_class_variable')
 var _weapon_triggered: bool = false:
     set(value):
         if not value:
@@ -23,28 +30,83 @@ var _weapon_triggered: bool = false:
 ## Toggled by update_input and tick to prevent missed input.
 var _has_ticked: bool = false
 
+## Set when fire delay elapses, or after calling actuate() with no delay
+var _fire_this_tick: bool = false
 
-## Handles weapon cycle
-func tick(delta: float) -> void:
+## Set when cycle time elapses
+var _cycle_this_tick: bool = false
+
+
+## Handles weapon cycle, returns leftover delta time that should be passed
+## back to the mechanism for additional updates.
+func tick(triggered: bool, delta: float) -> float:
     _has_ticked = true
+    _fire_this_tick = false
+    _cycle_this_tick = false
+    var used: bool = false
 
-    if _weapon_cycle > 0.0:
-        _weapon_cycle -= delta
+    if _delay_timer > 0.0:
+        used = true
+        if delta >= _delay_timer:
+            delta -= _delay_timer
+            _delay_timer = 0.0
+            _fire_this_tick = true
+        else:
+            _delay_timer -= delta
+            delta = 0.0
 
-## Begin weapon cycling
-func start_cycle() -> void:
-    _weapon_cycle = cycle_time
+    if _cycle_timer > 0.0 and delta > 0.0:
+        used = true
+        if delta >= _cycle_timer:
+            delta -= _cycle_timer
+            _cycle_timer = 0.0
+            _cycle_this_tick = true
+        else:
+            _cycle_timer -= delta
+            delta = 0.0
 
-## The mechanism has been actuated, but is not yet cycling. This means the weapon
-## will cycle at some point in the future.
+    if not used:
+        delta = 0.0
+
+    update_trigger(triggered)
+    return delta
+
+## The mechanism has been actuated and will soon fire a round
 func actuated() -> void:
-    pass
+    if fire_delay == 0.0:
+        _fire_this_tick = true
+    else:
+        _delay_timer = fire_delay / 1000.0
+    if cycle_time != 0.0:
+        _cycle_timer = cycle_time / 1000.0
 
-func is_cycled() -> bool:
-    return not _weapon_cycle > 0.0
+## If the mechanism should fire on this tick
+func fire_this_tick() -> bool:
+    return _fire_this_tick
 
-## Called once per frame, implement per trigger type.
-@warning_ignore('unused_parameter')
+## If the mechanism should cycle on this tick
+func cycle_this_tick() -> bool:
+    return _cycle_this_tick
+
+## The mechanism is ready to actuate
+func is_ready() -> bool:
+    return _cycle_timer == 0
+
+## Reset trigger mechanism state
+func reset() -> void:
+    _fire_this_tick = false
+    _cycle_this_tick = false
+    _cycle_timer = 0.0
+    _delay_timer = 0.0
+
+    # HACK: force the trigger state to reset
+    _has_ticked = true
+    _weapon_triggered = false
+    _has_ticked = false
+
+## Called at least once per frame, may be called multiple times.
+## Implement per trigger type.
+@warning_ignore("unused_parameter")
 func update_trigger(triggered: bool) -> void:
     pass
 

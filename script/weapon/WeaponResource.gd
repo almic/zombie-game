@@ -21,6 +21,10 @@ var slot: int = 1
 ## The weapon's primary fire is a melee attack
 @export var melee_is_primary: bool = false
 
+## Delay between melee input and actual collision test.
+@export_range(0.1, 500.0, 0.1, 'or_greater', 'suffix:ms')
+var melee_delay: float = 200.0
+
 ## Melee damage of the weapon
 @export_range(-50.0, 50.0, 0.1, 'or_greater', 'or_less', 'suffix:hp')
 var melee_damage: float = 0.0
@@ -548,18 +552,8 @@ func unload_rounds() -> void:
     _simple_reserve_total = 0
     _simple_reserve_type = 0
 
-## Fires the weapon, returns true if ammo state changed
-func fire(base: WeaponNode) -> bool:
-    trigger_mechanism.start_cycle()
-
-    if melee_is_primary:
-        fire_melee(base)
-        return false
-
-    return fire_projectiles(base)
-
 ## Fires the next loaded projectile, returns true if ammo state changed
-func fire_projectiles(base: WeaponNode) -> bool:
+func fire_projectiles(from: Node3D, transform: Transform3D) -> bool:
     var updated_ammo: bool = false
     var ammo_cache: Dictionary = get_supported_ammunition()
     var ammo: AmmoResource
@@ -591,11 +585,7 @@ func fire_projectiles(base: WeaponNode) -> bool:
         push_error("Firing weapon got no ammo to fire! Investigate!")
         return updated_ammo
 
-    var node: Node3D = base
-    if base.controller:
-        node = base.controller
-
-    _do_projectile_raycast(node, ammo, base.weapon_projectile_transform())
+    _do_projectile_raycast(from, ammo, transform)
 
     # If we are empty, signal
     if get_reserve_total() < 1:
@@ -660,9 +650,8 @@ func _do_projectile_raycast(node: Node3D, ammo: AmmoResource, transform: Transfo
             hit.direction = -projectile_forward
             hit.collider.do_hit(node, hit, ammo.damage)
 
-func fire_melee(base: WeaponNode) -> void:
-    var space: PhysicsDirectSpaceState3D = base.get_world_3d().direct_space_state
-    var transform: Transform3D = base.aim_target_transform()
+func fire_melee(node: Node3D, transform: Transform3D, melee_excluded_hurtboxes: Array[RID]) -> void:
+    var space: PhysicsDirectSpaceState3D = node.get_world_3d().direct_space_state
 
     var from: Vector3 = transform.origin
     var forward: Vector3 = transform.basis.z
@@ -675,7 +664,7 @@ func fire_melee(base: WeaponNode) -> void:
 
     query.collide_with_areas = true
     query.collide_with_bodies = true
-    query.exclude = base.melee_excluded_hurtboxes
+    query.exclude = melee_excluded_hurtboxes
 
     var hit := space.intersect_ray(query)
 
@@ -684,11 +673,8 @@ func fire_melee(base: WeaponNode) -> void:
 
     if hit.collider is HurtBox:
         #total_hits += 1
-        var from_node: Node3D = base
-        if base.controller:
-            from_node = base.controller
         hit.power = melee_impact
         hit.from = from
         # NOTE: i do not understand why this is different than the impulse direction...
         hit.direction = -forward
-        hit.collider.do_hit(from_node, hit, melee_damage)
+        hit.collider.do_hit(node, hit, melee_damage)

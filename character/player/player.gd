@@ -846,9 +846,9 @@ func update_weapon_node(delta: float) -> void:
     else:
         _fire_can_buffer = _fire_ready && _handle_input
 
-    var action: WeaponNode.Action = weapon_node.update_trigger(triggered, delta)
+    var actuated: bool = weapon_node.update_trigger(triggered, delta)
 
-    if action == WeaponNode.Action.OKAY:
+    if actuated:
         _fire_can_buffer = false
         clear_input_buffer(fire_primary)
     else:
@@ -866,8 +866,8 @@ func update_weapon_node(delta: float) -> void:
         elif is_input_buffered(fire_primary):
             # NOTE: If the action was blocked, keep trying anyway
             #       because we may be waiting to charge/ reload
-            action = weapon_node.update_trigger(true, 0.0)
-            if action == WeaponNode.Action.OKAY:
+            actuated = weapon_node.update_trigger(true, 0.0)
+            if actuated:
                 clear_input_buffer()
 
     # NOTE: do this after so we can change buffer times if we are reloading
@@ -895,7 +895,6 @@ func update_weapon_node(delta: float) -> void:
             if revolver_scene:
                 var okay: bool = revolver_scene.goto_fan()
                 if okay:
-
                     clear_input_buffer(fan_hammer)
                 else:
                     update_input_buffer(fan_hammer)
@@ -912,16 +911,16 @@ func update_weapon_node(delta: float) -> void:
 
         # NOTE: Even if the action is blocked, buffer anyway because we
         #       may be waiting to load a round
-        action = weapon_node.charge()
-        if action == WeaponNode.Action.OKAY:
+        actuated = weapon_node.charge()
+        if actuated:
             clear_input_buffer(charge)
         else:
             update_input_buffer(charge)
     elif is_input_buffered(charge):
         # NOTE: If the action was blocked, keep trying anyway
         #       because we way be waiting to reload
-        action = weapon_node.charge()
-        if action == WeaponNode.Action.OKAY:
+        actuated = weapon_node.charge()
+        if actuated:
             clear_input_buffer()
     # NOTE: We may have a fire buffered, but we have failed to shoot, so try
     #       charging the weapon in case we were waiting for that
@@ -931,7 +930,8 @@ func update_weapon_node(delta: float) -> void:
             #       This is because it charges as part of a longer fire animation
             pass
         else:
-            if weapon_node.charge() == WeaponNode.Action.OKAY:
+            actuated = weapon_node.charge()
+            if actuated:
                 # Requeue the primary fire action as buffer is too short normally
                 update_input_buffer(fire_primary)
 
@@ -955,8 +955,8 @@ func update_weapon_node(delta: float) -> void:
             # NOTE: Even if the action is blocked, buffer anyway because we
             #       may be waiting to cycle a round from reserve
             #print('please reload!')
-            action = weapon_node.reload()
-            if action == WeaponNode.Action.OKAY:
+            actuated = weapon_node.reload()
+            if actuated:
                 clear_input_buffer(reload)
             else:
                 update_input_buffer(reload)
@@ -972,8 +972,8 @@ func update_weapon_node(delta: float) -> void:
             _weapon_reload_time = 0
 
         if is_input_buffered(reload):
-            action = weapon_node.reload()
-            if action == WeaponNode.Action.OKAY:
+            actuated = weapon_node.reload()
+            if actuated:
                 clear_input_buffer()
 
     if _handle_input and unload.is_triggered():

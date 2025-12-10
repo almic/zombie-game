@@ -88,7 +88,7 @@ func update(weapon: WeaponResource) -> void:
         return
     revolver_weapon = revolver
 
-    if revolver._hammer_cocked:
+    if revolver.hammer_cocked:
         marker.self_modulate = marker_color_cocked
     else:
         marker.self_modulate = marker_color

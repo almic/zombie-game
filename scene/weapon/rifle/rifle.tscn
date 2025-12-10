@@ -67,35 +67,35 @@ unique_name_in_owner = true
 [node name="protomesh" type="Node3D" parent="Mesh"]
 
 [node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -8.78157e-09, -0.22)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.22)
 mesh = SubResource("CylinderMesh_xkfre")
 
 [node name="body" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.01, 0.025)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0.025)
 mesh = SubResource("BoxMesh_qqsv1")
 
 [node name="barrel_cover" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, -0.29)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.29)
 mesh = SubResource("CylinderMesh_fyojs")
 
 [node name="stock_attach" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.00944, 0.225)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00944, 0.225)
 mesh = SubResource("BoxMesh_mbpeo")
 
 [node name="stock" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.02, 0.36)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0.36)
 mesh = SubResource("BoxMesh_3c15l")
 
 [node name="grip" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 1.45519e-11, -0.09, 0.135)
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, -0.09, 0.135)
 mesh = SubResource("BoxMesh_3d6q2")
 
 [node name="charge_handle" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -0.04, 1.45519e-11, 0.015)
+transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.04, 0, 0.015)
 mesh = SubResource("CylinderMesh_mbpeo")
 
 [node name="handle_track" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -0.026, 1.45519e-11, 0.05)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.026, 0, 0.05)
 mesh = SubResource("QuadMesh_3c15l")
 
 [node name="BarrelMarker" type="Marker3D" parent="Mesh"]
@@ -103,11 +103,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.48)
 visible = false
 
 [node name="MagazineMarker" type="Marker3D" parent="Mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.075, -0.04)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.075, -0.04)
 gizmo_extents = 0.0
 
 [node name="RifleMagMesh" parent="Mesh/MagazineMarker" instance=ExtResource("4_y8syv")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.73472e-17, -2.98023e-08, 1.11759e-08)
 
 [node name="EjectMarker" type="Marker3D" parent="Mesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0, -0.04)
@@ -127,7 +126,7 @@ advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 
 [node name="ReloadMarker" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.075, -0.04)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.075, -0.04)
 visible = false
 
 [node name="RecoilMarker" type="Marker3D" parent="."]

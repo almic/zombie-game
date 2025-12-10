@@ -56,7 +56,7 @@ var revolver_ammo: Dictionary
 var is_fanning: bool = false
 
 var cocked: bool:
-    get(): return revolver._hammer_cocked
+    get(): return revolver.hammer_cocked
 
 var is_round_live: bool:
     get(): return revolver.is_round_live()
@@ -183,14 +183,6 @@ func _hide_unload_port() -> void:
     for child in port.get_children():
         child.visible = false
         break
-
-func _emit_fired() -> void:
-    if not is_round_live:
-        revolver._hammer_cocked = false
-        revolver.trigger_mechanism.start_cycle()
-        super._emit_uncharged()
-        return
-    super._emit_fired()
 
 func _emit_round_loaded() -> void:
     super._emit_round_loaded()

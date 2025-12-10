@@ -2,8 +2,7 @@
 @icon("res://icon/weapon_trigger.svg")
 
 ## Single fire trigger method, fires only once per action and must wait for
-## the cycle time before it can be triggered again. Activates the particle
-## and sound on each fire.
+## the cycle time before it can be triggered again.
 class_name SingleFireMechanism extends TriggerMechanism
 
 

@@ -400,7 +400,6 @@ func can_fire() -> bool:
         else:
             return false
 
-    # NOTE: this should only happen for the revolver
     return get_reserve_total() > 0
 
 func can_melee() -> bool:
@@ -440,7 +439,7 @@ func charge_weapon() -> void:
         push_error('Weapon cannot be chambered! This is a mistake! Investigate!')
 
     if _chambered_round_type != 0:
-        push_error('Weapon is chambered, but is also charging! This is a mistake! Investigate!')
+        push_error('Weapon has a chambered round, you must eject first! Investigate!')
 
     if not ammo_can_mix:
         _simple_reserve_total -= 1
@@ -552,40 +551,50 @@ func unload_rounds() -> void:
     _simple_reserve_total = 0
     _simple_reserve_type = 0
 
-## Fires the next loaded projectile, returns true if ammo state changed
-func fire_projectiles(from: Node3D, transform: Transform3D) -> bool:
-    var updated_ammo: bool = false
+## Get the next ammo resource to be fired
+func get_ammo_to_fire() -> AmmoResource:
     var ammo_cache: Dictionary = get_supported_ammunition()
-    var ammo: AmmoResource
 
     if is_chambered():
-        ammo = ammo_cache.get(_chambered_round_type)
+       return ammo_cache.get(_chambered_round_type)
+
+    if not ammo_can_mix:
+        push_error("Non-chambered, non-mixed reserve weapon type! This is a mistake! Investigate!")
+        return null
+
+    var size: int = _mixed_reserve.size()
+    if size < 1:
+        push_error("Weapon has no mixed reserve! Investigate!")
+        return null
+
+    if ammo_reversed_use:
+        return ammo_cache.get(_mixed_reserve[size - 1])
+    return ammo_cache.get(_mixed_reserve[0])
+
+## Updates chambered round to be fired, returns true if ammo state changed
+func fire_round() -> bool:
+    var updated_ammo: bool = false
+
+    if is_chambered():
+        if not _chambered_round_live:
+            push_error("Firing a non-live round! Investigate!")
         _chambered_round_live = false
         updated_ammo = true
     else:
         if not ammo_can_mix:
             push_error("Firing a simple reserve, non-chambered weapon! This is a mistake! Investigate!")
         else:
-            # NOTE: This should only happen for the revolver
             var size: int = _mixed_reserve.size()
             if size < 1:
                 push_error("Firing weapon with no mixed reserve! WeaponNode should not allow this!")
                 return false
 
             if ammo_reversed_use:
-                ammo = ammo_cache.get(_mixed_reserve[size - 1])
                 _mixed_reserve.resize(size - 1)
             else:
-                ammo = ammo_cache.get(_mixed_reserve[0])
                 _mixed_reserve.remove_at(0)
 
             updated_ammo = true
-
-    if not ammo:
-        push_error("Firing weapon got no ammo to fire! Investigate!")
-        return updated_ammo
-
-    _do_projectile_raycast(from, ammo, transform)
 
     # If we are empty, signal
     if get_reserve_total() < 1:
@@ -593,7 +602,8 @@ func fire_projectiles(from: Node3D, transform: Transform3D) -> bool:
 
     return updated_ammo
 
-func _do_projectile_raycast(node: Node3D, ammo: AmmoResource, transform: Transform3D) -> void:
+## Fires projectile with given properties
+func fire_projectiles(node: Node3D, ammo: AmmoResource, transform: Transform3D) -> void:
     var space: PhysicsDirectSpaceState3D = node.get_world_3d().direct_space_state
     var from: Vector3 = transform.origin
     var forward: Vector3 = transform.basis.z
@@ -650,6 +660,7 @@ func _do_projectile_raycast(node: Node3D, ammo: AmmoResource, transform: Transfo
             hit.direction = -projectile_forward
             hit.collider.do_hit(node, hit, ammo.damage)
 
+## Fires melee raycast with given properties
 func fire_melee(node: Node3D, transform: Transform3D, melee_excluded_hurtboxes: Array[RID]) -> void:
     var space: PhysicsDirectSpaceState3D = node.get_world_3d().direct_space_state
 

@@ -93,7 +93,7 @@ var _weapon_audio_player: PositionalAudioPlayer
 
 var melee_excluded_hurtboxes: Array[RID]
 
-var weapon_ticks: Array[Variant]
+var weapon_fire_queue: Array
 
 var _melee_timer: float = 0.0
 var _melee_transform: Variant = null
@@ -104,7 +104,7 @@ func _ready() -> void:
     _weapon_audio_player.source_node = self
     _weapon_audio_player.groups = sound_groups.duplicate()
     _weapon_audio_player.bus = sound_bus
-    _weapon_audio_player.polyphony = 7 # nice
+    _weapon_audio_player.polyphony = 8
 
     if aim_target and aim_target_reduced_rate:
         aim_target.enabled = false
@@ -116,7 +116,7 @@ func _ready() -> void:
     _recoil_recovery.current = 0.0
     _recoil_recovery.target = 0.0
 
-    weapon_ticks = []
+    weapon_fire_queue = []
 
     add_child(_weapon_audio_player)
 
@@ -157,25 +157,35 @@ func _physics_process(_delta: float) -> void:
         return
 
     var played_effects: bool = false
-    var emit_update: bool = false
-    for t in weapon_ticks:
-        if t is Transform3D:
-            if not played_effects:
-                played_effects = true
-                trigger_sound()
-                trigger_particle()
+    var from_node: Node3D = self
+    if controller:
+        from_node = controller
 
-            var updated: bool = on_weapon_fire(t)
-            if updated:
-                emit_update = true
-        # NOTE: cycle tick
-        elif typeof(t) == TYPE_INT and t == 1:
-            on_weapon_charged()
+    var i: int = 0
+    var size: int = weapon_fire_queue.size()
+    while i < size:
+        if not played_effects:
+            played_effects = true
+            trigger_sound()
+            trigger_particle()
 
-    weapon_ticks.clear()
+        if weapon_type.melee_is_primary:
+            weapon_type.fire_melee(
+                    from_node,
+                    weapon_fire_queue[i],
+                    melee_excluded_hurtboxes
+            )
+            i += 1
+            continue
 
-    if emit_update:
-        weapon_updated.emit()
+        weapon_type.fire_projectiles(
+                from_node,
+                weapon_fire_queue[i],
+                weapon_fire_queue[i + 1]
+        )
+        i += 2
+
+    weapon_fire_queue.clear()
 
     if _melee_transform is Transform3D:
         on_weapon_melee(_melee_transform)
@@ -343,6 +353,7 @@ func switch_ammo() -> bool:
 func update_trigger(triggered: bool, delta: float) -> bool:
     var mechanism: TriggerMechanism = weapon_type.trigger_mechanism
     var actuated: bool = false
+    var emit_updated: bool = false
 
     while true:
         delta = mechanism.tick(triggered, delta)
@@ -355,17 +366,31 @@ func update_trigger(triggered: bool, delta: float) -> bool:
         elif not triggered:
             _is_recoil_rising = false
 
-        if mechanism.fire_this_tick():
-            if weapon_type.melee_is_primary:
-                weapon_ticks.append(aim_target_transform())
-            else:
-                weapon_ticks.append(weapon_projectile_transform())
+        for action in mechanism.get_actions():
+            if action == TriggerMechanism.Action.FIRE:
+                if weapon_type.melee_is_primary:
+                    weapon_fire_queue.append(aim_target_transform())
+                    continue
 
-        if mechanism.cycle_this_tick():
-            weapon_ticks.append(int(1))
+                weapon_fire_queue.append(weapon_type.get_ammo_to_fire())
+                weapon_fire_queue.append(weapon_projectile_transform())
+                if on_weapon_fire():
+                    emit_updated = true
+                continue
+
+            if action == TriggerMechanism.Action.EJECT:
+                on_weapon_round_ejected()
+                continue
+
+            if action == TriggerMechanism.Action.CHARGE:
+                on_weapon_charged()
+                continue
 
         if delta == 0.0:
             break
+
+    if emit_updated:
+        weapon_updated.emit()
 
     return actuated
 
@@ -440,7 +465,7 @@ func load_weapon_type(type: WeaponResource) -> void:
     _recoil_rise_speed = 0.0
     _recoil_rise_amount = 0.0
 
-    weapon_ticks.clear()
+    weapon_fire_queue.clear()
     _melee_timer = 0.0
     _melee_transform = null
 
@@ -475,7 +500,6 @@ func _load_weapon_scene() -> void:
         _weapon_scene.uncharged.disconnect(on_weapon_uncharged)
         _weapon_scene.reload_loop.disconnect(on_weapon_reload_loop)
         _weapon_scene.unload_loop.disconnect(on_weapon_unload_loop)
-        _weapon_scene.round_ejected.disconnect(on_weapon_round_ejected)
         _weapon_scene.round_loaded.disconnect(on_weapon_round_loaded)
         _weapon_scene.round_unloaded.disconnect(on_weapon_round_unloaded)
         _weapon_scene.magazine_loaded.disconnect(on_weapon_magazine_loaded)
@@ -512,7 +536,6 @@ func _load_weapon_scene() -> void:
     _weapon_scene.uncharged.connect(on_weapon_uncharged)
     _weapon_scene.reload_loop.connect(on_weapon_reload_loop)
     _weapon_scene.unload_loop.connect(on_weapon_unload_loop)
-    _weapon_scene.round_ejected.connect(on_weapon_round_ejected)
     _weapon_scene.round_loaded.connect(on_weapon_round_loaded)
     _weapon_scene.round_unloaded.connect(on_weapon_round_unloaded)
     _weapon_scene.magazine_loaded.connect(on_weapon_magazine_loaded)
@@ -546,13 +569,13 @@ func _load_particle_system() -> void:
         add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
-func on_weapon_fire(fire_transform: Transform3D) -> bool:
+func on_weapon_fire() -> bool:
     if not weapon_type:
         return false
 
     # NOTE: Dev only, should be removed later
-    if not Engine.is_in_physics_frame():
-        print_debug('on_weapon_fire() must only be called in the physics frame!')
+    if weapon_type.melee_is_primary:
+        print_debug('on_weapon_fire() must not be called for melee-primary weapons!')
         return false
 
     # Turn on recoil rise when firing
@@ -560,22 +583,7 @@ func on_weapon_fire(fire_transform: Transform3D) -> bool:
         _is_recoil_rising = true
 
     # NOTE: This can signal an empty weapon, which turns off recoil rise
-    var from_node: Node3D = self
-    if controller:
-        from_node = controller
-
-    var updated: bool = false
-    if weapon_type.melee_is_primary:
-        weapon_type.fire_melee(
-                from_node,
-                fire_transform,
-                melee_excluded_hurtboxes
-        )
-    else:
-        updated = weapon_type.fire_projectiles(
-                from_node,
-                fire_transform
-        )
+    var updated: bool = weapon_type.fire_round()
 
     # NOTE: Always apply recoil kick
     if weapon_type.recoil_enabled:

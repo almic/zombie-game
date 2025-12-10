@@ -6,22 +6,22 @@
 [ext_resource type="Resource" uid="uid://nqh0w26v06v4" path="res://data/weapon/ammo/slug.tres" id="3_2nd26"]
 [ext_resource type="PackedScene" uid="uid://d272705u8gln4" path="res://particle/system/weapon/gunshot_big.tscn" id="4_86fa8"]
 [ext_resource type="PackedScene" uid="uid://c8nmtmax1l5vn" path="res://scene/weapon/revolver/revolver.tscn" id="5_86fa8"]
-[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="5_gbcyp"]
 [ext_resource type="PackedScene" uid="uid://cvryaecomxuny" path="res://ui/weapon/revolver/revolver_ui.tscn" id="6_jxjno"]
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="7_qdvuk"]
+[ext_resource type="Script" uid="uid://jtsjpvb46vsa" path="res://script/weapon/trigger/DoubleActionMechanism.gd" id="9_qdvuk"]
 [ext_resource type="Texture2D" uid="uid://cobrkeyc5x2ut" path="res://icon/revolver_side.png" id="10_qdvuk"]
 
-[sub_resource type="Resource" id="Resource_86fa8"]
-script = ExtResource("5_gbcyp")
-cycle_time = 0.1
-metadata/_custom_type_script = "uid://crckednuhsmu2"
+[sub_resource type="Resource" id="Resource_2vv8o"]
+script = ExtResource("9_qdvuk")
+fire_delay = 5.0
+metadata/_custom_type_script = "uid://jtsjpvb46vsa"
 
 [resource]
 script = ExtResource("2_l6v7f")
 fan_offset = Vector3(-0.0814, -0.032, 0.08)
 name = "Revolver"
 slot = 6
-trigger_mechanism = SubResource("Resource_86fa8")
+trigger_mechanism = SubResource("Resource_2vv8o")
 projectile_inaccuracy = 0.7
 projectile_hit_mask = 88
 aim_enabled = true

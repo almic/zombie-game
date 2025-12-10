@@ -14,7 +14,9 @@
 [sub_resource type="Resource" id="Resource_3p7e2"]
 script = ExtResource("8_5gim3")
 automatic_fire = true
-cycle_time = 0.055
+fire_delay = 10.0
+eject_delay = 32.0
+charge_delay = 60.0
 metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]

@@ -88,20 +88,18 @@ metadata/_custom_type_script = "uid://b8c38fv1c1av1"
 unique_name_in_owner = true
 
 [node name="protomesh" type="Node3D" parent="Mesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 1.45519e-11)
 
 [node name="cylinder_axel" type="Node3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0055, -0.057, 0)
 
 [node name="cylinder_spin" type="Node3D" parent="Mesh/protomesh/cylinder_axel"]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0055, 0.037, -1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0055, 0.037, 0)
 
 [node name="plunger_slide" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 0)
 
 [node name="plunger" type="MeshInstance3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -0.034)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.034)
 mesh = SubResource("CylinderMesh_65eug")
 skeleton = NodePath("../../../..")
 metadata/_edit_lock_ = true
@@ -110,7 +108,7 @@ metadata/_edit_lock_ = true
 metadata/_edit_lock_ = true
 
 [node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0.034)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.034)
 radius = 0.0166016
 height = 0.002
 sides = 28
@@ -118,7 +116,7 @@ material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
 [node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 0.02, 0.035)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0.035)
 operation = 2
 radius = 0.009
 height = 0.005
@@ -127,7 +125,7 @@ material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
 [node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0173, 0.01, 0.035)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, 0.01, 0.035)
 operation = 2
 radius = 0.009
 height = 0.005
@@ -136,7 +134,7 @@ material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
 [node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0173, -0.01, 0.035)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, -0.01, 0.035)
 operation = 2
 radius = 0.009
 height = 0.005
@@ -145,7 +143,7 @@ material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
 [node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, -0.02, 0.035)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.02, 0.035)
 operation = 2
 radius = 0.009
 height = 0.005
@@ -154,7 +152,7 @@ material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
 [node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0173, -0.01, 0.035)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, -0.01, 0.035)
 operation = 2
 radius = 0.009
 height = 0.005
@@ -163,7 +161,7 @@ material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
 [node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0173, 0.01, 0.035)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, 0.01, 0.035)
 operation = 2
 radius = 0.009
 height = 0.005
@@ -175,7 +173,7 @@ metadata/_edit_lock_ = true
 metadata/_edit_lock_ = true
 
 [node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
 radius = 0.0317383
 height = 0.07
 sides = 32
@@ -183,7 +181,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 0.02, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 operation = 2
 radius = 0.009
 height = 0.071
@@ -192,7 +190,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0173, 0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, 0.01, 0)
 operation = 2
 radius = 0.009
 height = 0.071
@@ -201,7 +199,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, -0.0173, -0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, -0.01, 0)
 operation = 2
 radius = 0.009
 height = 0.071
@@ -210,7 +208,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, -0.02, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.02, 0)
 operation = 2
 radius = 0.009
 height = 0.071
@@ -219,7 +217,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0173, -0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, -0.01, 0)
 operation = 2
 radius = 0.009
 height = 0.071
@@ -228,7 +226,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0.0173, 0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, 0.01, 0)
 operation = 2
 radius = 0.009
 height = 0.071
@@ -237,7 +235,7 @@ material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
 [node name="thing_cut" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 1.45519e-11, 1.45519e-11, 0.0341)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.0341)
 operation = 2
 radius = 0.0166016
 height = 0.002
@@ -249,88 +247,87 @@ metadata/_edit_lock_ = true
 
 [node name="Port1Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
 unique_name_in_owner = true
-transform = Transform3D(1, -9.86076e-31, -3.25261e-19, 3.9443e-31, 1, 0, 1.0842e-19, 0, 1, 1.45519e-11, 0.02, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 gizmo_extents = 0.0
 
 [node name="BuckshotMesh" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers/Port1Marker" instance=ExtResource("4_a06wg")]
-transform = Transform3D(1, 0, -2.58494e-26, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 visible = false
 
 [node name="Port2Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
 unique_name_in_owner = true
-transform = Transform3D(1, -3.9443e-31, -1.0842e-19, 0, 1, 0, 0, 0, 1, -0.0173, 0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0173, 0.01, 0)
 gizmo_extents = 0.0
 
 [node name="Port3Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
 unique_name_in_owner = true
-transform = Transform3D(1, -3.9443e-31, -1.0842e-19, 0, 1, 0, 0, 0, 1, -0.0173, -0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0173, -0.01, 0)
 gizmo_extents = 0.0
 
 [node name="Port4Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
 unique_name_in_owner = true
-transform = Transform3D(1, -3.9443e-31, -1.0842e-19, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.02, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 gizmo_extents = 0.0
 
 [node name="Port5Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
 unique_name_in_owner = true
-transform = Transform3D(1, -3.9443e-31, -1.0842e-19, 0, 1, 0, 0, 0, 1, 0.0173, -0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0173, -0.01, 0)
 gizmo_extents = 0.0
 
 [node name="Port6Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
 unique_name_in_owner = true
-transform = Transform3D(1, -3.9443e-31, -1.0842e-19, 0, 1, 0, 0, 0, 1, 0.0173, 0.01, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0173, 0.01, 0)
 gizmo_extents = 0.0
 
 [node name="hammer_axel" type="Node3D" parent="Mesh/protomesh"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0128, 0.06)
 
 [node name="hammer2" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel"]
-transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, -1.45519e-11, 0.0166377, 0.00161392)
+transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, 0, 0.0166377, 0.0016139)
 mesh = SubResource("BoxMesh_t0xa3")
 skeleton = NodePath("../hammer")
 metadata/_edit_lock_ = true
 
 [node name="hammer" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel"]
-transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 1.45519e-11, 0.00880404, -0.00669135)
+transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0.008804, -0.0066913)
 mesh = SubResource("BoxMesh_10oke")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="frame" type="Node3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.45519e-11, -0.02, -1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 metadata/_edit_lock_ = true
 
 [node name="frame1" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.0345, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0345, 0)
 mesh = SubResource("BoxMesh_taqe3")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="frame2" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, -0.037, 1.45519e-11)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.037, 0)
 mesh = SubResource("BoxMesh_sqmra")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="frame3" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, 0.043)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043)
 mesh = SubResource("BoxMesh_s7c88")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="frame4" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 1.45519e-11, -0.043)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.043)
 mesh = SubResource("BoxMesh_s7c88")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="plate" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
-transform = Transform3D(1, 0, 0, 0, 1.31134e-07, 1, 0, -1, 1.31134e-07, 1.45519e-11, 1.45519e-11, 0.0385)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.0385)
 mesh = SubResource("CylinderMesh_56dd1")
 metadata/_edit_lock_ = true
 
 [node name="plunger_well" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.0035, -0.08)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0035, -0.08)
 mesh = SubResource("BoxMesh_jqqyl")
 metadata/_edit_lock_ = true
 
@@ -340,23 +337,23 @@ mesh = SubResource("BoxMesh_kcauo")
 metadata/_edit_lock_ = true
 
 [node name="irons2" type="MeshInstance3D" parent="Mesh/protomesh/frame/irons"]
-transform = Transform3D(0.766045, 0.642788, 0, -0.642788, 0.766045, 0, 0, 0, 1, 0.0126859, -0.00461727, 0)
+transform = Transform3D(0.766045, 0.642788, 0, -0.642788, 0.766045, 0, 0, 0, 1, 0.0126859, -0.0046173, 0)
 mesh = SubResource("BoxMesh_kcauo")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
 [node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -1.86265e-09, -0.136001)
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.136001)
 mesh = SubResource("CylinderMesh_wdyuu")
 metadata/_edit_lock_ = true
 
 [node name="rail" type="MeshInstance3D" parent="Mesh/protomesh/barrel"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.005, 0.0125)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0.0125)
 mesh = SubResource("BoxMesh_sb7xs")
 metadata/_edit_lock_ = true
 
 [node name="sight" type="MeshInstance3D" parent="Mesh/protomesh/barrel"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.45519e-11, 0.085, 0.017954)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0.017954)
 mesh = SubResource("BoxMesh_7jtif")
 metadata/_edit_lock_ = true
 
@@ -366,7 +363,7 @@ mesh = SubResource("BoxMesh_epxfg")
 metadata/_edit_lock_ = true
 
 [node name="grip2" type="MeshInstance3D" parent="Mesh/protomesh/grip"]
-transform = Transform3D(1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 1.45519e-11, 0.0542, -0.0001)
+transform = Transform3D(1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 0, 0.0542, -9.999999999999999e-05)
 mesh = SubResource("BoxMesh_y58f1")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true

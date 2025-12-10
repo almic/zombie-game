@@ -23,9 +23,6 @@ signal swap_hand(time: float)
 ## Weapon has melee'd
 signal melee()
 
-## A round ejects from the gun
-signal round_ejected()
-
 ## For animations that load individual rounds
 signal round_loaded()
 
@@ -111,7 +108,7 @@ func _unlock_anim() -> void:
     anim_locked = false
 
 func _emit_fired() -> void:
-    # TODO: remove this from all animation logic. Firing is timer only.
+    # TODO: remove this from all animation logic.
     pass
 
 func _emit_melee() -> void:
@@ -121,7 +118,8 @@ func _emit_swap_hand(time: float) -> void:
     swap_hand.emit(time)
 
 func _emit_round_ejected() -> void:
-    round_ejected.emit()
+    # TODO: remove this from all animation logic.
+    pass
 
 func _emit_round_loaded() -> void:
     round_loaded.emit()
@@ -249,6 +247,7 @@ func seek(time: float) -> void:
 func travel(node: StringName, immediate: bool = false) -> void:
     if immediate:
         anim_state.start(node)
+        print('Teleporting to ' + node)
         return
 
     # NOTE: For development only, remove later
@@ -259,7 +258,7 @@ func travel(node: StringName, immediate: bool = false) -> void:
     if anim_node:
         anim_target = node
         is_anim_traveling = true
-        #print('Traveling to ' + node + ' (' + anim_node.animation + ')')
+    print('Traveling to ' + node + ' (' + anim_node.animation + ')')
     anim_state.travel(node)
 
 ## Weapon is ready to be used

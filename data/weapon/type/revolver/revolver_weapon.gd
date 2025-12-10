@@ -25,13 +25,11 @@ var _cylinder_position: int = 0
 var _animated_cylinder_rotation: float = 0
 
 ## If the hammer is cocked
-var _hammer_cocked: bool = false
+var hammer_cocked: bool = false
 
 
 func _init() -> void:
-    (func ():
-        _cylinder_position = wrapi(_cylinder_position, 0, ammo_reserve_size)
-    ).call_deferred()
+    rotate_cylinder.call_deferred(0, false)
 
 
 ## Rotates the cylinder by a given number of places. Positive is clockwise,
@@ -84,21 +82,23 @@ func can_fire() -> bool:
     return trigger_mechanism.is_ready()
 
 func can_charge() -> bool:
-    return not _hammer_cocked
+    return not hammer_cocked
 
 ## For the revolver, you can always unload
 func can_unload() -> bool:
     return true
 
-## For revolver scene to ask if the round in position is live
+## If the round in position is live
 func is_round_live() -> bool:
     return _cylinder_ammo_state[_cylinder_position] != 0
 
 ## For the revolver, charging cocks the hammer and rotates clockwise 1 place
 func charge_weapon() -> void:
-    if _hammer_cocked:
+    if hammer_cocked:
         return
-    _hammer_cocked = true
+    hammer_cocked = true
+    if trigger_mechanism is DoubleActionMechanism:
+        trigger_mechanism.primed = true
     rotate_cylinder(1, false)
     state_updated.emit()
 
@@ -147,25 +147,20 @@ func unload_rounds() -> void:
         _mixed_reserve.set(i, 0)
     state_updated.emit()
 
-func fire_projectiles(from: Node3D, transform: Transform3D) -> bool:
-    var updated_ammo: bool = false
+func get_ammo_to_fire() -> AmmoResource:
     var ammo_cache: Dictionary = get_supported_ammunition()
-    var type: int = _mixed_reserve[_cylinder_position]
-    var ammo: AmmoResource = ammo_cache.get(type)
+    return ammo_cache.get(_mixed_reserve[_cylinder_position])
 
-    if not ammo:
-        push_error("Revolver got no ammo to fire! Investigate!")
-        return updated_ammo
+func fire_round() -> bool:
+    var updated_ammo: bool = false
 
     # NOTE: For debugging only, should be removed
     if not _cylinder_ammo_state[_cylinder_position]:
         push_error("Revolver is firing a dead round! Investigate!")
 
-    _do_projectile_raycast(from, ammo, transform)
-
     _cylinder_ammo_state[_cylinder_position] = 0
     updated_ammo = true
-    _hammer_cocked = false
+    hammer_cocked = false
     state_updated.emit()
 
     # If we are empty, signal

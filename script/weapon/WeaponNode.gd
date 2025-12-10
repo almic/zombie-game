@@ -359,6 +359,7 @@ func update_trigger(triggered: bool, delta: float) -> bool:
         delta = mechanism.tick(triggered, delta)
 
         if mechanism.should_trigger() and weapon_type.can_fire():
+            # NOTE: goto_fire() must be BEFORE actuated because of spaghetti with revolvers
             _weapon_scene.goto_fire()
             mechanism.actuated()
             actuated = true
@@ -372,10 +373,14 @@ func update_trigger(triggered: bool, delta: float) -> bool:
                     weapon_fire_queue.append(aim_target_transform())
                     continue
 
-                weapon_fire_queue.append(weapon_type.get_ammo_to_fire())
-                weapon_fire_queue.append(weapon_projectile_transform())
+                var ammo: AmmoResource = weapon_type.get_ammo_to_fire()
+                if ammo:
+                    weapon_fire_queue.append(ammo)
+                    weapon_fire_queue.append(weapon_projectile_transform())
+
                 if on_weapon_fire():
                     emit_updated = true
+
                 continue
 
             if action == TriggerMechanism.Action.EJECT:
@@ -578,12 +583,14 @@ func on_weapon_fire() -> bool:
         print_debug('on_weapon_fire() must not be called for melee-primary weapons!')
         return false
 
-    # Turn on recoil rise when firing
+    # Turn on recoil rise when firing, before fire_round as it may become empty
     if weapon_type.recoil_enabled:
         _is_recoil_rising = true
 
-    # NOTE: This can signal an empty weapon, which turns off recoil rise
-    var updated: bool = weapon_type.fire_round()
+    # NOTE: If ammo state wasn't modified, then we should not rise or kick
+    if not weapon_type.fire_round():
+        _is_recoil_rising = false
+        return false
 
     # NOTE: Always apply recoil kick
     if weapon_type.recoil_enabled:
@@ -631,7 +638,7 @@ func on_weapon_fire() -> bool:
         _recoil_kick.transition = Tween.TRANS_SPRING
         _recoil_kick.set_target_delta(target, target - _recoil_kick.current)
 
-    return updated
+    return true
 
 func on_weapon_empty() -> void:
     # NOTE: better recoil stop on the tick we empty the gun

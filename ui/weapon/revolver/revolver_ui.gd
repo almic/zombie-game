@@ -37,6 +37,11 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     if revolver_weapon:
+        if revolver_weapon.hammer_cocked:
+            marker.self_modulate = marker_color_cocked
+        else:
+            marker.self_modulate = marker_color
+
         # NOTE: This value is updated by the animated weapon scene. Due to -Z,
         #       we always want the negative rotation from 3D.
         var target: float = fposmod(-revolver_weapon._animated_cylinder_rotation, TAU)
@@ -87,15 +92,6 @@ func update(weapon: WeaponResource) -> void:
     if not revolver:
         return
     revolver_weapon = revolver
-
-    if revolver.hammer_cocked:
-        marker.self_modulate = marker_color_cocked
-    else:
-        marker.self_modulate = marker_color
-
-    # NOTE NOTE: I don't think this needs to be done...
-    # NOTE: When we are told to update, snap to the true angle
-    # cylinder.rotation = deg_to_rad(60.0 * revolver._cylinder_position)
 
     var supported: Dictionary = revolver.get_supported_ammunition()
     for i in range(revolver.ammo_reserve_size):

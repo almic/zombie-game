@@ -148,23 +148,27 @@ func unload_rounds() -> void:
     state_updated.emit()
 
 func get_ammo_to_fire() -> AmmoResource:
+    if not is_round_live():
+        return null
+
     var ammo_cache: Dictionary = get_supported_ammunition()
     return ammo_cache.get(_mixed_reserve[_cylinder_position])
 
 func fire_round() -> bool:
     var updated_ammo: bool = false
 
-    # NOTE: For debugging only, should be removed
-    if not _cylinder_ammo_state[_cylinder_position]:
-        push_error("Revolver is firing a dead round! Investigate!")
+    if is_round_live():
+        _cylinder_ammo_state[_cylinder_position] = 0
+        updated_ammo = true
 
-    _cylinder_ammo_state[_cylinder_position] = 0
-    updated_ammo = true
-    hammer_cocked = false
-    state_updated.emit()
+    if hammer_cocked:
+        hammer_cocked = false
+        if trigger_mechanism is DoubleActionMechanism:
+            trigger_mechanism.primed = false
+        state_updated.emit()
 
     # If we are empty, signal
-    if get_reserve_total() < 1:
+    if updated_ammo and get_reserve_total() < 1:
         out_of_ammo.emit()
 
     return updated_ammo

@@ -551,12 +551,14 @@ func unload_rounds() -> void:
     _simple_reserve_total = 0
     _simple_reserve_type = 0
 
-## Get the next ammo resource to be fired
+## Get the next ammo resource to be fired. Returns 'null' if nothing can be fired.
 func get_ammo_to_fire() -> AmmoResource:
     var ammo_cache: Dictionary = get_supported_ammunition()
 
     if is_chambered():
-       return ammo_cache.get(_chambered_round_type)
+        if not _chambered_round_live:
+            return null
+        return ammo_cache.get(_chambered_round_type)
 
     if not ammo_can_mix:
         push_error("Non-chambered, non-mixed reserve weapon type! This is a mistake! Investigate!")
@@ -576,28 +578,24 @@ func fire_round() -> bool:
     var updated_ammo: bool = false
 
     if is_chambered():
-        if not _chambered_round_live:
-            push_error("Firing a non-live round! Investigate!")
-        _chambered_round_live = false
-        updated_ammo = true
+        if _chambered_round_live:
+            _chambered_round_live = false
+            updated_ammo = true
     else:
         if not ammo_can_mix:
             push_error("Firing a simple reserve, non-chambered weapon! This is a mistake! Investigate!")
-        else:
-            var size: int = _mixed_reserve.size()
-            if size < 1:
-                push_error("Firing weapon with no mixed reserve! WeaponNode should not allow this!")
-                return false
+            return false
 
+        var size: int = _mixed_reserve.size()
+        if size > 0:
             if ammo_reversed_use:
                 _mixed_reserve.resize(size - 1)
             else:
                 _mixed_reserve.remove_at(0)
-
             updated_ammo = true
 
     # If we are empty, signal
-    if get_reserve_total() < 1:
+    if updated_ammo and get_reserve_total() < 1:
         out_of_ammo.emit()
 
     return updated_ammo

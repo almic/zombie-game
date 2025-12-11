@@ -17,8 +17,9 @@ render_mode blend_mix,depth_draw_opaque,cull_back,diffuse_burley,specular_schlic
 
 // Private uniforms
 // Commented uniforms aren't needed for this shader, but are available for your own needs.
-uniform vec3 _camera_pos = vec3(0.f);
+uniform vec3 _target_pos = vec3(0.f);
 uniform float _mesh_size = 48.f;
+uniform float _subdiv = 1.f;
 uniform uint _background_mode = 1u; // NONE = 0, FLAT = 1, NOISE = 2
 uniform uint _mouse_layer = 0x80000000u; // Layer 32
 uniform float _vertex_spacing = 1.0;
@@ -27,8 +28,19 @@ uniform float _region_size = 1024.0;
 uniform float _region_texel_size = 0.0009765625; // = 1/1024
 uniform int _region_map_size = 32;
 uniform int _region_map[1024];
+//uniform vec2 _region_locations[1024];
+//uniform float _texture_normal_depth_array[32];
+//uniform float _texture_ao_strength_array[32];
+//uniform float _texture_ao_affect_array[32];
+//uniform float _texture_roughness_mod_array[32];
+//uniform float _texture_uv_scale_array[32];
+//uniform vec2 _texture_detile_array[32];
+//uniform vec4 _texture_color_array[32];
 uniform highp sampler2DArray _height_maps : repeat_disable;
 uniform highp sampler2DArray _control_maps : repeat_disable;
+//uniform highp sampler2DArray _color_maps : source_color, filter_linear_mipmap_anisotropic, repeat_disable;
+//uniform highp sampler2DArray _texture_array_albedo : source_color, filter_linear_mipmap_anisotropic, repeat_enable;
+//uniform highp sampler2DArray _texture_array_normal : hint_normal, filter_linear_mipmap_anisotropic, repeat_enable;
 
 // Public Uniforms
 uniform bool flat_terrain_normals = false;
@@ -37,6 +49,7 @@ uniform bool flat_terrain_normals = false;
 // Some are required for editor functions
 varying float v_vertex_xz_dist;
 varying vec3 v_vertex;
+varying vec3 v_camera_pos;
 
 ////////////////////////
 // Vertex
@@ -62,26 +75,49 @@ ivec3 get_index_coord(const vec2 uv, const int search) {
 	return ivec3(ivec2(mod(r_uv,_region_size)), layer_index);
 }
 
+float interpolated_height(vec2 pos) {
+	const vec2 offsets = vec2(0, 1);
+	vec2 index_id = floor(pos);
+	ivec3 index[4];
+	index[0] = get_index_coord(index_id + offsets.xy, VERTEX_PASS);
+	index[1] = get_index_coord(index_id + offsets.yy, VERTEX_PASS);
+	index[2] = get_index_coord(index_id + offsets.yx, VERTEX_PASS);
+	index[3] = get_index_coord(index_id + offsets.xx, VERTEX_PASS);
+	float h0 = texelFetch(_height_maps, index[0], 0).r;
+	float h1 = texelFetch(_height_maps, index[1], 0).r;
+	float h2 = texelFetch(_height_maps, index[2], 0).r;
+	float h3 = texelFetch(_height_maps, index[3], 0).r;
+	vec2 f = fract(pos);
+	vec2 i = 1.0 - f;
+	vec4 w = vec4(i.x * f.y, f.x * f.y, f.x * i.y, i.x * i.y);
+	float h = h0 * w[0] + h1 * w[1] + h2 * w[2] + h3 * w[3];
+	return h;
+}
+
 void vertex() {
+	// Save Camera Position to varying for access in later functions
+	v_camera_pos = MAIN_CAM_INV_VIEW_MATRIX[3].xyz;
+
 	// Get vertex of flat plane in world coordinates and set world UV
 	v_vertex = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 
-	// Camera distance to vertex on flat plane
-	v_vertex_xz_dist = length(v_vertex.xz - _camera_pos.xz);
+	// Target Object distance to vertex on flat plane
+	v_vertex_xz_dist = length(v_vertex.xz - _target_pos.xz);
 
 	// Geomorph vertex, set end and start for linear height interpolate
 	float scale = MODEL_MATRIX[0][0];
-	float vertex_lerp = smoothstep(0.55, 0.95, (v_vertex_xz_dist / scale - _mesh_size - 4.0) / (_mesh_size - 2.0));
+	float inv_scale = 1.0 / scale;
+	float vertex_distance = max(abs(v_vertex.x - _target_pos.x), abs(v_vertex.z - _target_pos.z));
+	float vertex_lerp = smoothstep(0.0, 1.0, (vertex_distance * inv_scale - _mesh_size - 4.0) / (_mesh_size - 4.0));
 	vec2 v_fract = fract(VERTEX.xz * 0.5) * 2.0;
 	// For LOD0 morph from a regular grid to an alternating grid to align with LOD1+
-	vec2 shift = (scale < _vertex_spacing + 1e-6) ? // LOD0 or not
-		// Shift from regular to symetric
+	vec2 shift = (scale < _vertex_spacing / _subdiv + 1e-6) ? // LOD0 or not
+		// Shift from regular to symmetric
 		mix(v_fract, vec2(v_fract.x, -v_fract.y),
-			round(fract(round(mod(v_vertex.z * _vertex_density, 4.0)) *
-			round(mod(v_vertex.x * _vertex_density, 4.0)) * 0.25))
-			) :
-		// Symetric shift
-		v_fract * round((fract(v_vertex.xz * 0.25 / scale) - 0.5) * 4.0);
+			round(fract(round(mod(v_vertex.z * inv_scale, 4.0)) *
+			round(mod(v_vertex.x * inv_scale, 4.0)) * 0.25))) :
+		// symmetric shift
+		v_fract * round((fract(v_vertex.xz * 0.25 * inv_scale) - 0.5) * 4.0);
 	vec2 start_pos = v_vertex.xz * _vertex_density;
 	vec2 end_pos = (v_vertex.xz - shift * scale) * _vertex_density;
 	v_vertex.xz -= shift * scale * vertex_lerp;
@@ -102,10 +138,17 @@ void vertex() {
 			(hole || (_background_mode == 0u && v_region.z < 0))) {
 		v_vertex.x = 0. / 0.;
 	} else {
-		// Interpolate Geomorph Start & End, set height. 2 Lookups.
-		ivec3 uv_a = get_index_coord(start_pos, VERTEX_PASS);
-		ivec3 uv_b = get_index_coord(end_pos, VERTEX_PASS);
-		float h = mix(texelFetch(_height_maps, uv_a, 0).r, texelFetch(_height_maps, uv_b, 0).r, vertex_lerp);
+		// Set final vertex height.
+		float h;
+		// This branch is static for each of the clipmap segments
+		// Interpolated reads only occur where sub-texel values are required.
+		if (scale < _vertex_spacing) {
+			h = mix(interpolated_height(start_pos), interpolated_height(end_pos), vertex_lerp);
+		} else {
+			ivec3 coord_a = get_index_coord(start_pos, VERTEX_PASS);
+			ivec3 coord_b = get_index_coord(end_pos, VERTEX_PASS);
+			h = mix(texelFetch(_height_maps, coord_a, 0).r,texelFetch(_height_maps, coord_b, 0).r,vertex_lerp);
+		}
 		v_vertex.y = h;
 	}
 
@@ -123,6 +166,7 @@ void vertex() {
 void fragment() {
 	// Recover UVs
 	vec2 uv = UV;
+	//vec2 uv2 = UV2;
 
 	// Lookup offsets, ID and blend weight
 	const vec3 offsets = vec3(0, 1, 2);
@@ -138,6 +182,7 @@ void fragment() {
 
 	vec3 base_ddx = dFdxCoarse(v_vertex);
 	vec3 base_ddy = dFdyCoarse(v_vertex);
+	//vec4 base_derivatives = vec4(base_ddx.xz, base_ddy.xz);
 	// Calculate the effective mipmap for regionspace, and if less than 0,
 	// skip all extra lookups required for bilinear blend.
 	float region_mip = log2(max(length(base_ddx.xz), length(base_ddy.xz)) * _vertex_density);

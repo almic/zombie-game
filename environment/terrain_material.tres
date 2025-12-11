@@ -28,25 +28,24 @@ _shader_parameters = {
 &"auto_base_texture": 2,
 &"auto_height_reduction": 0.029,
 &"auto_overlay_texture": 0,
+&"auto_shader": null,
 &"auto_slope": 1.794,
-&"bias_distance": 512.0,
 &"blend_sharpness": 0.547,
-&"depth_blur": 0.0,
-&"enable_projection": true,
-&"height_blending": true,
+&"enable_textures": true,
+&"flat_terrain_normals": false,
+&"general": null,
+&"ground_level": 0.0,
+&"macro_variation": null,
 &"macro_variation1": Color(1, 0.943244, 0.919604, 1),
 &"macro_variation2": Color(0.899196, 1, 0.823027, 1),
+&"macro_variation_enabled": true,
 &"macro_variation_slope": 0.333,
-&"mipmap_bias": 1.0,
 &"noise1_angle": 0.0,
 &"noise1_offset": Vector2(0.5, 0.5),
 &"noise1_scale": 0.04,
 &"noise2_scale": 0.076,
-&"noise3_scale": 0.225,
 &"noise_texture": SubResource("NoiseTexture2D_fj7yv"),
-&"projection_angular_division": 2.0,
-&"projection_threshold": 0.8,
-&"world_space_normal_blend": false
+&"region_blend": 0.25
 }
 world_background = 0
 texture_filtering = 1

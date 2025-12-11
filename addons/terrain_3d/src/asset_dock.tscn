@@ -16,6 +16,30 @@ vertical = true
 [node name="Buttons" type="BoxContainer" parent="Box"]
 layout_mode = 2
 
+[node name="SearchBox" type="TextEdit" parent="Box/Buttons"]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+placeholder_text = "Search"
+emoji_menu_enabled = false
+scroll_fit_content_height = true
+caret_blink = true
+caret_multiple = false
+
+[node name="SearchButton" type="Button" parent="Box/Buttons/SearchBox"]
+layout_mode = 1
+anchors_preset = 6
+anchor_left = 1.0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_left = -13.0
+offset_top = -4.0
+offset_right = -5.0
+offset_bottom = 4.0
+grow_horizontal = 0
+grow_vertical = 2
+action_mode = 0
+
 [node name="TexturesBtn" type="Button" parent="Box/Buttons"]
 custom_minimum_size = Vector2(80, 30)
 layout_mode = 2
@@ -65,8 +89,8 @@ popup/item_8/id = 8
 custom_minimum_size = Vector2(80, 10)
 layout_mode = 2
 size_flags_horizontal = 3
-min_value = 66.0
-max_value = 230.0
+min_value = 90.0
+max_value = 512.0
 value = 90.0
 
 [node name="Floating" type="Button" parent="Box/Buttons"]

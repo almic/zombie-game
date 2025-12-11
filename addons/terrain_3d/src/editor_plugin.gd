@@ -131,8 +131,8 @@ func _edit(p_object: Object) -> void:
 		terrain.set_editor(editor)
 		debug = terrain.debug_level
 		editor.set_terrain(terrain)
-		region_gizmo.set_node_3d(terrain)
-		terrain.add_gizmo(region_gizmo)
+		#region_gizmo.set_node_3d(terrain)
+		#terrain.add_gizmo(region_gizmo)
 		ui.set_visible(true)
 		terrain.set_meta("_edit_lock_", true)
 

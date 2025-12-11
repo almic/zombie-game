@@ -60,7 +60,7 @@ void main() {
     if (any(lessThan(pos, params.size))) {
 #ifdef READ
         vec3 n = params.night_sensitivity;
-        vec3 v = texelFetch(screen, pos, 0).rgb;
+        vec3 v = max(texelFetch(screen, pos, 0).rgb, vec3(0));
 
         // tmp_data[t] = max(v.r, max(v.g, v.b));
         tmp_data[t] = vec2(

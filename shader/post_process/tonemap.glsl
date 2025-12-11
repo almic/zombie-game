@@ -46,6 +46,11 @@ void main()
     ivec2 uv = ivec2(gl_GlobalInvocationID.xy);
     vec4 color = imageLoad(screen, uv);
 
+    // Debug shaders/ materials which output negative pixel values
+    if (max(color, vec4(0)) != color) {
+        color.rgb = vec3(1.0, 0.0, 1.0);
+    }
+
     vec2 auto_values = texelFetch(auto_exposure, ivec2(0), 0).rg;
     float exposure = params.exposure_scale / auto_values.r;
     float color_luminance = max(color.r, max(color.g, color.b));

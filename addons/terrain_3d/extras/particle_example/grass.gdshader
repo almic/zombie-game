@@ -30,8 +30,6 @@ void vertex() {
 	// Get wind force and scale from process()
 	float scale = pow(INSTANCE_CUSTOM[3] * INSTANCE_CUSTOM[3], 0.707);
 	float force = INSTANCE_CUSTOM[2] * data[2] * scale;
-	// Add some cheap jitter at high wind values
-	force -= fract(force * 256.0) * force * 0.05;
 	// Curve the result
 	force = pow(force, 0.707);
 
@@ -54,7 +52,7 @@ void vertex() {
 
 void fragment() {
 	// Hard coded color.
-	ALBEDO = vec3(0.20, 0.22, 0.05) * (data[2] * 0.5 + 0.5);
+	ALBEDO = vec3(0.20, 0.22, 0.05) * (clamp(data[2], 0., 1.) * 0.5 + 0.5);
 	ALBEDO.rg *= (data.rg * 0.3 + 0.9);
 	ALBEDO *= pow(COLOR.rgb, vec3(2.2));
 	// Modify roughness / specular based on wind force for added detail

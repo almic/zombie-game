@@ -66,12 +66,15 @@ extends Node3D
 			p.amount = amount
 
 
-@export_range(1, 256, 1) var process_fixed_fps: int = 30:
+@export_range(0, 256, 1) var process_fixed_fps: int = 0:
 	set(value):
-		process_fixed_fps = maxi(value, 1)
+		process_fixed_fps = maxi(value, 0)
 		for p in particle_nodes:
 			p.fixed_fps = process_fixed_fps
-			p.preprocess = 1.0 / float(process_fixed_fps)
+			if process_fixed_fps > 0:
+				p.preprocess = 1.0 / float(process_fixed_fps)
+			else:
+				p.preprocess = 0.0
 
 
 ## Access to process material parameters

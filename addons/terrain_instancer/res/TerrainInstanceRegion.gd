@@ -2,7 +2,7 @@
 class_name TerrainInstanceRegion extends Resource
 
 
-var terrain: Node
+var instance_node: TerrainInstanceNode
 
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_NO_EDITOR)
 var vertices: PackedInt32Array = []

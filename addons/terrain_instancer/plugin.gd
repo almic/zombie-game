@@ -1,12 +1,20 @@
 @tool
 extends EditorPlugin
 
+const Toolbar = preload("uid://c3rp8rh2rylb0")
+const Gizmos = preload("uid://diallkouwe5cd")
 
+
+var gizmos: Gizmos
+var toolbar: Toolbar
+var tool_mode: Toolbar.Tool = Toolbar.Tool.NONE
 var edited_node: TerrainInstanceNode
 
 var mouse_update_rate: int = 3
 var mouse_position: Vector3
 var mouse_position_tick: int = 0
+
+var triangle_vertices: Array = []
 
 
 func _enable_plugin():
@@ -14,7 +22,14 @@ func _enable_plugin():
     # add_autoload_singleton("GUIDE", "res://addons/guide/guide.gd")
 
 func _enter_tree() -> void:
-    pass
+    toolbar = Toolbar.new()
+    add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbar)
+
+    if not toolbar.tool_selected.is_connected(on_tool_selected):
+        toolbar.tool_selected.connect(on_tool_selected)
+
+    gizmos = Gizmos.new()
+    add_node_3d_gizmo_plugin(gizmos)
     # _main_panel = MainPanel.instantiate()
     # _main_panel.initialize(self)
     # EditorInterface.get_editor_main_screen().add_child(_main_panel)
@@ -22,6 +37,8 @@ func _enter_tree() -> void:
     # _make_visible(false)
 
 func _exit_tree() -> void:
+    remove_node_3d_gizmo_plugin(gizmos)
+
     pass
     # if is_instance_valid(_main_panel):
     #     _main_panel.queue_free()
@@ -30,6 +47,9 @@ func _exit_tree() -> void:
 func _disable_plugin():
     pass
     # remove_autoload_singleton("GUIDE")
+
+func _make_visible(visible: bool) -> void:
+    toolbar.visible = visible
 
 func _handles(object: Object) -> bool:
     return object is TerrainInstanceNode
@@ -82,15 +102,22 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
     if not edited_node.terrain:
         return AFTER_GUI_INPUT_PASS
 
-    # Add vertex
-    if mouse == 1 and edited_node.active_region:
+    if mouse == 1:
         var vertex: Vector2i = Vector2i(
                 edited_node.project_terrain(
                     Vector2(mouse_position.x, mouse_position.z)
                 ).round()
         )
         edited_node.active_region.add_vertex(vertex)
+        edited_node.update_gizmos()
         print('clicked at %s, vertex: %s' % [mouse_position, vertex])
         return AFTER_GUI_INPUT_STOP
 
     return AFTER_GUI_INPUT_PASS
+
+func on_tool_selected(tool: Toolbar.Tool) -> void:
+    tool_mode = tool
+
+    # Clear triangle list when selecting that tool
+    if tool == Toolbar.Tool.ADD_TRIANGLE:
+        triangle_vertices.clear()

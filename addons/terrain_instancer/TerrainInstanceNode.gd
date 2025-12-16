@@ -1,5 +1,5 @@
 @tool
-class_name TerrainInstanceNode extends Node
+class_name TerrainInstanceNode extends Node3D
 
 
 ## Terrain node to manage instancing for
@@ -90,9 +90,13 @@ func project_global(point: Vector2) -> Vector3:
     return Vector3.INF
 
 func add_region() -> void:
-    active_region = TerrainInstanceRegion.new()
-    regions.append(active_region)
+    var new_region = TerrainInstanceRegion.new()
+    new_region.instance_node = self
+    regions.append(new_region)
+    active_region = new_region
+    update_gizmos()
 
 func clear_regions() -> void:
     active_region = null
     regions.clear()
+    update_gizmos()

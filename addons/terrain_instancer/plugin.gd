@@ -29,6 +29,7 @@ func _enter_tree() -> void:
         toolbar.tool_selected.connect(on_tool_selected)
 
     gizmos = Gizmos.new()
+    gizmos.plugin = self
     add_node_3d_gizmo_plugin(gizmos)
     # _main_panel = MainPanel.instantiate()
     # _main_panel.initialize(self)
@@ -102,16 +103,21 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
     if not edited_node.terrain:
         return AFTER_GUI_INPUT_PASS
 
+    var terrain_point: Vector2 = edited_node.project_terrain(Vector2(mouse_position.x, mouse_position.z))
+
     if mouse == 1:
-        var vertex: Vector2i = Vector2i(
-                edited_node.project_terrain(
-                    Vector2(mouse_position.x, mouse_position.z)
-                ).round()
-        )
-        edited_node.active_region.add_vertex(vertex)
-        edited_node.update_gizmos()
+        var vertex: Vector2i = Vector2i(terrain_point.round())
         print('clicked at %s, vertex: %s' % [mouse_position, vertex])
-        return AFTER_GUI_INPUT_STOP
+
+        if tool_mode == Toolbar.Tool.ADD_TRIANGLE:
+            edited_node.active_region.add_vertex(vertex)
+            edited_node.update_gizmos()
+        elif tool_mode == Toolbar.Tool.SELECT:
+            pass
+        else:
+            print('No tool selected!')
+
+        return AFTER_GUI_INPUT_CUSTOM
 
     return AFTER_GUI_INPUT_PASS
 

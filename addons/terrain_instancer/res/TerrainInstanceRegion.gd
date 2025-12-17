@@ -66,6 +66,12 @@ func get_vertex(index: int) -> Vector2i:
     index *= 2
     return Vector2i(vertices[index], vertices[index + 1])
 
+## Set the vertex by id. This does not perform a bounds check.
+func set_vertex(index: int, new_vertex: Vector2i) -> void:
+    index *= 2
+    vertices[index]     = new_vertex.x
+    vertices[index + 1] = new_vertex.y
+
 ## Get the ID of the vertex nearest to point, within some radius. Returns -1 if
 ## there was no vertex within the radius. If you need the vertex position
 ## instead, prefer `get_nearest_vertex()`.
@@ -74,6 +80,7 @@ func get_nearest_vertex_id(point: Vector2, range: float) -> int:
     if vertex_count < 1:
         return -1
 
+    var range_sq: float = range * range
     var offset: Vector2 = Vector2.ONE * range
     var max_pos: Vector2 = point + offset
     var min_pos: Vector2 = point - offset
@@ -90,7 +97,7 @@ func get_nearest_vertex_id(point: Vector2, range: float) -> int:
             id += 2
             continue
         var dist_sq: float = point.distance_squared_to(vertex)
-        if dist_sq < best_dist:
+        if dist_sq <= range_sq and dist_sq < best_dist:
             best_dist = dist_sq
             best_id = id
         id += 2

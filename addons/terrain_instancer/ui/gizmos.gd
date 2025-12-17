@@ -6,6 +6,7 @@ const Plugin = preload("uid://khsyydwj7rw2")
 var SPHERE_MESH: SphereMesh
 var SPHERE_COLLISION: TriangleMesh
 var SPHERE_MATERIAL: StandardMaterial3D
+var SPHERE_EDITING_MATERIAL: StandardMaterial3D
 
 
 var plugin: Plugin
@@ -31,6 +32,10 @@ func _init() -> void:
     SPHERE_MATERIAL.albedo_color = Color(1.0, 0.5, 1.0, 0.08)
     SPHERE_MATERIAL.stencil_color = Color(0.4, 0.05, 0.35, 0.8)
 
+    SPHERE_EDITING_MATERIAL = SPHERE_MATERIAL.duplicate(true)
+    SPHERE_EDITING_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.08)
+    SPHERE_EDITING_MATERIAL.stencil_color = Color(0.0, 0.25, 0.5, 0.8)
+
 func _get_gizmo_name() -> String:
     return 'Terrain Instance Region'
 
@@ -50,12 +55,32 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
     if not region:
         return
 
+    var transform: Transform3D = Transform3D()
+
+    # Show blue marker to nearest terrain vertex when adding triangles
+    if (not edited_handle) and plugin.tool_mode == Plugin.Toolbar.Tool.ADD_TRIANGLE:
+        var terrain_point: Vector2 = instance.project_terrain(
+                Vector2(
+                    plugin.mouse_position.x,
+                    plugin.mouse_position.z
+                )
+        )
+        var global_point: Vector3 = instance.project_global(terrain_point.round())
+        if global_point.is_finite():
+            transform.origin = global_point
+            gizmo.add_mesh(SPHERE_MESH, SPHERE_EDITING_MATERIAL, transform)
+
     cached_collision_meshes.resize(region.get_vertex_count())
 
-    var transform: Transform3D = Transform3D()
     for vertex_id in region.get_vertex_count():
         transform.origin = instance.project_global(region.get_vertex(vertex_id))
-        gizmo.add_mesh(SPHERE_MESH, SPHERE_MATERIAL, transform)
+
+        if edited_handle and edited_handle.id == vertex_id:
+            gizmo.add_mesh(SPHERE_MESH, SPHERE_EDITING_MATERIAL, transform)
+            transform.origin = plugin.mouse_position
+            gizmo.add_mesh(SPHERE_MESH, SPHERE_MATERIAL, transform)
+        else:
+            gizmo.add_mesh(SPHERE_MESH, SPHERE_MATERIAL, transform)
 
         # Set up collision mesh
         var collision_mesh: TriangleMesh = TriangleMesh.new()
@@ -151,7 +176,6 @@ func _set_handle(
             )
     )
 
-    print('updating vertex %d' % handle_id)
     edited_handle.current_pos = Vector2i(terrain_point.round())
     region.set_vertex(edited_handle.id, edited_handle.current_pos)
     region.instance_node.update_gizmos()

@@ -95,6 +95,11 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         var camera_dir: Vector3 = viewport_camera.project_ray_normal(mouse_pos)
 
         mouse_position = edited_node.intersect_terrain(camera_pos, camera_dir)
+
+        # Update marker position when in triangle mode
+        if edited_node and tool_mode == Toolbar.Tool.ADD_TRIANGLE:
+            edited_node.update_gizmos()
+
         return AFTER_GUI_INPUT_PASS
 
     if mouse == 0:
@@ -113,17 +118,23 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             edited_node.active_region.add_vertex(vertex)
             edited_node.update_gizmos()
         elif tool_mode == Toolbar.Tool.SELECT:
-            pass
+            # Allow gizmo selection
+            return AFTER_GUI_INPUT_CUSTOM
         else:
             print('No tool selected!')
 
-        return AFTER_GUI_INPUT_CUSTOM
+        return AFTER_GUI_INPUT_STOP
+
 
     return AFTER_GUI_INPUT_PASS
 
 func on_tool_selected(tool: Toolbar.Tool) -> void:
+    var previous_tool := tool_mode
     tool_mode = tool
 
     # Clear triangle list when selecting that tool
     if tool == Toolbar.Tool.ADD_TRIANGLE:
         triangle_vertices.clear()
+    # Clear triangle marker when deselecting this tool
+    elif edited_node and previous_tool == Toolbar.Tool.ADD_TRIANGLE:
+        edited_node.update_gizmos()

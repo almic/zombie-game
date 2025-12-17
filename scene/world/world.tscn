@@ -728,10 +728,11 @@ process_mode = 1
 top_level = true
 metadata/_edit_lock_ = true
 
-[node name="TerrainInstanceNode" type="Node" parent="Terrain3D" node_paths=PackedStringArray("terrain")]
+[node name="TerrainInstanceNode" type="Node3D" parent="Terrain3D" node_paths=PackedStringArray("terrain")]
 script = ExtResource("83_cqpt1")
 terrain = NodePath("..")
 metadata/_custom_type_script = "uid://db37nkvye6raf"
+metadata/_edit_lock_ = true
 
 [node name="LevelBlocking" type="Node" parent="."]
 

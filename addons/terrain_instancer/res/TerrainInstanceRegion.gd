@@ -4,6 +4,7 @@ class_name TerrainInstanceRegion extends Resource
 
 var instance_node: TerrainInstanceNode
 
+
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_NO_EDITOR)
 var vertices: PackedInt32Array = []
 
@@ -11,51 +12,94 @@ var vertices: PackedInt32Array = []
 var indexes: PackedInt32Array = []
 
 
+var mesh: ArrayMesh = ArrayMesh.new()
+var triangle_mesh: TriangleMesh = TriangleMesh.new()
+var triangle_mesh_faces: PackedVector3Array = PackedVector3Array()
+var _reload_mesh: bool = true
+
+func update_mesh() -> void:
+    if not _reload_mesh:
+        return
+
+    mesh.clear_surfaces()
+
+    if not indexes.is_empty():
+        var data: Array = []
+        data.resize(Mesh.ARRAY_MAX)
+
+        var mapped_vertices: PackedVector3Array = PackedVector3Array()
+        var size: int = vertices.size()
+        mapped_vertices.resize(size / 2)
+        var i: int = 0
+        var mi: int = 0
+        while i < size:
+            mapped_vertices[mi] = instance_node.project_global(
+                    Vector2(vertices[i], vertices[i + 1])
+            )
+            i += 2
+            mi += 1
+
+        data[Mesh.ARRAY_VERTEX] = mapped_vertices
+        data[Mesh.ARRAY_INDEX]  = indexes
+
+        mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, data)
+
+        triangle_mesh = mesh.generate_triangle_mesh()
+        triangle_mesh_faces = triangle_mesh.get_faces()
+    else:
+        triangle_mesh = TriangleMesh.new()
+        triangle_mesh_faces.clear()
+
+    _reload_mesh = false
+
 ## Adds a vertex, returns the new vertex id
-func add_vertex(vertex: Vector2i) -> int:
+func add_vertex(vertex: Vector2i, enable_checks: bool = true) -> int:
+    if enable_checks:
+        var id: int = get_vertex_id(vertex)
+        if id != -1:
+            push_error('Vertex %s already exists, id: %d' % [vertex, id])
+            return -1
+        # TODO: reject vertices that lie within an existing face.
+
     var vertex_count: int = vertices.size()
-    var index_count: int = indexes.size()
-
-    if index_count < 3:
-        vertices.resize(vertex_count + 2)
-        indexes.append(vertex_count / 2)
-        vertices[vertex_count]     = vertex.x
-        vertices[vertex_count + 1] = vertex.y
-
-        if index_count == 2:
-            _sort_indexes(indexes)
-
-        print('Vertices: ', vertices)
-        print('Indexes: ', indexes)
-        return vertex_count / 2
-
-    # TODO: reject vertices that lie within an existing face. My theory was to
-    #       get the two closest points and check all their faces, this should
-    #       quickly reduce the amount of computation needed and guarantee a result
-
     vertices.resize(vertex_count + 2)
     vertices[vertex_count]     = vertex.x
     vertices[vertex_count + 1] = vertex.y
 
-    # TODO: get closest vertices that will not produce edges which overlap
-    #       existing faces
-    vertex_count /= 2
-    var next_face: PackedInt32Array = [
-        indexes[vertex_count - 2],
-        indexes[vertex_count - 1],
-        vertex_count
-    ]
-    _sort_indexes(next_face)
-
-    indexes.append_array(next_face)
     print('Vertices: ', vertices)
-    print('Indexes: ', indexes)
-    return vertex_count
+    return vertex_count / 2
 
-## Removes all vertices
-func clear_vertices() -> void:
+## Adds a face using indexes, returns the new face id
+func add_face(index_array: PackedInt32Array, enable_checks: bool = true) -> int:
+    if enable_checks:
+        var size: int = index_array.size()
+        if size != 3:
+            push_error('Index array must be length 3, got %d ints' % size)
+            return -1
+        var max_index: int = vertices.size() / 2
+        for i in range(size):
+            var index: int = index_array[i]
+            if index < 0 or index >= max_index:
+                push_error('Index value %d (element %d) is invalid, must be 0-%d' % [index, i, max_index])
+                return -1
+        # TODO: check that face does not already exist, would require deterministic index sorting
+
+    # Sort and add
+    var sorted: PackedInt32Array = index_array.duplicate()
+    _sort_indexes(sorted)
+
+    var face_id: int = indexes.size() / 3
+    indexes.append_array(sorted)
+    _reload_mesh = true
+
+    print('Indexes: ', indexes)
+    return face_id
+
+## Removes all vertices and faces
+func clear_data() -> void:
     vertices.clear()
     indexes.clear()
+    _reload_mesh = true
 
 ## Get the vertex count
 func get_vertex_count() -> int:
@@ -66,11 +110,22 @@ func get_vertex(index: int) -> Vector2i:
     index *= 2
     return Vector2i(vertices[index], vertices[index + 1])
 
+## Find a vertex id from a position. Returns -1 if not found
+func get_vertex_id(vertex: Vector2i) -> int:
+    var index: int = 0
+    var size: int = vertices.size()
+    while index < size:
+        if vertex.x == vertices[index] and vertex.y == vertices[index + 1]:
+            return index / 2
+        index += 2
+    return -1
+
 ## Set the vertex by id. This does not perform a bounds check.
 func set_vertex(index: int, new_vertex: Vector2i) -> void:
     index *= 2
     vertices[index]     = new_vertex.x
     vertices[index + 1] = new_vertex.y
+    _reload_mesh = true
 
 ## Get the ID of the vertex nearest to point, within some radius. Returns -1 if
 ## there was no vertex within the radius. If you need the vertex position
@@ -117,87 +172,75 @@ func get_nearest_vertex(point: Vector2, range: float) -> Vector2i:
 
 ## Sorts the indexes in clockwise order
 func _sort_indexes(arr: PackedInt32Array) -> void:
-    var a: Vector2i = get_vertex(arr[0])
-    var b: Vector2i = get_vertex(arr[1])
-    var c: Vector2i = get_vertex(arr[2])
+    # Get vectors relative to center point
+    var ia: int = arr[0]
+    var ib: int = arr[1]
+    var ic: int = arr[2]
+    var a: Vector2 = get_vertex(ia)
+    var b: Vector2 = get_vertex(ib)
+    var c: Vector2 = get_vertex(ic)
+
+    # invert z
+    a.y = -a.y
+    b.y = -b.y
+    c.y = -c.y
 
     var o: Vector2 = Vector2(
         a.x + b.x + c.x,
         a.y + b.y + c.y
     ) / 3.0
+    # print("o: %s" % o)
+    a -= o
+    b -= o
+    c -= o
 
-    # [0, 1, 2] == [1, 2, 0]
-    if _compare_vertices(o, a, b):
-        # a(0) <-> b(1)
-        # print("b < a")
-        var t: int = arr[0]
-        arr[0] = arr[1]
-        arr[1] = t
-        if _compare_vertices(o, a, c):
-            # a(1) <-> c(2)
-            # print("c < a")
-            arr[1] = arr[2]
-            arr[2] = t
-        elif _compare_vertices(o, b, c):
-            # b(0) <-> c(2)
-            # print("c < b")
-            t = arr[0]
-            arr[0] = arr[2]
-            arr[2] = t
-    elif _compare_vertices(o, a, c):
-        # a(0) <-> c(2)
-        # print("c < a")
-        var t: int = arr[0]
-        arr[0] = arr[2]
-        arr[2] = t
-        if _compare_vertices(o, b, c):
-            # b(1) <-> c(0)
-            # print("c < b")
-            t = arr[1]
-            arr[1] = arr[0]
-            arr[0] = t
-    elif _compare_vertices(o, b, c):
-        # b(1) <-> c(2)
-        # print("c < b")
-        var t: int = arr[1]
-        arr[1] = arr[2]
-        arr[2] = t
+    # Convert each vector to an angle, but inverted so they sort in reverse
+    # NOTE: this is slow for many vectors, but acceptable since this is done
+    #       only one time when adding, and once when checking for duplicates
+    var angle_a: float = TAU - (atan2(a.y, a.x) + PI)
+    var angle_b: float = TAU - (atan2(b.y, b.x) + PI)
+    var angle_c: float = TAU - (atan2(c.y, c.x) + PI)
 
-## Comares two vertices, returns 'true' if b < a, 'false' if a <= b
-static func _compare_vertices(c: Vector2, a: Vector2i, b: Vector2i) -> bool:
-    var ac_x: float = a.x - c.x
-    var bc_x: float = b.x - c.x
+    # print('angles:\n  a: %s = %f\n  b: %s = %f\n  c: %s = %f' % [a, angle_a, b, angle_b, c, angle_c])
 
-    # b  |  a
-    if ac_x >= 0 and bc_x < 0:
-        # print('b | a')
-        return true
-    # a  |  b
-    if ac_x < 0 and bc_x >= 0:
-        # print('a | b')
-        return false
-    # | a b |
-    if ac_x == 0 and bc_x == 0:
-        # print('| ab |')
-        if (a.y - c.y) >= 0 or (b.y - c.y) >= 0:
-            # print('a OR b > c')
-            return b.y > a.y
-        return b.y < a.y
+    # Sort by angle normally
+    var sorted: Array = Array(arr)
+    sorted.sort_custom(
+        func(a: int, b: int) -> bool:
+            var f: float
+            if a == ia:
+                f = angle_a
+            elif a == ib:
+                f = angle_b
+            else:
+                f = angle_c
 
-    # compute the cross product of vectors (c -> a) x (c -> b)
-    var ac_y: float = a.y - c.y
-    var bc_y: float = b.y - c.y
+            if b == ia:
+                return f < angle_a
+            if b == ib:
+                return f < angle_b
+            return f < angle_c
+    )
 
-    var det: float = (ac_x * bc_y) - (bc_x * ac_y)
-    if det < 0:
-        # print('det < 0')
-        return true
-    if det > 0:
-        # print('det > 0')
-        return false
+    # print('first sort: %s' % str(sorted))
 
-    # points a and b are on the same line from the center
-    # check which point is closer to the center
-    var d1: float = (ac_x * ac_x) + (ac_y * ac_y)
-    var d2: float = (bc_x * bc_x) + (bc_y * bc_y)
-    return d2 < d1
+    # Place lowest index first, followed by the remaining indexes
+    # NOTE: this step is to make the resulting set of indexes deterministic
+    #       for any input ordering of the same three vertices
+    var old := sorted.duplicate()
+    var i: int = 0
+    var best: int = 0
+    var lowest: int = Vector2i.MAX.x
+    while i < 3:
+        if old[i] < lowest:
+            lowest = old[i]
+            best = i
+        i += 1
+
+    i = 0
+    while i < 3:
+        arr[i] = old[best]
+        i += 1
+        best = posmod(best + 1, 3)
+
+    # print('index sort: %s' % arr)

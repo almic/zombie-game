@@ -7,6 +7,7 @@ var SPHERE_MESH: SphereMesh
 var SPHERE_COLLISION: TriangleMesh
 var SPHERE_MATERIAL: StandardMaterial3D
 var SPHERE_EDITING_MATERIAL: StandardMaterial3D
+var SURFACE_MATERIAL: StandardMaterial3D
 
 
 var plugin: Plugin
@@ -36,6 +37,12 @@ func _init() -> void:
     SPHERE_EDITING_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.08)
     SPHERE_EDITING_MATERIAL.stencil_color = Color(0.0, 0.25, 0.5, 0.8)
 
+    SURFACE_MATERIAL = SPHERE_MATERIAL.duplicate(true)
+    SURFACE_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.08)
+    SURFACE_MATERIAL.stencil_color = Color(0.0, 0.25, 0.5, 0.8)
+    SURFACE_MATERIAL.render_priority = BaseMaterial3D.RENDER_PRIORITY_MIN + 1
+    SURFACE_MATERIAL.set_flag(BaseMaterial3D.FLAG_DISABLE_DEPTH_TEST, true)
+
 func _get_gizmo_name() -> String:
     return 'Terrain Instance Region'
 
@@ -54,6 +61,27 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
     var region: TerrainInstanceRegion = instance.active_region
     if not region:
         return
+
+    region.update_mesh()
+    if region.mesh.get_surface_count():
+        # Wireframe
+        var size: int = region.triangle_mesh_faces.size()
+        var i: int = 0
+        while i < size:
+            gizmo.add_lines(
+                [
+                    region.triangle_mesh_faces[i],
+                    region.triangle_mesh_faces[i + 1],
+
+                    region.triangle_mesh_faces[i],
+                    region.triangle_mesh_faces[i + 2],
+
+                    region.triangle_mesh_faces[i + 1],
+                    region.triangle_mesh_faces[i + 2]
+                ], SURFACE_MATERIAL)
+            i += 3
+        # Filling
+        gizmo.add_mesh(region.mesh, SURFACE_MATERIAL)
 
     var transform: Transform3D = Transform3D()
 

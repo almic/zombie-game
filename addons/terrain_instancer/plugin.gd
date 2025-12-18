@@ -14,7 +14,7 @@ var mouse_update_rate: int = 3
 var mouse_position: Vector3
 var mouse_position_tick: int = 0
 
-var triangle_vertices: Array = []
+var triangle_vertices: PackedInt32Array = []
 
 
 func _enable_plugin():
@@ -115,8 +115,23 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         print('clicked at %s, vertex: %s' % [mouse_position, vertex])
 
         if tool_mode == Toolbar.Tool.ADD_TRIANGLE:
-            edited_node.active_region.add_vertex(vertex)
-            edited_node.update_gizmos()
+            var update: bool = false
+            var existing: int = edited_node.active_region.get_vertex_id(vertex)
+            if existing != -1:
+                triangle_vertices.append(existing)
+            else:
+                triangle_vertices.append(edited_node.active_region.add_vertex(vertex, false))
+                update = true
+
+            if triangle_vertices.size() >= 3:
+                triangle_vertices.resize(3)
+                edited_node.active_region.add_face(triangle_vertices, false)
+                triangle_vertices.clear()
+                update = true
+
+            if update:
+                edited_node.update_gizmos()
+
         elif tool_mode == Toolbar.Tool.SELECT:
             # Allow gizmo selection
             return AFTER_GUI_INPUT_CUSTOM

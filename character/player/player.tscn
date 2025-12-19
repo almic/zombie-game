@@ -52,7 +52,7 @@ height = 1.7
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
 
-[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["zombie_target"]]
+[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["player", "zombie_target"]]
 process_mode = 1
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 collision_mask = 115

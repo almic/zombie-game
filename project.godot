@@ -74,6 +74,7 @@ world="ZA WARUDO"
 nav_group="Used in terrain nav baking"
 sound_group:grass="group for grass"
 sound_group:rock=""
+player="Is a player"
 
 [gui]
 

@@ -23,6 +23,7 @@ func _enable_plugin():
 
 func _enter_tree() -> void:
     toolbar = Toolbar.new()
+    toolbar.visible = false
     add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbar)
 
     if not toolbar.tool_selected.is_connected(on_tool_selected):

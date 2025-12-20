@@ -1287,4 +1287,9 @@ func bush_test() -> void:
         return
 
     var bush_intersection: Dictionary = results[0]
+    var terrain: Terrain3D = bush_intersection.collider as Terrain3D
+    var shape_rid: RID = PhysicsServer3D.body_get_shape(
+        bush_intersection.rid, bush_intersection.shape
+    )
     print('bush: %s id: %s' % [bush_intersection.collider, bush_intersection.rid])
+    print(terrain.collision.get_instance_information(shape_rid))

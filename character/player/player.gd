@@ -646,6 +646,9 @@ func _physics_process(delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
+    # TODO: play sounds when walking through bush
+    # bush_test()
+
     # NOTE: Only process input in _process(), so we do not
     # miss inputs shorter than a physics frame.
 
@@ -1271,3 +1274,17 @@ func show_self(yes: bool = true) -> void:
     visible = false
     collider.disabled = true
     weapon_node.process_mode = Node.PROCESS_MODE_DISABLED
+
+func bush_test() -> void:
+    var space := get_world_3d().direct_space_state
+    var query: PhysicsShapeQueryParameters3D = PhysicsShapeQueryParameters3D.new()
+    query.transform = global_transform
+    query.shape_rid = PhysicsServer3D.body_get_shape(get_rid(), 0)
+    query.collision_mask = 512 # test_bush layer
+
+    var results: Array[Dictionary] = space.intersect_shape(query, 1)
+    if results.is_empty():
+        return
+
+    var bush_intersection: Dictionary = results[0]
+    print('bush: %s id: %s' % [bush_intersection.collider, bush_intersection.rid])

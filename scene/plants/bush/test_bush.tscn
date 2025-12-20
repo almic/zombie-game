@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3 uid="uid://cyi3vg3dckja8"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sxnmx"]
+albedo_color = Color(0.22352941, 0.44705883, 0.12941177, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_tghv8"]
+material = SubResource("StandardMaterial3D_sxnmx")
+radial_segments = 20
+rings = 10
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_p5v52"]
+
+[node name="TestBush" type="Area3D"]
+
+[node name="LOD0" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_tghv8")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_p5v52")

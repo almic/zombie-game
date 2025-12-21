@@ -4,7 +4,13 @@ class_name TerrainInstanceRegion extends Node3D
 
 var instance_node: TerrainInstanceNode
 
-@export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_NO_EDITOR)
+## This is the ID used for data storage. It is displayed for convenience only,
+## it should not be modified while the editor is running.
+@export_custom(
+    PROPERTY_HINT_RANGE,
+    '0,10000,1,hide_slider',
+    PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY
+)
 var region_id: int = 0
 var _rd: TerrainInstanceRegionData
 

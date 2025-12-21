@@ -24,6 +24,7 @@ func _enable_plugin():
 
 func _enter_tree() -> void:
     toolbar = Toolbar.new()
+    toolbar.plugin = self
     toolbar.visible = false
     add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbar)
 
@@ -68,12 +69,14 @@ func _edit(object: Object) -> void:
             edited_region.hide_gizmos()
         edited_node = null
         edited_region = null
+        toolbar.update_visibility()
         return
 
     if object == edited_node:
         if edited_region:
             edited_region = null
         edited_node.show_gizmos()
+        toolbar.update_visibility()
         return
 
     if object is TerrainInstanceNode:
@@ -101,6 +104,8 @@ func _edit(object: Object) -> void:
         if edited_region:
             edited_region.hide_gizmos()
             edited_region = null
+
+    toolbar.update_visibility()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> AfterGUIInput:
     if not edited_node:
@@ -176,6 +181,9 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
 
     return AFTER_GUI_INPUT_PASS
+
+static func logs(message: String) -> void:
+    print_rich('[color=light_slate_gray]TerrainInstancer : %s[/color]' % message)
 
 func on_tool_selected(tool: Toolbar.Tool) -> void:
     var previous_tool := tool_mode

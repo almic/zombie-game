@@ -1,21 +1,35 @@
 @tool
-class_name TerrainInstanceRegion extends Resource
+class_name TerrainInstanceRegion extends Node3D
 
 
 var instance_node: TerrainInstanceNode
 
-
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_NO_EDITOR)
-var vertices: PackedInt32Array = []
-
-@export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_NO_EDITOR)
-var indexes: PackedInt32Array = []
-
+var region_id: int = 0
+var _rd: TerrainInstanceRegionData
 
 var mesh: ArrayMesh = ArrayMesh.new()
 var triangle_mesh: TriangleMesh = TriangleMesh.new()
 var triangle_mesh_faces: PackedVector3Array = PackedVector3Array()
 var _reload_mesh: bool = true
+var _show_gizmo: bool = false
+
+
+func _notification(what: int) -> void:
+    if what == NOTIFICATION_EDITOR_PRE_SAVE:
+        if _rd:
+            ResourceSaver.save(_rd, _rd.resource_path)
+
+func set_data(data: TerrainInstanceRegionData) -> void:
+    _rd = data
+
+func show_gizmos() -> void:
+    _show_gizmo = true
+    update_gizmos()
+
+func hide_gizmos() -> void:
+    _show_gizmo = false
+    update_gizmos()
 
 func update_mesh() -> void:
     if not _reload_mesh:
@@ -23,24 +37,24 @@ func update_mesh() -> void:
 
     mesh.clear_surfaces()
 
-    if not indexes.is_empty():
+    if _rd.indexes.size() > 0:
         var data: Array = []
         data.resize(Mesh.ARRAY_MAX)
 
         var mapped_vertices: PackedVector3Array = PackedVector3Array()
-        var size: int = vertices.size()
+        var size: int = _rd.vertices.size()
         mapped_vertices.resize(size / 2)
         var i: int = 0
         var mi: int = 0
         while i < size:
             mapped_vertices[mi] = instance_node.project_global(
-                    Vector2(vertices[i], vertices[i + 1])
+                    Vector2(_rd.vertices[i], _rd.vertices[i + 1])
             )
             i += 2
             mi += 1
 
         data[Mesh.ARRAY_VERTEX] = mapped_vertices
-        data[Mesh.ARRAY_INDEX]  = indexes
+        data[Mesh.ARRAY_INDEX]  = _rd.indexes.duplicate()
 
         mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, data)
 
@@ -61,12 +75,12 @@ func add_vertex(vertex: Vector2i, enable_checks: bool = true) -> int:
             return -1
         # TODO: reject vertices that lie within an existing face.
 
-    var vertex_count: int = vertices.size()
-    vertices.resize(vertex_count + 2)
-    vertices[vertex_count]     = vertex.x
-    vertices[vertex_count + 1] = vertex.y
+    var vertex_count: int = _rd.vertices.size()
+    _rd.vertices.resize(vertex_count + 2)
+    _rd.vertices[vertex_count]     = vertex.x
+    _rd.vertices[vertex_count + 1] = vertex.y
 
-    print('Vertices: ', vertices)
+    print('Vertices: ', _rd.vertices.duplicate())
     return vertex_count / 2
 
 ## Adds a face using indexes, returns the new face id
@@ -76,7 +90,7 @@ func add_face(index_array: PackedInt32Array, enable_checks: bool = true) -> int:
         if size != 3:
             push_error('Index array must be length 3, got %d ints' % size)
             return -1
-        var max_index: int = vertices.size() / 2
+        var max_index: int = _rd.vertices.size() / 2
         for i in range(size):
             var index: int = index_array[i]
             if index < 0 or index >= max_index:
@@ -88,34 +102,33 @@ func add_face(index_array: PackedInt32Array, enable_checks: bool = true) -> int:
     var sorted: PackedInt32Array = index_array.duplicate()
     _sort_indexes(sorted)
 
-    var face_id: int = indexes.size() / 3
-    indexes.append_array(sorted)
+    var face_id: int = _rd.indexes.size() / 3
+    _rd.indexes.append_array(sorted)
     _reload_mesh = true
 
-    print('Indexes: ', indexes)
+    print('Indexes: ', _rd.indexes.duplicate())
     return face_id
 
 ## Removes all vertices and faces
 func clear_data() -> void:
-    vertices.clear()
-    indexes.clear()
+    _rd.clear()
     _reload_mesh = true
 
 ## Get the vertex count
 func get_vertex_count() -> int:
-    return vertices.size() / 2
+    return _rd.vertices.size() / 2
 
 ## Get the vertex by id. This does not perform a bounds check.
 func get_vertex(index: int) -> Vector2i:
     index *= 2
-    return Vector2i(vertices[index], vertices[index + 1])
+    return Vector2i(_rd.vertices[index], _rd.vertices[index + 1])
 
 ## Find a vertex id from a position. Returns -1 if not found
 func get_vertex_id(vertex: Vector2i) -> int:
     var index: int = 0
-    var size: int = vertices.size()
+    var size: int = _rd.vertices.size()
     while index < size:
-        if vertex.x == vertices[index] and vertex.y == vertices[index + 1]:
+        if vertex.x == _rd.vertices[index] and vertex.y == _rd.vertices[index + 1]:
             return index / 2
         index += 2
     return -1
@@ -123,15 +136,15 @@ func get_vertex_id(vertex: Vector2i) -> int:
 ## Set the vertex by id. This does not perform a bounds check.
 func set_vertex(index: int, new_vertex: Vector2i) -> void:
     index *= 2
-    vertices[index]     = new_vertex.x
-    vertices[index + 1] = new_vertex.y
+    _rd.vertices[index]     = new_vertex.x
+    _rd.vertices[index + 1] = new_vertex.y
     _reload_mesh = true
 
 ## Get the ID of the vertex nearest to point, within some radius. Returns -1 if
 ## there was no vertex within the radius. If you need the vertex position
 ## instead, prefer `get_nearest_vertex()`.
 func get_nearest_vertex_id(point: Vector2, range: float) -> int:
-    var vertex_count: int = vertices.size()
+    var vertex_count: int = _rd.vertices.size()
     if vertex_count < 1:
         return -1
 
@@ -144,7 +157,7 @@ func get_nearest_vertex_id(point: Vector2, range: float) -> int:
     var best_id: int = -1
     var id: int = 0
     while id < vertex_count:
-        var vertex: Vector2 = Vector2(vertices[id], vertices[id + 1])
+        var vertex: Vector2 = Vector2(_rd.vertices[id], _rd.vertices[id + 1])
         if (
                vertex.x < min_pos.x or vertex.x > max_pos.x
             or vertex.y < min_pos.y or vertex.y > max_pos.y
@@ -168,7 +181,7 @@ func get_nearest_vertex(point: Vector2, range: float) -> Vector2i:
     if id == -1:
         return Vector2i.MAX
     id *= 2
-    return Vector2i(vertices[id], vertices[id + 1])
+    return Vector2i(_rd.vertices[id], _rd.vertices[id + 1])
 
 ## Sorts the indexes in clockwise order
 func _sort_indexes(arr: PackedInt32Array) -> void:

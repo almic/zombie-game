@@ -12,6 +12,10 @@ var terrain: Node:
         terrain = value
         update_configuration_warnings()
 
+
+@export_tool_button("Update Regions") var button_update_region = update_regions
+
+
 @export_group("Collision Targets", "target")
 
 @export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
@@ -27,14 +31,9 @@ var target_btn_update_targets = update_target_nodes
 var target_groups: Dictionary = {}
 
 
-@export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_NO_EDITOR)
 var regions: Array[TerrainInstanceRegion] = []
+var region_ids: Dictionary = {}
 
-@export_tool_button("Add Region") var button_add_region = add_region
-@export_tool_button("Clear Regions") var button_clear_regions = clear_regions
-
-
-var active_region: TerrainInstanceRegion = null
 
 ## Key Node3D to Value { snapped: Vector2i, cache: Variant, radius: int, modified: bool }
 var node_data: Dictionary
@@ -43,6 +42,7 @@ var node_data: Dictionary
 func _ready() -> void:
     setup_terrain.call_deferred()
 
+    update_regions()
     update_target_nodes()
 
     get_tree().node_added.connect(on_node_added)
@@ -87,7 +87,9 @@ func setup_terrain() -> void:
         terrain = parent
         # Terrain3DCollision.InstanceCollisionMode::INSTANCE_COLLISION_MANUAL
         terrain.collision_mode = 3
-        return
+
+        for region in regions:
+            load_region_data(region)
 
     update_configuration_warnings()
 
@@ -98,6 +100,70 @@ func create_node_data() -> Dictionary:
             radius = 0,
             modified = false,
     }
+
+func assign_region(region: TerrainInstanceRegion) -> void:
+    if region.region_id == 0:
+        var id: int = -1
+        var max_attempts: int = 50
+        while max_attempts > 0:
+            var test_id: int = (randi() % 9900) + 100
+            if not region_ids.has(test_id):
+                id = test_id
+                break
+            max_attempts -= 1
+        if id == -1:
+            push_error('Exceeded 50 attepmts to produce a unique ID for region %s! Manual intervention required.' % region)
+            return
+        region.region_id = id
+    elif region_ids.has(region.region_id):
+        push_error('Adding region with existing id %d! Manual intervention required.' % region.region_id)
+        return
+
+    region_ids.set(region.region_id, null)
+
+    # If we have terrain now, load the region data.
+    # If not, it should be assigned later when the terrain is available
+    if terrain:
+        load_region_data(region)
+
+    region.instance_node = self
+    regions.append(region)
+
+func update_regions() -> void:
+    regions.clear()
+    region_ids.clear()
+
+    var children: Array[Node] = get_children()
+    while not children.is_empty():
+        var child: Node = children.pop_front()
+        if child.get_child_count() > 0:
+            children.append_array(child.get_children())
+        if child is TerrainInstanceRegion:
+            assign_region(child)
+
+func load_region_data(region: TerrainInstanceRegion) -> void:
+    if region.region_id == 0:
+        push_error('Attempted to load data for region with no ID!')
+        return
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var directory: String = terrain.data_directory + '/'
+        var file_path: String = directory + ('ird_%04d.res' % region.region_id)
+        var data: TerrainInstanceRegionData
+        if ResourceLoader.exists(file_path):
+            data = ResourceLoader.load(file_path, '', ResourceLoader.CACHE_MODE_IGNORE)
+            print('loaded data "%s": %s' % [file_path, data])
+            print(data.vertices.duplicate())
+            print(data.indexes.duplicate())
+        else:
+            data = TerrainInstanceRegionData.new()
+            data.take_over_path(file_path)
+            ResourceSaver.save(data, file_path)
+            print('new data "%s": %s' % [file_path, data])
+        region.set_data(data)
+        return
+
+    push_warning('No terrain loaded, cannot provide regions with data')
 
 ## Update tracking list. Call this when changing target_groups.
 func update_target_nodes() -> void:
@@ -293,19 +359,28 @@ func snap_terrain(location: Vector3) -> Vector2i:
 
     return Vector2i.MAX
 
-func add_region() -> void:
-    var new_region = TerrainInstanceRegion.new()
-    new_region.instance_node = self
-    regions.append(new_region)
-    active_region = new_region
-    update_gizmos()
+func show_gizmos() -> void:
+    for region in regions:
+        region.show_gizmos()
 
-func clear_regions() -> void:
-    active_region = null
-    regions.clear()
-    update_gizmos()
+func hide_gizmos() -> void:
+    for region in regions:
+        region.hide_gizmos()
 
 func on_node_added(node: Node) -> void:
+    if node is TerrainInstanceRegion:
+        var top: Node = get_tree().current_scene
+        var next: Node = node.get_parent()
+        var max_count: int = 7
+        while max_count > 0 and next and next != top:
+            if next is TerrainInstanceNode:
+                if next == self:
+                    assign_region(node)
+                return
+            next = next.get_parent()
+            max_count -= 1
+        return
+
     if node is Node3D:
         if node_data.has(node):
             return

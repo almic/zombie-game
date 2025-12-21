@@ -9,6 +9,7 @@ var gizmos: Gizmos
 var toolbar: Toolbar
 var tool_mode: Toolbar.Tool = Toolbar.Tool.NONE
 var edited_node: TerrainInstanceNode
+var edited_region: TerrainInstanceRegion
 
 var mouse_update_rate: int = 3
 var mouse_position: Vector3
@@ -54,20 +55,52 @@ func _make_visible(visible: bool) -> void:
     toolbar.visible = visible
 
 func _handles(object: Object) -> bool:
-    return object is TerrainInstanceNode
+    return (
+               object is TerrainInstanceNode
+            or object is TerrainInstanceRegion
+    )
 
 func _edit(object: Object) -> void:
     if not object:
+        if edited_node:
+            edited_node.hide_gizmos()
+        elif edited_region:
+            edited_region.hide_gizmos()
         edited_node = null
+        edited_region = null
         return
 
     if object == edited_node:
+        if edited_region:
+            edited_region = null
+        edited_node.show_gizmos()
         return
 
     if object is TerrainInstanceNode:
         edited_node = object
+        edited_node.show_gizmos()
+    elif object is TerrainInstanceRegion:
+        if edited_node:
+            edited_node.hide_gizmos()
+            edited_node = null
+
+        if object.instance_node:
+            edited_region = object
+            edited_region.show_gizmos()
+            edited_node = edited_region.instance_node
+        else:
+            EditorInterface.get_editor_toaster().push_toast(
+                    'TerrainInstanceRegion selected has no owning TerrainInstanceNode!\n' +
+                    'Please ensure the region has a parent node and select "Update Regions" ' +
+                    'to edit this region.'
+            )
     else:
-        edited_node = null
+        if edited_node:
+            edited_node.hide_gizmos()
+            edited_node = null
+        if edited_region:
+            edited_region.hide_gizmos()
+            edited_region = null
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> AfterGUIInput:
     if not edited_node:
@@ -98,8 +131,8 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         mouse_position = edited_node.intersect_terrain(camera_pos, camera_dir)
 
         # Update marker position when in triangle mode
-        if edited_node and tool_mode == Toolbar.Tool.ADD_TRIANGLE:
-            edited_node.update_gizmos()
+        if edited_region and tool_mode == Toolbar.Tool.ADD_TRIANGLE:
+            edited_region.update_gizmos()
 
         return AFTER_GUI_INPUT_PASS
 
@@ -117,21 +150,21 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
         if tool_mode == Toolbar.Tool.ADD_TRIANGLE:
             var update: bool = false
-            var existing: int = edited_node.active_region.get_vertex_id(vertex)
+            var existing: int = edited_region.get_vertex_id(vertex)
             if existing != -1:
                 triangle_vertices.append(existing)
             else:
-                triangle_vertices.append(edited_node.active_region.add_vertex(vertex, false))
+                triangle_vertices.append(edited_region.add_vertex(vertex, false))
                 update = true
 
             if triangle_vertices.size() >= 3:
                 triangle_vertices.resize(3)
-                edited_node.active_region.add_face(triangle_vertices, false)
+                edited_region.add_face(triangle_vertices, false)
                 triangle_vertices.clear()
                 update = true
 
             if update:
-                edited_node.update_gizmos()
+                edited_region.update_gizmos()
 
         elif tool_mode == Toolbar.Tool.SELECT:
             # Allow gizmo selection
@@ -152,5 +185,5 @@ func on_tool_selected(tool: Toolbar.Tool) -> void:
     if tool == Toolbar.Tool.ADD_TRIANGLE:
         triangle_vertices.clear()
     # Clear triangle marker when deselecting this tool
-    elif edited_node and previous_tool == Toolbar.Tool.ADD_TRIANGLE:
-        edited_node.update_gizmos()
+    elif edited_region and previous_tool == Toolbar.Tool.ADD_TRIANGLE:
+        edited_region.update_gizmos()

@@ -14,12 +14,12 @@ var plugin: Plugin
 var last_mouse_update_rate: int = -1
 var edited_handle: Dictionary
 
-var cached_collision_meshes: Array[TriangleMesh]
+var cached_collision_meshes: Dictionary = {}
 
 func _init() -> void:
     SPHERE_MESH = SphereMesh.new()
-    SPHERE_MESH.height = 0.25
-    SPHERE_MESH.radius = 0.125
+    SPHERE_MESH.height = 0.4
+    SPHERE_MESH.radius = 0.2
     SPHERE_MESH.rings = 7
     SPHERE_MESH.radial_segments = 14
 
@@ -30,7 +30,7 @@ func _init() -> void:
     SPHERE_MATERIAL.disable_fog = true
     SPHERE_MATERIAL.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
     SPHERE_MATERIAL.stencil_mode = BaseMaterial3D.STENCIL_MODE_OUTLINE
-    SPHERE_MATERIAL.albedo_color = Color(1.0, 0.5, 1.0, 0.08)
+    SPHERE_MATERIAL.albedo_color = Color(1.0, 0.6, 1.0, 0.12)
     SPHERE_MATERIAL.stencil_color = Color(0.4, 0.05, 0.35, 0.8)
 
     SPHERE_EDITING_MATERIAL = SPHERE_MATERIAL.duplicate(true)
@@ -47,19 +47,29 @@ func _get_gizmo_name() -> String:
     return 'Terrain Instance Region'
 
 func _has_gizmo(for_node_3d: Node3D) -> bool:
-    return for_node_3d is TerrainInstanceNode
+    return for_node_3d is TerrainInstanceRegion
 
 func _redraw(gizmo: EditorNode3DGizmo) -> void:
     gizmo.clear()
-    cached_collision_meshes.clear()
 
-    var instance: TerrainInstanceNode = gizmo.get_node_3d() as TerrainInstanceNode
-    if not instance:
-        print_debug('no instance node!')
+    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
+    if not region:
+        push_error('No region!')
         return
 
-    var region: TerrainInstanceRegion = instance.active_region
-    if not region:
+    var cache: Array[TriangleMesh]
+    if not cached_collision_meshes.has(region):
+        cached_collision_meshes.set(region, cache)
+    else:
+        cache = cached_collision_meshes.get(region)
+
+    if not region._show_gizmo:
+        cache.clear()
+        return
+
+    var instance: TerrainInstanceNode = region.instance_node
+    if not instance:
+        cache.clear()
         return
 
     region.update_mesh()
@@ -98,7 +108,7 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
             transform.origin = global_point
             gizmo.add_mesh(SPHERE_MESH, SPHERE_EDITING_MATERIAL, transform)
 
-    cached_collision_meshes.resize(region.get_vertex_count())
+    cache.resize(region.get_vertex_count())
 
     for vertex_id in region.get_vertex_count():
         transform.origin = instance.project_global(region.get_vertex(vertex_id))
@@ -117,26 +127,27 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
             collision_faces[v] += transform.origin
         collision_mesh.create_from_faces(collision_faces)
 
-        cached_collision_meshes[vertex_id] = collision_mesh
+        cache[vertex_id] = collision_mesh
         gizmo.add_collision_triangles(collision_mesh)
 
         #print('put sphere at %s' % transform.origin)
 
 func _handles_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen_pos: Vector2) -> int:
-    var instance: TerrainInstanceNode = gizmo.get_node_3d() as TerrainInstanceNode
-    if not instance:
-        return -1
-
-    var region: TerrainInstanceRegion = instance.active_region
+    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
         return -1
 
-    var affine: Transform3D = instance.global_transform.affine_inverse()
+    var instance: TerrainInstanceNode = region.instance_node
+    if not instance:
+        return -1
+
+    var affine: Transform3D = instance.terrain.global_transform.affine_inverse()
     var ray_from: Vector3 = affine * camera.project_ray_origin(screen_pos)
     var ray_dir: Vector3 = (affine.basis * camera.project_ray_normal(screen_pos)).normalized()
 
+    var cache: Array[TriangleMesh] = cached_collision_meshes.get(region, Array())
     for vertex_id in region.get_vertex_count():
-        var collision_mesh: TriangleMesh = cached_collision_meshes[vertex_id]
+        var collision_mesh: TriangleMesh = cache[vertex_id]
         if collision_mesh.intersect_ray(ray_from, ray_dir):
             return vertex_id
 
@@ -146,26 +157,18 @@ func _get_handle_name(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool)
     return 'Vertex %d' % handle_id
 
 func _get_handle_value(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool) -> Variant:
-    var instance: TerrainInstanceNode = gizmo.get_node_3d() as TerrainInstanceNode
-    if not instance:
-        print_debug('no instance node!')
-        return null
-
-    var region: TerrainInstanceRegion = instance.active_region
+    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
+        print_debug('no region!')
         return null
 
     return region.get_vertex(handle_id)
 
 func _begin_handle_action(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool) -> void:
     print('start editing vertex %d' % handle_id)
-    var instance: TerrainInstanceNode = gizmo.get_node_3d() as TerrainInstanceNode
-    if not instance:
-        print_debug('no instance node!')
-        return
-
-    var region: TerrainInstanceRegion = instance.active_region
+    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
+        print_debug('no region!')
         return
 
     var position: Vector2i = _get_handle_value(gizmo, handle_id, secondary)
@@ -206,7 +209,7 @@ func _set_handle(
 
     edited_handle.current_pos = Vector2i(terrain_point.round())
     region.set_vertex(edited_handle.id, edited_handle.current_pos)
-    region.instance_node.update_gizmos()
+    region.update_gizmos()
 
 func _commit_handle(
         gizmo: EditorNode3DGizmo,

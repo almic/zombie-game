@@ -1,4 +1,4 @@
-[gd_scene load_steps=122 format=3 uid="uid://b28fs2sgvdicd"]
+[gd_scene load_steps=121 format=3 uid="uid://b28fs2sgvdicd"]
 
 [ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_fj7yv"]
 [ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_rf70f"]
@@ -73,7 +73,6 @@
 [ext_resource type="Material" uid="uid://cvhepqprrnttl" path="res://material/terrain/grass.tres" id="53_r4xj5"]
 [ext_resource type="Script" uid="uid://hutnddwuoerd" path="res://addons/csg_extra/poly_resource.gd" id="54_k8or8"]
 [ext_resource type="PackedScene" uid="uid://dcwdq2tolxn0a" path="res://vehicle/truck/truck_vehicle.tscn" id="54_x6gsb"]
-[ext_resource type="Script" uid="uid://ba7dj46pupxe5" path="res://addons/terrain_instancer/TerrainInstanceRegion.gd" id="55_fktp8"]
 [ext_resource type="Texture2D" uid="uid://dxcbxv68vekkj" path="res://textures/road/crosswalk_decal.tres" id="56_ubgmn"]
 [ext_resource type="Script" uid="uid://behs32dwn6xbp" path="res://addons/csg_extra/csg_curve/csg_curve_point.gd" id="57_i2hso"]
 [ext_resource type="Resource" uid="uid://dc4dm4qwu046j" path="res://scene/world/polygon2d/curb_71_sharp.tres" id="58_hyeqt"]
@@ -740,18 +739,6 @@ target_groups = {
 &"zombie": 1
 }
 metadata/_custom_type_script = "uid://db37nkvye6raf"
-metadata/_edit_lock_ = true
-
-[node name="TerrainInstanceRegion" type="Node3D" parent="Terrain3D/TerrainInstanceNode"]
-script = ExtResource("55_fktp8")
-region_id = 1872
-metadata/_custom_type_script = "uid://ba7dj46pupxe5"
-metadata/_edit_lock_ = true
-
-[node name="TerrainInstanceRegion2" type="Node3D" parent="Terrain3D/TerrainInstanceNode"]
-script = ExtResource("55_fktp8")
-region_id = 8037
-metadata/_custom_type_script = "uid://ba7dj46pupxe5"
 metadata/_edit_lock_ = true
 
 [node name="LevelBlocking" type="Node" parent="."]

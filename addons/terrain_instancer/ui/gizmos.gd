@@ -1,6 +1,7 @@
 extends EditorNode3DGizmoPlugin
 
 const Plugin = preload("uid://khsyydwj7rw2")
+const Toolbar = preload("uid://c3rp8rh2rylb0")
 
 
 var SPHERE_MESH: SphereMesh
@@ -18,8 +19,8 @@ var cached_collision_meshes: Dictionary = {}
 
 func _init() -> void:
     SPHERE_MESH = SphereMesh.new()
-    SPHERE_MESH.height = 0.4
-    SPHERE_MESH.radius = 0.2
+    SPHERE_MESH.height = 0.7
+    SPHERE_MESH.radius = 0.35
     SPHERE_MESH.rings = 7
     SPHERE_MESH.radial_segments = 14
 
@@ -130,8 +131,6 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
         cache[vertex_id] = collision_mesh
         gizmo.add_collision_triangles(collision_mesh)
 
-        #print('put sphere at %s' % transform.origin)
-
 func _handles_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen_pos: Vector2) -> int:
     var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
@@ -165,7 +164,6 @@ func _get_handle_value(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool
     return region.get_vertex(handle_id)
 
 func _begin_handle_action(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool) -> void:
-    print('start editing vertex %d' % handle_id)
     var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
         print_debug('no region!')
@@ -235,11 +233,9 @@ func _commit_handle(
         return
 
     if cancel:
-        print('canceled handle %d' % handle_id)
         region.set_vertex(edited_handle.id, edited_handle.initial_pos)
         edited_handle.clear()
         return
 
-    print('commiting handle %d' % handle_id)
     region.set_vertex(edited_handle.id, edited_handle.current_pos)
     edited_handle.clear()

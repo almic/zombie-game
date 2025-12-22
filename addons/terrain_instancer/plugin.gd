@@ -11,6 +11,7 @@ var tool_mode: Toolbar.Tool = Toolbar.Tool.NONE
 var edited_node: TerrainInstanceNode
 var edited_region: TerrainInstanceRegion
 
+var vp_mouse_position: Vector2
 var mouse_update_rate: int = 3
 var mouse_position: Vector3
 var mouse_position_tick: int = 0
@@ -112,12 +113,15 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         return AFTER_GUI_INPUT_PASS
 
     var mouse: int = 0
+    var screen_pos: Vector2
+
     if event is InputEventMouseButton:
         if event.pressed:
             if event.button_index == MOUSE_BUTTON_LEFT:
                 mouse = 1
             elif event.button_index == MOUSE_BUTTON_RIGHT:
                 mouse = 2
+            screen_pos = event.position
     elif event is InputEventMouseMotion:
         mouse_position_tick += 1
         if mouse_position_tick < mouse_update_rate:
@@ -126,12 +130,12 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
         # Update mouse position
         var viewport: SubViewport = viewport_camera.get_parent()
-        var vp_mouse_pos: Vector2 = viewport.get_mouse_position()
-        var mouse_pos: Vector2 = vp_mouse_pos
+        var mouse_pos: Vector2 = viewport.get_mouse_position()
+        vp_mouse_position = mouse_pos
         if viewport.get_parent().stretch_shrink == 2:
-            vp_mouse_pos /= 2
-        var camera_pos: Vector3 = viewport_camera.project_ray_origin(mouse_pos)
-        var camera_dir: Vector3 = viewport_camera.project_ray_normal(mouse_pos)
+            vp_mouse_position /= 2
+        var camera_pos: Vector3 = viewport_camera.project_ray_origin(vp_mouse_position)
+        var camera_dir: Vector3 = viewport_camera.project_ray_normal(vp_mouse_position)
 
         mouse_position = edited_node.intersect_terrain(camera_pos, camera_dir)
 
@@ -151,7 +155,6 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
     if mouse == 1:
         var vertex: Vector2i = Vector2i(terrain_point.round())
-        print('clicked at %s, vertex: %s' % [mouse_position, vertex])
 
         if tool_mode == Toolbar.Tool.ADD_TRIANGLE:
             var update: bool = false
@@ -174,6 +177,40 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         elif tool_mode == Toolbar.Tool.SELECT:
             # Allow gizmo selection
             return AFTER_GUI_INPUT_CUSTOM
+
+        elif tool_mode == Toolbar.Tool.REMOVE_VERTEX:
+            if not edited_region:
+                return AFTER_GUI_INPUT_PASS
+
+            # Use gizmo handle selection to find clicked vertex
+            var vertex_id: int = gizmos._handles_intersect_ray(
+                    edited_region.get_gizmos()[0],
+                    viewport_camera, vp_mouse_position
+            )
+
+            # allow deselection when not clicking a vertex
+            if vertex_id == -1:
+                return AFTER_GUI_INPUT_PASS
+
+            edited_region.remove_vertex(vertex_id)
+            edited_region.update_gizmos()
+
+        elif tool_mode == Toolbar.Tool.REMOVE_TRIANGLE:
+            if not edited_region:
+                return AFTER_GUI_INPUT_PASS
+
+            var face_idx: int = edited_region.pick_face(
+                    viewport_camera.project_ray_origin(vp_mouse_position),
+                    viewport_camera.project_ray_normal(vp_mouse_position)
+            )
+
+            # allow deselection when not clicking a face
+            if face_idx == -1:
+                return AFTER_GUI_INPUT_PASS
+
+            edited_region.remove_face(face_idx)
+            edited_region.update_gizmos()
+
         else:
             print('No tool selected!')
 

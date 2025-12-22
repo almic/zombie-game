@@ -5,7 +5,7 @@ class_name TerrainInstanceRegion extends Node3D
 @export_tool_button("Populate Region", "PointMesh")
 var btn_populate = editor_populate_region
 
-@export_tool_button("Clear Region", "RemoveInternal")
+@export_tool_button("Clear Region", "Clear")
 var btn_clear = editor_clear_region
 
 var instance_node: TerrainInstanceNode
@@ -103,7 +103,6 @@ func add_vertex(vertex: Vector2i, enable_checks: bool = true) -> int:
     _rd.vertices[vertex_count]     = vertex.x
     _rd.vertices[vertex_count + 1] = vertex.y
 
-    print('Vertices: ', _rd.vertices.duplicate())
     return vertex_count / 2
 
 ## Adds a face using indexes, returns the new face id
@@ -129,8 +128,70 @@ func add_face(index_array: PackedInt32Array, enable_checks: bool = true) -> int:
     _rd.indexes.append_array(sorted)
     _reload_mesh = true
 
-    print('Indexes: ', _rd.indexes.duplicate())
     return face_id
+
+## Using a raycast, returns a face index, used to "pick" a face from the editor.
+## Returns -1 if no face was hit.
+func pick_face(begin: Vector3, direction: Vector3) -> int:
+    update_mesh()
+
+    if triangle_mesh_faces.size() == 0:
+        return -1
+
+    # Hit test on triangle mesh
+    var hit: Dictionary = triangle_mesh.intersect_ray(begin, direction)
+    if not hit:
+        return -1
+
+    # Retrieve vertex indices
+    var tri_face: int = hit.face_index * 3
+    var verts: Array[Vector2i]
+    verts.resize(3)
+
+    for i in range(3):
+        var point: Vector3i = Vector3i(triangle_mesh_faces[tri_face + i].round())
+        verts[i] = Vector2i(point.x, point.z)
+
+    var face: PackedInt32Array
+    face.resize(3)
+    face.fill(-1)
+
+    var i: int = 0
+    var size: int = _rd.vertices.size()
+    while i < size:
+        var vertex: Vector2i = Vector2i(_rd.vertices[i], _rd.vertices[i + 1])
+        for v in range(3):
+            if vertex == verts[v]:
+                face[v] = i / 2
+                break
+        i += 2
+
+    # Test that we found all indexes
+    i = 0
+    size = 3
+    while i < size:
+        if face[i] == -1:
+            push_error('Failed to match vertex %s with existing vertices!' % verts[i])
+        i += 1
+
+    # Sort vertices so face matching is trivial/ fast
+    _sort_indexes(face)
+
+    # Find face
+    i = 0
+    size = _rd.indexes.size()
+    while i < size:
+        if (
+                    _rd.indexes[i]     == face[0]
+                and _rd.indexes[i + 1] == face[1]
+                and _rd.indexes[i + 2] == face[2]
+        ):
+            return i / 3
+        i += 3
+
+    push_error('Failed to match face %s with existing faces!' % face)
+
+    return -1
 
 ## Removes all vertices and faces
 func clear_data() -> void:
@@ -161,6 +222,49 @@ func set_vertex(index: int, new_vertex: Vector2i) -> void:
     index *= 2
     _rd.vertices[index]     = new_vertex.x
     _rd.vertices[index + 1] = new_vertex.y
+    _reload_mesh = true
+
+## Remove a vertex. Also deletes any faces connected to the vertex. This does not
+## perform a bounds check.
+func remove_vertex(index: int) -> void:
+    # NOTE: order matters
+    _rd.vertices.remove_at(index * 2 + 1)
+    _rd.vertices.remove_at(index * 2)
+
+    # Remove/ update faces
+    var i: int = 0
+    var size: int = _rd.indexes.size()
+    while i < size:
+        if not (
+                   _rd.indexes[i]     == index
+                or _rd.indexes[i + 1] == index
+                or _rd.indexes[i + 2] == index
+        ):
+            for v in range(3):
+                if _rd.indexes[i + v] > index:
+                    _rd.indexes[i + v] -= 1
+                    _reload_mesh = true
+            i += 3
+            continue
+
+        # NOTE: order matters
+        _rd.indexes.remove_at(i + 2)
+        _rd.indexes.remove_at(i + 1)
+        _rd.indexes.remove_at(i)
+        size -= 3
+
+        _reload_mesh = true
+
+## Removes a face. Does not delete any vertices. This does not perform a bounds
+## check.
+func remove_face(index: int) -> void:
+    index *= 3
+
+    # NOTE: order matters
+    _rd.indexes.remove_at(index + 2)
+    _rd.indexes.remove_at(index + 1)
+    _rd.indexes.remove_at(index)
+
     _reload_mesh = true
 
 ## Get the ID of the vertex nearest to point, within some radius. Returns -1 if
@@ -225,7 +329,7 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
         a.x + b.x + c.x,
         a.y + b.y + c.y
     ) / 3.0
-    # print("o: %s" % o)
+
     a -= o
     b -= o
     c -= o
@@ -236,8 +340,6 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
     var angle_a: float = TAU - (atan2(a.y, a.x) + PI)
     var angle_b: float = TAU - (atan2(b.y, b.x) + PI)
     var angle_c: float = TAU - (atan2(c.y, c.x) + PI)
-
-    # print('angles:\n  a: %s = %f\n  b: %s = %f\n  c: %s = %f' % [a, angle_a, b, angle_b, c, angle_c])
 
     # Sort by angle normally
     var sorted: Array = Array(arr)
@@ -258,8 +360,6 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
             return f < angle_c
     )
 
-    # print('first sort: %s' % str(sorted))
-
     # Place lowest index first, followed by the remaining indexes
     # NOTE: this step is to make the resulting set of indexes deterministic
     #       for any input ordering of the same three vertices
@@ -278,8 +378,6 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
         arr[i] = old[best]
         i += 1
         best = posmod(best + 1, 3)
-
-    # print('index sort: %s' % arr)
 
 func clear_region() -> void:
     update_mesh()

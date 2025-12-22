@@ -1,3 +1,4 @@
+@tool
 class_name TerrainInstanceRegionData extends Resource
 
 
@@ -12,3 +13,6 @@ var indexes: PackedInt32Array
 func clear() -> void:
     vertices.clear()
     indexes.clear()
+
+func _to_string() -> String:
+    return "Vertices: %s\nIndexes: %s" % [vertices, indexes]

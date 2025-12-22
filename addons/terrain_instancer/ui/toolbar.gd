@@ -8,6 +8,8 @@ enum Tool {
     NONE,
     SELECT,
     ADD_TRIANGLE,
+    REMOVE_VERTEX,
+    REMOVE_TRIANGLE,
 }
 
 const Plugin = preload("uid://khsyydwj7rw2")
@@ -18,9 +20,12 @@ var plugin: Plugin
 var btn_add_region: Button
 
 var group_region: ButtonGroup = ButtonGroup.new()
+var sep_region: VSeparator
 var btn_select: Button
 var btn_add_triangle: Button
-var sep_region: VSeparator
+var sep_region_remove: VSeparator
+var btn_remove_vertex: Button
+var btn_remove_triangle: Button
 
 
 func _init() -> void:
@@ -51,10 +56,27 @@ func _ready() -> void:
     btn_add_triangle.icon = get_theme_icon(&'ToolTriangle', &'EditorIcons')
     _init_tool_button(btn_add_triangle, group_region)
 
+    sep_region_remove = VSeparator.new()
+
+    btn_remove_vertex = Button.new()
+    btn_remove_vertex.name = &'Remove Vertex'
+    btn_remove_vertex.tooltip_text = "Remove Vertex. Will also delete any faces connected to the vertex."
+    btn_remove_vertex.icon = get_theme_icon(&'Marker3D', &'EditorIcons')
+    _init_tool_button(btn_remove_vertex, group_region)
+
+    btn_remove_triangle = Button.new()
+    btn_remove_triangle.name = &'Remove Triangles'
+    btn_remove_triangle.tooltip_text = "Remove Triangles. Keeps vertices."
+    btn_remove_triangle.icon = get_theme_icon(&'MeshInstance3D', &'EditorIcons')
+    _init_tool_button(btn_remove_triangle, group_region)
+
     add_child(btn_add_region)
     add_child(sep_region)
     add_child(btn_select)
     add_child(btn_add_triangle)
+    add_child(sep_region_remove)
+    add_child(btn_remove_vertex)
+    add_child(btn_remove_triangle)
 
 func _init_tool_button(button: Button, group: ButtonGroup) -> void:
     button.toggle_mode = true
@@ -80,10 +102,16 @@ func update_visibility() -> void:
             sep_region.show()
         btn_select.show()
         btn_add_triangle.show()
+        sep_region_remove.show()
+        btn_remove_vertex.show()
+        btn_remove_triangle.show()
     else:
         sep_region.hide()
         btn_select.hide()
         btn_add_triangle.hide()
+        sep_region_remove.hide()
+        btn_remove_vertex.hide()
+        btn_remove_triangle.hide()
 
 func create_region_node() -> TerrainInstanceRegion:
     var region := TerrainInstanceRegion.new()
@@ -130,5 +158,9 @@ func on_selection_changed() -> void:
         tool_selected.emit(Tool.SELECT)
     elif selected.name == &'Add Triangles':
         tool_selected.emit(Tool.ADD_TRIANGLE)
+    elif selected.name == &'Remove Vertex':
+        tool_selected.emit(Tool.REMOVE_VERTEX)
+    elif selected.name == &'Remove Triangles':
+        tool_selected.emit(Tool.REMOVE_TRIANGLE)
     else:
         push_error('TerrainInstancerPlugin: unknown tool selected! "%s"' % selected.name)

@@ -232,8 +232,6 @@ func update_target_nodes() -> void:
             data.modified = true
             node_data.set(node, data)
 
-    print(node_data)
-
 ## Computes new locations for all tracked nodes
 func update_tracked_node_locations() -> void:
     for node in node_data:

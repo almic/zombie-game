@@ -14,6 +14,8 @@ var instance_node: TerrainInstanceNode
 var region_id: int = 0
 var _rd: TerrainInstanceRegionData
 
+@export_tool_button("Populate Region", "PointMesh") var btn_populate = editor_populate_region
+
 var mesh: ArrayMesh = ArrayMesh.new()
 var triangle_mesh: TriangleMesh = TriangleMesh.new()
 var triangle_mesh_faces: PackedVector3Array = PackedVector3Array()
@@ -25,6 +27,10 @@ func _notification(what: int) -> void:
     if what == NOTIFICATION_EDITOR_PRE_SAVE:
         if _rd:
             ResourceSaver.save(_rd, _rd.resource_path)
+
+## Editor function, probably do some validation and maybe a confirmation dialog
+func editor_populate_region() -> void:
+    populate_region()
 
 func set_data(data: TerrainInstanceRegionData) -> void:
     _rd = data
@@ -263,3 +269,70 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
         best = posmod(best + 1, 3)
 
     # print('index sort: %s' % arr)
+
+func populate_region() -> void:
+    # Ensure triangle mesh is up-to-date
+    update_mesh()
+
+    if triangle_mesh_faces.size() == 0:
+        EditorInterface.get_editor_toaster().push_toast(
+                "No faces for this region, nothing to populate",
+                EditorToaster.SEVERITY_WARNING
+        )
+        return
+
+    # CRITICAL NOTE!!!
+    # ONLY add transforms, you provide a list of transforms, colors, by instance
+    # id to Node, and it will add them to the terrain.
+    # Support a clear button, which will search for instances by managed id, and
+    # delete any within the regions.
+    # This should be a whole lot simpler and faster.
+    # Make sure to not remove transforms that exist in the custom instances dict
+
+    # Get the area rect from the mesh AABB
+    var box: AABB = mesh.get_aabb().abs()
+    var x1: int = box.position.x
+    var y1: int = box.position.z
+    var x2: int = x1 + box.size.x
+    var y2: int = y1 + box.size.z
+
+    # Place instances at vertices within the triangles, allow edges
+    var data: Dictionary = {}
+
+    var instance_data: Dictionary = data.get_or_add(0, Dictionary())
+
+    var xforms: Array[Transform3D]
+    xforms = instance_data.get_or_add(&'xforms', xforms)
+    var colors: PackedColorArray
+    colors = instance_data.get_or_add(&'colors', colors)
+
+    var pos: Vector3 = Vector3(0, 1e6, 0)
+    var dir: Vector3 = Vector3.DOWN
+
+    var x: int = x1
+    var y: int
+    while x <= x2:
+        pos.x = x
+        y = y1
+        while y <= y2:
+            pos.z = y
+
+            if not triangle_mesh.intersect_ray(pos, dir):
+                y += 1
+                continue
+
+            var height: float = instance_node.get_height(Vector2(pos.x, pos.z))
+            if is_nan(height):
+                y += 1
+                continue
+
+            # For now, 1/10
+            if randf() > 0.1:
+                y += 1
+                continue
+
+            xforms.append(Transform3D(Basis.IDENTITY, Vector3(pos.x, height, pos.z)))
+            y += 1
+        x += 1
+
+    instance_node.add_instances(data)

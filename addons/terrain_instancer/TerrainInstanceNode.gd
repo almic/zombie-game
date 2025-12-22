@@ -405,6 +405,208 @@ func snap_terrain(location: Vector3) -> Vector2i:
 
     return Vector2i.MAX
 
+## Test if a point in world 2D space maps to a height on the terrain, i.e.
+## passing this point to the method get_height() /should/ return a finite value
+func terrain_has(point: Vector2) -> bool:
+    if not terrain:
+        return false
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        # Annoyingly, hole test returns FALSE when outside of regions!
+        var pos := Vector3(point.x, 0, point.y)
+        if terrain.data.get_control(pos) == 4294967295:
+            # Outside of terrain
+            return false
+        return (not terrain.data.get_control_hole(pos))
+
+    return false
+
+## Get the height of a point on the terrain from world 2D space, returns NAN if
+## the point is invalid for the terrain
+func get_height(point: Vector2) -> float:
+    if not terrain:
+        return NAN
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        return terrain.data.get_height(Vector3(point.x, 0.0, point.y))
+
+    return NAN
+
+## Return an array of indexes that can be used to access and modify instance data
+func get_instance_indexes(area: Rect2) -> Array:
+    if not terrain:
+        return []
+
+    # Terrain3D is an array of cell locations
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var vertex_spacing: float = terrain.vertex_spacing
+        const cell_size: int = 32
+        var region_size: int = terrain.region_size
+        var cells_per_region: int = region_size / cell_size
+        var region_size_vec := Vector2(region_size, region_size) * vertex_spacing
+        var cell_size_vec := Vector2(cell_size, cell_size) * vertex_spacing
+
+        var indexes: Array[Vector2i]
+        var rect: Rect2
+        var cell_x: int
+        var cell_y: int
+        var cell_loc: Vector2i
+
+        rect.size = region_size_vec
+        for region_loc in terrain.data.region_locations:
+            rect.position = region_loc * region_size * vertex_spacing
+
+            if not rect.intersects(area):
+                continue
+
+            rect.size = cell_size_vec
+            cell_x = 0
+            while cell_x < cells_per_region:
+                cell_y = 0
+                cell_loc.x = cell_x + (region_loc.x * cells_per_region)
+                rect.position.x = cell_loc.x * vertex_spacing
+                while cell_y < cells_per_region:
+                    cell_loc.y = cell_y + (region_loc.y * cells_per_region)
+                    rect.position.y = cell_loc.y * vertex_spacing
+
+                    if not rect.intersects(area):
+                        cell_y += 1
+                        continue
+
+                    indexes.append(cell_loc)
+                    cell_y += 1
+                cell_x += 1
+            rect.size = region_size_vec
+
+        return indexes
+
+    return []
+
+## Obtain instance data from an instance data index, obtained from a call to
+## 'get_instance_indexes()'. After modifying, call 'set_instance_data()'.
+## Returns an empty dictionary if the index is invalid.
+## {
+##     area: Rect2,
+##     instances: {
+##         id: int {
+##             xform: Array[Transform3D],
+##             color: Array[Color],
+##         }
+##     }
+## }
+func get_instance_data(index: Variant) -> Dictionary:
+    if not terrain:
+        return {}
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        # Index is a global cell location, obtain region and local cell
+        var vertex_spacing: float = terrain.vertex_spacing
+        const cell_size: int = 32
+        var region_size: int = terrain.region_size
+        var cells_per_region: int = region_size / cell_size
+
+        var region_loc := Vector2i((Vector2(index) / float(cells_per_region)).floor())
+        var region = terrain.data.get_region(region_loc)
+        if (not region) or region.is_deleted():
+            return {}
+
+        var cell_loc: Vector2i = index - (region_loc * cells_per_region)
+        var result: Dictionary = {
+            &'area': Rect2(
+                    (
+                        (Vector2(region_loc) * region_size) +
+                        (Vector2(cell_loc)   * cell_size)
+                    ) * vertex_spacing,
+                    Vector2(cell_size, cell_size) * vertex_spacing
+            ),
+            &'instances': Dictionary(),
+        }
+        var instance_data: Dictionary = result.get(&'instances')
+        for mesh_id in region.instances:
+            if not region.instances[mesh_id].has(cell_loc):
+                continue
+
+            var r_data: Array = region.instances[mesh_id][cell_loc]
+
+            if not instance_data.has(mesh_id):
+                var data_dict: Dictionary = {
+                    &'xform': [],
+                    &'color': [],
+                }
+                instance_data.set(mesh_id, data_dict)
+
+            var data: Dictionary = instance_data.get(mesh_id)
+            data[&'xform'].append_array(r_data[0])
+            data[&'color'].append_array(r_data[1])
+
+        return result
+
+    return {}
+
+## Apply modifications to 'data' to the instance index. Transforms should be
+## relative to
+func set_instance_data(data: Dictionary, index: Variant) -> void:
+    if not terrain:
+        return
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        data = data.get(&'instances') # discard the other info, not needed
+        # Index is a global cell location, obtain region and local cell
+        const cell_size: int = 32
+        var region_size: int = terrain.region_size
+        var cells_per_region: int = region_size / cell_size
+
+        var region_loc := Vector2i((Vector2(index) / float(cells_per_region)).floor())
+        var region = terrain.data.get_region(region_loc)
+        if (not region) or region.is_deleted():
+            return
+
+        var cell_loc: Vector2i = index - (region_loc * cells_per_region)
+        var w_data: Dictionary
+        var r_data: Array
+        for mesh_id in data:
+            if not region.instances.has(mesh_id):
+                region.instances.set(mesh_id, Dictionary())
+
+            if not region.instances[mesh_id].has(cell_loc):
+                var c_data: Array
+                c_data.resize(3)
+                c_data[0] = []
+                c_data[1] = []
+                c_data[2] = true
+                region.instances[mesh_id].set(cell_loc, c_data)
+
+            w_data = data.get(mesh_id)
+            r_data = region.instances[mesh_id][cell_loc]
+
+            r_data[0].clear()
+            r_data[0].append_array(w_data[&'xform'])
+            r_data[1].clear()
+            r_data[1].append_array(w_data[&'color'])
+            r_data[2] = true
+
+            terrain.instancer.update_mmis(mesh_id, region_loc)
+        return
+
+    return
+
+func add_instances(instance_data: Dictionary) -> void:
+    if not terrain:
+        return
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var total: int = instance_data.size()
+        for id in instance_data:
+            total -= 1
+            var data: Dictionary = instance_data.get(id)
+            var xforms: Array[Transform3D] = data[&'xforms']
+            var colors: PackedColorArray = data[&'colors']
+            var update: bool = total <= 0
+            terrain.instancer.add_transforms(id, xforms, colors, update)
+        return
+
+    return
+
 func show_gizmos() -> void:
     for region in regions:
         region.show_gizmos()

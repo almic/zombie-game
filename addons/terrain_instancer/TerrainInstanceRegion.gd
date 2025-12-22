@@ -2,7 +2,16 @@
 class_name TerrainInstanceRegion extends Node3D
 
 
+@export_tool_button("Populate Region", "PointMesh")
+var btn_populate = editor_populate_region
+
+@export_tool_button("Clear Region", "RemoveInternal")
+var btn_clear = editor_clear_region
+
 var instance_node: TerrainInstanceNode
+
+
+@export_subgroup("Info")
 
 ## This is the ID used for data storage. It is displayed for convenience only,
 ## it should not be modified while the editor is running.
@@ -13,8 +22,6 @@ var instance_node: TerrainInstanceNode
 )
 var region_id: int = 0
 var _rd: TerrainInstanceRegionData
-
-@export_tool_button("Populate Region", "PointMesh") var btn_populate = editor_populate_region
 
 var mesh: ArrayMesh = ArrayMesh.new()
 var triangle_mesh: TriangleMesh = TriangleMesh.new()
@@ -27,6 +34,10 @@ func _notification(what: int) -> void:
     if what == NOTIFICATION_EDITOR_PRE_SAVE:
         if _rd:
             ResourceSaver.save(_rd, _rd.resource_path)
+
+## Editor function, probably do some validation and maybe a confirmation dialog
+func editor_clear_region() -> void:
+    clear_region()
 
 ## Editor function, probably do some validation and maybe a confirmation dialog
 func editor_populate_region() -> void:
@@ -270,6 +281,74 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
 
     # print('index sort: %s' % arr)
 
+func clear_region() -> void:
+    update_mesh()
+    if triangle_mesh_faces.size() == 0:
+        EditorInterface.get_editor_toaster().push_toast(
+                "No faces for this region, cannot clear",
+                EditorToaster.SEVERITY_WARNING
+        )
+        return
+
+    var box: AABB = mesh.get_aabb().abs()
+    var area: Rect2 = Rect2(box.position.x, box.position.z, box.size.x, box.size.z)
+
+    var begin := Vector3(0, 1e6, 0)
+    var dir := Vector3.DOWN
+
+    var indexes: Array = instance_node.get_instance_indexes(area)
+    var new_data: Array[Dictionary]
+    var new_indexes: Array
+
+    for index in indexes:
+        var inst_data: Dictionary = instance_node.get_instance_data(index)
+        var new_inst_data: Dictionary
+        for inst_id in inst_data:
+            # For now, only managing trees
+            if inst_id != 0:
+                continue
+
+            var new_cell_data: Dictionary
+            var cell_data: Dictionary = inst_data.get(inst_id)
+            for cell in cell_data:
+                var mesh_data: Dictionary = cell_data.get(cell)
+                var xforms: Array = mesh_data.get(&'xform')
+                var colors: PackedColorArray = mesh_data.get(&'color')
+                var modified: bool = false
+
+                var i: int = 0
+                var size: int = xforms.size()
+                while i < size:
+                    var xform: Transform3D = xforms[i]
+
+                    # CRITICAL TODO!!!
+                    # Make sure to not remove transforms that exist in the custom instances dict
+
+                    begin.x = xform.origin.x
+                    begin.z = xform.origin.z
+
+                    if not triangle_mesh.intersect_ray(begin, dir):
+                        i += 1
+                        continue
+
+                    xforms.remove_at(i)
+                    colors.remove_at(i)
+                    modified = true
+                    size -= 1
+
+                if modified:
+                    mesh_data.set(&'color', colors)
+                    new_cell_data.set(cell, mesh_data)
+
+            if new_cell_data.size() > 0:
+                new_inst_data.set(inst_id, new_cell_data)
+
+        if new_inst_data.size() > 0:
+            new_data.append(new_inst_data)
+            new_indexes.append(index)
+
+    instance_node.set_instance_data(new_indexes, new_data)
+
 func populate_region() -> void:
     # Ensure triangle mesh is up-to-date
     update_mesh()
@@ -280,14 +359,6 @@ func populate_region() -> void:
                 EditorToaster.SEVERITY_WARNING
         )
         return
-
-    # CRITICAL NOTE!!!
-    # ONLY add transforms, you provide a list of transforms, colors, by instance
-    # id to Node, and it will add them to the terrain.
-    # Support a clear button, which will search for instances by managed id, and
-    # delete any within the regions.
-    # This should be a whole lot simpler and faster.
-    # Make sure to not remove transforms that exist in the custom instances dict
 
     # Get the area rect from the mesh AABB
     var box: AABB = mesh.get_aabb().abs()
@@ -326,8 +397,8 @@ func populate_region() -> void:
                 y += 1
                 continue
 
-            # For now, 1/10
-            if randf() > 0.1:
+            # For now...
+            if randf() > 0.02:
                 y += 1
                 continue
 

@@ -603,7 +603,7 @@ func _populate_probability(density: float, nearest: float) -> bool:
 
 ## Main logic for instance placement relating to settings
 func _populate_instance(
-        instance: TerrainInstanceRegionSettings.InstanceSettings,
+        instance: TerrainInstanceSettings,
         data: Dictionary,
         vertex: Vector2i,
         tracking: Dictionary,

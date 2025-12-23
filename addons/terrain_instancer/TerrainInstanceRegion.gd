@@ -8,7 +8,9 @@ var btn_populate = editor_populate_region
 @export_tool_button("Clear Region", "Clear")
 var btn_clear = editor_clear_region
 
-var instance_node: TerrainInstanceNode
+
+@export
+var settings: TerrainInstanceRegionSettings
 
 
 @export_subgroup("Info")
@@ -22,6 +24,9 @@ var instance_node: TerrainInstanceNode
 )
 var region_id: int = 0
 var _rd: TerrainInstanceRegionData
+
+
+var instance_node: TerrainInstanceNode
 
 var mesh: ArrayMesh = ArrayMesh.new()
 var triangle_mesh: TriangleMesh = TriangleMesh.new()
@@ -458,6 +463,49 @@ func populate_region() -> void:
         )
         return
 
+    if settings.instances.size() == 0:
+        EditorInterface.get_editor_toaster().push_toast(
+                "No instances to place in settings, nothing to populate",
+                EditorToaster.SEVERITY_WARNING
+        )
+        return
+
+    # Build structures for placing instances
+    var instances: Dictionary
+    for instance_setting in settings.instances:
+        if not instance_setting.enabled:
+            continue
+
+        instances.set(
+                instance_setting,
+                {
+                    &'front': Vector2i.MAX,
+                    &'front_closest': Vector2i.MAX,
+                    &'last': Vector2i.MAX,
+                    &'closest': Vector2i.MAX,
+                }
+        )
+
+    if instances.size() == 0:
+        EditorInterface.get_editor_toaster().push_toast(
+                "No enabled instances, nothing to populate",
+                EditorToaster.SEVERITY_WARNING
+        )
+        return
+
+    # Track "nearest" targets in a smaller set, vertex to instance id/ used
+    # Initially empty
+    var tracking: Dictionary
+
+    # Locations to output, map instance id to vertex array
+    var output: Dictionary
+    for inst in instances:
+        output.set(inst.id, PackedInt32Array())
+
+    # Vars for mesh hit testing
+    var pos: Vector3 = Vector3(0, 1e6, 0)
+    var dir: Vector3 = Vector3.DOWN
+
     # Get the area rect from the mesh AABB
     var box: AABB = mesh.get_aabb().abs()
     var x1: int = box.position.x
@@ -465,43 +513,100 @@ func populate_region() -> void:
     var x2: int = x1 + box.size.x
     var y2: int = y1 + box.size.z
 
-    # Place instances at vertices within the triangles, allow edges
-    var data: Dictionary = {}
-
-    var instance_data: Dictionary = data.get_or_add(0, Dictionary())
-
-    var xforms: Array[Transform3D]
-    xforms = instance_data.get_or_add(&'xforms', xforms)
-    var colors: PackedColorArray
-    colors = instance_data.get_or_add(&'colors', colors)
-
-    var pos: Vector3 = Vector3(0, 1e6, 0)
-    var dir: Vector3 = Vector3.DOWN
-
-    var x: int = x1
-    var y: int
-    while x <= x2:
-        pos.x = x
-        y = y1
-        while y <= y2:
-            pos.z = y
-
+    # Mesh vertex loop
+    var v: Vector2i
+    var vx: int = x1
+    var vy: int
+    while vx <= x2:
+        pos.x = vx
+        v.x = vx
+        vy = y1
+        while vy <= y2:
+            pos.z = vy
             if not triangle_mesh.intersect_ray(pos, dir):
-                y += 1
+                vy += 1
                 continue
 
-            var height: float = instance_node.get_height(Vector2(pos.x, pos.z))
-            if is_nan(height):
-                y += 1
+            v.y = vy
+            if not instance_node.terrain_has(v):
+                vy += 1
                 continue
 
-            # For now...
-            if randf() > 0.02:
-                y += 1
-                continue
+            for inst in instances:
+                _populate_instance(
+                        inst,
+                        instances.get(inst),
+                        v,
+                        tracking,
+                        output,
+                )
 
-            xforms.append(Transform3D(Basis.IDENTITY, Vector3(pos.x, height, pos.z)))
-            y += 1
-        x += 1
+            vy += 1
+        vx += 1
 
+    # Clean up some stuff (maybe not needed but i want my memory back now!)
+    tracking.clear()
+    instances.clear()
+
+    # Build final transforms and colors
+    var data: Dictionary = {}
+    var keys = output.keys()
+    for inst_id in keys:
+        var vertices: PackedInt32Array = output.get(inst_id)
+
+        var size: int = vertices.size()
+
+        var xforms: Array[Transform3D]
+        var colors: PackedColorArray
+        xforms.resize(size / 2)
+        colors.resize(size / 2)
+
+        var i: int = 0
+        var k: int = 0
+        while i < size:
+            var tx: float = vertices[i]
+            var tz: float = vertices[i + 1]
+
+            # wiggle a little
+            tx += 0.7 * randf() - 0.35
+            tz += 0.7 * randf() - 0.35
+
+            var ty: float = instance_node.get_height(Vector2(tx, tz))
+
+            # TODO: height variation option
+
+            xforms[k] = Transform3D(
+                    Basis.IDENTITY, Vector3(tx, ty, tz)
+            )
+            colors[k] = Color.WHITE
+
+            i += 2
+            k += 1
+
+        # Progressively free memory
+        output.erase(inst_id)
+
+        # Save to data
+        data.set(inst_id, { &'xform': xforms, &'color': colors })
+
+    # Add instances to terrain
     instance_node.add_instances(data)
+
+## Probability test using a given density of the instance, and a distance to
+## the nearest interfering instance
+func _populate_probability(density: float, nearest: float) -> bool:
+    var s: float = density
+    var x: float = clampf(nearest, 0.0, s)
+
+    var p: float = tanh((-cos(x * (PI / s)) + 1.0) / PI)
+    return p >= randf()
+
+## Main logic for instance placement relating to settings
+func _populate_instance(
+        instance: TerrainInstanceRegionSettings.InstanceSettings,
+        data: Dictionary,
+        vertex: Vector2i,
+        tracking: Dictionary,
+        output: Dictionary
+) -> void:
+    pass

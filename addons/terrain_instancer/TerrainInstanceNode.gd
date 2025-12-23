@@ -571,9 +571,12 @@ func add_instances(instance_data: Dictionary) -> void:
     if terrain.get_class() == CLASS_TERRAIN3D:
         for id in instance_data:
             var data: Dictionary = instance_data.get(id)
-            var xforms: Array[Transform3D] = data[&'xforms']
-            var colors: PackedColorArray = data[&'colors']
-            terrain.instancer.add_transforms(id, xforms, colors, true)
+            terrain.instancer.add_transforms(
+                    id,
+                    data[&'xforms'],
+                    data[&'colors'],
+                    true
+            )
         return
 
     return

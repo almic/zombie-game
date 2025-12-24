@@ -482,34 +482,17 @@ func populate_region() -> void:
         return
 
     # Build structures for placing instances
-    var instances: Dictionary
-    for instance_setting in settings.instances:
-        if (not instance_setting.enabled) or instance_setting.id == -1:
+    var instance_index: Dictionary
+    var instance_data: Dictionary
+    for i in range(settings.instances.size()):
+        var inst: TerrainInstanceSettings = settings.instances[i]
+        if (not inst.enabled) or inst.id == -1:
             continue
 
-        var inst_data: Dictionary
-        for inst_id in instance_setting.minimum_distances:
-            inst_data.set(
-                    inst_id,
-                    {
-                        &'last_column': INT_MAX,
-                        &'closest': Vector2i.MAX,
-                    }
-            )
+        instance_index.set(i, inst.id)
+        instance_data.set(inst.id, _create_pop_data(inst))
 
-        # Ensure itself is present for density logic
-        if not inst_data.has(instance_setting.id):
-            inst_data.set(
-                    instance_setting.id,
-                    {
-                        &'last_column': INT_MAX,
-                        &'closest': Vector2i.MAX,
-                    }
-            )
-
-        instances.set(instance_setting, inst_data)
-
-    if instances.size() == 0:
+    if instance_index.size() == 0:
         EditorInterface.get_editor_toaster().push_toast(
                 "No enabled instances, nothing to populate",
                 EditorToaster.SEVERITY_WARNING
@@ -541,8 +524,8 @@ func populate_region() -> void:
 
     # Locations to output, map instance id to vertex array
     var output: Dictionary
-    for inst in instances:
-        output.set(inst.id, PackedInt32Array())
+    for index in instance_index:
+        output.set(instance_index[index], PackedInt32Array())
 
     # Vars for mesh hit testing
     var pos: Vector3 = Vector3(0, 1e6, 0)
@@ -561,13 +544,14 @@ func populate_region() -> void:
     var vy: int = y1
     while vy <= y2:
         # _prune_tracking(tracking, vy)
-        print('-------\nrow %d' % vy)
+        # print('-------\nrow %d' % vy)
 
         pos.z = vy
         v.y = vy
 
         vx = x1
         while vx <= x2:
+            # print('--- column %d' % vx)
             pos.x = vx
             if not triangle_mesh.intersect_ray(pos, dir):
                 vx += 1
@@ -578,16 +562,17 @@ func populate_region() -> void:
                 vx += 1
                 continue
 
-            for inst in instances:
+            for index in instance_index:
+                var inst: TerrainInstanceSettings = settings.instances[index]
                 _populate_instance(
                         inst,
-                        instances.get(inst),
+                        instance_data.get(inst.id),
                         v,
                         tracking,
                         output,
                 )
-            print(v)
-            print(tracking)
+            # print(v)
+            # print(tracking)
 
             vx += 1
 
@@ -608,7 +593,8 @@ func populate_region() -> void:
 
     # Clean up some stuff (maybe not needed but i want my memory back now!)
     tracking.clear()
-    instances.clear()
+    instance_data.clear()
+    instance_index.clear()
 
     # Build final transforms and colors
     var data: Dictionary = {}
@@ -687,13 +673,26 @@ func populate_region() -> void:
 
     print('Terrain updated in %.3f seconds' % [float(end - start) / 1e6])
 
+func _create_pop_data(instance: TerrainInstanceSettings) -> Dictionary:
+    var data: Dictionary = { &'last_clear_column': INT_MAX }
+
+    for id in instance.minimum_distances:
+        data.set(id, Vector2i.MAX)
+
+    # Ensure itself is present for density logic
+    if not data.has(instance.id):
+        data.set(instance.id, Vector2i.MAX)
+
+    return data
+
 ## Probability test using a given density of the instance, and a distance to
 ## the nearest interfering instance
 func _populate_probability(density: float, nearest: float) -> bool:
-    var s: float = 271828.0 / density
+    var s: float = 10.0 / density
     var x: float = clampf(nearest, 0.0, s)
 
     var p: float = tanh((-cos(x * (PI / s)) + 1.0) / PI)
+    # print('p: %.3f' % p)
     return p >= randf()
 
 ## Clears instances from the tracking dictionary if later instances are provably
@@ -724,13 +723,13 @@ func _populate_instance(
 
     # Optimize, skip distance tests
     var skip_tests: bool = true
-    for inst_id in instance.minimum_distances:
+    for inst_id in data:
         if tracking.has(inst_id):
             skip_tests = false
             break
 
     if skip_tests:
-        print('first run/ no instances')
+        # print('first run/ no instances')
         if _populate_probability(instance.density, INF):
             _put_instance(instance, data, vertex, tracking, output)
         return
@@ -745,25 +744,30 @@ func _populate_instance(
     #     }
     # }
 
-    if vertex.x < data.get(instance.id).last_column:
+    if vertex.x < data.last_clear_column:
         # Gone back, must get new closest
+        # print('New search for %d' % instance.id)
 
-        var best_sq: int = INT_MAX
+        var self_dist_sq: int = INT_MAX
         var point: Vector2i
 
-        for inst_id in instance.minimum_distances:
-            var inst_data: Dictionary = data.get(inst_id)
-            inst_data.last_column = vertex.x
+        for inst_id in data:
+            if inst_id is not int:
+                continue
 
             if not tracking.has(inst_id):
+                # print('Not tracking any %d' % inst_id)
                 continue
+            # print('Tracking %d' % inst_id)
 
             var is_self: bool = inst_id == instance.id
             var closest: Vector2i = Vector2i.MAX
             var inst_map: Dictionary = tracking.get(inst_id)
 
-            var min_dist_sq: float = instance.minimum_distances.get(inst_id, 0)
-            min_dist_sq *= min_dist_sq
+            var min_dist_sq: float = instance.minimum_distances.get(inst_id, -1)
+            if min_dist_sq > 0:
+                min_dist_sq *= min_dist_sq
+            # print('Min distance: %d' % min_dist_sq)
 
             for column in inst_map:
                 # Stop early if it is impossible to be closer than best, and
@@ -772,94 +776,101 @@ func _populate_instance(
                     var max_sq: int = column - vertex.x
                     max_sq *= max_sq
                     if is_self:
-                        if max_sq > max(best_sq, min_dist_sq):
+                        if max_sq > max(self_dist_sq, min_dist_sq):
                             break
                     elif max_sq > min_dist_sq:
                         break
 
                 point.x = column
                 point.y = inst_map[column]
+                # print('Checking distance from %s' % point)
 
                 var dist_sq: int = vertex.distance_squared_to(point)
 
                 # If we are ever too close...
-                if dist_sq <= min_dist_sq:
-                    inst_data.closest = point
-                    print('Found %s that was too close, dist_sq: %d' % [inst_id, dist_sq])
+                if dist_sq < min_dist_sq:
+                    data.set(inst_id, point)
+                    # print('Found %s that was too close, dist_sq: %d' % [inst_id, dist_sq])
                     return
 
                 # The rest is only for density
                 if not is_self:
+                    # print('It was %d away' % dist_sq)
                     continue
 
                 # NOTE: favor right-most point when equal distance
-                if dist_sq <= best_sq:
-                    best_sq = dist_sq
+                if dist_sq <= self_dist_sq:
+                    self_dist_sq = dist_sq
                     closest = point
 
             if is_self:
-                if best_sq != INT_MAX:
-                    print('closest to %s was %s' % [vertex, closest])
-                    inst_data.closest = closest
-                    nearest_sq = best_sq
-                else:
-                    print('nothing found near %s' % vertex)
+                if self_dist_sq != INT_MAX:
+                    # print('closest to %s was %s' % [vertex, closest])
+                    data.set(inst_id, closest)
+                    nearest_sq = self_dist_sq
+                # else:
+                #     print('nothing found near %s' % vertex)
             else:
                 # This instance is no longer too close, clear the closest point
-                inst_data.closest = Vector2i.MAX
+                data.set(inst_id, Vector2i.MAX)
 
+        data.last_clear_column = vertex.x
+
+        # print('Attempting placment of %d' % instance.id)
         if _populate_probability(instance.density, sqrt(nearest_sq)):
             _put_instance(instance, data, vertex, tracking, output)
 
         return
 
     # Optimized testing when moving right on the same row
+    # print('Normal search for %d' % instance.id)
 
     # Check that we are at least far enough from all of our "closest" instances
-    var best_sq: int = INT_MAX
+    var self_dist_sq: int = INT_MAX
     for inst_id in data:
-        var inst_data: Dictionary = data.get(inst_id)
-        if inst_data.closest == Vector2i.MAX:
+        if inst_id is not int:
             continue
 
-        var min_sq: float = instance.minimum_distances.get(inst_id, 0)
-        min_sq *= min_sq
+        var closest: Vector2i = data.get(inst_id)
+        if closest == Vector2i.MAX:
+            continue
 
-        var dist_sq: int = vertex.distance_squared_to(inst_data.closest)
-        if dist_sq <= min_sq:
-            print('Still close to last %s, dist_sq: %d' % [inst_id, best_sq])
+        var min_dist_sq: float = instance.minimum_distances.get(inst_id, -1)
+        if min_dist_sq > 0:
+            min_dist_sq *= min_dist_sq
+
+        var dist_sq: int = vertex.distance_squared_to(closest)
+        if dist_sq < min_dist_sq:
+            # print('Still close to last %s, dist_sq: %d' % [inst_id, dist_sq])
             return # Still too close
 
         if inst_id == instance.id:
-            best_sq = dist_sq
-            nearest_sq = best_sq
+            self_dist_sq = dist_sq
+            nearest_sq = self_dist_sq
         else:
             # This instance is no longer too close, clear the closest point
-            inst_data.closest = Vector2i.MAX
+            data.set(inst_id, Vector2i.MAX)
 
     var point: Vector2i
 
-    for inst_id in instance.minimum_distances:
-        var inst_data: Dictionary = data.get(inst_id)
-
-        if not tracking.has(inst_id):
-            inst_data.last_column = vertex.x
+    for inst_id in data:
+        if inst_id is not int:
             continue
 
-        var last_column: int = inst_data.last_column
-        inst_data.last_column = vertex.x
+        if not tracking.has(inst_id):
+            continue
 
         var closest := Vector2i.MAX
         var is_self: bool = inst_id == instance.id
         var inst_map: Dictionary = tracking.get(inst_id)
 
-        var min_dist_sq: float = instance.minimum_distances.get(inst_id, 0)
-        min_dist_sq *= min_dist_sq
+        var min_dist_sq: float = instance.minimum_distances.get(inst_id, -1)
+        if min_dist_sq > 0:
+            min_dist_sq *= min_dist_sq
 
         for column in inst_map:
-            # Skip columns prior to last column, they would have been
-            # tested already
-            if column <= last_column:
+            # Skip columns prior to last cleared column
+            if column <= data.last_clear_column:
                 continue
 
             # Stop early if the best option is too far
@@ -867,7 +878,7 @@ func _populate_instance(
                 var max_sq: int = column - vertex.x
                 max_sq *= max_sq
                 if is_self:
-                    if max_sq > max(best_sq, min_dist_sq):
+                    if max_sq > max(self_dist_sq, min_dist_sq):
                         break
                 elif max_sq > min_dist_sq:
                     break
@@ -878,9 +889,9 @@ func _populate_instance(
             var dist_sq: int = vertex.distance_squared_to(point)
 
             # If we are ever too close...
-            if dist_sq <= min_dist_sq:
-                inst_data.closest = point
-                print('Too close to %s, dist_sq: %d' % [inst_id, dist_sq])
+            if dist_sq < min_dist_sq:
+                data.set(inst_id, point)
+                # print('Too close to %s, dist_sq: %d' % [inst_id, dist_sq])
                 return
 
             # The rest is only for density
@@ -888,18 +899,21 @@ func _populate_instance(
                 continue
 
             # NOTE: favor right-most point when equal distance
-            if dist_sq <= best_sq:
+            if dist_sq <= self_dist_sq:
                 closest = point
-                best_sq = dist_sq
+                self_dist_sq = dist_sq
 
         if is_self:
-            if closest != Vector2i.MAX and closest != inst_data.closest:
-                print('NEW closest to %s was %s' % [vertex, closest])
-                inst_data.closest = closest
-                nearest_sq = best_sq
-            else:
-                print('Nothing closer to %s than %s' % [vertex, inst_data.closest])
+            if closest != Vector2i.MAX and closest != data.get(inst_id):
+                # print('NEW closest to %s was %s' % [vertex, closest])
+                data.set(inst_id, closest)
+                nearest_sq = self_dist_sq
+            # else:
+            #     print('Nothing closer to %s than %s' % [vertex, data.get(inst_id)])
 
+    data.last_clear_column = vertex.x
+
+    # print('Attempting placment of %d' % instance.id)
     if _populate_probability(instance.density, sqrt(nearest_sq)):
         _put_instance(instance, data, vertex, tracking, output)
 
@@ -913,13 +927,13 @@ func _put_instance(
     output.get(instance.id).append_array([vertex.x, vertex.y])
     if not tracking.has(instance.id):
         tracking.set(instance.id, { vertex.x: vertex.y })
-        print('First instance of %d: %s' % [instance.id, { vertex.x: vertex.y }])
+        # print('First instance of %d: %s' % [instance.id, { vertex.x: vertex.y }])
     else:
         var inst_map: Dictionary = tracking.get(instance.id)
         var do_sort: bool = not inst_map.has(vertex.x)
         inst_map.set(vertex.x, vertex.y)
         if do_sort:
             inst_map.sort()
-        print('New instance of %d: %s' % [instance.id, inst_map])
+        # print('New instance of %d: %s' % [instance.id, inst_map])
 
-    data.get(instance.id).closest = vertex
+    data.set(instance.id, vertex)

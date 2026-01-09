@@ -3,6 +3,7 @@ class_name TerrainInstanceRegion extends Node3D
 
 
 const INT_MAX: int = Vector2i.MAX.x
+const CHUNK_SIZE: int = 16
 
 
 @export_tool_button("Populate Region", "PointMesh")
@@ -481,55 +482,20 @@ func populate_region() -> void:
         )
         return
 
-    # Build structures for placing instances
-    var instance_index: Dictionary
-    var instance_data: Dictionary
+    var instances: Array[TerrainInstanceSettings]
     for i in range(settings.instances.size()):
         var inst: TerrainInstanceSettings = settings.instances[i]
         if (not inst.enabled) or inst.id == -1:
             continue
 
-        instance_index.set(i, inst.id)
-        instance_data.set(inst.id, _create_pop_data(inst))
+        instances.append(inst)
 
-    if instance_index.size() == 0:
+    if instances.size() == 0:
         EditorInterface.get_editor_toaster().push_toast(
                 "No enabled instances, nothing to populate",
                 EditorToaster.SEVERITY_WARNING
         )
         return
-
-    # Track "nearest" targets in a smaller set
-    #
-    # With pruning
-    # {
-    #     [id; int] {
-    #         [column; int] {
-    #             [used; bool],
-    #             [left; column],
-    #             [right; column],
-    #             [row; int],
-    #         }
-    #     }
-    # }
-    #
-    # Without pruning
-    # {
-    #     [id; int] {
-    #         [column; int] : [row; int]
-    #     }
-    # }
-    #
-    var tracking: Dictionary
-
-    # Locations to output, map instance id to vertex array
-    var output: Dictionary
-    for index in instance_index:
-        output.set(instance_index[index], PackedInt32Array())
-
-    # Vars for mesh hit testing
-    var pos: Vector3 = Vector3(0, 1e6, 0)
-    var dir: Vector3 = Vector3.DOWN
 
     # Get the area rect from the mesh AABB
     var box: AABB = mesh.get_aabb().abs()
@@ -538,133 +504,74 @@ func populate_region() -> void:
     var x2: int = x1 + box.size.x
     var y2: int = y1 + box.size.z
 
-    # Mesh vertex loop
-    var v: Vector2i
-    var vx: int
-    var vy: int = y1
-    while vy <= y2:
-        # _prune_tracking(tracking, vy)
-        # print('-------\nrow %d' % vy)
+    # Compute "chunks" that will be populated
+    var chunks: Dictionary
+    var c_x1: int = floori(float(x1) / 16.0)
+    var c_y1: int = floori(float(y1) / 16.0)
+    var c_x2: int = ceili(float(x2) / 16.0) - 1
+    var c_y2: int = ceili(float(y2) / 16.0) - 1
 
-        pos.z = vy
-        v.y = vy
+    var chunk: Vector2i
+    var chunk_total: int = 0
+    var chunk_max: int = (c_x2 - c_x1 + 1) * (c_y2 - c_y1 + 1) * instances.size()
+    var full_total: int = 0
+    var data: Dictionary
 
-        vx = x1
-        while vx <= x2:
-            # print('--- column %d' % vx)
-            pos.x = vx
-            if not triangle_mesh.intersect_ray(pos, dir):
-                vx += 1
-                continue
-
-            v.x = vx
-            if not instance_node.terrain_has(v):
-                vx += 1
-                continue
-
-            for index in instance_index:
-                var inst: TerrainInstanceSettings = settings.instances[index]
-                _populate_instance(
-                        inst,
-                        instance_data.get(inst.id),
-                        v,
-                        tracking,
-                        output,
-                )
-            # print(v)
-            # print(tracking)
-
-            vx += 1
-
-        vy += 1
-
-        if (vy - y1) % 100 == 0:
-            var total: int = 0
-            for inst_id in output:
-                total += output.get(inst_id).size() / 2
-            print(
-                    '%.1f completed, %d instances total' % [
-                        (float(vy - y1) / (y2 - y1)) * 100.0,
-                        total
-                    ]
-            )
-
-            await get_tree().process_frame
-
-    # Clean up some stuff (maybe not needed but i want my memory back now!)
-    tracking.clear()
-    instance_data.clear()
-    instance_index.clear()
-
-    # Build final transforms and colors
-    var data: Dictionary = {}
-    var keys = output.keys()
-    var total: int = 0
-    for inst_id in keys:
-        var vertices: PackedInt32Array = output.get(inst_id)
-
-        var size: int = vertices.size()
-
+    for instance in instances:
         var xforms: Array[Transform3D]
         var colors: PackedColorArray
-        xforms.resize(size / 2)
-        colors.resize(size / 2)
+        var instance_total: int = 0
 
-        var i: int = 0
-        var k: int = 0
-        while i < size:
-            var tx: float = vertices[i]
-            var tz: float = vertices[i + 1]
+        chunk.y = c_y1
+        while chunk.y <= c_y2:
+            chunk.x = c_x1
+            while chunk.x <= c_x2:
+                var count_added: int = _populate_chunk(instance, chunk, chunks)
 
-            # wiggle a little
-            #tx += 0.7 * randf() - 0.35
-            #tz += 0.7 * randf() - 0.35
+                if count_added > 0:
+                    var positions: Array[Vector3] = chunks.get(instance.id).get(chunk)
+                    xforms.resize(xforms.size() + count_added)
+                    colors.resize(colors.size() + count_added)
 
-            # check that we are still in the mesh
-            pos.x = tx
-            pos.z = tz
-            if not triangle_mesh.intersect_ray(pos, dir):
-                tx = vertices[i]
-                tz = vertices[i + 1]
+                    var i: int = 0
+                    while i < count_added:
+                        var xform: Transform3D = Transform3D.IDENTITY
+                        xform.origin = positions[i]
+                        # TODO: height variation option
+                        # TODO: rotation variation
+                        # TODO: scale variation
 
-            var ty: float = instance_node.get_height(Vector2(tx, tz))
-            if is_nan(ty):
-                tx = vertices[i]
-                tz = vertices[i + 1]
-                ty = instance_node.get_height(Vector2(tx, tz))
-                if is_nan(ty):
-                    push_error('Guh')
-                    i += 2
-                    # Shrink arrays
-                    xforms.resize(xforms.size() - 1)
-                    colors.resize(colors.size() - 1)
-                    continue
+                        var color: Color = Color.WHITE
+                        # TODO: color variation (list of weighted options)
 
-            # TODO: height variation option
-            # TODO: rotation variation
-            # TODO: scale variation
+                        xforms[i + instance_total] = xform
+                        colors[i + instance_total] = color
+                        i += 1
 
-            xforms[k] = Transform3D(
-                    Basis.IDENTITY, Vector3(tx, ty, tz)
-            )
+                instance_total += count_added
+                full_total += count_added
 
-            # TODO: color variation (list of weighted options)
-            colors[k] = Color.WHITE
+                chunk.x += 1
+                chunk_total += 1
+                if chunk_total % (10 * instances.size()) == 0:
+                    print(
+                            '%.1f completed, %d instances total' % [
+                                float(chunk_total) / float(chunk_max) * 100.0,
+                                full_total
+                            ]
+                    )
 
-            i += 2
-            k += 1
-            total += 1
+                    await get_tree().process_frame
 
-        # Progressively free memory
-        output.erase(inst_id)
+            chunk.y += 1
 
         # Save to data
-        data.set(inst_id, { &'xforms': xforms, &'colors': colors })
+        data.set(instance.id, { &'xforms': xforms, &'colors': colors })
 
     # NOTE: do not time the terrain placement side
     var end: int = Time.get_ticks_usec()
 
-    print('Populated %d instances in %.3f seconds' % [total, float(end - start) / 1e6])
+    print('Populated %d instances in %.3f seconds' % [full_total, float(end - start) / 1e6])
 
     start = Time.get_ticks_usec()
     # Add instances to terrain
@@ -673,267 +580,100 @@ func populate_region() -> void:
 
     print('Terrain updated in %.3f seconds' % [float(end - start) / 1e6])
 
-func _create_pop_data(instance: TerrainInstanceSettings) -> Dictionary:
-    var data: Dictionary = { &'last_clear_column': INT_MAX }
-
-    for id in instance.minimum_distances:
-        data.set(id, Vector2i.MAX)
-
-    # Ensure itself is present for density logic
-    if not data.has(instance.id):
-        data.set(instance.id, Vector2i.MAX)
-
-    return data
-
-## Probability test using a given density of the instance, and a distance to
-## the nearest interfering instance
-func _populate_probability(density: float, nearest: float) -> bool:
-    var s: float = 10.0 / density
-    var x: float = clampf(nearest, 0.0, s)
-
-    var p: float = tanh((-cos(x * (PI / s)) + 1.0) / PI)
-    # print('p: %.3f' % p)
-    return p >= randf()
-
-## Clears instances from the tracking dictionary if later instances are provably
-## always closer to 'row'. An instance must have a left and right neighbor on
-## the same row or below, and closer in the X-dimension than 'row'.
-func _prune_tracking(
-        tracking: Dictionary,
-        row: int
-) -> void:
-    # Switch to turn this off for timings tests
-    const enable: bool = true
-    if not enable:
-        return
-
-    # NOTE: due to memory use needed for pruning, I'm gonna leave this
-    #       unimplemented until I do timings with large regions, and if locating
-    #       the closest neighbor is the biggest time usage.
-    pass
-
-## Main logic for instance placement relating to settings
-func _populate_instance(
+func _populate_chunk(
         instance: TerrainInstanceSettings,
-        data: Dictionary,
-        vertex: Vector2i,
-        tracking: Dictionary,
-        output: Dictionary
-) -> void:
+        chunk: Vector2i,
+        chunks: Dictionary,
+) -> int:
+    var count: int = roundi(randfn(instance.density, instance.density_deviation))
+    var count_added: int = 0
+    var positions: Array[Vector3]
+    var our_chunks: Dictionary
 
-    # Optimize, skip distance tests
-    var skip_tests: bool = true
-    for inst_id in data:
-        if tracking.has(inst_id):
-            skip_tests = false
-            break
+    if chunks.has(instance.id):
+        our_chunks = chunks.get(instance.id)
+        if our_chunks.has(chunk):
+            positions = our_chunks.get(chunk)
 
-    if skip_tests:
-        # print('first run/ no instances')
-        if _populate_probability(instance.density, INF):
-            _put_instance(instance, data, vertex, tracking, output)
-        return
+    # Vars for mesh hit testing
+    var pos: Vector2
+    var ray_pos: Vector3 = Vector3(0, 1e6, 0)
+    var dir: Vector3 = Vector3.DOWN
 
-    # Compute closest distance
-    var nearest_sq: int = INT_MAX
+    for i in range(count):
+        pos.x = randi_range(0, CHUNK_SIZE - 1) + minf(randf(), 0.999)
+        pos.y = randi_range(0, CHUNK_SIZE - 1) + minf(randf(), 0.999)
 
-    # Tracking
-    # {
-    #     [id; int] {
-    #         [column; int] : [row; int]
-    #     }
-    # }
+        pos.x += chunk.x * 16
+        pos.y += chunk.y * 16
 
-    if vertex.x < data.last_clear_column:
-        # Gone back, must get new closest
-        # print('New search for %d' % instance.id)
+        ray_pos.x = pos.x
+        ray_pos.z = pos.y
 
-        var self_dist_sq: int = INT_MAX
-        var point: Vector2i
+        if not triangle_mesh.intersect_ray(ray_pos, dir):
+            continue
 
-        for inst_id in data:
-            if inst_id is not int:
-                continue
+        if not instance_node.terrain_has(pos):
+            continue
 
-            if not tracking.has(inst_id):
-                # print('Not tracking any %d' % inst_id)
-                continue
-            # print('Tracking %d' % inst_id)
+        var height: float = instance_node.get_height(pos)
+        if is_nan(height):
+            continue
 
-            var is_self: bool = inst_id == instance.id
-            var closest: Vector2i = Vector2i.MAX
-            var inst_map: Dictionary = tracking.get(inst_id)
+        var pos_3d: Vector3 = Vector3(pos.x, height, pos.y)
 
-            var min_dist_sq: float = instance.minimum_distances.get(inst_id, -1)
-            if min_dist_sq > 0:
-                min_dist_sq *= min_dist_sq
-            # print('Min distance: %d' % min_dist_sq)
+        if _is_pos_too_close(pos_3d, instance, chunk, chunks):
+            continue
 
-            for column in inst_map:
-                # Stop early if it is impossible to be closer than best, and
-                # further than most distant instance
-                if column > vertex.x:
-                    var max_sq: int = column - vertex.x
-                    max_sq *= max_sq
-                    if is_self:
-                        if max_sq > max(self_dist_sq, min_dist_sq):
-                            break
-                    elif max_sq > min_dist_sq:
-                        break
+        # Place in chunk now
+        positions.append(pos_3d)
+        our_chunks.set(chunk, positions)
 
-                point.x = column
-                point.y = inst_map[column]
-                # print('Checking distance from %s' % point)
+        if not chunks.has(instance.id):
+            chunks.set(instance.id, our_chunks)
 
-                var dist_sq: int = vertex.distance_squared_to(point)
+        count_added += 1
 
-                # If we are ever too close...
-                if dist_sq < min_dist_sq:
-                    data.set(inst_id, point)
-                    # print('Found %s that was too close, dist_sq: %d' % [inst_id, dist_sq])
-                    return
+    return count_added
 
-                # The rest is only for density
-                if not is_self:
-                    # print('It was %d away' % dist_sq)
+func _is_pos_too_close(
+        pos: Vector3,
+        instance: TerrainInstanceSettings,
+        chunk: Vector2i,
+        chunks: Dictionary,
+) -> bool:
+    var pos2: Vector2 = Vector2(pos.x, pos.z)
+    for other_id in instance.minimum_distances:
+        var other_chunks: Dictionary = chunks.get(other_id, {})
+        if not other_chunks:
+            continue
+
+        var minimum_distance: float = instance.minimum_distances.get(other_id)
+        var minimum_distance_squared = minimum_distance * minimum_distance
+
+        var chunk_range: int = ceili(minimum_distance / 16.0)
+        var x_start: int = chunk.x - chunk_range
+        var y_start: int = chunk.y - chunk_range
+        var x_end: int = chunk.x + chunk_range
+        var y_end: int = chunk.y + chunk_range
+
+        var x: int = x_start
+        var y: int
+        while x <= x_end:
+            y = y_start
+            while y <= y_end:
+                var positions: Variant = other_chunks.get(Vector2i(x, y))
+                if not positions:
+                    y += 1
                     continue
 
-                # NOTE: favor right-most point when equal distance
-                if dist_sq <= self_dist_sq:
-                    self_dist_sq = dist_sq
-                    closest = point
+                for other_pos in positions:
+                    # Ignore height
+                    var other2: Vector2 = Vector2(other_pos.x, other_pos.z)
+                    if pos2.distance_squared_to(other2) < minimum_distance_squared:
+                        return true
 
-            if is_self:
-                if self_dist_sq != INT_MAX:
-                    # print('closest to %s was %s' % [vertex, closest])
-                    data.set(inst_id, closest)
-                    nearest_sq = self_dist_sq
-                # else:
-                #     print('nothing found near %s' % vertex)
-            else:
-                # This instance is no longer too close, clear the closest point
-                data.set(inst_id, Vector2i.MAX)
+                y += 1
+            x += 1
 
-        data.last_clear_column = vertex.x
-
-        # print('Attempting placment of %d' % instance.id)
-        if _populate_probability(instance.density, sqrt(nearest_sq)):
-            _put_instance(instance, data, vertex, tracking, output)
-
-        return
-
-    # Optimized testing when moving right on the same row
-    # print('Normal search for %d' % instance.id)
-
-    # Check that we are at least far enough from all of our "closest" instances
-    var self_dist_sq: int = INT_MAX
-    for inst_id in data:
-        if inst_id is not int:
-            continue
-
-        var closest: Vector2i = data.get(inst_id)
-        if closest == Vector2i.MAX:
-            continue
-
-        var min_dist_sq: float = instance.minimum_distances.get(inst_id, -1)
-        if min_dist_sq > 0:
-            min_dist_sq *= min_dist_sq
-
-        var dist_sq: int = vertex.distance_squared_to(closest)
-        if dist_sq < min_dist_sq:
-            # print('Still close to last %s, dist_sq: %d' % [inst_id, dist_sq])
-            return # Still too close
-
-        if inst_id == instance.id:
-            self_dist_sq = dist_sq
-            nearest_sq = self_dist_sq
-        else:
-            # This instance is no longer too close, clear the closest point
-            data.set(inst_id, Vector2i.MAX)
-
-    var point: Vector2i
-
-    for inst_id in data:
-        if inst_id is not int:
-            continue
-
-        if not tracking.has(inst_id):
-            continue
-
-        var closest := Vector2i.MAX
-        var is_self: bool = inst_id == instance.id
-        var inst_map: Dictionary = tracking.get(inst_id)
-
-        var min_dist_sq: float = instance.minimum_distances.get(inst_id, -1)
-        if min_dist_sq > 0:
-            min_dist_sq *= min_dist_sq
-
-        for column in inst_map:
-            # Skip columns prior to last cleared column
-            if column <= data.last_clear_column:
-                continue
-
-            # Stop early if the best option is too far
-            if column > vertex.x:
-                var max_sq: int = column - vertex.x
-                max_sq *= max_sq
-                if is_self:
-                    if max_sq > max(self_dist_sq, min_dist_sq):
-                        break
-                elif max_sq > min_dist_sq:
-                    break
-
-            point.x = column
-            point.y = inst_map[column]
-
-            var dist_sq: int = vertex.distance_squared_to(point)
-
-            # If we are ever too close...
-            if dist_sq < min_dist_sq:
-                data.set(inst_id, point)
-                # print('Too close to %s, dist_sq: %d' % [inst_id, dist_sq])
-                return
-
-            # The rest is only for density
-            if not is_self:
-                continue
-
-            # NOTE: favor right-most point when equal distance
-            if dist_sq <= self_dist_sq:
-                closest = point
-                self_dist_sq = dist_sq
-
-        if is_self:
-            if closest != Vector2i.MAX and closest != data.get(inst_id):
-                # print('NEW closest to %s was %s' % [vertex, closest])
-                data.set(inst_id, closest)
-                nearest_sq = self_dist_sq
-            # else:
-            #     print('Nothing closer to %s than %s' % [vertex, data.get(inst_id)])
-
-    data.last_clear_column = vertex.x
-
-    # print('Attempting placment of %d' % instance.id)
-    if _populate_probability(instance.density, sqrt(nearest_sq)):
-        _put_instance(instance, data, vertex, tracking, output)
-
-func _put_instance(
-        instance: TerrainInstanceSettings,
-        data: Dictionary,
-        vertex: Vector2i,
-        tracking: Dictionary,
-        output: Dictionary
-) -> void:
-    output.get(instance.id).append_array([vertex.x, vertex.y])
-    if not tracking.has(instance.id):
-        tracking.set(instance.id, { vertex.x: vertex.y })
-        # print('First instance of %d: %s' % [instance.id, { vertex.x: vertex.y }])
-    else:
-        var inst_map: Dictionary = tracking.get(instance.id)
-        var do_sort: bool = not inst_map.has(vertex.x)
-        inst_map.set(vertex.x, vertex.y)
-        if do_sort:
-            inst_map.sort()
-        # print('New instance of %d: %s' % [instance.id, inst_map])
-
-    data.set(instance.id, vertex)
+    return false

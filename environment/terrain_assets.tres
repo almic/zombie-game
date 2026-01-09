@@ -13,7 +13,6 @@
 name = "Test Tree"
 scene_file = ExtResource("1_3d404")
 density = 5.0
-cast_shadows = 0
 last_lod = 0
 last_shadow_lod = 0
 lod0_range = 4096.0
@@ -28,7 +27,7 @@ height_offset = 0.2
 density = 10.0
 last_lod = 0
 last_shadow_lod = 0
-lod0_range = 128.0
+lod0_range = 4096.0
 collision_layers = 0
 collision_mask = 0
 

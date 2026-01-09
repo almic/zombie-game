@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=5 format=3 uid="uid://bwxsarbene1w5"]
+
+[ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_hj0f8"]
+[ext_resource type="Script" uid="uid://g1tug1pbf30t" path="res://addons/terrain_instancer/res/TerrainInstanceRegionSettings.gd" id="2_x3il8"]
+
+[sub_resource type="Resource" id="Resource_icy4k"]
+script = ExtResource("1_hj0f8")
+id = 0
+density = 20.0
+density_deviation = 4.0
+minimum_distances = {
+0: 5.0
+}
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"
+
+[sub_resource type="Resource" id="Resource_dsaby"]
+script = ExtResource("1_hj0f8")
+id = 1
+density = 2.0
+minimum_distances = {
+0: 0.9,
+1: 1.5
+}
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"
+
+[resource]
+script = ExtResource("2_x3il8")
+instances = Array[ExtResource("1_hj0f8")]([SubResource("Resource_icy4k"), SubResource("Resource_dsaby")])
+metadata/_custom_type_script = "uid://g1tug1pbf30t"

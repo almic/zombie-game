@@ -1,7 +1,18 @@
-[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=5 format=3 uid="uid://bwxsarbene1w5"]
+[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=7 format=3 uid="uid://bwxsarbene1w5"]
 
 [ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_hj0f8"]
+[ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_cpl1s"]
 [ext_resource type="Script" uid="uid://g1tug1pbf30t" path="res://addons/terrain_instancer/res/TerrainInstanceRegionSettings.gd" id="2_x3il8"]
+
+[sub_resource type="Resource" id="Resource_xrlpi"]
+script = ExtResource("2_cpl1s")
+color = Color(1, 0.8822324, 0.8649853, 1)
+hue_variation = 0.01
+hue_deviation = 0.007
+lit_variation = 0.0732
+lit_deviation = 0.0635
+sat_variation = 0.0188
+metadata/_custom_type_script = "uid://dmr3brsptijju"
 
 [sub_resource type="Resource" id="Resource_icy4k"]
 script = ExtResource("1_hj0f8")
@@ -11,11 +22,22 @@ density_deviation = 4.0
 minimum_distances = {
 0: 5.0
 }
+v_colors = Array[ExtResource("2_cpl1s")]([SubResource("Resource_xrlpi")])
+v_height_offset = -2.0
+v_spin_low = 3.14159265358979
+v_spin_high = 3.14159265358979
+v_tilt_low = 0.03490658503989
+v_tilt_high = 0.03490658503989
+v_tilt_deviation = 0.01396263401595
+v_scale_low = 0.1
+v_scale_high = 0.1
+v_scale_deviation = 0.1
 metadata/_custom_type_script = "uid://vr4nxiaugcwm"
 
 [sub_resource type="Resource" id="Resource_dsaby"]
 script = ExtResource("1_hj0f8")
 id = 1
+enabled = false
 density = 2.0
 minimum_distances = {
 0: 0.9,

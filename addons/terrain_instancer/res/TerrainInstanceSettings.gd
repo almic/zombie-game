@@ -15,6 +15,13 @@ var density: float = 1.0
 @export_range(0.01, 10.0, 0.01, 'or_greater')
 var density_deviation: float = 2.0
 
+## Density reduction according to local slope for instances. This acts as an
+## additional probability function, and can only reduce the density. If you want
+## to have "higher" densities at certain slopes, you must increase the base
+## density and modify the curve appropriately.
+@export
+var density_slope: Curve
+
 @export_custom(
     PROPERTY_HINT_DICTIONARY_TYPE,
     '2/1:-1,10,1,or_greater;3/1:0.1,10.0,0.1,or_greater'

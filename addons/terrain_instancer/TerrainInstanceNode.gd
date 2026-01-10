@@ -430,6 +430,20 @@ func get_height(point: Vector2) -> float:
 
     return NAN
 
+## Get the normal of a point on the terrain from world 2D space. Returns a zero
+## vector if the point is invalid for the terrain
+func get_normal(point: Vector2) -> Vector3:
+    if not terrain:
+        return Vector3.ZERO
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var n: Vector3 = terrain.data.get_normal(Vector3(point.x, 0.0, point.y))
+        if n.is_finite():
+            return n
+        return Vector3.ZERO
+
+    return Vector3.ZERO
+
 ## Return an array of indexes that can be used to access and modify instance data
 func get_instance_indexes(area: Rect2) -> Array:
     if not terrain:

@@ -1,8 +1,13 @@
-[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=7 format=3 uid="uid://bwxsarbene1w5"]
+[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=8 format=3 uid="uid://bwxsarbene1w5"]
 
 [ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_hj0f8"]
 [ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_cpl1s"]
 [ext_resource type="Script" uid="uid://g1tug1pbf30t" path="res://addons/terrain_instancer/res/TerrainInstanceRegionSettings.gd" id="2_x3il8"]
+
+[sub_resource type="Curve" id="Curve_x3il8"]
+_limits = [0.0, 1.0, 0.0, 90.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(7.92176055908203, 0), 0.0, 0.0, 0, 0, Vector2(90, 0), 0.0, 0.0, 0, 0]
+point_count = 3
 
 [sub_resource type="Resource" id="Resource_xrlpi"]
 script = ExtResource("2_cpl1s")
@@ -19,6 +24,7 @@ script = ExtResource("1_hj0f8")
 id = 0
 density = 20.0
 density_deviation = 4.0
+density_slope = SubResource("Curve_x3il8")
 minimum_distances = {
 0: 5.0
 }

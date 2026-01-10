@@ -626,6 +626,8 @@ func _populate_chunk(
         if our_chunks.has(chunk):
             positions = our_chunks.get(chunk)
 
+    var slope_curve: Curve = instance.density_slope
+
     # Vars for mesh hit testing
     var pos: Vector2
     var ray_pos: Vector3 = Vector3(0, 1e6, 0)
@@ -646,6 +648,19 @@ func _populate_chunk(
 
         if not instance_node.terrain_has(pos):
             continue
+
+        if slope_curve:
+            var normal: Vector3 = instance_node.get_normal(pos)
+            if normal.is_zero_approx():
+                continue
+            var angle: float = rad_to_deg(acos(normal.dot(Vector3.UP)))
+            var probability: float = slope_curve.sample_baked(angle)
+
+            if is_zero_approx(probability):
+                continue
+
+            if randf() > probability:
+                continue
 
         var height: float = instance_node.get_height(pos)
         if is_nan(height):

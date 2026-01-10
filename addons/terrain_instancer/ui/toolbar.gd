@@ -6,7 +6,9 @@ signal tool_selected(tool: Tool)
 
 enum Tool {
     NONE,
-    SELECT,
+    ADD_INSTANCE,
+    EDIT_INSTANCE,
+    SELECT_VERTEX,
     ADD_TRIANGLE,
     REMOVE_VERTEX,
     REMOVE_TRIANGLE,
@@ -20,17 +22,23 @@ var plugin: Plugin
 var btn_add_region: Button
 
 var group_region: ButtonGroup = ButtonGroup.new()
+
 var sep_region: VSeparator
 var btn_select: Button
 var btn_add_triangle: Button
+
 var sep_region_remove: VSeparator
 var btn_remove_vertex: Button
 var btn_remove_triangle: Button
 
+var sep_instances: VSeparator
+var btn_add_instance: Button
+var btn_edit_instance: Button
+
 
 func _init() -> void:
     group_region.allow_unpress = true
-    custom_minimum_size = Vector2(20, 0)
+    custom_minimum_size = Vector2(0, 20)
 
 func _ready() -> void:
     btn_add_region = Button.new()
@@ -45,7 +53,7 @@ func _ready() -> void:
     sep_region = VSeparator.new()
 
     btn_select = Button.new()
-    btn_select.name = &'Select'
+    btn_select.name = &'Select Vertex'
     btn_select.tooltip_text = "Select Vertex"
     btn_select.icon = get_theme_icon(&'EditPivot', &'EditorIcons')
     _init_tool_button(btn_select, group_region)
@@ -70,13 +78,34 @@ func _ready() -> void:
     btn_remove_triangle.icon = get_theme_icon(&'MeshInstance3D', &'EditorIcons')
     _init_tool_button(btn_remove_triangle, group_region)
 
+    sep_instances = VSeparator.new()
+
+    btn_add_instance = Button.new()
+    btn_add_instance.name = &'Add Instance'
+    btn_add_instance.tooltip_text = "Add instances. Creates a temporary node for editing. Merges with region on save."
+    btn_add_instance.icon = get_theme_icon(&'ArrayMesh', &'EditorIcons')
+    _init_tool_button(btn_add_instance, group_region)
+
+    btn_edit_instance = Button.new()
+    btn_edit_instance.name = &'Edit Instance'
+    btn_edit_instance.tooltip_text = "Edit instances. Changes selected instance into temporary node for editing. Merges into region on save."
+    btn_edit_instance.icon = get_theme_icon(&'DebugContinue', &'EditorIcons')
+    _init_tool_button(btn_edit_instance, group_region)
+
     add_child(btn_add_region)
+
     add_child(sep_region)
     add_child(btn_select)
     add_child(btn_add_triangle)
+
     add_child(sep_region_remove)
     add_child(btn_remove_vertex)
     add_child(btn_remove_triangle)
+
+    add_child(sep_instances)
+    add_child(btn_add_instance)
+    add_child(btn_edit_instance)
+
 
 func _init_tool_button(button: Button, group: ButtonGroup) -> void:
     button.toggle_mode = true
@@ -102,16 +131,27 @@ func update_visibility() -> void:
             sep_region.show()
         btn_select.show()
         btn_add_triangle.show()
+
         sep_region_remove.show()
         btn_remove_vertex.show()
         btn_remove_triangle.show()
+
+        sep_instances.show()
+        btn_add_instance.show()
+        btn_edit_instance.show()
+
     else:
         sep_region.hide()
         btn_select.hide()
         btn_add_triangle.hide()
+
         sep_region_remove.hide()
         btn_remove_vertex.hide()
         btn_remove_triangle.hide()
+
+        sep_instances.hide()
+        btn_add_instance.hide()
+        btn_edit_instance.hide()
 
 func create_region_node() -> TerrainInstanceRegion:
     var region := TerrainInstanceRegion.new()
@@ -154,13 +194,17 @@ func on_selection_changed() -> void:
         tool_selected.emit(Tool.NONE)
         return
 
-    if selected.name == &'Select':
-        tool_selected.emit(Tool.SELECT)
+    if selected.name == &'Select Vertex':
+        tool_selected.emit(Tool.SELECT_VERTEX)
     elif selected.name == &'Add Triangles':
         tool_selected.emit(Tool.ADD_TRIANGLE)
     elif selected.name == &'Remove Vertex':
         tool_selected.emit(Tool.REMOVE_VERTEX)
     elif selected.name == &'Remove Triangles':
         tool_selected.emit(Tool.REMOVE_TRIANGLE)
+    elif selected.name == &'Add Instance':
+        tool_selected.emit(Tool.ADD_INSTANCE)
+    elif selected.name == &'Edit Instance':
+        tool_selected.emit(Tool.EDIT_INSTANCE)
     else:
         push_error('TerrainInstancerPlugin: unknown tool selected! "%s"' % selected.name)

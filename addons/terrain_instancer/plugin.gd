@@ -2,12 +2,14 @@
 extends EditorPlugin
 
 const Toolbar = preload("uid://c3rp8rh2rylb0")
+const InstanceBar = preload("uid://btydstng0aghh")
 const Gizmos = preload("uid://diallkouwe5cd")
 
 
 var gizmos: Gizmos
 var toolbar: Toolbar
 var tool_mode: Toolbar.Tool = Toolbar.Tool.NONE
+var instance_bar: InstanceBar
 var edited_node: TerrainInstanceNode
 var edited_region: TerrainInstanceRegion
 
@@ -28,6 +30,11 @@ func _enter_tree() -> void:
     toolbar.plugin = self
     toolbar.visible = false
     add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_MENU, toolbar)
+
+    instance_bar = InstanceBar.new()
+    instance_bar.plugin = self
+    instance_bar.visible = false
+    add_control_to_container(EditorPlugin.CONTAINER_SPATIAL_EDITOR_BOTTOM, instance_bar)
 
     if not toolbar.tool_selected.is_connected(on_tool_selected):
         toolbar.tool_selected.connect(on_tool_selected)
@@ -55,6 +62,12 @@ func _disable_plugin():
 
 func _make_visible(visible: bool) -> void:
     toolbar.visible = visible
+    if visible and tool_mode == Toolbar.Tool.ADD_INSTANCE and edited_region:
+        instance_bar.region = edited_region
+        instance_bar.visible = true
+    else:
+        instance_bar.region = null
+        instance_bar.visible = false
 
 func _handles(object: Object) -> bool:
     return (
@@ -71,6 +84,8 @@ func _edit(object: Object) -> void:
         edited_node = null
         edited_region = null
         toolbar.update_visibility()
+        instance_bar.region = null
+        instance_bar.hide()
         return
 
     if object == edited_node:
@@ -78,6 +93,8 @@ func _edit(object: Object) -> void:
             edited_region = null
         edited_node.show_gizmos()
         toolbar.update_visibility()
+        instance_bar.region = null
+        instance_bar.hide()
         return
 
     if object is TerrainInstanceNode:
@@ -107,6 +124,12 @@ func _edit(object: Object) -> void:
             edited_region = null
 
     toolbar.update_visibility()
+    if edited_region and tool_mode == Toolbar.Tool.ADD_INSTANCE:
+        instance_bar.region = edited_region
+        instance_bar.show()
+    else:
+        instance_bar.region = null
+        instance_bar.hide()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> AfterGUIInput:
     if not edited_node:
@@ -174,7 +197,7 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             if update:
                 edited_region.update_gizmos()
 
-        elif tool_mode == Toolbar.Tool.SELECT:
+        elif tool_mode == Toolbar.Tool.SELECT_VERTEX:
             # Allow gizmo selection
             return AFTER_GUI_INPUT_CUSTOM
 
@@ -211,6 +234,12 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             edited_region.remove_face(face_idx)
             edited_region.update_gizmos()
 
+        elif tool_mode == Toolbar.Tool.ADD_INSTANCE:
+            if (not edited_region) or (not instance_bar.region):
+                return AFTER_GUI_INPUT_PASS
+
+            # TODO
+
         else:
             print('No tool selected!')
 
@@ -232,3 +261,13 @@ func on_tool_selected(tool: Toolbar.Tool) -> void:
     # Clear triangle marker when deselecting this tool
     elif edited_region and previous_tool == Toolbar.Tool.ADD_TRIANGLE:
         edited_region.update_gizmos()
+
+    if previous_tool == Toolbar.Tool.ADD_INSTANCE:
+        instance_bar.hide()
+    if tool == Toolbar.Tool.ADD_INSTANCE:
+        if edited_region:
+            instance_bar.region = edited_region
+            instance_bar.show()
+        else:
+            instance_bar.region = null
+            instance_bar.hide()

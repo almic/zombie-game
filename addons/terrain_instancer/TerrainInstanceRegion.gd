@@ -4,6 +4,7 @@ class_name TerrainInstanceRegion extends Node3D
 
 const INT_MAX: int = Vector2i.MAX.x
 const CHUNK_SIZE: int = 16
+const TerrainInstanceTemporary = preload("uid://dumv2y8oq3f1x")
 
 
 @export_tool_button("Populate Region", "PointMesh")
@@ -43,6 +44,8 @@ func _notification(what: int) -> void:
     if what == NOTIFICATION_EDITOR_PRE_SAVE:
         if _rd:
             ResourceSaver.save(_rd, _rd.resource_path)
+
+        save_temporary_instances()
 
 ## Editor function, probably do some validation and maybe a confirmation dialog
 func editor_clear_region() -> void:
@@ -387,6 +390,46 @@ func _sort_indexes(arr: PackedInt32Array) -> void:
         arr[i] = old[best]
         i += 1
         best = posmod(best + 1, 3)
+
+func save_temporary_instances() -> void:
+    if not instance_node:
+        return
+
+    var temps: Array[TerrainInstanceTemporary]
+    for child in get_children():
+        if child is TerrainInstanceTemporary:
+            temps.append(child)
+
+    if not temps:
+        return
+
+    var data: Dictionary
+    for temp_inst in temps:
+        var id: int = temp_inst.instance_id
+        var color: Color = temp_inst.instance_color
+        var xform: Transform3D = temp_inst.global_transform
+
+        if not data.has(id):
+            var xforms: Array[Transform3D] = [xform]
+            var colors: PackedColorArray = [color]
+            data.set(id, { &'xforms': xforms, &'colors': colors })
+            continue
+
+        var inst_data: Dictionary = data.get(id)
+        var xforms: Array[Transform3D] = inst_data.get(&'xforms')
+        var colors: PackedColorArray = inst_data.get(&'colors')
+
+        xforms.append(xform)
+        colors.append(color)
+
+        inst_data.set(&'xforms', xforms)
+        inst_data.set(&'colors', colors)
+
+    instance_node.add_instances(data)
+
+    for child in temps:
+        child.owner = null
+        remove_child.call_deferred(child)
 
 func clear_region() -> void:
     update_mesh()

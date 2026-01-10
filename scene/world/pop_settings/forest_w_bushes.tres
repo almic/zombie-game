@@ -6,8 +6,8 @@
 
 [sub_resource type="Curve" id="Curve_x3il8"]
 _limits = [0.0, 1.0, 0.0, 90.0]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(7.92176055908203, 0), 0.0, 0.0, 0, 0, Vector2(90, 0), 0.0, 0.0, 0, 0]
-point_count = 3
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(16.5036678314209, 0), 0.0, 0.0, 0, 0, Vector2(34.5476760864258, 1), 0.0, 0.0, 0, 0, Vector2(67.5550155639648, 0), 0.0, 0.0, 0, 0, Vector2(90, 0), 0.0, 0.0, 0, 0]
+point_count = 5
 
 [sub_resource type="Resource" id="Resource_xrlpi"]
 script = ExtResource("2_cpl1s")

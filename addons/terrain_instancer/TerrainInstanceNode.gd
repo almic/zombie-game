@@ -348,7 +348,7 @@ func dispatch_instance_collision_update(data: Variant) -> void:
         return
 
 ## Given a ray origin and direction, finds the point of intersection on the
-## terrain.
+## terrain. Returns Vector3.INF when it doesn't intersect terrain.
 func intersect_terrain(origin: Vector3, direction: Vector3) -> Vector3:
     if not terrain:
         return Vector3.INF
@@ -594,6 +594,52 @@ func add_instances(instance_data: Dictionary) -> void:
         return
 
     return
+
+## Get the user-specified name of an instance, returns the number as a string
+## if it does not exist or has an empty name.
+func get_instance_name(instance_id: int) -> String:
+    if not terrain:
+        return str(instance_id)
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var asset = terrain.assets.get_mesh_asset(instance_id)
+        if not asset:
+            return str(instance_id)
+
+        var n: String = asset.name
+        if not n:
+            return str(instance_id)
+        return n
+
+    return str(instance_id)
+
+## Get the mesh of an instance, optionally at a given LOD
+func get_instance_lod_mesh(instance_id: int, lod: int = 0) -> Mesh:
+    if not terrain:
+        return null
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var asset = terrain.assets.get_mesh_asset(instance_id)
+        if not asset:
+            return null
+
+        return asset.get_mesh(lod)
+
+    return null
+
+## Get a thumbnail image of an instance, useful for UI elements
+func get_instance_thumbnail(instance_id: int) -> Texture2D:
+    if not terrain:
+        return null
+
+    if terrain.get_class() == CLASS_TERRAIN3D:
+        var asset = terrain.assets.get_mesh_asset(instance_id)
+        if not asset:
+            return null
+
+        return asset.get_thumbnail()
+
+    return null
 
 func show_gizmos() -> void:
     for region in regions:

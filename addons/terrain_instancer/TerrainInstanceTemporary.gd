@@ -1,0 +1,96 @@
+extends Node3D
+
+
+@export var instance_id: int = -1:
+    set = set_instance_id
+
+@export_color_no_alpha
+var instance_color: Color = Color.WHITE
+
+
+var region: TerrainInstanceRegion:
+    set = set_region
+
+var mesh_instance: MeshInstance3D
+var is_id_valid: bool = false
+
+
+func _init() -> void:
+    mesh_instance = MeshInstance3D.new()
+
+func _ready() -> void:
+    if not region:
+        push_error('Instance temporary added to scene without a region, please fix!')
+        update_configuration_warnings()
+        return
+
+    is_id_valid = validate_instance_id(instance_id)
+    if not is_id_valid:
+        push_error('Instance temporary added to scene without a valid instance id, please fix!')
+    else:
+        mesh_instance.mesh = region.instance_node.get_instance_lod_mesh(instance_id)
+        add_child(mesh_instance, false, Node.INTERNAL_MODE_FRONT)
+    update_configuration_warnings()
+
+func _validate_property(property: Dictionary) -> void:
+    if property.name != 'instance_id':
+        return
+
+    if not region:
+        return
+
+    property.hint = PROPERTY_HINT_ENUM
+    var hint_str: String = ''
+    for option in region.settings.instances:
+        if not hint_str.is_empty():
+            hint_str += ','
+        hint_str += '%s:%d' % [
+                region.instance_node.get_instance_name(option.id),
+                option.id
+        ]
+    property.hint_string = hint_str
+    property.usage = PROPERTY_USAGE_EDITOR
+
+func _get_configuration_warnings() -> PackedStringArray:
+    var warns: PackedStringArray
+    if not region:
+        warns.append('No valid region assigned, please move this node to a region or delete it!')
+    if not is_id_valid:
+        warns.append('Instance ID %d is not in the region settings' % instance_id)
+    return warns
+
+func set_region(new_region: TerrainInstanceRegion) -> void:
+    region = new_region
+    is_id_valid = validate_instance_id(instance_id)
+
+    notify_property_list_changed()
+    update_configuration_warnings()
+
+func set_instance_id(id: int) -> void:
+    notify_property_list_changed()
+
+    if not region:
+        instance_id = id
+        return
+
+    is_id_valid = validate_instance_id(id)
+    if not is_id_valid:
+        EditorInterface.get_editor_toaster().push_toast(
+                'ID %d is not in the region\'s instance settings!',
+                EditorToaster.SEVERITY_ERROR
+        )
+        update_configuration_warnings()
+        return
+
+    instance_id = id
+    update_configuration_warnings()
+
+func validate_instance_id(id: int) -> bool:
+    if not region:
+        return false
+
+    for option in region.settings.instances:
+        if option.id == id:
+            return true
+
+    return false

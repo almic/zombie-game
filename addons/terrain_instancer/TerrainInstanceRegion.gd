@@ -431,6 +431,113 @@ func save_temporary_instances() -> void:
         child.owner = null
         remove_child.call_deferred(child)
 
+## Attempts to edit the closest managed instance to 'near'. Creates and adds a
+## temporary instance child, and selects it. Returns false if no instance could
+## be edited.
+func edit_instance(near: Vector3) -> bool:
+    if (not instance_node) or (not settings):
+        return false
+
+    if not near.is_finite():
+        return false
+
+    # Build set of instance types to manage
+    var ids: Array[int]
+    for inst in settings.instances:
+        if ids.has(inst.id):
+            continue
+        ids.append(inst.id)
+
+    if ids.size() == 0:
+        return false
+
+    var area: Rect2 = Rect2(near.x - 1.0, near.z - 1.0, 2.0, 2.0)
+    var indexes: Array = instance_node.get_instance_indexes(area)
+
+    var nearest_sq_dist: float = INF
+    var nearest_index: Variant
+    var nearest_inst_id: int
+    var nearest_cell_id: Vector2i
+    var nearest_mesh_id: int
+    var nearest_mesh_data: Dictionary
+    var nearest_xform: Transform3D
+    var nearest_color: Color
+
+    for index in indexes:
+        var inst_data: Dictionary = instance_node.get_instance_data(index)
+        for inst_id in inst_data:
+            if not ids.has(inst_id):
+                continue
+
+            var cell_data: Dictionary = inst_data.get(inst_id)
+            for cell in cell_data:
+                var mesh_data: Dictionary = cell_data.get(cell)
+                var xforms: Array = mesh_data.get(&'xform')
+                var i: int = 0
+                var size: int = xforms.size()
+                while i < size:
+                    var xform: Transform3D = xforms[i]
+
+                    if not area.has_point(Vector2(xform.origin.x, xform.origin.z)):
+                        i += 1
+                        continue
+
+                    var dist_sq: float = near.distance_squared_to(xform.origin)
+                    if dist_sq >= nearest_sq_dist:
+                        i += 1
+                        continue
+
+                    nearest_sq_dist = dist_sq
+                    nearest_index = index
+                    nearest_inst_id = inst_id
+                    nearest_cell_id = cell
+                    nearest_mesh_id = i
+                    nearest_mesh_data = mesh_data
+                    nearest_xform = xform
+
+                    var colors: PackedColorArray = mesh_data.get(&'color')
+                    if colors.size() > i:
+                        nearest_color = colors[i]
+                    else:
+                        nearest_color = Color.WHITE
+
+                    i += 1
+
+    if is_inf(nearest_sq_dist):
+        return false
+
+    # Remove instance from data and update
+    # Only need to provide the one cell we changed
+    var new_inst_data: Dictionary
+    var new_cell_data: Dictionary
+
+    var new_xforms: Array = nearest_mesh_data.get(&'xform')
+    var new_colors: PackedColorArray = nearest_mesh_data.get(&'color')
+
+    new_xforms.remove_at(nearest_mesh_id)
+    if new_colors.size() > nearest_mesh_id:
+        new_colors.remove_at(nearest_mesh_id)
+
+    new_cell_data.set(nearest_cell_id, { &'xform' : new_xforms, &'color': new_colors })
+    new_inst_data.set(nearest_inst_id, new_cell_data)
+    instance_node.set_instance_data([nearest_index], [new_inst_data])
+
+    # Create temporary and add child
+    var t_instance := TerrainInstanceTemporary.new()
+    t_instance.instance_id = nearest_inst_id
+    t_instance.instance_color = nearest_color
+    t_instance.region = self
+    t_instance.name = instance_node.get_instance_name(nearest_inst_id)
+    if t_instance.name == str(nearest_inst_id):
+        # Use alternative name when defaulting to ID
+        t_instance.name = 'T_Instance%d_1' % nearest_inst_id
+    add_child(t_instance, true)
+    t_instance.owner = self.owner
+    t_instance.global_transform = nearest_xform
+    EditorInterface.edit_node(t_instance)
+
+    return true
+
 func clear_region() -> void:
     update_mesh()
     if triangle_mesh_faces.size() == 0:

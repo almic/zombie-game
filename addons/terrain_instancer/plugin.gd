@@ -267,6 +267,14 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             t_instance.owner = edited_region.owner
             t_instance.global_position = mouse_position
 
+        elif tool_mode == Toolbar.Tool.EDIT_INSTANCE:
+            if not edited_region:
+                return AFTER_GUI_INPUT_PASS
+
+            # NOTE: region handles full instance editing behavior
+            if not edited_region.edit_instance(mouse_position):
+                return AFTER_GUI_INPUT_PASS
+
         else:
             print('No tool selected!')
 

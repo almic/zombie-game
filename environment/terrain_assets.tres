@@ -23,7 +23,6 @@ collision_mask = 0
 name = "test_bush"
 id = 1
 scene_file = ExtResource("2_labdp")
-height_offset = 0.2
 density = 10.0
 last_lod = 0
 last_shadow_lod = 0

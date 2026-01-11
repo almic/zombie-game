@@ -5,7 +5,11 @@ extends Node3D
     set = set_instance_id
 
 @export_color_no_alpha
-var instance_color: Color = Color.WHITE
+var instance_color: Color = Color.WHITE:
+    set(value):
+        instance_color = value
+        if is_inside_tree():
+            update_mesh_colors()
 
 
 var region: TerrainInstanceRegion:
@@ -13,6 +17,8 @@ var region: TerrainInstanceRegion:
 
 var mesh_instance: MeshInstance3D
 var is_id_valid: bool = false
+
+var original_colors: PackedColorArray
 
 
 func _init() -> void:
@@ -28,7 +34,7 @@ func _ready() -> void:
     if not is_id_valid:
         push_error('Instance temporary added to scene without a valid instance id, please fix!')
     else:
-        mesh_instance.mesh = region.instance_node.get_instance_lod_mesh(instance_id)
+        update_instance_mesh()
         add_child(mesh_instance, false, Node.INTERNAL_MODE_FRONT)
     update_configuration_warnings()
 
@@ -84,6 +90,7 @@ func set_instance_id(id: int) -> void:
 
     instance_id = id
     update_configuration_warnings()
+    update_instance_mesh()
 
 func validate_instance_id(id: int) -> bool:
     if not region:
@@ -94,3 +101,11 @@ func validate_instance_id(id: int) -> bool:
             return true
 
     return false
+
+func update_instance_mesh() -> void:
+    mesh_instance.mesh = region.instance_node.get_instance_lod_mesh(instance_id).duplicate()
+    update_mesh_colors()
+
+func update_mesh_colors() -> void:
+    # TODO: figure out how to do this
+    pass

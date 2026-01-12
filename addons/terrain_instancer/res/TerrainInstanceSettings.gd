@@ -115,3 +115,45 @@ var v_scale_high: float = 0.0
 ## by the high/ low settings. Zero will use a linear distribution.
 @export_range(0.0, 1.0, 0.01, 'or_greater')
 var v_scale_deviation: float = 0.0
+
+
+var _parent: TerrainInstanceSettings = null
+
+
+func _validate_property(property: Dictionary) -> void:
+    if not _parent:
+        return
+
+    # Hidden properties when used by the add instance tool
+    if (
+           property.name == 'id'
+        or property.name == 'enabled'
+        or property.name == 'density'
+        or property.name == 'density_deviation'
+        or property.name == 'density_slope'
+        or property.name == 'minimum_distances'
+        # hide the main variation group from this editor
+        or property.name == 'Variation'
+        # hide the resource values
+        or property.name == 'resource_local_to_scene'
+        or property.name == 'resource_path'
+        or property.name == 'resource_name'
+    ):
+        property.usage = PROPERTY_USAGE_NONE
+
+
+func _property_can_revert(property: StringName) -> bool:
+    if (
+           property == &'id'
+        or property == &'enabled'
+        or property == &'density_slope'
+        or property == &'v_colors'
+    ):
+        return false
+
+    return true
+
+func _property_get_revert(property: StringName) -> Variant:
+    if _parent:
+        return _parent.get(property)
+    return null

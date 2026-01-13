@@ -13,7 +13,7 @@ var tool_mode: Toolbar.Tool = Toolbar.Tool.NONE
 var instance_bar: InstanceBar
 var edited_node: TerrainInstanceNode
 var edited_region: TerrainInstanceRegion
-var instance_preview: MeshInstance3D
+var instance_to_place: TerrainInstanceTemporary
 
 var vp_camera: Camera3D
 var vp_mouse_position: Vector2
@@ -45,13 +45,13 @@ func _enter_tree() -> void:
     gizmos.plugin = self
     add_node_3d_gizmo_plugin(gizmos)
 
-    ensure_instance_preview()
+    ensure_instance_to_place()
 
 func _exit_tree() -> void:
     remove_node_3d_gizmo_plugin(gizmos)
-    if instance_preview:
-        instance_preview.queue_free()
-        instance_preview = null
+    if instance_to_place:
+        instance_to_place.queue_free()
+        instance_to_place = null
 
 func _disable_plugin():
     pass
@@ -82,8 +82,8 @@ func _edit(object: Object) -> void:
         toolbar.update_visibility()
         instance_bar.region = null
         instance_bar.hide()
-        if instance_preview:
-            instance_preview.hide()
+        if instance_to_place:
+            instance_to_place.hide()
         return
 
     if object == edited_node:
@@ -93,8 +93,8 @@ func _edit(object: Object) -> void:
         toolbar.update_visibility()
         instance_bar.region = null
         instance_bar.hide()
-        if instance_preview:
-            instance_preview.hide()
+        if instance_to_place:
+            instance_to_place.hide()
         return
 
     if object is TerrainInstanceNode:
@@ -128,17 +128,17 @@ func _edit(object: Object) -> void:
         instance_bar.region = edited_region
         instance_bar.show()
 
-        ensure_instance_preview()
+        ensure_instance_to_place()
 
-        var preview_parent: Node = instance_preview.get_parent()
+        var preview_parent: Node = instance_to_place.get_parent()
         if preview_parent:
-            preview_parent.remove_child(instance_preview)
-        edited_region.add_child(instance_preview, false, Node.INTERNAL_MODE_FRONT)
+            preview_parent.remove_child(instance_to_place)
+        edited_region.add_child(instance_to_place, false, Node.INTERNAL_MODE_FRONT)
     else:
         instance_bar.region = null
         instance_bar.hide()
-        if instance_preview:
-            instance_preview.hide()
+        if instance_to_place:
+            instance_to_place.hide()
 
 func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> AfterGUIInput:
     if not edited_node:
@@ -176,16 +176,16 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
         # Update instance preview location
         if edited_region and tool_mode == Toolbar.Tool.ADD_INSTANCE:
-            if not instance_preview:
-                ensure_instance_preview()
-                edited_region.add_child(instance_preview, false, Node.INTERNAL_MODE_FRONT)
+            if not instance_to_place:
+                ensure_instance_to_place()
+                edited_region.add_child(instance_to_place, false, Node.INTERNAL_MODE_FRONT)
 
             if mouse_position.is_finite():
-                instance_preview.global_position = mouse_position
-                if not instance_preview.visible:
-                    instance_preview.visible = true
-            elif instance_preview.visible:
-                instance_preview.visible = false
+                instance_to_place.global_position = mouse_position
+                if not instance_to_place.visible:
+                    instance_to_place.visible = true
+            elif instance_to_place.visible:
+                instance_to_place.visible = false
 
         return AFTER_GUI_INPUT_PASS
 
@@ -256,16 +256,19 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             edited_region.update_gizmos()
 
         elif tool_mode == Toolbar.Tool.ADD_INSTANCE:
-            if (not edited_region) or (not instance_bar.region):
+            if not edited_node:
                 return AFTER_GUI_INPUT_PASS
 
-            var t_instance := TerrainInstanceTemporary.new()
-            t_instance.instance_id = 0
-            t_instance.region = edited_region
-            t_instance.name = 'TemporaryInstance'
-            edited_region.add_child(t_instance, true)
-            t_instance.owner = edited_region.owner
-            t_instance.global_position = mouse_position
+            # TASK: Make it so one click can "lock" the position of the instance
+            #       and allow randomizing/ tweaking while in place.
+
+            var inst_data: Dictionary
+            var xform: Array[Transform3D] = [instance_to_place.global_transform]
+            var color: PackedColorArray = [instance_to_place.instance_color]
+            inst_data.set(instance_to_place.instance_id, {&'xforms': xform, &'colors': color})
+
+            edited_node.add_instances(inst_data)
+            instance_to_place = instance_bar.get_instance()
 
         elif tool_mode == Toolbar.Tool.EDIT_INSTANCE:
             if not edited_region:
@@ -297,26 +300,24 @@ func on_tool_selected(tool: Toolbar.Tool) -> void:
     elif edited_region and previous_tool == Toolbar.Tool.ADD_TRIANGLE:
         edited_region.update_gizmos()
 
-    ensure_instance_preview()
+    ensure_instance_to_place()
 
     if previous_tool == Toolbar.Tool.ADD_INSTANCE:
         instance_bar.hide()
-        instance_preview.hide()
+        instance_to_place.hide()
     if tool == Toolbar.Tool.ADD_INSTANCE:
         if edited_region:
             instance_bar.region = edited_region
             instance_bar.show()
-            var preview_parent: Node = instance_preview.get_parent()
+            var preview_parent: Node = instance_to_place.get_parent()
             if preview_parent != edited_region:
                 if preview_parent:
-                    preview_parent.remove_child(instance_preview)
-                edited_region.add_child(instance_preview, false, Node.INTERNAL_MODE_FRONT)
-            instance_preview.show()
-            instance_preview.mesh = edited_region.instance_node.get_instance_lod_mesh(0)
+                    preview_parent.remove_child(instance_to_place)
+                edited_region.add_child(instance_to_place, false, Node.INTERNAL_MODE_FRONT)
         else:
             instance_bar.region = null
             instance_bar.hide()
-            instance_preview.hide()
+            instance_to_place.hide()
 
 func update_mouse_position() -> void:
     var camera_pos: Vector3 = vp_camera.project_ray_origin(vp_mouse_position)
@@ -324,9 +325,8 @@ func update_mouse_position() -> void:
 
     mouse_position = edited_node.intersect_terrain(camera_pos, camera_dir)
 
-func ensure_instance_preview() -> void:
-    if instance_preview:
+func ensure_instance_to_place() -> void:
+    if instance_to_place:
         return
 
-    instance_preview = MeshInstance3D.new()
-    instance_preview.top_level = true
+    instance_to_place = instance_bar.get_instance()

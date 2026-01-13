@@ -628,7 +628,7 @@ func get_instance_lod_mesh(instance_id: int, lod: int = 0) -> Mesh:
     return null
 
 ## Get a thumbnail image of an instance, useful for UI elements
-func get_instance_thumbnail(instance_id: int) -> Texture2D:
+func get_instance_scene(instance_id: int) -> PackedScene:
     if not terrain:
         return null
 
@@ -637,7 +637,7 @@ func get_instance_thumbnail(instance_id: int) -> Texture2D:
         if not asset:
             return null
 
-        return asset.get_thumbnail()
+        return asset.scene_file
 
     return null
 

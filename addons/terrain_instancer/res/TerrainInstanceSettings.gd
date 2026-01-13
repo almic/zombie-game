@@ -1,6 +1,10 @@
 @tool
 class_name TerrainInstanceSettings extends Resource
 
+
+signal on_randomize(type: StringName)
+
+
 @export_range(-1, 10, 1, 'or_greater')
 var id: int = -1
 
@@ -147,7 +151,6 @@ func _property_can_revert(property: StringName) -> bool:
            property == &'id'
         or property == &'enabled'
         or property == &'density_slope'
-        or property == &'v_colors'
     ):
         return false
 
@@ -155,5 +158,9 @@ func _property_can_revert(property: StringName) -> bool:
 
 func _property_get_revert(property: StringName) -> Variant:
     if _parent:
+        if property == &'v_colors':
+            return _parent.v_colors.duplicate_deep(DeepDuplicateMode.DEEP_DUPLICATE_ALL)
         return _parent.get(property)
+    if property == &'v_colors':
+        return v_colors # Do not allow reverting colors...
     return null

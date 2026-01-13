@@ -73,11 +73,11 @@ func set_region(new_region: TerrainInstanceRegion) -> void:
     update_configuration_warnings()
 
 func set_instance_id(id: int) -> void:
-    notify_property_list_changed()
-
     if not region:
         instance_id = id
         return
+
+    notify_property_list_changed()
 
     is_id_valid = validate_instance_id(id)
     if not is_id_valid:

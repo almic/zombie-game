@@ -1,36 +1,31 @@
-[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=9 format=3 uid="uid://bwxsarbene1w5"]
+[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=8 format=3 uid="uid://bwxsarbene1w5"]
 
 [ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_hj0f8"]
 [ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_cpl1s"]
 [ext_resource type="Script" uid="uid://g1tug1pbf30t" path="res://addons/terrain_instancer/res/TerrainInstanceRegionSettings.gd" id="2_x3il8"]
 
-[sub_resource type="Curve" id="Curve_x3il8"]
-_limits = [0.0, 1.0, 0.0, 90.0]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(16.5036678314209, 0), 0.0, 0.0, 0, 0, Vector2(34.5476760864258, 1), 0.0, 0.0, 0, 0, Vector2(67.5550155639648, 0), 0.0, 0.0, 0, 0, Vector2(90, 0), 0.0, 0.0, 0, 0]
-point_count = 5
-
 [sub_resource type="Resource" id="Resource_xrlpi"]
 script = ExtResource("2_cpl1s")
 color = Color(1, 0.8822324, 0.8649853, 1)
-hue_variation = 0.01
-hue_deviation = 0.007
-lit_variation = 0.0732
-lit_deviation = 0.0635
-sat_variation = 0.0188
+hue_variation = 0.0063
+hue_deviation = 0.0022
+lit_variation = 0.0098
+lit_deviation = 0.0145
+sat_variation = 0.0108
 metadata/_custom_type_script = "uid://dmr3brsptijju"
 
 [sub_resource type="Resource" id="Resource_icy4k"]
 resource_name = "TREE"
 script = ExtResource("1_hj0f8")
 id = 0
+seed = 148689319
 density = 20.0
 density_deviation = 4.0
-density_slope = SubResource("Curve_x3il8")
 minimum_distances = {
 0: 5.0
 }
 v_colors = Array[ExtResource("2_cpl1s")]([SubResource("Resource_xrlpi")])
-v_height_offset = -2.0
+v_height_offset = -0.5
 v_spin_low = 3.14159265358979
 v_spin_high = 3.14159265358979
 v_tilt_low = 0.03490658503989
@@ -55,6 +50,7 @@ resource_name = "BUSH"
 script = ExtResource("1_hj0f8")
 id = 1
 enabled = false
+seed = 3463565043
 density = 2.0
 minimum_distances = {
 0: 0.9,

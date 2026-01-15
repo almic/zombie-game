@@ -27,6 +27,7 @@ var editor: EditorInspector
 
 var instance_settings_map: Dictionary
 var instance_settings: TerrainInstanceSettings
+var rng: RandomNumberGenerator
 
 
 func _init() -> void:
@@ -40,6 +41,9 @@ func _init() -> void:
     split_bg.expand_margin_top = 4
 
     add_theme_stylebox_override(&'split_bar_background', split_bg)
+
+    rng = RandomNumberGenerator.new()
+    rng.randomize()
 
 func _ready() -> void:
     left_scroll = ScrollContainer.new()
@@ -352,17 +356,17 @@ func randomize_instance(prop: StringName = &'all') -> void:
     var do_all: bool = prop == &'all'
 
     if do_all or prop == &'color':
-        plugin.instance_preview.instance_color = instance_settings.rand_color()
+        plugin.instance_preview.instance_color = instance_settings.rand_color(rng)
 
     if do_all or prop == &'height':
-        plugin.instance_preview.instance_height = instance_settings.rand_height()
+        plugin.instance_preview.instance_height = instance_settings.rand_height(rng)
 
     if do_all or prop == &'spin':
-        plugin.instance_preview.instance_spin = instance_settings.rand_spin()
+        plugin.instance_preview.instance_spin = instance_settings.rand_spin(rng)
 
     if do_all or prop == &'tilt':
         plugin.instance_preview.rand_tilt_axis()
-        plugin.instance_preview.instance_tilt = instance_settings.rand_tilt()
+        plugin.instance_preview.instance_tilt = instance_settings.rand_tilt(rng)
 
     if do_all or prop == &'scale':
-        plugin.instance_preview.instance_scale = instance_settings.rand_scale()
+        plugin.instance_preview.instance_scale = instance_settings.rand_scale(rng)

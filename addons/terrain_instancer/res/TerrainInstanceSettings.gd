@@ -10,6 +10,13 @@ var id: int = -1
 
 @export var enabled: bool = true
 
+@export var seed: int
+
+@export_tool_button('Randomize Seed', 'RandomNumberGenerator')
+var btn_randomize_seed = func():
+    randomize()
+    seed = randi()
+
 ## Expected count per 256 sq. meters, or 16x16 meter area
 @export_range(0.01, 10.0, 0.01, 'or_greater')
 var density: float = 1.0
@@ -145,16 +152,10 @@ func _validate_property(property: Dictionary) -> void:
     ):
         property.usage = PROPERTY_USAGE_NONE
 
-
 func _property_can_revert(property: StringName) -> bool:
-    if (
-           property == &'id'
-        or property == &'enabled'
-        or property == &'density_slope'
-    ):
-        return false
-
-    return true
+    if _parent:
+        return true
+    return false
 
 func _property_get_revert(property: StringName) -> Variant:
     if _parent:
@@ -165,34 +166,34 @@ func _property_get_revert(property: StringName) -> Variant:
         return v_colors # Do not allow reverting colors...
     return null
 
-func rand_color() -> Color:
-    return _vary_color(v_colors)
+func rand_color(rng: RandomNumberGenerator) -> Color:
+    return _vary_color(rng, v_colors)
 
-func rand_height() -> float:
-    return _vary(v_height_offset, v_height_low, v_height_high, v_height_deviation)
+func rand_height(rng: RandomNumberGenerator) -> float:
+    return _vary(rng, v_height_offset, v_height_low, v_height_high, v_height_deviation)
 
-func rand_spin() -> float:
-    return _vary(v_spin_offset, v_spin_low, v_spin_high, v_spin_deviation)
+func rand_spin(rng: RandomNumberGenerator) -> float:
+    return _vary(rng, v_spin_offset, v_spin_low, v_spin_high, v_spin_deviation)
 
-func rand_tilt() -> float:
-    return _vary(v_tilt_offset, v_tilt_low, v_tilt_high, v_tilt_deviation)
+func rand_tilt(rng: RandomNumberGenerator) -> float:
+    return _vary(rng, v_tilt_offset, v_tilt_low, v_tilt_high, v_tilt_deviation)
 
-func rand_scale() -> float:
-    return _vary(v_scale_multiplier, v_scale_low * v_scale_multiplier, v_scale_high, v_scale_deviation)
+func rand_scale(rng: RandomNumberGenerator) -> float:
+    return _vary(rng, v_scale_multiplier, v_scale_low * v_scale_multiplier, v_scale_high, v_scale_deviation)
 
-static func _vary(base: float, low: float, high: float, d: float) -> float:
+static func _vary(rng: RandomNumberGenerator, base: float, low: float, high: float, d: float) -> float:
     if is_zero_approx(low) and is_zero_approx(high):
         if is_zero_approx(d):
             return base
 
-        return randfn(base, d)
+        return rng.randfn(base, d)
 
     if is_zero_approx(d):
-        return randf_range(base - low, base + high)
+        return rng.randf_range(base - low, base + high)
 
-    return clampf(randfn(base, d), base - low, base + high)
+    return clampf(rng.randfn(base, d), base - low, base + high)
 
-static func _vary_color(colors: Array[TerrainInstanceColorSettings]) -> Color:
+static func _vary_color(rng: RandomNumberGenerator, colors: Array[TerrainInstanceColorSettings]) -> Color:
     # Compute ticket range
     var max_ticket: int = 0
     for choice in colors:
@@ -201,7 +202,7 @@ static func _vary_color(colors: Array[TerrainInstanceColorSettings]) -> Color:
     if max_ticket < 1:
         return Color.WHITE
 
-    var ticket: int = randi_range(1, max_ticket)
+    var ticket: int = rng.randi_range(1, max_ticket)
     var color_setting: TerrainInstanceColorSettings
     for choice in colors:
         ticket -= choice.weight
@@ -220,36 +221,36 @@ static func _vary_color(colors: Array[TerrainInstanceColorSettings]) -> Color:
 
     if not is_zero_approx(color_setting.hue_deviation):
         h += clampf(
-                randfn(0.0, color_setting.hue_deviation),
+                rng.randfn(0.0, color_setting.hue_deviation),
                 -color_setting.hue_variation,
                  color_setting.hue_variation,
         )
     else:
-        h += randf_range(
+        h += rng.randf_range(
                 -color_setting.hue_variation,
                  color_setting.hue_variation
         )
 
     if not is_zero_approx(color_setting.lit_deviation):
         l += clampf(
-                randfn(0.0, color_setting.lit_deviation),
+                rng.randfn(0.0, color_setting.lit_deviation),
                 -color_setting.lit_variation,
                  color_setting.lit_variation,
         )
     else:
-        l += randf_range(
+        l += rng.randf_range(
                 -color_setting.lit_variation,
                  color_setting.lit_variation
         )
 
     if not is_zero_approx(color_setting.sat_deviation):
         s += clampf(
-                randfn(0.0, color_setting.sat_deviation),
+                rng.randfn(0.0, color_setting.sat_deviation),
                 -color_setting.sat_variation,
                  color_setting.sat_variation,
         )
     else:
-        s += randf_range(
+        s += rng.randf_range(
                 -color_setting.sat_variation,
                  color_setting.sat_variation
         )

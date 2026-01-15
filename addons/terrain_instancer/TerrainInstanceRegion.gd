@@ -7,12 +7,12 @@ const CHUNK_SIZE: int = 16
 const TerrainInstanceTemporary = preload("uid://dumv2y8oq3f1x")
 
 
-@export_tool_button("Populate Region", "PointMesh")
-var btn_populate = editor_populate_region
+@export var seed: int
 
-@export_tool_button("Clear Region", "Clear")
-var btn_clear = editor_clear_region
-
+@export_tool_button('Randomize Seed', 'RandomNumberGenerator')
+var btn_randomize_seed = func():
+    randomize()
+    seed = randi()
 
 @export
 var settings: TerrainInstanceRegionSettings
@@ -53,7 +53,7 @@ func editor_clear_region() -> void:
 
 ## Editor function, probably do some validation and maybe a confirmation dialog
 func editor_populate_region() -> void:
-    populate_region()
+    populate_region(true)
 
 func set_data(data: TerrainInstanceRegionData) -> void:
     _rd = data
@@ -612,7 +612,7 @@ func clear_region() -> void:
 
     instance_node.set_instance_data(new_indexes, new_data)
 
-func populate_region() -> void:
+func populate_region(editor_mode: bool = false) -> void:
     var start: int = Time.get_ticks_usec()
 
     # Ensure triangle mesh is up-to-date
@@ -667,17 +667,48 @@ func populate_region() -> void:
     var full_total: int = 0
     var data: Dictionary
 
+    var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+    var hash_inst: PackedInt64Array
+    var hash_chunk_x: PackedInt64Array
+    var hash_chunk_y: PackedInt64Array
+
+    # Precompute instance and chunk coordinate hashes
+    var size_x: int = (c_x2 - c_x1) + 1
+    var size_y: int = (c_y2 - c_y1) + 1
+    hash_chunk_x.resize(size_x)
+    hash_chunk_y.resize(size_y)
+    hash_inst.resize(instances.size())
+    for i in range(size_x):
+        hash_chunk_x[i] = hash((c_x1 + i) * seed)
+    for i in range(size_y):
+        hash_chunk_y[i] = hash((c_y1 + i) * 3_372_734_527)
+    for i in range(instances.size()):
+        hash_inst[i] = hash(seed ^ instances[i].seed)
+
+    var i_hash: int
+    var y_hash: int
+
+    var inst_index: int = 0
     for instance in instances:
         var xforms: Array[Transform3D]
         var colors: PackedColorArray
         var instance_total: int = 0
 
+        i_hash = hash_inst[inst_index]
+        inst_index += 1
+
         chunk.y = c_y1
+        var y_index: int = 0
+        var x_index: int
         while chunk.y <= c_y2:
             chunk.x = c_x1
+            y_hash = i_hash ^ hash_chunk_y[y_index]
+            y_index += 1
+            x_index = 0
             while chunk.x <= c_x2:
-                var count_added: int = _populate_chunk(instance, chunk, chunks)
-
+                rng.seed = y_hash ^ hash_chunk_x[x_index]
+                x_index += 1
+                var count_added: int = _populate_chunk(rng, instance, chunk, chunks)
                 if count_added > 0:
                     var positions: Array[Vector3] = chunks.get(instance.id).get(chunk)
                     xforms.resize(xforms.size() + count_added)
@@ -687,29 +718,32 @@ func populate_region() -> void:
                     while i < count_added:
                         var xform: Transform3D = Transform3D.IDENTITY
                         xform.origin = positions[i]
-                        xform.origin.y += instance.rand_height()
+                        xform.origin.y += instance.rand_height(rng)
 
-                        xform.basis = xform.basis.rotated(Vector3.DOWN, instance.rand_spin())
+                        xform.basis = xform.basis.rotated(Vector3.DOWN, instance.rand_spin(rng))
 
-                        var tilt_amount: float = instance.rand_tilt()
+                        var tilt_amount: float = instance.rand_tilt(rng)
                         if not is_zero_approx(tilt_amount):
                             var tilt_basis: Basis = Basis.IDENTITY
-                            tilt_basis = tilt_basis.rotated(Vector3.UP, randf_range(0, TAU))
+                            tilt_basis = tilt_basis.rotated(Vector3.UP, rng.randf_range(0, TAU))
                             tilt_basis = tilt_basis.rotated(-tilt_basis.z, tilt_amount)
                             xform.basis = tilt_basis * xform.basis
 
-                        var scale_amount: float = instance.rand_scale()
+                        var scale_amount: float = instance.rand_scale(rng)
                         if not is_equal_approx(scale_amount, 1.0):
                             xform = xform.scaled_local(Vector3(scale_amount, scale_amount, scale_amount))
 
                         xforms[i + instance_total] = xform
-                        colors[i + instance_total] = instance.rand_color().srgb_to_linear()
+                        colors[i + instance_total] = instance.rand_color(rng).srgb_to_linear()
                         i += 1
 
                 instance_total += count_added
                 full_total += count_added
 
                 chunk.x += 1
+                if not editor_mode:
+                    continue
+
                 chunk_total += 1
                 if chunk_total % (10 * instances.size()) == 0:
                     print(
@@ -729,21 +763,24 @@ func populate_region() -> void:
     # NOTE: do not time the terrain placement side
     var end: int = Time.get_ticks_usec()
 
-    print('Populated %d instances in %.3f seconds' % [full_total, float(end - start) / 1e6])
+    if editor_mode:
+        print('Populated %d instances in %.3f seconds' % [full_total, float(end - start) / 1e6])
+        start = Time.get_ticks_usec()
 
-    start = Time.get_ticks_usec()
     # Add instances to terrain
     instance_node.add_instances(data)
-    end = Time.get_ticks_usec()
 
-    print('Terrain updated in %.3f seconds' % [float(end - start) / 1e6])
+    if editor_mode:
+        end = Time.get_ticks_usec()
+        print('Terrain updated in %.3f seconds' % [float(end - start) / 1e6])
 
 func _populate_chunk(
+        rng: RandomNumberGenerator,
         instance: TerrainInstanceSettings,
         chunk: Vector2i,
         chunks: Dictionary,
 ) -> int:
-    var count: int = roundi(randfn(instance.density, instance.density_deviation))
+    var count: int = roundi(rng.randfn(instance.density, instance.density_deviation))
     var count_added: int = 0
     var positions: Array[Vector3]
     var our_chunks: Dictionary
@@ -761,11 +798,12 @@ func _populate_chunk(
     var dir: Vector3 = Vector3.DOWN
 
     for i in range(count):
-        pos.x = randi_range(0, CHUNK_SIZE - 1) + minf(randf(), 0.999)
-        pos.y = randi_range(0, CHUNK_SIZE - 1) + minf(randf(), 0.999)
+        var slope_prob: float = rng.randf()
+        pos.x = minf(rng.randf() * CHUNK_SIZE, float(CHUNK_SIZE) - 0.0001)
+        pos.y = minf(rng.randf() * CHUNK_SIZE, float(CHUNK_SIZE) - 0.0001)
 
-        pos.x += chunk.x * 16
-        pos.y += chunk.y * 16
+        pos.x += chunk.x * CHUNK_SIZE
+        pos.y += chunk.y * CHUNK_SIZE
 
         ray_pos.x = pos.x
         ray_pos.z = pos.y
@@ -786,7 +824,7 @@ func _populate_chunk(
             if is_zero_approx(probability):
                 continue
 
-            if randf() > probability:
+            if slope_prob > probability:
                 continue
 
         var height: float = instance_node.get_height(pos)

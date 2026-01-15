@@ -35,6 +35,10 @@ var sep_instances: VSeparator
 var btn_add_instance: Button
 var btn_edit_instance: Button
 
+var sep_region_populate: VSeparator
+var btn_populate_region: Button
+var btn_clear_region: Button
+
 
 func _init() -> void:
     group_region.allow_unpress = true
@@ -92,6 +96,27 @@ func _ready() -> void:
     btn_edit_instance.icon = get_theme_icon(&'DebugContinue', &'EditorIcons')
     _init_tool_button(btn_edit_instance, group_region)
 
+    sep_region_populate = VSeparator.new()
+
+    btn_populate_region = Button.new()
+    btn_populate_region.text = "Populate"
+    btn_populate_region.name = &'Populate'
+    btn_populate_region.tooltip_text = "Populate the region"
+    btn_populate_region.theme_type_variation = &'FlatButton'
+    btn_populate_region.icon = get_theme_icon(&'InterpCubicAngle', &'EditorIcons')
+    btn_populate_region.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+    btn_populate_region.pressed.connect(on_populate_region)
+
+    btn_clear_region = Button.new()
+    btn_clear_region.text = "Clear"
+    btn_clear_region.name = &'Clear'
+    btn_clear_region.tooltip_text = "Remove managed instance types from the region"
+    btn_clear_region.theme_type_variation = &'FlatButton'
+    btn_clear_region.icon = get_theme_icon(&'InterpLinear', &'EditorIcons')
+    btn_clear_region.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+    btn_clear_region.pressed.connect(on_clear_region)
+
+
     add_child(btn_add_region)
 
     add_child(sep_region)
@@ -105,6 +130,10 @@ func _ready() -> void:
     add_child(sep_instances)
     add_child(btn_add_instance)
     add_child(btn_edit_instance)
+
+    add_child(sep_region_populate)
+    add_child(btn_populate_region)
+    add_child(btn_clear_region)
 
 
 func _init_tool_button(button: Button, group: ButtonGroup) -> void:
@@ -187,6 +216,23 @@ func on_add_region() -> void:
             "Unable to add region, no selected region or node instance to put with",
             EditorToaster.SEVERITY_ERROR
     )
+
+func on_populate_region() -> void:
+    if not plugin.edited_region:
+        return
+
+    plugin.edited_region.editor_populate_region()
+
+    #for k in range(25):
+        #plugin.edited_region.btn_randomize_seed.call()
+        #plugin.edited_region.settings.instances[0].btn_randomize_seed.call()
+        #plugin.edited_region.editor_populate_region()
+
+func on_clear_region() -> void:
+    if not plugin.edited_region:
+        return
+
+    plugin.edited_region.editor_clear_region()
 
 func on_selection_changed() -> void:
     var selected: BaseButton = group_region.get_pressed_button()

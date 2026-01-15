@@ -745,6 +745,7 @@ metadata/_edit_lock_ = true
 
 [node name="TerrainInstanceRegion" type="Node3D" parent="Terrain3D/TerrainInstanceNode"]
 script = ExtResource("55_fs5wv")
+seed = 3345733802
 settings = ExtResource("56_fs5wv")
 region_id = 6888
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"

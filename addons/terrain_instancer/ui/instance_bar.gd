@@ -27,13 +27,12 @@ var editor: EditorInspector
 
 var instance_settings_map: Dictionary
 var instance_settings: TerrainInstanceSettings
-var _instance: TerrainInstanceTemporary
 
 
 func _init() -> void:
-    _instance = TerrainInstanceTemporary.new()
-
     instance_btn_group = ButtonGroup.new()
+    instance_btn_group.pressed.connect(update_settings)
+
     setting_btn_group = ButtonGroup.new()
 
     var split_bg: StyleBoxFlat = StyleBoxFlat.new()
@@ -174,7 +173,7 @@ func _physics_process(_delta: float) -> void:
         if plugin.instance_preview and plugin.instance_preview.visible:
             plugin.update_mouse_position()
             if plugin.mouse_position.is_finite():
-                plugin.instance_preview.global_position = plugin.mouse_position
+                plugin.instance_preview.instance_position = plugin.mouse_position
             else:
                 _preview_update_frames = 0
 
@@ -183,9 +182,6 @@ func set_region(new_region: TerrainInstanceRegion) -> void:
         return
 
     editor.visible = false
-
-    if region:
-        editor.edit(null)
 
     if new_region == null:
         region = null
@@ -205,7 +201,6 @@ func set_region(new_region: TerrainInstanceRegion) -> void:
 
     region = new_region
     update_instance_grid()
-    update_settings()
 
 func update_instance_grid() -> void:
     for child in instance_container.get_children():
@@ -222,9 +217,8 @@ func update_instance_grid() -> void:
         ids.append(setting.id)
 
     var previewer: EditorResourcePreview = EditorInterface.get_resource_previewer()
-    var index: int = -1
+    var is_first: bool = true
     for instance_id in ids:
-        index += 1
         var container: MarginContainer = MarginContainer.new()
         container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
@@ -247,7 +241,6 @@ func update_instance_grid() -> void:
         btn.name = str(instance_id)
         btn.text = region.instance_node.get_instance_name(instance_id)
         btn.tooltip_text = 'ID: %d' % instance_id
-        btn.pressed.connect(update_settings)
 
         container.add_child(btn)
 
@@ -255,15 +248,15 @@ func update_instance_grid() -> void:
         previewer.queue_resource_preview(
                 instance_scene.resource_path,
                 self,
-                &'set_instance_preview',
+                &'set_instance_thumbnail',
                 btn
         )
 
         instance_container.add_child(container)
 
-        if index == 0:
-            btn.set_pressed_no_signal(true)
-            btn.pressed.emit()
+        if is_first:
+            is_first = false
+            btn.set_pressed.call_deferred(true)
 
     # Add blank control to consume remainder of last line
     var spacer: Control = Control.new()
@@ -272,7 +265,7 @@ func update_instance_grid() -> void:
     spacer.size_flags_stretch_ratio = INF
     instance_container.add_child(spacer)
 
-func set_instance_preview(path: String, preview: Texture2D, thumbnail: Texture2D, user_data: Variant) -> void:
+func set_instance_thumbnail(path: String, preview: Texture2D, thumbnail: Texture2D, user_data: Variant) -> void:
     var btn: Button = user_data as Button
     if not btn:
         return
@@ -284,20 +277,21 @@ func set_instance_preview(path: String, preview: Texture2D, thumbnail: Texture2D
 
     btn.icon = thumbnail
 
-func update_settings() -> void:
+func update_settings(selected: BaseButton) -> void:
     for child in setting_btn_container.get_children():
         setting_btn_container.remove_child(child)
         child.queue_free()
 
-    _set_instance_setting(null)
+    set_instance_setting(true, null)
 
     if not region or not region.settings:
         return
 
     var id: int = -1
-    var selected: BaseButton = instance_btn_group.get_pressed_button()
     if selected:
         id = int(selected.name)
+    print('selected instance %d' % id)
+    plugin.instance_preview.instance_id = id
 
     var options: Array[TerrainInstanceSettings]
     for setting in region.settings.instances:
@@ -305,14 +299,17 @@ func update_settings() -> void:
             options.append(setting)
 
     var option_id: int = 0
+    var is_first: bool = true
     for option in options:
         option_id += 1
 
         var child_settings: TerrainInstanceSettings
         if instance_settings_map.has(option):
             child_settings = instance_settings_map.get(option)
+            child_settings.resource_name = option.resource_name
         else:
             child_settings = option.duplicate(true)
+            child_settings.resource_name = option.resource_name
             child_settings._parent = option
             instance_settings_map.set(option, child_settings)
 
@@ -329,25 +326,37 @@ func update_settings() -> void:
             btn.text = 'Option %d' % option_id
             btn.tooltip_text = 'Set a resource name to display here.'
 
-        btn.pressed.connect(_set_instance_setting.bind(child_settings))
+        btn.toggled.connect(set_instance_setting.bind(child_settings))
         setting_btn_container.add_child(btn)
 
-        if option_id == 1:
-            btn.set_pressed_no_signal(true)
-            btn.pressed.emit()
+        # Only one choice, hide the button
+        if options.size() == 1:
+            btn.visible = false
+            if is_first:
+                is_first = true
+                btn.set_pressed.call_deferred(true)
 
-            # Only one choice, hide the button
-            if options.size() == 1:
-                btn.visible = false
+
+func set_instance_setting(toggled: bool, setting: TerrainInstanceSettings) -> void:
+    if not toggled:
+        return
+
+    instance_settings = setting
+
+    if instance_settings:
+        print_debug('editing %s' % setting.resource_name)
+        editor.edit(setting)
+        randomize_instance()
+        editor.show()
+    else:
+        print_debug('hiding editor')
+        editor.hide()
+    print_stack()
 
 func randomize_instance(prop: StringName = &'all') -> void:
-    print('Randomize %s' % prop)
-
-func get_instance() -> TerrainInstanceTemporary:
-    randomize_instance()
-    return _instance
-
-func _set_instance_setting(setting: TerrainInstanceSettings) -> void:
-    editor.visible = setting != null
-    editor.edit(setting)
-    instance_settings = setting
+    pass
+    #print_debug('Randomize %s' % prop)
+    #print_stack()
+    #print('parent: %s' % plugin.instance_preview.get_parent())
+    #print('mesh: %s' % plugin.instance_preview.mesh_instance.mesh)
+    #print('visible: %s' % plugin.instance_preview.visible)

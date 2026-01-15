@@ -11,6 +11,19 @@ var instance_color: Color = Color.WHITE:
         if is_inside_tree():
             update_mesh_colors()
 
+var instance_position: Vector3 = Vector3.ZERO:
+    set(value):
+        instance_position = value
+        if is_inside_tree():
+            global_position = instance_position
+            global_position.y += instance_height
+var instance_height: float = 0.0:
+    set(value):
+        instance_height = value
+        if is_inside_tree():
+            global_position = instance_position
+            global_position.y += instance_height
+
 
 var region: TerrainInstanceRegion:
     set = set_region
@@ -23,6 +36,7 @@ var original_colors: PackedColorArray
 
 func _init() -> void:
     mesh_instance = MeshInstance3D.new()
+    add_child(mesh_instance, false, Node.INTERNAL_MODE_FRONT)
 
 func _ready() -> void:
     if not region:
@@ -31,11 +45,8 @@ func _ready() -> void:
         return
 
     is_id_valid = validate_instance_id(instance_id)
-    if not is_id_valid:
-        push_error('Instance temporary added to scene without a valid instance id, please fix!')
-    else:
+    if is_id_valid:
         update_instance_mesh()
-        add_child(mesh_instance, false, Node.INTERNAL_MODE_FRONT)
     update_configuration_warnings()
 
 func _validate_property(property: Dictionary) -> void:
@@ -75,16 +86,13 @@ func set_region(new_region: TerrainInstanceRegion) -> void:
 func set_instance_id(id: int) -> void:
     if not region:
         instance_id = id
+        is_id_valid = false
         return
 
     notify_property_list_changed()
 
     is_id_valid = validate_instance_id(id)
     if not is_id_valid:
-        EditorInterface.get_editor_toaster().push_toast(
-                'ID %d is not in the region\'s instance settings!',
-                EditorToaster.SEVERITY_ERROR
-        )
         update_configuration_warnings()
         return
 
@@ -93,7 +101,7 @@ func set_instance_id(id: int) -> void:
     update_instance_mesh()
 
 func validate_instance_id(id: int) -> bool:
-    if not region:
+    if (not region) or (not region.settings):
         return false
 
     for option in region.settings.instances:

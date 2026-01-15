@@ -20,6 +20,7 @@ sat_variation = 0.0188
 metadata/_custom_type_script = "uid://dmr3brsptijju"
 
 [sub_resource type="Resource" id="Resource_icy4k"]
+resource_name = "TREE"
 script = ExtResource("1_hj0f8")
 id = 0
 density = 20.0
@@ -41,6 +42,7 @@ v_scale_deviation = 0.1
 metadata/_custom_type_script = "uid://vr4nxiaugcwm"
 
 [sub_resource type="Resource" id="Resource_dsaby"]
+resource_name = "BUSH"
 script = ExtResource("1_hj0f8")
 id = 1
 enabled = false

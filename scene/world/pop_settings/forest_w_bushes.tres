@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=8 format=3 uid="uid://bwxsarbene1w5"]
+[gd_resource type="Resource" script_class="TerrainInstanceRegionSettings" load_steps=9 format=3 uid="uid://bwxsarbene1w5"]
 
 [ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_hj0f8"]
 [ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_cpl1s"]
@@ -41,6 +41,15 @@ v_scale_high = 0.1
 v_scale_deviation = 0.1
 metadata/_custom_type_script = "uid://vr4nxiaugcwm"
 
+[sub_resource type="Resource" id="Resource_x3il8"]
+script = ExtResource("2_cpl1s")
+color = Color(0.38039216, 0.7882353, 0.20392157, 1)
+hue_variation = 0.008
+hue_deviation = 0.003
+lit_variation = 0.0125
+sat_variation = 0.0115
+metadata/_custom_type_script = "uid://dmr3brsptijju"
+
 [sub_resource type="Resource" id="Resource_dsaby"]
 resource_name = "BUSH"
 script = ExtResource("1_hj0f8")
@@ -51,6 +60,7 @@ minimum_distances = {
 0: 0.9,
 1: 1.5
 }
+v_colors = Array[ExtResource("2_cpl1s")]([SubResource("Resource_x3il8")])
 metadata/_custom_type_script = "uid://vr4nxiaugcwm"
 
 [resource]

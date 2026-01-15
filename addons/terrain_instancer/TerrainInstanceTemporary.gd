@@ -8,21 +8,33 @@ extends Node3D
 var instance_color: Color = Color.WHITE:
     set(value):
         instance_color = value
-        if is_inside_tree():
-            update_mesh_colors()
+        update_mesh_colors()
 
 var instance_position: Vector3 = Vector3.ZERO:
     set(value):
         instance_position = value
-        if is_inside_tree():
-            global_position = instance_position
-            global_position.y += instance_height
+        queue_update_transform()
+
 var instance_height: float = 0.0:
     set(value):
         instance_height = value
-        if is_inside_tree():
-            global_position = instance_position
-            global_position.y += instance_height
+        queue_update_transform()
+
+var instance_spin: float = 0.0:
+    set(value):
+        instance_spin = value
+        queue_update_transform()
+
+var _tilt_axis_spin: float = 0.0
+var instance_tilt: float = 0.0:
+    set(value):
+        instance_tilt = value
+        queue_update_transform()
+
+var instance_scale: float = 1.0:
+    set(value):
+        instance_scale = value
+        queue_update_transform()
 
 
 var region: TerrainInstanceRegion:
@@ -32,6 +44,8 @@ var mesh_instance: MeshInstance3D
 var is_id_valid: bool = false
 
 var original_colors: PackedColorArray
+
+var _queued_transform: bool = false
 
 
 func _init() -> void:
@@ -111,9 +125,39 @@ func validate_instance_id(id: int) -> bool:
     return false
 
 func update_instance_mesh() -> void:
-    mesh_instance.mesh = region.instance_node.get_instance_lod_mesh(instance_id).duplicate()
+    if not is_inside_tree():
+        return
+    mesh_instance.mesh = region.instance_node.get_instance_lod_mesh(instance_id).duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
     update_mesh_colors()
 
 func update_mesh_colors() -> void:
-    # TODO: figure out how to do this
-    pass
+    var mat: Material = mesh_instance.mesh.surface_get_material(0)
+    if mat is BaseMaterial3D:
+        mat.albedo_color = instance_color
+    elif mat is ShaderMaterial:
+        mat.set_shader_parameter(&'instance_color', instance_color)
+
+func rand_tilt_axis() -> void:
+    _tilt_axis_spin = randf() * TAU
+
+func queue_update_transform() -> void:
+    _queued_transform = true
+    _update_transform.call_deferred()
+
+func _update_transform() -> void:
+    if not _queued_transform:
+        return
+    _queued_transform = false
+
+    if not is_inside_tree():
+        return
+
+    global_position = instance_position
+    global_position.y += instance_height
+
+    var new_basis: Basis = Basis.IDENTITY
+    new_basis = new_basis.rotated(Vector3.FORWARD.rotated(Vector3.UP, _tilt_axis_spin), instance_tilt)
+    new_basis = new_basis.rotated(Vector3.DOWN, instance_spin)
+    new_basis = new_basis.scaled(Vector3(instance_scale, instance_scale, instance_scale))
+
+    global_basis = new_basis

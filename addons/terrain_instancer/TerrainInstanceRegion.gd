@@ -687,46 +687,23 @@ func populate_region() -> void:
                     while i < count_added:
                         var xform: Transform3D = Transform3D.IDENTITY
                         xform.origin = positions[i]
-                        xform.origin.y += _vary(
-                                instance.v_height_offset,
-                                instance.v_height_low,
-                                instance.v_height_high,
-                                instance.v_height_deviation
-                        )
+                        xform.origin.y += instance.rand_height()
 
-                        xform.basis = xform.basis.rotated(
-                                Vector3.DOWN,
-                                _vary(
-                                    instance.v_spin_offset,
-                                    instance.v_spin_low,
-                                    instance.v_spin_high,
-                                    instance.v_spin_deviation
-                                )
-                        )
+                        xform.basis = xform.basis.rotated(Vector3.DOWN, instance.rand_spin())
 
-                        var tilt_amount: float = _vary(
-                                instance.v_tilt_offset,
-                                instance.v_tilt_low,
-                                instance.v_tilt_high,
-                                instance.v_tilt_deviation
-                        )
+                        var tilt_amount: float = instance.rand_tilt()
                         if not is_zero_approx(tilt_amount):
                             var tilt_basis: Basis = Basis.IDENTITY
                             tilt_basis = tilt_basis.rotated(Vector3.UP, randf_range(0, TAU))
                             tilt_basis = tilt_basis.rotated(-tilt_basis.z, tilt_amount)
                             xform.basis = tilt_basis * xform.basis
 
-                        var scale_amount: float = _vary(
-                                instance.v_scale_multiplier,
-                                instance.v_scale_low * instance.v_scale_multiplier,
-                                instance.v_scale_high,
-                                instance.v_scale_deviation
-                        )
+                        var scale_amount: float = instance.rand_scale()
                         if not is_equal_approx(scale_amount, 1.0):
                             xform = xform.scaled_local(Vector3(scale_amount, scale_amount, scale_amount))
 
                         xforms[i + instance_total] = xform
-                        colors[i + instance_total] = _vary_color(instance.v_colors)
+                        colors[i + instance_total] = instance.rand_color().srgb_to_linear()
                         i += 1
 
                 instance_total += count_added
@@ -873,78 +850,3 @@ func _is_pos_too_close(
             x += 1
 
     return false
-
-func _vary(base: float, low: float, high: float, d: float) -> float:
-    if is_zero_approx(low) and is_zero_approx(high):
-        if is_zero_approx(d):
-            return base
-
-        return randfn(base, d)
-
-    if is_zero_approx(d):
-        return randf_range(base - low, base + high)
-
-    return clampf(randfn(base, d), base - low, base + high)
-
-func _vary_color(colors: Array[TerrainInstanceColorSettings]) -> Color:
-    # Compute ticket range
-    var max_ticket: int = 0
-    for choice in colors:
-        max_ticket += choice.weight
-
-    if max_ticket < 1:
-        return Color.WHITE
-
-    var ticket: int = randi_range(1, max_ticket)
-    var color_setting: TerrainInstanceColorSettings
-    for choice in colors:
-        ticket -= choice.weight
-        if ticket <= 0:
-            color_setting = choice
-
-    if not color_setting:
-        # Make it clear this was an error
-        return Color.PURPLE
-
-    var color: Color = color_setting.color
-    var h: float = color.ok_hsl_h
-    var s: float = color.ok_hsl_s
-    var l: float = color.ok_hsl_l
-
-    if not is_zero_approx(color_setting.hue_deviation):
-        h += clampf(
-                randfn(0.0, color_setting.hue_deviation),
-                -color_setting.hue_variation,
-                 color_setting.hue_variation,
-        )
-    else:
-        h += randf_range(
-                -color_setting.hue_variation,
-                 color_setting.hue_variation
-        )
-
-    if not is_zero_approx(color_setting.lit_deviation):
-        l += clampf(
-                randfn(0.0, color_setting.lit_deviation),
-                -color_setting.lit_variation,
-                 color_setting.lit_variation,
-        )
-    else:
-        l += randf_range(
-                -color_setting.lit_variation,
-                 color_setting.lit_variation
-        )
-
-    if not is_zero_approx(color_setting.sat_deviation):
-        s += clampf(
-                randfn(0.0, color_setting.sat_deviation),
-                -color_setting.sat_variation,
-                 color_setting.sat_variation,
-        )
-    else:
-        s += randf_range(
-                -color_setting.sat_variation,
-                 color_setting.sat_variation
-        )
-
-    return Color.from_ok_hsl(h, s, l)

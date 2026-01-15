@@ -164,3 +164,94 @@ func _property_get_revert(property: StringName) -> Variant:
     if property == &'v_colors':
         return v_colors # Do not allow reverting colors...
     return null
+
+func rand_color() -> Color:
+    return _vary_color(v_colors)
+
+func rand_height() -> float:
+    return _vary(v_height_offset, v_height_low, v_height_high, v_height_deviation)
+
+func rand_spin() -> float:
+    return _vary(v_spin_offset, v_spin_low, v_spin_high, v_spin_deviation)
+
+func rand_tilt() -> float:
+    return _vary(v_tilt_offset, v_tilt_low, v_tilt_high, v_tilt_deviation)
+
+func rand_scale() -> float:
+    return _vary(v_scale_multiplier, v_scale_low * v_scale_multiplier, v_scale_high, v_scale_deviation)
+
+static func _vary(base: float, low: float, high: float, d: float) -> float:
+    if is_zero_approx(low) and is_zero_approx(high):
+        if is_zero_approx(d):
+            return base
+
+        return randfn(base, d)
+
+    if is_zero_approx(d):
+        return randf_range(base - low, base + high)
+
+    return clampf(randfn(base, d), base - low, base + high)
+
+static func _vary_color(colors: Array[TerrainInstanceColorSettings]) -> Color:
+    # Compute ticket range
+    var max_ticket: int = 0
+    for choice in colors:
+        max_ticket += choice.weight
+
+    if max_ticket < 1:
+        return Color.WHITE
+
+    var ticket: int = randi_range(1, max_ticket)
+    var color_setting: TerrainInstanceColorSettings
+    for choice in colors:
+        ticket -= choice.weight
+        if ticket <= 0:
+            color_setting = choice
+            break
+
+    if not color_setting:
+        # Make it clear this was an error
+        return Color.PURPLE
+
+    var color: Color = color_setting.color
+    var h: float = color.ok_hsl_h
+    var s: float = color.ok_hsl_s
+    var l: float = color.ok_hsl_l
+
+    if not is_zero_approx(color_setting.hue_deviation):
+        h += clampf(
+                randfn(0.0, color_setting.hue_deviation),
+                -color_setting.hue_variation,
+                 color_setting.hue_variation,
+        )
+    else:
+        h += randf_range(
+                -color_setting.hue_variation,
+                 color_setting.hue_variation
+        )
+
+    if not is_zero_approx(color_setting.lit_deviation):
+        l += clampf(
+                randfn(0.0, color_setting.lit_deviation),
+                -color_setting.lit_variation,
+                 color_setting.lit_variation,
+        )
+    else:
+        l += randf_range(
+                -color_setting.lit_variation,
+                 color_setting.lit_variation
+        )
+
+    if not is_zero_approx(color_setting.sat_deviation):
+        s += clampf(
+                randfn(0.0, color_setting.sat_deviation),
+                -color_setting.sat_variation,
+                 color_setting.sat_variation,
+        )
+    else:
+        s += randf_range(
+                -color_setting.sat_variation,
+                 color_setting.sat_variation
+        )
+
+    return Color.from_ok_hsl(h, s, l)

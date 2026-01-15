@@ -233,7 +233,7 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
             var inst_data: Dictionary
             var xform: Array[Transform3D] = [instance_preview.global_transform]
-            var color: PackedColorArray = [instance_preview.instance_color]
+            var color: PackedColorArray = [instance_preview.instance_color.srgb_to_linear()]
             inst_data.set(instance_preview.instance_id, {&'xforms': xform, &'colors': color})
 
             edited_node.add_instances(inst_data)

@@ -5,6 +5,7 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_sc
 
 uniform vec3 center_position;
 
+uniform vec4 instance_color : source_color = vec4(1.0);
 uniform vec4 albedo : source_color;
 uniform sampler2D texture_albedo : source_color, filter_linear_mipmap, repeat_enable;
 
@@ -28,7 +29,7 @@ void fragment() {
 	vec2 base_uv = UV;
 
 	vec4 albedo_tex = texture(texture_albedo, base_uv);
-	ALBEDO = albedo.rgb * albedo_tex.rgb * COLOR.rgb;
+	ALBEDO = albedo.rgb * albedo_tex.rgb * COLOR.rgb * instance_color.rgb;
 
 	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
 	METALLIC = metallic_tex * metallic;

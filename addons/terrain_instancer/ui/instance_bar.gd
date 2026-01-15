@@ -44,7 +44,7 @@ func _init() -> void:
 func _ready() -> void:
     left_scroll = ScrollContainer.new()
     left_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    left_scroll.custom_minimum_size = Vector2(0, 80)
+    left_scroll.custom_minimum_size = Vector2(0, 176)
     left_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     left_scroll.size_flags_stretch_ratio = 2
 
@@ -73,7 +73,6 @@ func _ready() -> void:
 
     right_scroll = ScrollContainer.new()
     right_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-    right_scroll.custom_minimum_size = Vector2(0, 80)
     right_scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
     right_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
     right_scroll.size_flags_stretch_ratio = 7
@@ -156,7 +155,6 @@ func _ready() -> void:
     margin_right.add_child(right_split)
 
     add_child(margin_right)
-
 
 func _physics_process(_delta: float) -> void:
     if (not visible) or (not Engine.is_editor_hint()):
@@ -336,7 +334,6 @@ func update_settings(selected: BaseButton) -> void:
                 is_first = true
                 btn.set_pressed.call_deferred(true)
 
-
 func set_instance_setting(toggled: bool, setting: TerrainInstanceSettings) -> void:
     if not toggled:
         return
@@ -344,19 +341,28 @@ func set_instance_setting(toggled: bool, setting: TerrainInstanceSettings) -> vo
     instance_settings = setting
 
     if instance_settings:
-        print_debug('editing %s' % setting.resource_name)
         editor.edit(setting)
         randomize_instance()
         editor.show()
     else:
-        print_debug('hiding editor')
         editor.hide()
     print_stack()
 
 func randomize_instance(prop: StringName = &'all') -> void:
-    pass
-    #print_debug('Randomize %s' % prop)
-    #print_stack()
-    #print('parent: %s' % plugin.instance_preview.get_parent())
-    #print('mesh: %s' % plugin.instance_preview.mesh_instance.mesh)
-    #print('visible: %s' % plugin.instance_preview.visible)
+    var do_all: bool = prop == &'all'
+
+    if do_all or prop == &'color':
+        plugin.instance_preview.instance_color = instance_settings.rand_color()
+
+    if do_all or prop == &'height':
+        plugin.instance_preview.instance_height = instance_settings.rand_height()
+
+    if do_all or prop == &'spin':
+        plugin.instance_preview.instance_spin = instance_settings.rand_spin()
+
+    if do_all or prop == &'tilt':
+        plugin.instance_preview.rand_tilt_axis()
+        plugin.instance_preview.instance_tilt = instance_settings.rand_tilt()
+
+    if do_all or prop == &'scale':
+        plugin.instance_preview.instance_scale = instance_settings.rand_scale()

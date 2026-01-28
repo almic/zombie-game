@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjl7whkdgp3rl"]
+
+[ext_resource type="ArrayMesh" uid="uid://cgyr503km6sss" path="res://scene/plants/tree/white_fir/white_fir_placeholder.res" id="1_hvyi5"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hvyi5"]
+radius = 0.45
+height = 5.0
+
+[node name="WhiteFirA" type="Area3D"]
+
+[node name="LOD0" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_hvyi5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("CapsuleShape3D_hvyi5")

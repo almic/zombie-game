@@ -8,3 +8,9 @@ scratch/
 # For now...
 model/plant_kit
 
+# Do not upload model files or unwrap caches
+*.blend
+*.blend1
+*.fbx
+*.glb
+*.unwrap_cache

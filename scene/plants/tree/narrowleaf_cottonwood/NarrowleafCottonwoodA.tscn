@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://y0k55srr24mg"]
+
+[ext_resource type="ArrayMesh" uid="uid://bfy1t86kkhroq" path="res://scene/plants/tree/narrowleaf_cottonwood/narrowleaf_cottonwood_placeholder.res" id="1_utq1x"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_utq1x"]
+radius = 0.29
+height = 5.0
+
+[node name="NarrowleafCottonwoodA" type="Area3D"]
+
+[node name="LOD0" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_utq1x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("CapsuleShape3D_utq1x")

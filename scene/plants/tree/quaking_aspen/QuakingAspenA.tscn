@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://cd0ht2igqoi33"]
+
+[ext_resource type="ArrayMesh" uid="uid://brei67fql1e72" path="res://scene/plants/tree/quaking_aspen/quaking_aspen_placeholder.res" id="1_ifay6"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ifay6"]
+radius = 0.25
+height = 5.0
+
+[node name="QuakingAspenA" type="Area3D"]
+
+[node name="LOD0" type="MeshInstance3D" parent="."]
+mesh = ExtResource("1_ifay6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
+shape = SubResource("CapsuleShape3D_ifay6")

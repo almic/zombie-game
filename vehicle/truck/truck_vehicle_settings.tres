@@ -1,4 +1,4 @@
-[gd_resource type="JoltVehicleSettings" load_steps=14 format=3 uid="uid://dlnf4w43oiscr"]
+[gd_resource type="JoltVehicleSettings" format=3 uid="uid://dlnf4w43oiscr"]
 
 [ext_resource type="VehicleEngineSettings" uid="uid://bf2ij5t181hxy" path="res://vehicle/truck/engine_final.tres" id="1_rjrqi"]
 [ext_resource type="VehicleTransmissionSettings" uid="uid://10qaopb2ruue" path="res://vehicle/truck/transmission_final.tres" id="2_d5vh2"]
@@ -31,17 +31,17 @@ differentials = Array[VehicleDifferentialSettings]([SubResource("VehicleDifferen
 open_differential = true
 
 [sub_resource type="WheelSettings" id="WheelSettings_xrypp"]
-position = Vector3(0.80000001192093, 0.63999998569489, 2.17199993133545)
+position = Vector3(0.8, 0.64, 2.172)
 radius = 0.414
 width = 0.323
-kingpin_angle = 0.01745329251994
-caster_angle = 0.03490658503989
-toe = 0.00872664625997
-camber = -0.01745329251994
+kingpin_angle = 0.017453292
+caster_angle = 0.034906585
+toe = 0.008726646
+camber = -0.017453292
 suspension_max_length = 0.4
 suspension_min_length = 0.02
-suspension_forward_angle = 0.1221730476396
-suspension_sideways_angle = 0.1221730476396
+suspension_forward_angle = 0.12217305
+suspension_sideways_angle = 0.12217305
 spring_mode = 1
 spring_frequency = 1.1
 spring_stiffness = 42.73
@@ -55,17 +55,17 @@ lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_pe5m6"]
-position = Vector3(-0.80000001192093, 0.63999998569489, 2.17199993133545)
+position = Vector3(-0.8, 0.64, 2.172)
 radius = 0.414
 width = 0.323
-kingpin_angle = -0.01745329251994
-caster_angle = 0.03490658503989
-toe = -0.00872664625997
-camber = 0.01745329251994
+kingpin_angle = -0.017453292
+caster_angle = 0.034906585
+toe = -0.008726646
+camber = 0.017453292
 suspension_max_length = 0.4
 suspension_min_length = 0.02
-suspension_forward_angle = 0.1221730476396
-suspension_sideways_angle = -0.1221730476396
+suspension_forward_angle = 0.12217305
+suspension_sideways_angle = -0.12217305
 spring_mode = 1
 spring_frequency = 1.1
 spring_stiffness = 42.73
@@ -79,14 +79,14 @@ lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_y4srf"]
-position = Vector3(0.80000001192093, 0.63999998569489, -1.51900005340576)
+position = Vector3(0.8, 0.64, -1.519)
 radius = 0.414
 width = 0.323
-camber = -0.01745329251994
+camber = -0.017453292
 suspension_max_length = 0.4
 suspension_min_length = 0.02
-suspension_forward_angle = -0.1221730476396
-suspension_sideways_angle = 0.1221730476396
+suspension_forward_angle = -0.12217305
+suspension_sideways_angle = 0.12217305
 spring_mode = 1
 spring_frequency = 1.1
 spring_stiffness = 37.14
@@ -98,14 +98,14 @@ lateral_friction = ExtResource("3_rjrqi")
 longitudinal_friction = ExtResource("2_jdhhr")
 
 [sub_resource type="WheelSettings" id="WheelSettings_hoh4d"]
-position = Vector3(-0.80000001192093, 0.63999998569489, -1.51900005340576)
+position = Vector3(-0.8, 0.64, -1.519)
 radius = 0.414
 width = 0.323
-camber = 0.01745329251994
+camber = 0.017453292
 suspension_max_length = 0.4
 suspension_min_length = 0.02
-suspension_forward_angle = -0.1221730476396
-suspension_sideways_angle = -0.1221730476396
+suspension_forward_angle = -0.12217305
+suspension_sideways_angle = -0.12217305
 spring_mode = 1
 spring_frequency = 1.1
 spring_stiffness = 37.14

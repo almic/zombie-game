@@ -1,4 +1,4 @@
-shader_type spatial;
+shader_type canvas_item;
 
 uniform vec2 size = vec2(12, 6);
 uniform vec3 color_a: source_color = vec3(0);
@@ -6,8 +6,8 @@ uniform vec3 color_b: source_color = vec3(1);
 
 void fragment() {
     if ((int(UV.x * size.x) + int(UV.y * size.y)) % 2 == 0) {
-        ALBEDO.rgb = color_a;
+        COLOR.rgb = color_a;
     } else {
-        ALBEDO.rgb = color_b;
+        COLOR.rgb = color_b;
     }
 }

@@ -1,38 +1,15 @@
-[gd_scene load_steps=7 format=3 uid="uid://csbgool8iklu8"]
+[gd_scene load_steps=3 format=3 uid="uid://csbgool8iklu8"]
 
-[ext_resource type="Texture2D" uid="uid://kn2jgsepagid" path="res://model/plant_kit/texture/trunk.png" id="1_3mqfi"]
-[ext_resource type="Shader" uid="uid://q6d5naq6d57" path="res://shader/simple/simple_vertex_offset.gdshader" id="1_okf7k"]
-[ext_resource type="Texture2D" uid="uid://c7pop5xgpxtiv" path="res://scratch/proton_scatter/demos/assets/textures/t_tree_bark_rough.png" id="2_xgvsu"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_3mqfi"]
-render_priority = 0
-shader = ExtResource("1_okf7k")
-shader_parameter/center_position = Vector3(0, 4, 0)
-shader_parameter/albedo = Color(1, 1, 1, 1)
-shader_parameter/texture_albedo = ExtResource("1_3mqfi")
-shader_parameter/roughness = 1.0
-shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
-shader_parameter/texture_roughness = ExtResource("2_xgvsu")
-shader_parameter/specular = 0.5
-shader_parameter/metallic = 0.0
-shader_parameter/uv1_scale = Vector3(3.14, 8, 1)
-shader_parameter/uv1_offset = Vector3(0, 0, 0)
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_xgvsu"]
-material = SubResource("ShaderMaterial_3mqfi")
-custom_aabb = AABB(-1, -1, -1, 2, 10, 2)
-height = 8.0
-radial_segments = 6
-rings = 0
-cap_bottom = false
+[ext_resource type="ArrayMesh" uid="uid://c0y5a3aanehiv" path="res://scene/plants/tree/douglas_fir/douglas_fir_mesh.res" id="1_3mqfi"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3mqfi"]
-height = 8.0
+radius = 0.635
+height = 10.0
 
 [node name="TreeTest" type="Area3D"]
 
 [node name="LOD0" type="MeshInstance3D" parent="."]
-mesh = SubResource("CylinderMesh_xgvsu")
+mesh = ExtResource("1_3mqfi")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 0)

@@ -1,4 +1,4 @@
-[gd_resource type="Compositor" load_steps=8 format=3 uid="uid://lqdw34ardwn6"]
+[gd_resource type="Compositor" format=3 uid="uid://lqdw34ardwn6"]
 
 [ext_resource type="CompositorEffect" uid="uid://devd6x2sd38ht" path="res://environment/sky_compute.tres" id="1_67d1k"]
 [ext_resource type="Script" uid="uid://cke0kq5c5l0ai" path="res://script/post_process/tonemap.gd" id="2_mgpe3"]

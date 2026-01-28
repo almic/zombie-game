@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BehaviorMind" load_steps=17 format=3 uid="uid://cb57wji4codsc"]
+[gd_resource type="Resource" script_class="BehaviorMind" format=3 uid="uid://cb57wji4codsc"]
 
 [ext_resource type="Script" uid="uid://d2sl5aie3kmae" path="res://script/behavior/goal.gd" id="1_b41gs"]
 [ext_resource type="Resource" uid="uid://cled17rlahlpm" path="res://data/zombie/goal_investigate_basic.tres" id="2_fi45o"]

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="BehaviorGoalInvestigate" load_steps=6 format=3 uid="uid://cled17rlahlpm"]
+[gd_resource type="Resource" script_class="BehaviorGoalInvestigate" format=3 uid="uid://cled17rlahlpm"]
 
 [ext_resource type="Script" uid="uid://ct1i7o41qp4i0" path="res://script/behavior/goal/investigate.gd" id="1_cslcx"]
 [ext_resource type="Curve" uid="uid://s8gm47o3n4yx" path="res://data/zombie/time_falloff.tres" id="2_7v5q2"]

@@ -75,7 +75,7 @@ func _notification(what: int) -> void:
 
 func _create_shader() -> void:
     var shader_file: FileAccess = FileAccess.open(_shader_path(), FileAccess.READ)
-    var shader_code: String = shader_file.get_as_text(true)
+    var shader_code: String = shader_file.get_as_text()
 
     # Normal shader
     var shader_source: RDShaderSource = RDShaderSource.new()

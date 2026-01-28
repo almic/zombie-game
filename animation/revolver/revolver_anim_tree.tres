@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeBlendTree" load_steps=105 format=3 uid="uid://dt0qvu21eywbn"]
+[gd_resource type="AnimationNodeBlendTree" format=3 uid="uid://dt0qvu21eywbn"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_avu46"]
 animation = &"revolver/charge"

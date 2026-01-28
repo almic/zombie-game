@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponResource" load_steps=12 format=3 uid="uid://d3ao7jq6qeasg"]
+[gd_resource type="Resource" script_class="WeaponResource" format=3 uid="uid://d3ao7jq6qeasg"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_3vreh"]
 [ext_resource type="PackedScene" uid="uid://d30d6ot2ufjtr" path="res://particle/system/weapon/gunshot_small.tscn" id="1_6v0uo"]

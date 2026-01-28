@@ -1,4 +1,4 @@
-[gd_resource type="ShaderMaterial" load_steps=10 format=3 uid="uid://xqhlhxpokfjm"]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://xqhlhxpokfjm"]
 
 [ext_resource type="Shader" uid="uid://daj5vchrei4yl" path="res://shader/flame/muzzle_flame.gdshader" id="1_8wg2k"]
 

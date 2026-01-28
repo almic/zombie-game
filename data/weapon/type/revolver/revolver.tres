@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="RevolverWeapon" load_steps=12 format=3 uid="uid://ccvoouydse02j"]
+[gd_resource type="Resource" script_class="RevolverWeapon" format=3 uid="uid://ccvoouydse02j"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_l6v7f"]
 [ext_resource type="Script" uid="uid://bjohgo3h6olkv" path="res://data/weapon/type/revolver/revolver_weapon.gd" id="2_l6v7f"]

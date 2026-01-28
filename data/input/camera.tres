@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEMappingContext" load_steps=15 format=3 uid="uid://b1tmnuu4av4go"]
+[gd_resource type="Resource" script_class="GUIDEMappingContext" format=3 uid="uid://b1tmnuu4av4go"]
 
 [ext_resource type="Script" uid="uid://cpplm41b5bt6m" path="res://addons/guide/guide_action_mapping.gd" id="1_hjeco"]
 [ext_resource type="Script" uid="uid://dsa1dnifd6w32" path="res://addons/guide/guide_mapping_context.gd" id="2_7b3hd"]

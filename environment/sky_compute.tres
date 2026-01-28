@@ -1,4 +1,4 @@
-[gd_resource type="CompositorEffect" script_class="PhysicalSkyCompute" load_steps=2 format=3 uid="uid://devd6x2sd38ht"]
+[gd_resource type="CompositorEffect" script_class="PhysicalSkyCompute" format=3 uid="uid://devd6x2sd38ht"]
 
 [ext_resource type="Script" uid="uid://b30sia5gpcc2f" path="res://script/dynamic_day/physical_sky_compute.gd" id="1_1iqvp"]
 

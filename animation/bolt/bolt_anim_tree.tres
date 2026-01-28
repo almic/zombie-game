@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeBlendTree" load_steps=25 format=3 uid="uid://4tfq1m1mtxok"]
+[gd_resource type="AnimationNodeBlendTree" format=3 uid="uid://4tfq1m1mtxok"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l3tjp"]
 animation = &"bolt/charge"

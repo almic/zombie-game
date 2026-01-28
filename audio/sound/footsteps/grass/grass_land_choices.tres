@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="SoundResourceChoice" load_steps=9 format=3 uid="uid://dwox35a35umdu"]
+[gd_resource type="Resource" script_class="SoundResourceChoice" format=3 uid="uid://dwox35a35umdu"]
 
 [ext_resource type="Script" uid="uid://v2wb8alqo46v" path="res://script/sound/SoundResource.gd" id="1_0nfcy"]
 [ext_resource type="Script" uid="uid://b1wx0vpn36hgj" path="res://script/sound/SoundResourceVariable.gd" id="2_khaq8"]

@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeBlendTree" load_steps=27 format=3 uid="uid://ciss64tuc8s8c"]
+[gd_resource type="AnimationNodeBlendTree" format=3 uid="uid://ciss64tuc8s8c"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_h1u7h"]
 animation = &"pistol/charge"

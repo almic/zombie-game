@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeStateMachine" load_steps=9 format=3 uid="uid://doyn6aqoxbrjx"]
+[gd_resource type="AnimationNodeStateMachine" format=3 uid="uid://doyn6aqoxbrjx"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7nqyo"]
 animation = &"zombie_anim_lib/attack_a"

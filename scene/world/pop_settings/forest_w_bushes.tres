@@ -19,10 +19,10 @@ resource_name = "TREE"
 script = ExtResource("1_hj0f8")
 id = 0
 seed = 148689319
-density = 20.0
+density = 10.0
 density_deviation = 4.0
 minimum_distances = {
-0: 5.0
+0: 7.0
 }
 v_colors = Array[ExtResource("2_cpl1s")]([SubResource("Resource_xrlpi")])
 v_height_offset = -0.5

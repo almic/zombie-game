@@ -1,4 +1,4 @@
-[gd_resource type="AnimationNodeBlendTree" load_steps=12 format=3 uid="uid://dyptogvxyba5h"]
+[gd_resource type="AnimationNodeBlendTree" format=3 uid="uid://dyptogvxyba5h"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_e0q86"]
 animation = &"shovel/swing"

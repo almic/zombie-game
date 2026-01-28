@@ -381,7 +381,7 @@ directional_shadow_fade_start = 0.975
 directional_shadow_max_distance = 2000.0
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay" unique_id=842982889]
-transform = Transform3D(-0.42274655198448, -0.54468659232747, -0.72429404865974, -0.84027198208955, 0.53495231900061, 0.0881420019694, 0.339453, 0.64586572330056, -0.68383414, 0, 0, 0)
+transform = Transform3D(-0.42274655198447, -0.54468659232747, -0.72429404865975, -0.84027198208955, 0.53495231900061, 0.0881420019694, 0.339453, 0.64586572330056, -0.68383414, 0, 0, 0)
 top_level = true
 light_intensity_lux = 0.5
 light_temperature = 7100.0

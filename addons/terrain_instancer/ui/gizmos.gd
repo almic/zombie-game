@@ -9,6 +9,7 @@ var SPHERE_COLLISION: TriangleMesh
 var SPHERE_MATERIAL: StandardMaterial3D
 var SPHERE_EDITING_MATERIAL: StandardMaterial3D
 var SURFACE_MATERIAL: StandardMaterial3D
+var PATH_MATERIAL: StandardMaterial3D
 
 
 var plugin: Plugin
@@ -27,22 +28,20 @@ func _init() -> void:
     SPHERE_COLLISION = SPHERE_MESH.generate_triangle_mesh()
 
     SPHERE_MATERIAL = StandardMaterial3D.new()
+    SPHERE_MATERIAL.set_flag(BaseMaterial3D.FLAG_DISABLE_DEPTH_TEST, true)
     SPHERE_MATERIAL.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-    SPHERE_MATERIAL.disable_fog = true
     SPHERE_MATERIAL.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-    SPHERE_MATERIAL.stencil_mode = BaseMaterial3D.STENCIL_MODE_OUTLINE
     SPHERE_MATERIAL.albedo_color = Color(1.0, 0.6, 1.0, 0.12)
-    SPHERE_MATERIAL.stencil_color = Color(0.4, 0.05, 0.35, 0.8)
+    SPHERE_MATERIAL.render_priority = BaseMaterial3D.RENDER_PRIORITY_MAX - 10
 
     SPHERE_EDITING_MATERIAL = SPHERE_MATERIAL.duplicate(true)
     SPHERE_EDITING_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.08)
-    SPHERE_EDITING_MATERIAL.stencil_color = Color(0.0, 0.25, 0.5, 0.8)
 
     SURFACE_MATERIAL = SPHERE_MATERIAL.duplicate(true)
     SURFACE_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.08)
-    SURFACE_MATERIAL.stencil_color = Color(0.0, 0.25, 0.5, 0.8)
-    SURFACE_MATERIAL.render_priority = BaseMaterial3D.RENDER_PRIORITY_MIN + 1
-    SURFACE_MATERIAL.set_flag(BaseMaterial3D.FLAG_DISABLE_DEPTH_TEST, true)
+
+    PATH_MATERIAL = SURFACE_MATERIAL.duplicate(true)
+    PATH_MATERIAL.albedo_color = Color(1.0, 0.0, 0.2, 0.9)
 
 func _get_gizmo_name() -> String:
     return 'Terrain Instance Region'
@@ -74,11 +73,13 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
         return
 
     region.update_mesh()
+
     if region.mesh.get_surface_count():
         # Wireframe
         var size: int = region.triangle_mesh_faces.size()
         var i: int = 0
         while i < size:
+
             gizmo.add_lines(
                 [
                     region.triangle_mesh_faces[i],
@@ -94,10 +95,21 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
         # Filling
         gizmo.add_mesh(region.mesh, SURFACE_MATERIAL)
 
+    # Path
+    PATH_MATERIAL.render_priority = BaseMaterial3D.RENDER_PRIORITY_MIN + 2
+    if region.world_vertices.size() > 1:
+        var size: int = region.world_vertices.size()
+        var i: int = 0
+        while i < size - 1:
+            var a: Vector3 = region.world_vertices[i]
+            var b: Vector3 = region.world_vertices[i + 1]
+            gizmo.add_lines([a, b], PATH_MATERIAL)
+            i += 1
+
     var transform: Transform3D = Transform3D()
 
-    # Show blue marker to nearest terrain vertex when adding triangles
-    if (not edited_handle) and plugin.tool_mode == Plugin.Toolbar.Tool.ADD_TRIANGLE:
+    # Show blue marker to nearest terrain vertex when adding vertices
+    if (not edited_handle) and plugin.tool_mode == Plugin.Toolbar.Tool.ADD_VERTEX:
         var terrain_point: Vector2 = instance.project_terrain(
                 Vector2(
                     plugin.mouse_position.x,

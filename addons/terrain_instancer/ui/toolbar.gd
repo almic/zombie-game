@@ -9,7 +9,7 @@ enum Tool {
     ADD_INSTANCE,
     EDIT_INSTANCE,
     SELECT_VERTEX,
-    ADD_TRIANGLE,
+    ADD_VERTEX,
     REMOVE_VERTEX,
     REMOVE_TRIANGLE,
 }
@@ -25,11 +25,8 @@ var group_region: ButtonGroup = ButtonGroup.new()
 
 var sep_region: VSeparator
 var btn_select: Button
-var btn_add_triangle: Button
-
-var sep_region_remove: VSeparator
+var btn_add_vertex: Button
 var btn_remove_vertex: Button
-var btn_remove_triangle: Button
 
 var sep_instances: VSeparator
 var btn_add_instance: Button
@@ -62,25 +59,17 @@ func _ready() -> void:
     btn_select.icon = get_theme_icon(&'EditPivot', &'EditorIcons')
     _init_tool_button(btn_select, group_region)
 
-    btn_add_triangle = Button.new()
-    btn_add_triangle.name = &'Add Triangles'
-    btn_add_triangle.tooltip_text = "Add Triangles. Add new vertices or select existing ones to use them for a new face."
-    btn_add_triangle.icon = get_theme_icon(&'ToolTriangle', &'EditorIcons')
-    _init_tool_button(btn_add_triangle, group_region)
-
-    sep_region_remove = VSeparator.new()
+    btn_add_vertex = Button.new()
+    btn_add_vertex.name = &'Add Vertex'
+    btn_add_vertex.tooltip_text = "Add Vertex"
+    btn_add_vertex.icon = get_theme_icon(&'ToolTriangle', &'EditorIcons')
+    _init_tool_button(btn_add_vertex, group_region)
 
     btn_remove_vertex = Button.new()
     btn_remove_vertex.name = &'Remove Vertex'
     btn_remove_vertex.tooltip_text = "Remove Vertex. Will also delete any faces connected to the vertex."
     btn_remove_vertex.icon = get_theme_icon(&'Marker3D', &'EditorIcons')
     _init_tool_button(btn_remove_vertex, group_region)
-
-    btn_remove_triangle = Button.new()
-    btn_remove_triangle.name = &'Remove Triangles'
-    btn_remove_triangle.tooltip_text = "Remove Triangles. Keeps vertices."
-    btn_remove_triangle.icon = get_theme_icon(&'MeshInstance3D', &'EditorIcons')
-    _init_tool_button(btn_remove_triangle, group_region)
 
     sep_instances = VSeparator.new()
 
@@ -121,11 +110,8 @@ func _ready() -> void:
 
     add_child(sep_region)
     add_child(btn_select)
-    add_child(btn_add_triangle)
-
-    add_child(sep_region_remove)
+    add_child(btn_add_vertex)
     add_child(btn_remove_vertex)
-    add_child(btn_remove_triangle)
 
     add_child(sep_instances)
     add_child(btn_add_instance)
@@ -159,11 +145,8 @@ func update_visibility() -> void:
         if show_sep:
             sep_region.show()
         btn_select.show()
-        btn_add_triangle.show()
-
-        sep_region_remove.show()
+        btn_add_vertex.show()
         btn_remove_vertex.show()
-        btn_remove_triangle.show()
 
         sep_instances.show()
         btn_add_instance.show()
@@ -172,11 +155,8 @@ func update_visibility() -> void:
     else:
         sep_region.hide()
         btn_select.hide()
-        btn_add_triangle.hide()
-
-        sep_region_remove.hide()
         btn_remove_vertex.hide()
-        btn_remove_triangle.hide()
+        btn_remove_vertex.hide()
 
         sep_instances.hide()
         btn_add_instance.hide()
@@ -242,8 +222,8 @@ func on_selection_changed() -> void:
 
     if selected.name == &'Select Vertex':
         tool_selected.emit(Tool.SELECT_VERTEX)
-    elif selected.name == &'Add Triangles':
-        tool_selected.emit(Tool.ADD_TRIANGLE)
+    elif selected.name == &'Add Vertex':
+        tool_selected.emit(Tool.ADD_VERTEX)
     elif selected.name == &'Remove Vertex':
         tool_selected.emit(Tool.REMOVE_VERTEX)
     elif selected.name == &'Remove Triangles':

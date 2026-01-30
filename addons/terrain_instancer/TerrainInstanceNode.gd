@@ -34,7 +34,6 @@ var target_groups: Dictionary = {}
 
 var regions: Array[TerrainInstanceRegion] = []
 var region_ids: Dictionary = {}
-var loaded_region_data: Array[TerrainInstanceRegionData] = []
 
 
 ## Key Node3D to Value { snapped: Vector2i, cache: Variant, radius: int, modified: bool }
@@ -60,8 +59,6 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _notification(what: int) -> void:
     if what == NOTIFICATION_PARENTED:
         setup_terrain()
-    elif what == NOTIFICATION_EDITOR_POST_SAVE:
-        clean_stale_region_data()
 
 func _physics_process(delta: float) -> void:
     if not target_groups_enabled:
@@ -91,9 +88,6 @@ func setup_terrain() -> void:
         terrain = parent
         # Terrain3DCollision.InstanceCollisionMode::INSTANCE_COLLISION_MANUAL
         terrain.collision_mode = 3
-
-        for region in regions:
-            load_region_data(region)
 
     update_configuration_warnings()
 
@@ -125,11 +119,6 @@ func assign_region(region: TerrainInstanceRegion) -> void:
 
     region_ids.set(region.region_id, null)
 
-    # If we have terrain now, load the region data.
-    # If not, it should be assigned later when the terrain is available
-    if terrain:
-        load_region_data(region)
-
     region.instance_node = self
     regions.append(region)
 
@@ -144,72 +133,6 @@ func update_regions() -> void:
             children.append_array(child.get_children())
         if child is TerrainInstanceRegion:
             assign_region(child)
-
-func load_region_data(region: TerrainInstanceRegion) -> void:
-    if region.region_id == 0:
-        push_error('Attempted to load data for region with no ID!')
-        return
-
-    var data: TerrainInstanceRegionData
-
-    if terrain.get_class() == CLASS_TERRAIN3D:
-        var directory: String = terrain.data_directory + '/'
-        var file_path: String = directory + ('ird_%04d.res' % region.region_id)
-        if FileAccess.file_exists(file_path):
-            data = ResourceLoader.load(file_path, '', ResourceLoader.CACHE_MODE_IGNORE)
-        else:
-            data = TerrainInstanceRegionData.new()
-            data.take_over_path(file_path)
-            Plugin.logs('Saving new region data to "%s"' % file_path)
-            ResourceSaver.save(data, file_path)
-        region.set_data(data)
-        if not loaded_region_data.has(data):
-            loaded_region_data.append(data)
-        return
-
-    push_warning('No terrain loaded, cannot provide regions with data')
-
-## Deletes any loaded region data that no longer has an associated region with it
-func clean_stale_region_data() -> void:
-    if not terrain:
-        return
-
-    # Drop regions no longer in the tree
-    # Spare regions that may have been erroneously moved away from our child list
-    var trimmed_regions: Array[TerrainInstanceRegion] = []
-    var my_tree := get_tree()
-    for region in regions:
-        if not region.is_inside_tree():
-            continue
-        # verify and complain
-        if region.get_tree() != my_tree:
-            push_warning('Region "%s" known by "%s" is not in the same tree!' % [region.name, name])
-        if not is_ancestor_of(region):
-            push_warning('Region "%s" known by "%s" is not an ancestor!' % [region.name, name])
-        trimmed_regions.append(region)
-    regions.clear()
-    regions.append_array(trimmed_regions)
-    trimmed_regions.clear()
-
-    var i: int = 0
-    var size: int = loaded_region_data.size()
-    while i < size:
-        var data: TerrainInstanceRegionData = loaded_region_data[i]
-        var used: bool = false
-        for region in regions:
-            if region._rd == data:
-                used = true
-                break
-        if not used:
-            data.clear()
-            loaded_region_data.remove_at(i)
-            if ResourceLoader.exists(data.resource_path):
-                Plugin.logs('Deleting stale region data "%s"' % data.resource_path)
-                DirAccess.remove_absolute(data.resource_path)
-            data.resource_path = ''
-            size -= 1
-        else:
-            i += 1
 
 ## Update tracking list. Call this when changing target_groups.
 func update_target_nodes() -> void:

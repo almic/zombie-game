@@ -17,35 +17,31 @@ var btn_randomize_seed = func():
 @export
 var settings: TerrainInstanceRegionSettings
 
-
-@export_subgroup("Info")
-
-## This is the ID used for data storage. It is displayed for convenience only,
-## it should not be modified while the editor is running.
-@export_custom(
-    PROPERTY_HINT_RANGE,
-    '0,10000,1,hide_slider',
-    PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY
-)
-var region_id: int = 0
-var _rd: TerrainInstanceRegionData
-
-
 var instance_node: TerrainInstanceNode
 
 var mesh: ArrayMesh = ArrayMesh.new()
-var triangle_mesh: TriangleMesh = TriangleMesh.new()
-var triangle_mesh_faces: PackedVector3Array = PackedVector3Array()
+
+## {
+##     Curve3D: {
+##         vertices: PackedInt32Array,
+##         world_vertices: PackedVector3Array,
+##         mode: &'add' | &'subtract',
+##         triangle_mesh: TriangleMesh,
+##         triangle_mesh_faces: PackedVector3Array
+##     }
+## }
+var curves: Dictionary[Curve3D, Dictionary]
+
 var _reload_mesh: bool = true
 var _show_gizmo: bool = false
 
 
 func _notification(what: int) -> void:
     if what == NOTIFICATION_EDITOR_PRE_SAVE:
-        if _rd:
-            ResourceSaver.save(_rd, _rd.resource_path)
-
         save_temporary_instances()
+
+func _ready() -> void:
+    child_order_changed.connect(on_children_updated)
 
 ## Editor function, probably do some validation and maybe a confirmation dialog
 func editor_clear_region() -> void:
@@ -55,9 +51,6 @@ func editor_clear_region() -> void:
 func editor_populate_region() -> void:
     populate_region(true)
 
-func set_data(data: TerrainInstanceRegionData) -> void:
-    _rd = data
-
 func show_gizmos() -> void:
     _show_gizmo = true
     update_gizmos()
@@ -66,35 +59,49 @@ func hide_gizmos() -> void:
     _show_gizmo = false
     update_gizmos()
 
+func on_children_changed() -> void:
+    # First, drop any curves that disappear
+    for curve in curves:
+        if curve.
+
 func update_mesh() -> void:
     if not _reload_mesh:
         return
 
     mesh.clear_surfaces()
 
-    if _rd.indexes.size() > 0:
-        var data: Array = []
-        data.resize(Mesh.ARRAY_MAX)
+    for curve in curves:
+        var data: Dictionary = curves.get(curve)
 
-        var mapped_vertices: PackedVector3Array = PackedVector3Array()
         var size: int = _rd.vertices.size()
-        mapped_vertices.resize(size / 2)
+        var polygon: PackedVector2Array
+        world_vertices.resize(size / 2)
+        polygon.resize(size / 2)
         var i: int = 0
-        var mi: int = 0
+        var k: int = 0
+        var v: Vector2
         while i < size:
-            mapped_vertices[mi] = instance_node.project_global(
-                    Vector2(_rd.vertices[i], _rd.vertices[i + 1])
-            )
+            v = Vector2(_rd.vertices[i], _rd.vertices[i + 1])
+            polygon[k] = v
+            world_vertices[k] = instance_node.project_global(v)
             i += 2
-            mi += 1
+            k += 1
 
-        data[Mesh.ARRAY_VERTEX] = mapped_vertices
-        data[Mesh.ARRAY_INDEX]  = _rd.indexes.duplicate()
+        var indices: PackedInt32Array = Geometry2D.triangulate_polygon(polygon)
+        if indices.size() == 0:
+            triangle_mesh = TriangleMesh.new()
+            triangle_mesh_faces.clear()
+        else:
+            var data: Array = []
+            data.resize(Mesh.ARRAY_MAX)
 
-        mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, data)
+            data[Mesh.ARRAY_VERTEX] = world_vertices
+            data[Mesh.ARRAY_INDEX]  = indices
 
-        triangle_mesh = mesh.generate_triangle_mesh()
-        triangle_mesh_faces = triangle_mesh.get_faces()
+            mesh.add_surface_from_arrays(Mesh.PRIMITIVE_TRIANGLES, data)
+
+            triangle_mesh = mesh.generate_triangle_mesh()
+            triangle_mesh_faces = triangle_mesh.get_faces()
     else:
         triangle_mesh = TriangleMesh.new()
         triangle_mesh_faces.clear()

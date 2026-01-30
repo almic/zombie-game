@@ -21,8 +21,6 @@ var mouse_update_rate: int = 3
 var mouse_position: Vector3
 var mouse_position_tick: int = 0
 
-var triangle_vertices: PackedInt32Array = []
-
 
 func _enable_plugin():
     pass
@@ -147,8 +145,8 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         update_mouse_position()
 
         if edited_region:
-            # Update marker position when in triangle mode
-            if tool_mode == Toolbar.Tool.ADD_TRIANGLE:
+            # Update marker position when in add mode
+            if tool_mode == Toolbar.Tool.ADD_VERTEX:
                 edited_region.update_gizmos()
 
             # Update instance preview location
@@ -169,22 +167,10 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
     if mouse == 1:
         var vertex: Vector2i = Vector2i(terrain_point.round())
 
-        if tool_mode == Toolbar.Tool.ADD_TRIANGLE:
-            var update: bool = false
+        if tool_mode == Toolbar.Tool.ADD_VERTEX:
             var existing: int = edited_region.get_vertex_id(vertex)
-            if existing != -1:
-                triangle_vertices.append(existing)
-            else:
-                triangle_vertices.append(edited_region.add_vertex(vertex, false))
-                update = true
-
-            if triangle_vertices.size() >= 3:
-                triangle_vertices.resize(3)
-                edited_region.add_face(triangle_vertices, false)
-                triangle_vertices.clear()
-                update = true
-
-            if update:
+            if existing == -1:
+                edited_region.add_vertex(vertex, false)
                 edited_region.update_gizmos()
 
         elif tool_mode == Toolbar.Tool.SELECT_VERTEX:
@@ -262,11 +248,8 @@ func on_tool_selected(tool: Toolbar.Tool) -> void:
     var previous_tool := tool_mode
     tool_mode = tool
 
-    # Clear triangle list when selecting that tool
-    if tool == Toolbar.Tool.ADD_TRIANGLE:
-        triangle_vertices.clear()
-    # Clear triangle marker when deselecting this tool
-    elif edited_region and previous_tool == Toolbar.Tool.ADD_TRIANGLE:
+    # Clear vertex marker when deselecting this tool
+    if edited_region and previous_tool == Toolbar.Tool.ADD_VERTEX:
         edited_region.update_gizmos()
 
     if previous_tool == Toolbar.Tool.ADD_INSTANCE:

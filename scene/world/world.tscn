@@ -81,6 +81,7 @@
 [ext_resource type="Resource" uid="uid://dc4dm4qwu046j" path="res://scene/world/polygon2d/curb_71_sharp.tres" id="58_hyeqt"]
 [ext_resource type="Script" uid="uid://g1tug1pbf30t" path="res://addons/terrain_instancer/res/TerrainInstanceRegionSettings.gd" id="58_icy4k"]
 [ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
+[ext_resource type="Script" uid="uid://c5sknaqxkqhcr" path="res://addons/terrain_instancer/TerrainRegionPolygon.gd" id="59_yidmw"]
 [ext_resource type="Resource" uid="uid://b6qycvnywnt4n" path="res://scene/world/polygon2d/curb_76_round.tres" id="61_cvfj6"]
 [ext_resource type="Resource" uid="uid://da3rj8kluvsn8" path="res://scene/world/polygon2d/curb_52_sharp.tres" id="62_mcrc3"]
 [ext_resource type="Resource" uid="uid://cu1woxx6vcyr6" path="res://scene/world/polygon2d/sidewalk_220.tres" id="64_1yx4f"]
@@ -849,8 +850,13 @@ metadata/_edit_lock_ = true
 script = ExtResource("55_fs5wv")
 seed = 3873114041
 settings = SubResource("Resource_dsaby")
-region_id = 703
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"
+metadata/_edit_lock_ = true
+
+[node name="RegionPolygon" type="Node3D" parent="Terrain3D/TerrainInstanceNode/TerrainInstanceRegion" unique_id=970715668]
+script = ExtResource("59_yidmw")
+vertices = PackedInt32Array(-248, 483, -269, 450, -289, 476, -287, 501, -272, 523, -254, 516)
+metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 
 [node name="LevelBlocking" type="Node" parent="." unique_id=1272451309]

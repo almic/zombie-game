@@ -33,7 +33,6 @@ var target_groups: Dictionary = {}
 
 
 var regions: Array[TerrainInstanceRegion] = []
-var region_ids: Dictionary = {}
 
 
 ## Key Node3D to Value { snapped: Vector2i, cache: Variant, radius: int, modified: bool }
@@ -41,6 +40,9 @@ var node_data: Dictionary
 
 
 func _ready() -> void:
+    # NOTE: should never be moving this
+    set_meta(&'_edit_lock_', true)
+
     setup_terrain.call_deferred()
 
     update_regions()
@@ -100,31 +102,11 @@ func create_node_data() -> Dictionary:
     }
 
 func assign_region(region: TerrainInstanceRegion) -> void:
-    if region.region_id == 0:
-        var id: int = -1
-        var max_attempts: int = 50
-        while max_attempts > 0:
-            var test_id: int = (randi() % 9900) + 100
-            if not region_ids.has(test_id):
-                id = test_id
-                break
-            max_attempts -= 1
-        if id == -1:
-            push_error('Exceeded 50 attepmts to produce a unique ID for region %s! Manual intervention required.' % region)
-            return
-        region.region_id = id
-    elif region_ids.has(region.region_id):
-        push_error('Adding region with existing id %d! Manual intervention required.' % region.region_id)
-        return
-
-    region_ids.set(region.region_id, null)
-
     region.instance_node = self
     regions.append(region)
 
 func update_regions() -> void:
     regions.clear()
-    region_ids.clear()
 
     var children: Array[Node] = get_children()
     while not children.is_empty():

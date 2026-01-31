@@ -168,9 +168,7 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         var vertex: Vector2i = Vector2i(terrain_point.round())
 
         if tool_mode == Toolbar.Tool.ADD_VERTEX:
-            var existing: int = edited_region.get_vertex_id(vertex)
-            if existing == -1:
-                edited_region.add_vertex(vertex, false)
+            if edited_region.add_vertex(vertex, true):
                 edited_region.update_gizmos()
 
         elif tool_mode == Toolbar.Tool.SELECT_VERTEX:
@@ -187,12 +185,11 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
                     viewport_camera, vp_mouse_position
             )
 
-            # allow deselection when not clicking a vertex
-            if vertex_id == -1:
-                return AFTER_GUI_INPUT_PASS
+            if vertex_id != -1:
+                edited_region.remove_vertex(vertex_id)
+                edited_region.update_gizmos()
 
-            edited_region.remove_vertex(vertex_id)
-            edited_region.update_gizmos()
+            # do not deselect when missing a vertex
 
         elif tool_mode == Toolbar.Tool.REMOVE_TRIANGLE:
             if not edited_region:

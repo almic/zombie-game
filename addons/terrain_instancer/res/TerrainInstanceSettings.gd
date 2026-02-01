@@ -39,7 +39,7 @@ var density_slope: Curve
 )
 var minimum_distances: Dictionary
 
-
+#region Variation Settings
 @export_group('Variation')
 
 
@@ -127,6 +127,26 @@ var v_scale_high: float = 0.0
 @export_range(0.0, 1.0, 0.01, 'or_greater')
 var v_scale_deviation: float = 0.0
 
+#endregion
+
+@export_group('Slope Fixing', 'slope_fix')
+
+## Offsets the height of the instance using the slope and the base radius to
+## reduce the likelihood of the asset "floating" off the terrain. It is important
+## that the base radius be accurate. If placing on extreme terrain, set a limit
+## to prevent instances from disappearing into the ground.
+@export_custom(PROPERTY_HINT_GROUP_ENABLE, 'checkbox_only')
+var slope_fix_enabled: bool = false
+
+## Radius of the base of the instance for slope fixing at normal scale. If the
+## instance used scaling variation, this will be scaled appropriately.
+@export_range(0.0, 3.0, 0.001, 'or_greater')
+var slope_fix_base_radius: float = 0.0
+
+## Maximum lowering allowed. Useful only when instances are placed on extreme
+## slopes, while being wide but short, to prevent being fully obscured.
+@export_range(0.0, 2.0, 0.001, 'or_greater')
+var slope_fix_limit: float = 0.0
 
 var _parent: TerrainInstanceSettings = null
 

@@ -519,31 +519,46 @@ func populate_region(editor_mode: bool = false) -> void:
                 x_index += 1
                 var count_added: int = _populate_chunk(rng, instance, chunk, chunks)
                 if count_added > 0:
-                    var positions: Array[Vector3] = chunks.get(instance.id).get(chunk)
+                    var positions: PackedVector4Array = chunks.get(instance.id).get(chunk)
                     xforms.resize(xforms.size() + count_added)
                     colors.resize(colors.size() + count_added)
 
                     var i: int = 0
                     while i < count_added:
-                        var xform: Transform3D = Transform3D.IDENTITY
-                        xform.origin = positions[i]
-                        xform.origin.y += instance.rand_height(rng)
-
-                        xform.basis = xform.basis.rotated(Vector3.DOWN, instance.rand_spin(rng))
-
+                        var rand_height: float = instance.rand_height(rng)
+                        var rand_spin: float = instance.rand_spin(rng)
                         var tilt_amount: float = instance.rand_tilt(rng)
+                        var tilt_dir: float = rng.randf_range(0, TAU)
+                        var scale_amount: float = instance.rand_scale(rng)
+                        var rand_color: Color = instance.rand_color(rng).srgb_to_linear()
+
+                        var pos_theta: Vector4 = positions[i]
+                        var xform: Transform3D = Transform3D.IDENTITY
+                        xform.origin = Vector3(pos_theta.x, pos_theta.y, pos_theta.z)
+                        xform.basis = xform.basis.rotated(Vector3.DOWN, rand_spin)
+
+                        if instance.slope_fix_enabled:
+                            var limit: float = instance.slope_fix_limit
+                            if is_zero_approx(limit) or limit > 100:
+                                limit = 100
+                            xform.origin.y -= minf(
+                                    scale_amount * instance.slope_fix_base_radius * absf(tan(pos_theta.w)),
+                                    limit
+                            )
+
+                        xform.origin.y += rand_height
+
                         if not is_zero_approx(tilt_amount):
                             var tilt_basis: Basis = Basis.IDENTITY
-                            tilt_basis = tilt_basis.rotated(Vector3.UP, rng.randf_range(0, TAU))
+                            tilt_basis = tilt_basis.rotated(Vector3.UP, tilt_dir)
                             tilt_basis = tilt_basis.rotated(-tilt_basis.z, tilt_amount)
                             xform.basis = tilt_basis * xform.basis
 
-                        var scale_amount: float = instance.rand_scale(rng)
                         if not is_equal_approx(scale_amount, 1.0):
                             xform = xform.scaled_local(Vector3(scale_amount, scale_amount, scale_amount))
 
                         xforms[i + instance_total] = xform
-                        colors[i + instance_total] = instance.rand_color(rng).srgb_to_linear()
+                        colors[i + instance_total] = rand_color
                         i += 1
 
                 instance_total += count_added
@@ -595,7 +610,7 @@ func _populate_chunk(
 ) -> int:
     var count: int = roundi(rng.randfn(instance.density, instance.density_deviation))
     var count_added: int = 0
-    var positions: Array[Vector3]
+    var positions: PackedVector4Array
     var our_chunks: Dictionary
 
     if chunks.has(instance.id):
@@ -641,11 +656,15 @@ func _populate_chunk(
         if not instance_node.terrain_has(pos):
             continue
 
-        if slope_curve:
+        var theta: float = 0
+        if slope_curve or instance.slope_fix_enabled:
             var normal: Vector3 = instance_node.get_normal(pos)
             if normal.is_zero_approx():
                 continue
-            var angle: float = rad_to_deg(acos(normal.dot(Vector3.UP)))
+            theta = acos(normal.dot(Vector3.UP))
+
+        if slope_curve:
+            var angle: float = rad_to_deg(theta)
             var probability: float = slope_curve.sample_baked(angle)
 
             if is_zero_approx(probability):
@@ -663,8 +682,10 @@ func _populate_chunk(
         if _is_pos_too_close(pos_3d, instance, chunk, chunks):
             continue
 
+        var pos_theta: Vector4 = Vector4(pos_3d.x, pos_3d.y, pos_3d.z, theta)
+
         # Place in chunk now
-        positions.append(pos_3d)
+        positions.append(pos_theta)
         our_chunks.set(chunk, positions)
 
         if not chunks.has(instance.id):

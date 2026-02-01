@@ -18,6 +18,7 @@ var PATH_FADED_MATERIAL: StandardMaterial3D
 var plugin: Plugin
 var last_mouse_update_rate: int = -1
 var edited_handle: Dictionary
+var force_next_edit: int = -1
 
 func _init() -> void:
     SPHERE_MESH = SphereMesh.new()
@@ -168,6 +169,15 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
             gizmo.add_mesh(SPHERE_MESH, sphere_mat, transform)
 
 func _handles_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen_pos: Vector2) -> int:
+    if force_next_edit != -1:
+        var e: int = force_next_edit
+        force_next_edit = -1
+        return e
+
+    # Do not allow calling this method while editing or without clicking
+    if edited_handle or (not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)):
+        return -1
+
     var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
         return -1
@@ -176,19 +186,36 @@ func _handles_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen_p
     if not instance:
         return -1
 
+    region.update_shapes()
+
+    const VERTEX_DISTANCE: float = 10.0
+    const VERTEX_DIST_SQ: float = VERTEX_DISTANCE * VERTEX_DISTANCE
+
     var affine: Transform3D = instance.terrain.global_transform.affine_inverse()
     var ray_from: Vector3 = affine * camera.project_ray_origin(screen_pos)
     var ray_dir: Vector3 = (affine.basis * camera.project_ray_normal(screen_pos)).normalized()
 
     if region._last_shape:
         var index: int = 0
+        var nearest_sq: float = INF
+        var nearest_index: int = -1
         for vertex in region._last_shape.world_vertices:
             if SPHERE_COLLISION.intersect_ray(ray_from - vertex, ray_dir):
                 return index
+            var dist_sq: float = screen_pos.distance_squared_to(camera.unproject_position(vertex))
+            if dist_sq < VERTEX_DIST_SQ and dist_sq < nearest_sq:
+                nearest_index = index
+                nearest_sq = dist_sq
             index += 1
+        if nearest_index != -1:
+            return nearest_index
 
     if region._solo_shape:
         return -1
+
+    var nearest_polygon: TerrainRegionPolygon = null
+    var nearest_sq: float = INF
+    var nearest_index: int = -1
 
     for polygon in region.shapes:
         var index: int = 0
@@ -196,7 +223,16 @@ func _handles_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen_p
             if SPHERE_COLLISION.intersect_ray(ray_from - vertex, ray_dir):
                 region._last_shape = polygon
                 return index
+            var dist_sq: float = screen_pos.distance_squared_to(camera.unproject_position(vertex))
+            if dist_sq < VERTEX_DIST_SQ and dist_sq < nearest_sq:
+                nearest_index = index
+                nearest_sq = dist_sq
+                nearest_polygon = polygon
             index += 1
+
+    if nearest_polygon:
+        region._last_shape = nearest_polygon
+        return nearest_index
 
     return -1
 

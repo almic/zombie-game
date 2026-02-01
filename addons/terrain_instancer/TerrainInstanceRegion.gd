@@ -53,18 +53,22 @@ func hide_gizmos() -> void:
     update_gizmos()
 
 func on_children_changed() -> void:
+    if not Engine.is_editor_hint():
+        return
+
     # First, drop any shapes that disappear
     var shapes_copy: Array[TerrainRegionPolygon] = shapes.duplicate()
     for polygon in shapes_copy:
         if polygon.get_parent() != self:
             shapes.erase(polygon)
+            if polygon == _last_shape:
+                _last_shape = null
             _update_shapes = true
 
     # Add any new shapes
     for child in get_children():
         if child is TerrainRegionPolygon and (not shapes.has(child)):
             shapes.append(child)
-            print('new region polygon!')
             _update_shapes = true
 
     update_shapes()
@@ -80,26 +84,24 @@ func update_shapes() -> void:
 
         polygon.mesh.clear_surfaces()
 
-        if polygon.vertices.size() < 3:
+        var size: int = polygon.count()
+        var verts: PackedVector2Array
+
+        polygon.world_vertices.resize(size)
+        verts.resize(size)
+
+        var i: int = 0
+        var v: Vector2
+        while i < size:
+            v = Vector2(polygon.get_vertex(i))
+            verts[i] = v
+            polygon.world_vertices[i] = instance_node.project_global(v)
+            i += 1
+
+        if polygon.count() < 3:
             polygon.triangle_mesh = TriangleMesh.new()
             polygon.triangle_mesh_faces.clear()
             continue
-
-        var size: int = polygon.vertices.size()
-        var verts: PackedVector2Array
-
-        polygon.world_vertices.resize(size / 2)
-        verts.resize(size / 2)
-
-        var i: int = 0
-        var k: int = 0
-        var v: Vector2
-        while i < size:
-            v = Vector2(polygon.vertices[i], polygon.vertices[i + 1])
-            verts[k] = v
-            polygon.world_vertices[k] = instance_node.project_global(v)
-            i += 2
-            k += 1
 
         var indices: PackedInt32Array = Geometry2D.triangulate_polygon(verts)
         if indices.size() == 0:
@@ -121,33 +123,24 @@ func update_shapes() -> void:
     _update_shapes = false
 
 ## Adds a vertex, returns true if the vertex was added
-func add_vertex(vertex: Vector2i, editor_mode: bool = false) -> bool:
-    if editor_mode:
-        if shapes.size() == 0:
-            var new_shape: TerrainRegionPolygon = TerrainRegionPolygon.new()
-            new_shape.name = &'RegionPolygon'
-            new_shape.set_meta(
-                    &'_custom_type_script',
-                    ResourceUID.id_to_text(ResourceLoader.get_resource_uid(new_shape.get_script().get_path()))
-            )
-            add_child(new_shape, true)
-            new_shape.owner = self.owner
-            _last_shape = new_shape
-        elif has_vertex(vertex, true):
-            EditorInterface.get_editor_toaster().push_toast(
-                    'Vertex %s already exists on the selected polygon' % vertex,
-                    EditorToaster.SEVERITY_ERROR
-            )
-            return false
-    elif not _last_shape:
+func add_vertex(vertex: Vector2i, index: int = -1) -> bool:
+    if not _last_shape:
         return false
 
-    # TODO: insert vertices when selecting near an edge
-
     var size: int = _last_shape.vertices.size()
-    _last_shape.vertices.resize(size + 2)
-    _last_shape.vertices[size]     = vertex.x
-    _last_shape.vertices[size + 1] = vertex.y
+    if index > size / 2:
+        return false
+
+    if index < 0 or index == size / 2:
+        _last_shape.vertices.resize(size + 2)
+        _last_shape.vertices[size]     = vertex.x
+        _last_shape.vertices[size + 1] = vertex.y
+    else:
+        index *= 2
+        # NOTE: insert Y then X
+        _last_shape.vertices.insert(index, vertex.y)
+        _last_shape.vertices.insert(index, vertex.x)
+
     _last_shape.changed = true
     _update_shapes = true
 
@@ -487,6 +480,10 @@ func populate_region(editor_mode: bool = false) -> void:
     # Precompute instance and chunk coordinate hashes
     var size_x: int = (c_x2 - c_x1) + 1
     var size_y: int = (c_y2 - c_y1) + 1
+    var chunks_to_process: int = size_x * size_y
+
+    print('Starting region population, %d chunks with %d instance types' % [chunks_to_process, instances.size()])
+
     hash_chunk_x.resize(size_x)
     hash_chunk_y.resize(size_y)
     hash_inst.resize(instances.size())
@@ -557,14 +554,13 @@ func populate_region(editor_mode: bool = false) -> void:
                     continue
 
                 chunk_total += 1
-                if chunk_total % (10 * instances.size()) == 0:
+                if chunk_total % (2048 * instances.size()) == 0:
                     print(
                             '%.1f completed, %d instances total' % [
                                 float(chunk_total) / float(chunk_max) * 100.0,
                                 full_total
                             ]
                     )
-
                     await get_tree().process_frame
 
             chunk.y += 1
@@ -576,7 +572,12 @@ func populate_region(editor_mode: bool = false) -> void:
     var end: int = Time.get_ticks_usec()
 
     if editor_mode:
-        print('Populated %d instances in %.3f seconds' % [full_total, float(end - start) / 1e6])
+        print(
+                'Populated %d instances in %.3f seconds' % [
+                    full_total,
+                    float(end - start) / 1e6
+                ]
+        )
         start = Time.get_ticks_usec()
 
     # Add instances to terrain

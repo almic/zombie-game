@@ -168,8 +168,64 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
         var vertex: Vector2i = Vector2i(terrain_point.round())
 
         if tool_mode == Toolbar.Tool.ADD_VERTEX:
-            if edited_region.add_vertex(vertex, true):
-                edited_region.update_gizmos()
+            if not edited_region:
+                return AFTER_GUI_INPUT_PASS
+
+            # Test if we selected a vertex gizmo
+            var vertex_id: int = gizmos._handles_intersect_ray(
+                    edited_region.get_gizmos()[0],
+                    viewport_camera,
+                    screen_pos
+            )
+            if vertex_id != -1:
+                # Allow ALT + Click to delete vertex
+                if Input.is_physical_key_pressed(KEY_ALT):
+                    edited_region.remove_vertex(vertex_id)
+                    edited_region.update_gizmos()
+                    return AFTER_GUI_INPUT_STOP
+                return AFTER_GUI_INPUT_CUSTOM
+
+            if Input.is_physical_key_pressed(KEY_SHIFT):
+                add_vertex_new_shape(vertex)
+                return AFTER_GUI_INPUT_CUSTOM
+
+            if not edited_region._last_shape:
+                if edited_region.shapes.size() == 0:
+                    add_vertex_new_shape(vertex)
+                    return AFTER_GUI_INPUT_CUSTOM
+
+                # Test existing vertices against "placed" vertex and select that shape
+                for polygon in edited_region.shapes:
+                    var size: int = polygon.count()
+                    var i: int = 0
+                    while i < size:
+                        if vertex == polygon.get_vertex(i):
+                            edited_region._last_shape = polygon
+                            return AFTER_GUI_INPUT_STOP
+                        i += 1
+
+                if insert_vertex(viewport_camera, screen_pos, vertex, edited_region.shapes):
+                    return AFTER_GUI_INPUT_CUSTOM
+
+                return AFTER_GUI_INPUT_STOP
+
+            if edited_region.has_vertex(vertex, true):
+                EditorInterface.get_editor_toaster().push_toast(
+                        'Vertex %s already exists on the selected polygon' % vertex,
+                        EditorToaster.SEVERITY_ERROR
+                )
+                return AFTER_GUI_INPUT_STOP
+
+            if insert_vertex(viewport_camera, screen_pos, vertex, [edited_region._last_shape]):
+                return AFTER_GUI_INPUT_CUSTOM
+
+            # Append to shape if it fails
+            if edited_region.add_vertex(vertex):
+                edited_region.update_shapes()
+                gizmos.force_next_edit = edited_region._last_shape.count() - 1
+                return AFTER_GUI_INPUT_CUSTOM
+
+            return AFTER_GUI_INPUT_STOP
 
         elif tool_mode == Toolbar.Tool.SELECT_VERTEX:
             # Allow gizmo selection
@@ -182,30 +238,16 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             # Use gizmo handle selection to find clicked vertex
             var vertex_id: int = gizmos._handles_intersect_ray(
                     edited_region.get_gizmos()[0],
-                    viewport_camera, vp_mouse_position
+                    viewport_camera,
+                    screen_pos
             )
 
             if vertex_id != -1:
                 edited_region.remove_vertex(vertex_id)
+                edited_region.update_shapes()
                 edited_region.update_gizmos()
 
             # do not deselect when missing a vertex
-
-        elif tool_mode == Toolbar.Tool.REMOVE_TRIANGLE:
-            if not edited_region:
-                return AFTER_GUI_INPUT_PASS
-
-            var face_idx: int = edited_region.pick_face(
-                    viewport_camera.project_ray_origin(vp_mouse_position),
-                    viewport_camera.project_ray_normal(vp_mouse_position)
-            )
-
-            # allow deselection when not clicking a face
-            if face_idx == -1:
-                return AFTER_GUI_INPUT_PASS
-
-            edited_region.remove_face(face_idx)
-            edited_region.update_gizmos()
 
         elif tool_mode == Toolbar.Tool.ADD_INSTANCE:
             if not edited_node:
@@ -255,6 +297,66 @@ func on_tool_selected(tool: Toolbar.Tool) -> void:
     if tool == Toolbar.Tool.ADD_INSTANCE:
         instance_bar.show()
         instance_preview.show()
+
+func insert_vertex(
+        viewport_camera: Camera3D,
+        screen_pos: Vector2,
+        vertex: Vector2i,
+        shapes: Array[TerrainRegionPolygon]
+) -> bool:
+    # Test edges for inserting the vertex
+    const EDGE_DISTANCE: float = 8.0
+    const EDGE_DIST_SQ: float = EDGE_DISTANCE * EDGE_DISTANCE
+    var nearest_edge: float = INF
+    var nearest_insertion: int = -1
+
+    for polygon in shapes:
+        var size: int = polygon.count()
+        if size < 2:
+            continue
+
+        var i: int = 0
+        size -= 1 # checking [i, i + 1] segments
+
+        var a: Vector2 = viewport_camera.unproject_position(polygon.world_vertices[i])
+        while i < size:
+            var b: Vector2 = viewport_camera.unproject_position(polygon.world_vertices[i + 1])
+
+            var dist_sq: float = screen_pos.distance_squared_to(Geometry2D.get_closest_point_to_segment(screen_pos, a, b))
+            if dist_sq <= EDGE_DIST_SQ and dist_sq < nearest_edge:
+                edited_region._last_shape = polygon
+                nearest_edge = dist_sq
+                nearest_insertion = i + 1
+
+            # Next segment
+            a = b
+            i += 1
+
+    if nearest_insertion == -1:
+        return false
+
+    if edited_region.add_vertex(vertex, nearest_insertion):
+        edited_region.update_shapes()
+        gizmos.force_next_edit = nearest_insertion
+        edited_region.update_gizmos()
+        return true
+
+    return false
+
+func add_vertex_new_shape(vertex: Vector2i) -> void:
+    var new_shape: TerrainRegionPolygon = TerrainRegionPolygon.new()
+    new_shape.name = &'RegionPolygon'
+    new_shape.set_meta(
+            &'_custom_type_script',
+            ResourceUID.id_to_text(ResourceLoader.get_resource_uid(new_shape.get_script().get_path()))
+    )
+    edited_region.add_child(new_shape, true)
+    new_shape.owner = edited_region.owner
+    edited_region._last_shape = new_shape
+    edited_region.add_vertex(vertex)
+    edited_region.update_shapes()
+    gizmos.force_next_edit = 0
+    edited_region.update_gizmos()
 
 func update_mouse_position() -> void:
     var camera_pos: Vector3 = vp_camera.project_ray_origin(vp_mouse_position)

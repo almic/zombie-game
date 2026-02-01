@@ -292,7 +292,6 @@ func update_settings(selected: BaseButton) -> void:
     var id: int = -1
     if selected:
         id = int(selected.name)
-    print('selected instance %d' % id)
     plugin.instance_preview.instance_id = id
 
     var options: Array[TerrainInstanceSettings]
@@ -350,7 +349,6 @@ func set_instance_setting(toggled: bool, setting: TerrainInstanceSettings) -> vo
         editor.show()
     else:
         editor.hide()
-    print_stack()
 
 func randomize_instance(prop: StringName = &'all') -> void:
     var do_all: bool = prop == &'all'

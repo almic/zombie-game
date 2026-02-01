@@ -22,3 +22,10 @@ var triangle_mesh_faces: PackedVector3Array
 func _ready() -> void:
     # NOTE: should never be moving this
     set_meta(&'_edit_lock_', true)
+
+func count() -> int:
+    return vertices.size() / 2
+
+func get_vertex(index: int) -> Vector2i:
+    index *= 2
+    return Vector2i(vertices[index], vertices[index + 1])

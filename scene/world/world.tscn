@@ -106,13 +106,32 @@ radius = 0.6
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dprur"]
 
+[sub_resource type="Resource" id="Resource_icy4k"]
+script = ExtResource("56_uxmrl")
+id = 0
+seed = 1770769841
+density = 6.0
+minimum_distances = {
+0: 4.7
+}
+v_height_offset = -0.1
+v_height_low = 0.05
+v_height_high = 0.05
+v_spin_low = 3.14159265358979
+v_spin_high = 3.14159265358979
+v_tilt_low = 0.017453292
+v_tilt_high = 0.017453292
+v_scale_low = 0.05
+v_scale_high = 0.1
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"
+
 [sub_resource type="Resource" id="Resource_fvo7w"]
 script = ExtResource("56_uxmrl")
 id = 3
 seed = 956180086
 density = 6.0
 minimum_distances = {
-0: 3.5,
+0: 5.0,
 3: 3.5
 }
 v_height_offset = -0.1
@@ -126,29 +145,9 @@ v_scale_low = 0.05
 v_scale_high = 0.05
 metadata/_custom_type_script = "uid://vr4nxiaugcwm"
 
-[sub_resource type="Resource" id="Resource_icy4k"]
-script = ExtResource("56_uxmrl")
-id = 0
-seed = 1770769841
-density = 6.0
-minimum_distances = {
-0: 4.0,
-3: 3.5
-}
-v_height_offset = -0.1
-v_height_low = 0.05
-v_height_high = 0.05
-v_spin_low = 3.14159265358979
-v_spin_high = 3.14159265358979
-v_tilt_low = 0.017453292
-v_tilt_high = 0.017453292
-v_scale_low = 0.05
-v_scale_high = 0.1
-metadata/_custom_type_script = "uid://vr4nxiaugcwm"
-
 [sub_resource type="Resource" id="Resource_dsaby"]
 script = ExtResource("58_icy4k")
-instances = Array[ExtResource("56_uxmrl")]([SubResource("Resource_fvo7w"), SubResource("Resource_icy4k")])
+instances = Array[ExtResource("56_uxmrl")]([SubResource("Resource_icy4k"), SubResource("Resource_fvo7w")])
 metadata/_custom_type_script = "uid://g1tug1pbf30t"
 
 [sub_resource type="Resource" id="Resource_dayhp"]
@@ -846,16 +845,23 @@ target_groups = {
 metadata/_custom_type_script = "uid://db37nkvye6raf"
 metadata/_edit_lock_ = true
 
-[node name="TerrainInstanceRegion" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=990783198]
+[node name="CabinArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=990783198]
 script = ExtResource("55_fs5wv")
 seed = 3873114041
 settings = SubResource("Resource_dsaby")
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"
 metadata/_edit_lock_ = true
 
-[node name="RegionPolygon" type="Node3D" parent="Terrain3D/TerrainInstanceNode/TerrainInstanceRegion" unique_id=970715668]
+[node name="CabinDrivewayCut" type="Node3D" parent="Terrain3D/TerrainInstanceNode/CabinArea" unique_id=1375471601]
 script = ExtResource("59_yidmw")
-vertices = PackedInt32Array(-248, 483, -269, 450, -289, 476, -287, 501, -272, 523, -254, 516)
+mode = 1
+vertices = PackedInt32Array(-222, 492, -213, 504, -205, 506, -163, 508, -160, 502, -159, 490, -167, 480, -162, 467, -147, 455, -137, 454, -130, 464, -125, 469, -121, 475, -124, 481, -135, 494, -139, 499, -141, 505, -145, 512, -150, 518, -160, 522, -171, 522, -198, 521, -207, 520, -217, 518, -221, 516)
+metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
+metadata/_edit_lock_ = true
+
+[node name="MainArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/CabinArea" unique_id=2056786455]
+script = ExtResource("59_yidmw")
+vertices = PackedInt32Array(-221, 516, -220, 537, -215, 557, -205, 581, -103, 565, -104, 542, -112, 525, -118, 498, -125, 482, -139, 453, -134, 427, -130, 400, -131, 384, -196, 381, -207, 417, -214, 443, -222, 492)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 

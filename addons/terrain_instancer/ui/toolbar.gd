@@ -11,7 +11,6 @@ enum Tool {
     SELECT_VERTEX,
     ADD_VERTEX,
     REMOVE_VERTEX,
-    REMOVE_TRIANGLE,
 }
 
 const Plugin = preload("uid://khsyydwj7rw2")
@@ -226,8 +225,6 @@ func on_selection_changed() -> void:
         tool_selected.emit(Tool.ADD_VERTEX)
     elif selected.name == &'Remove Vertex':
         tool_selected.emit(Tool.REMOVE_VERTEX)
-    elif selected.name == &'Remove Triangles':
-        tool_selected.emit(Tool.REMOVE_TRIANGLE)
     elif selected.name == &'Add Instance':
         tool_selected.emit(Tool.ADD_INSTANCE)
     elif selected.name == &'Edit Instance':

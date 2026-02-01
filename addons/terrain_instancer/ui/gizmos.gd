@@ -11,6 +11,8 @@ var SPHERE_EDITING_MATERIAL: StandardMaterial3D
 var SPHERE_FADED_MATERIAL: StandardMaterial3D
 var SURFACE_MATERIAL: StandardMaterial3D
 var SURFACE_FADED_MATERIAL: StandardMaterial3D
+var SURFACE_SUBTRACT_MATERIAL: StandardMaterial3D
+var SURFACE_SUBTRACT_FADED_MATERIAL: StandardMaterial3D
 var PATH_MATERIAL: StandardMaterial3D
 var PATH_FADED_MATERIAL: StandardMaterial3D
 
@@ -51,16 +53,23 @@ func _init() -> void:
     SURFACE_MATERIAL.render_priority = priority
 
     SURFACE_FADED_MATERIAL = SURFACE_MATERIAL.duplicate(true)
-    SURFACE_FADED_MATERIAL.albedo_color = SURFACE_MATERIAL.albedo_color.lightened(0.1)
+    SURFACE_FADED_MATERIAL.albedo_color = SURFACE_MATERIAL.albedo_color.lightened(0.5)
     SURFACE_FADED_MATERIAL.albedo_color.a *= 0.5
     SURFACE_FADED_MATERIAL.render_priority = priority - 3
+
+    SURFACE_SUBTRACT_MATERIAL = SURFACE_MATERIAL.duplicate(true)
+    SURFACE_SUBTRACT_MATERIAL.albedo_color = Color(1.0, 0.3, 0.25, 0.08)
+
+    SURFACE_SUBTRACT_FADED_MATERIAL = SURFACE_FADED_MATERIAL.duplicate(true)
+    SURFACE_SUBTRACT_FADED_MATERIAL.albedo_color = SURFACE_SUBTRACT_MATERIAL.albedo_color.lightened(0.5)
+    SURFACE_SUBTRACT_FADED_MATERIAL.albedo_color.a *= 0.5
 
     PATH_MATERIAL = SURFACE_MATERIAL.duplicate(true)
     PATH_MATERIAL.albedo_color = Color(0.9, 0.0, 0.0, 1.0)
     PATH_MATERIAL.render_priority = priority + 3
 
     PATH_FADED_MATERIAL = PATH_MATERIAL.duplicate(true)
-    PATH_FADED_MATERIAL.albedo_color = PATH_MATERIAL.albedo_color.lightened(0.1)
+    PATH_FADED_MATERIAL.albedo_color = PATH_MATERIAL.albedo_color.lightened(0.5)
     PATH_FADED_MATERIAL.albedo_color.a *= 0.5
     PATH_FADED_MATERIAL.render_priority = priority - 1
 
@@ -91,6 +100,19 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
         if polygon.mesh.get_surface_count() < 1:
             continue
 
+        var is_surface_active: bool = (not region._last_shape) or polygon == region._last_shape
+        var surface_mat: StandardMaterial3D
+        if polygon.mode == TerrainRegionPolygon.Mode.ADD:
+            if is_surface_active:
+                surface_mat = SURFACE_MATERIAL
+            else:
+                surface_mat = SURFACE_FADED_MATERIAL
+        elif polygon.mode == TerrainRegionPolygon.Mode.SUBTRACT:
+            if is_surface_active:
+                surface_mat = SURFACE_SUBTRACT_MATERIAL
+            else:
+                surface_mat = SURFACE_SUBTRACT_FADED_MATERIAL
+
         # Wireframe
         var size: int = polygon.triangle_mesh_faces.size()
         var i: int = 0
@@ -106,11 +128,11 @@ func _redraw(gizmo: EditorNode3DGizmo) -> void:
 
                     polygon.triangle_mesh_faces[i + 1],
                     polygon.triangle_mesh_faces[i + 2]
-                ], SURFACE_MATERIAL)
+                ], surface_mat)
             i += 3
 
         # Filling
-        gizmo.add_mesh(polygon.mesh, SURFACE_MATERIAL)
+        gizmo.add_mesh(polygon.mesh, surface_mat)
 
     # Path
     for polygon in region.shapes:

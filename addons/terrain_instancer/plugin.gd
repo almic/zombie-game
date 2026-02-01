@@ -277,7 +277,6 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
         return AFTER_GUI_INPUT_STOP
 
-
     return AFTER_GUI_INPUT_PASS
 
 static func logs(message: String) -> void:

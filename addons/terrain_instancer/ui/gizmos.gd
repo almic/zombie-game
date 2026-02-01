@@ -77,15 +77,15 @@ func _get_gizmo_name() -> String:
     return 'Terrain Instance Region'
 
 func _has_gizmo(for_node_3d: Node3D) -> bool:
-    return for_node_3d is TerrainInstanceRegion
+    return (for_node_3d is TerrainInstanceRegion) or (for_node_3d is TerrainRegionPolygon)
 
 func _redraw(gizmo: EditorNode3DGizmo) -> void:
-    gizmo.clear()
-
     var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
     if not region:
-        push_error('No region!')
+        # Only draw for regions
         return
+
+    gizmo.clear()
 
     if not region._show_gizmo:
         return
@@ -200,7 +200,7 @@ func _handles_intersect_ray(gizmo: EditorNode3DGizmo, camera: Camera3D, screen_p
     if edited_handle or (not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)):
         return -1
 
-    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
+    var region: TerrainInstanceRegion = get_gizmo_region(gizmo)
     if not region:
         return -1
 
@@ -262,7 +262,7 @@ func _get_handle_name(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool)
     return 'Vertex %d' % handle_id
 
 func _get_handle_value(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool) -> Variant:
-    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
+    var region: TerrainInstanceRegion = get_gizmo_region(gizmo)
     if not region:
         print_debug('no region!')
         return null
@@ -275,7 +275,7 @@ func _get_handle_value(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool
     return Vector2i(world_vert.x, world_vert.z)
 
 func _begin_handle_action(gizmo: EditorNode3DGizmo, handle_id: int, secondary: bool) -> void:
-    var region: TerrainInstanceRegion = gizmo.get_node_3d() as TerrainInstanceRegion
+    var region: TerrainInstanceRegion = get_gizmo_region(gizmo)
     if not region:
         print_debug('no region!')
         return
@@ -349,4 +349,17 @@ func _commit_handle(
         return
 
     region.set_vertex(edited_handle.id, edited_handle.current_pos)
+    region.update_gizmos()
     edited_handle.clear()
+
+func get_gizmo_region(gizmo: EditorNode3DGizmo) -> TerrainInstanceRegion:
+    var object = gizmo.get_node_3d()
+
+    if object is TerrainInstanceRegion:
+        return object
+    elif object is TerrainRegionPolygon:
+        object = object.get_parent_node_3d()
+        if object is TerrainInstanceRegion:
+            return object
+
+    return null

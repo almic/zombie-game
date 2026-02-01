@@ -66,6 +66,7 @@ func _handles(object: Object) -> bool:
     return (
                object is TerrainInstanceNode
             or object is TerrainInstanceRegion
+            or object is TerrainRegionPolygon
     )
 
 func _edit(object: Object) -> void:
@@ -90,6 +91,8 @@ func _edit(object: Object) -> void:
 
     if edited_region and object != edited_region:
         edited_region.hide_gizmos()
+        edited_region._last_shape = null
+        edited_region._solo_shape = false
         edited_region = null
         instance_bar.region = null
         instance_bar.hide()
@@ -102,6 +105,8 @@ func _edit(object: Object) -> void:
     elif object is TerrainInstanceRegion:
         if object.instance_node:
             edited_region = object
+            edited_region._last_shape = null
+            edited_region._solo_shape = false
             edited_region.show_gizmos()
             edited_node = edited_region.instance_node
             set_preview_region(edited_region)
@@ -110,6 +115,22 @@ func _edit(object: Object) -> void:
                     'TerrainInstanceRegion selected has no owning TerrainInstanceNode!\n' +
                     'Please ensure the region has a parent node and select "Update Regions" ' +
                     'to edit this region.'
+            )
+
+    elif object is TerrainRegionPolygon:
+        var region: TerrainInstanceRegion = object.get_parent() as TerrainInstanceRegion
+        if region and region.instance_node:
+            edited_region = region
+            edited_region._last_shape = object
+            edited_region._solo_shape = true
+            edited_region.show_gizmos()
+            edited_node = edited_region.instance_node
+            set_preview_region(edited_region)
+        else:
+            EditorInterface.get_editor_toaster().push_toast(
+                    'TerrainRegionPolygon selected has no direct TerrainInstanceRegion parent!\n' +
+                    'Please move the polygon to be a direct child of a TerrainInstanceRegion, nested ' +
+                    'children are not supported. Use additional regions if you need more scene organization.'
             )
 
     toolbar.update_visibility()

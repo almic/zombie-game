@@ -242,8 +242,35 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
 
             # Append to shape if it fails
             if edited_region.add_vertex(vertex):
+                vertex_id = edited_region._last_shape.count() - 1
                 edited_region.update_shapes()
-                gizmos.force_next_edit = edited_region._last_shape.count() - 1
+                gizmos.force_next_edit = vertex_id
+                edited_region.update_gizmos()
+
+                var history: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+
+                history.create_action(
+                        'Append vertex (%d, %d) to TerrainRegionPolygon "%s"' % [
+                            vertex.x,
+                            vertex.y,
+                            edited_region._last_shape.name
+                        ],
+                        UndoRedo.MERGE_DISABLE,
+                        edited_region._last_shape
+                )
+
+                history.add_do_property(edited_region, &'_last_shape', edited_region._last_shape)
+                history.add_do_method(edited_region, &'add_vertex', vertex)
+                history.add_do_method(edited_region, &'update_shapes')
+                history.add_do_method(edited_region, &'update_gizmos')
+
+                history.add_undo_property(edited_region, &'_last_shape', edited_region._last_shape)
+                history.add_undo_method(edited_region, &'remove_vertex', vertex_id)
+                history.add_undo_method(edited_region, &'update_shapes')
+                history.add_undo_method(edited_region, &'update_gizmos')
+
+                history.commit_action(false)
+
                 return AFTER_GUI_INPUT_CUSTOM
 
             return AFTER_GUI_INPUT_STOP
@@ -264,9 +291,31 @@ func _forward_3d_gui_input(viewport_camera: Camera3D, event: InputEvent) -> Afte
             )
 
             if vertex_id != -1:
-                edited_region.remove_vertex(vertex_id)
-                edited_region.update_shapes()
-                edited_region.update_gizmos()
+                vertex = edited_region._last_shape.get_vertex(vertex_id)
+                var history: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+
+                history.create_action(
+                        'Delete vertex #%d (%d, %d) from TerrainRegionPolygon "%s"' % [
+                            vertex_id,
+                            vertex.x,
+                            vertex.y,
+                            edited_region._last_shape.name
+                        ],
+                        UndoRedo.MERGE_DISABLE,
+                        edited_region._last_shape
+                )
+
+                history.add_do_property(edited_region, &'_last_shape', edited_region._last_shape)
+                history.add_do_method(edited_region, &'remove_vertex', vertex_id)
+                history.add_do_method(edited_region, &'update_shapes')
+                history.add_do_method(edited_region, &'update_gizmos')
+
+                history.add_undo_property(edited_region, &'_last_shape', edited_region._last_shape)
+                history.add_undo_method(edited_region, &'add_vertex', vertex, vertex_id)
+                history.add_undo_method(edited_region, &'update_shapes')
+                history.add_undo_method(edited_region, &'update_gizmos')
+
+                history.commit_action()
 
             # do not deselect when missing a vertex
 
@@ -359,6 +408,32 @@ func insert_vertex(
         edited_region.update_shapes()
         gizmos.force_next_edit = nearest_insertion
         edited_region.update_gizmos()
+
+        var history: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+
+        history.create_action(
+                'Insert vertex #%d (%d, %d) to TerrainRegionPolygon "%s"' % [
+                    nearest_insertion,
+                    vertex.x,
+                    vertex.y,
+                    edited_region._last_shape.name
+                ],
+                UndoRedo.MERGE_DISABLE,
+                edited_region._last_shape
+        )
+
+        history.add_do_property(edited_region, &'_last_shape', edited_region._last_shape)
+        history.add_do_method(edited_region, &'add_vertex', vertex, nearest_insertion)
+        history.add_do_method(edited_region, &'update_shapes')
+        history.add_do_method(edited_region, &'update_gizmos')
+
+        history.add_undo_property(edited_region, &'_last_shape', edited_region._last_shape)
+        history.add_undo_method(edited_region, &'remove_vertex', nearest_insertion)
+        history.add_undo_method(edited_region, &'update_shapes')
+        history.add_undo_method(edited_region, &'update_gizmos')
+
+        history.commit_action(false)
+
         return true
 
     return false

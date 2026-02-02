@@ -348,8 +348,32 @@ func _commit_handle(
         edited_handle.clear()
         return
 
-    region.set_vertex(edited_handle.id, edited_handle.current_pos)
-    region.update_gizmos()
+    # Avoid spam changes when clicking, just skip the action if the final position
+    # is the same as before.
+    # *COUGH COUGH* https://github.com/godotengine/godot/commit/060f9b7a16b3a169d67af33b266e8c1284afbc8b *COUGH*
+    if edited_handle.current_pos == edited_handle.initial_pos:
+        edited_handle.clear()
+        return
+
+    var history: EditorUndoRedoManager = EditorInterface.get_editor_undo_redo()
+
+    history.create_action(
+            'Set TerrainRegionPolygon "%s" vertex #%d: (%d, %d)' % [
+                region._last_shape.name,
+                edited_handle.id,
+                edited_handle.current_pos.x,
+                edited_handle.current_pos.y,
+            ]
+    )
+
+    history.add_do_method(region, &'set_vertex', edited_handle.id, edited_handle.current_pos)
+    history.add_do_method(region, &'update_gizmos')
+
+    history.add_undo_method(region, &'set_vertex', edited_handle.id, edited_handle.initial_pos)
+    history.add_undo_method(region, &'update_gizmos')
+
+    history.commit_action()
+
     edited_handle.clear()
 
 func get_gizmo_region(gizmo: EditorNode3DGizmo) -> TerrainInstanceRegion:

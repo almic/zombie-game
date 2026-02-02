@@ -9093,7 +9093,9 @@ transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, 
 [node name="TruckVehicle" parent="." unique_id=273614056 instance=ExtResource("54_x6gsb")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -639.28, 15.8706825, -118.1)
 
-[node name="Race" type="Node" parent="." unique_id=129407853]
+[node name="Race" type="Node3D" parent="." unique_id=1034726807]
+visible = false
+metadata/_edit_lock_ = true
 
 [node name="0" type="Marker3D" parent="Race" unique_id=595072791]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -140.74, 2.2, -219.03)
@@ -10095,31 +10097,27 @@ mesh = SubResource("PlaneMesh_c4lkr")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.36, 0)
 mesh = SubResource("PlaneMesh_akpx5")
 
-[node name="PixelDensity" type="Node" parent="." unique_id=1694781972]
+[node name="PixelDensity" type="Node3D" parent="." unique_id=45389749]
+visible = false
 
 [node name="40x40" type="MeshInstance3D" parent="PixelDensity" unique_id=1259274019]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -389.00647, 7.6804755, 399.5367873)
-visible = false
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.6, 0.6, 0)
 mesh = SubResource("PlaneMesh_uxmrl")
 
 [node name="48x48" type="MeshInstance3D" parent="PixelDensity" unique_id=866818515]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -386.6335687, 7.7471129, 399.5367873)
-visible = false
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.6, -0.6, 0)
 mesh = SubResource("PlaneMesh_yidmw")
 
 [node name="64x64" type="MeshInstance3D" parent="PixelDensity" unique_id=1250469633]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -386.6304841, 8.7853292, 399.5367873)
-visible = false
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.6, 0.6, 0)
 mesh = SubResource("PlaneMesh_fvo7w")
 
 [node name="80x80" type="MeshInstance3D" parent="PixelDensity" unique_id=1017377951]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -388.478592, 8.7231717, 399.5367873)
-visible = false
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.6, -0.6, 0)
 mesh = SubResource("PlaneMesh_e5bey")
 
 [node name="10cm" type="MeshInstance3D" parent="PixelDensity" unique_id=1924911425]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -387.8936001, 8.47881, 399.09305)
-visible = false
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 mesh = SubResource("PlaneMesh_icy4k")
 
 [node name="Marker3D" type="Marker3D" parent="." unique_id=868034028]

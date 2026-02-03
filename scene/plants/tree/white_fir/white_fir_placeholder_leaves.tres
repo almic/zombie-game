@@ -1,0 +1,16 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://c6celflre1yst"]
+
+[ext_resource type="Shader" uid="uid://cqbl32kxqhp8" path="res://shader/foliage.gdshader" id="1_5hx80"]
+[ext_resource type="Texture2D" uid="uid://n3ylocqes8ch" path="res://scene/plants/tree/white_fir/white_fir_placeholder_noise.tres" id="2_s6rt5"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_5hx80")
+shader_parameter/back_face = true
+shader_parameter/albedo = Color(0.03137255, 0.5764706, 0.18039216, 1)
+shader_parameter/texture_albedo = ExtResource("2_s6rt5")
+shader_parameter/alpha_scissor_threshold = 0.78000003
+shader_parameter/roughness = 0.0
+shader_parameter/specular = 0.0
+shader_parameter/uv1_scale = Vector3(0.202, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)

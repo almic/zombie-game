@@ -1,0 +1,17 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://1bsige3jk5qj"]
+
+[ext_resource type="Shader" uid="uid://cqbl32kxqhp8" path="res://shader/foliage.gdshader" id="1_rn6hg"]
+[ext_resource type="Texture2D" uid="uid://dm77oj8u1vx4t" path="res://scene/plants/tree/douglas_fir/douglas_fir_placeholder_noise.tres" id="2_5das2"]
+
+[resource]
+resource_name = "Branches"
+render_priority = 0
+shader = ExtResource("1_rn6hg")
+shader_parameter/back_face = true
+shader_parameter/albedo = Color(0.18155885, 0.3836597, 0.01860321, 1)
+shader_parameter/texture_albedo = ExtResource("2_5das2")
+shader_parameter/alpha_scissor_threshold = 0.511
+shader_parameter/roughness = 0.7
+shader_parameter/specular = 0.5
+shader_parameter/uv1_scale = Vector3(0.19, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)

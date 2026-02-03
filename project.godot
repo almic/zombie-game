@@ -31,6 +31,7 @@ DrawLine3d="*res://script/draw_line_3d/DrawLine3D.gd"
 AutoExposureGlobal="*res://script/post_process/auto_exposure_global.gd"
 KawaseBlurGlobal="*res://script/post_process/kawase_blur_global.gd"
 GlobalWorld="*res://script/global/world.gd"
+GlobalShader="*uid://cko7ywjvfy4xu"
 
 [debug]
 
@@ -125,3 +126,14 @@ reflections/sky_reflections/texture_array_reflections=false
 textures/default_filters/anisotropic_filtering_level=1
 anti_aliasing/quality/msaa_3d=1
 anti_aliasing/quality/use_debanding=true
+
+[shader_globals]
+
+world_time={
+"type": "float",
+"value": 0.0
+}
+world_wind={
+"type": "vec2",
+"value": Vector2(0.009, -0.091)
+}

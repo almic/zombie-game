@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://c3huje6mtgeye"]
+[gd_scene format=3 uid="uid://c3huje6mtgeye"]
 
 [ext_resource type="ArrayMesh" uid="uid://c83578yk7xn7i" path="res://scene/plants/tree/douglas_fir/douglas_fir_placeholder.res" id="1_mavvc"]
 
@@ -6,11 +6,11 @@
 radius = 0.61
 height = 5.0
 
-[node name="DouglasFirA" type="Area3D"]
+[node name="DouglasFirA" type="Area3D" unique_id=49391743]
 
-[node name="LOD0" type="MeshInstance3D" parent="."]
+[node name="LOD0" type="MeshInstance3D" parent="." unique_id=1798792148]
 mesh = ExtResource("1_mavvc")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2002533242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("CapsuleShape3D_mavvc")

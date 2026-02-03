@@ -5,6 +5,7 @@ class_name TerrainInstanceSettings extends Resource
 signal on_randomize(type: StringName)
 
 
+## The matching mesh asset ID of the terrain asset
 @export_range(-1, 10, 1, 'or_greater')
 var id: int = -1
 

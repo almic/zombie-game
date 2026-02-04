@@ -343,8 +343,9 @@ shadow_bias = 0.02
 directional_shadow_split_1 = 0.04
 directional_shadow_split_2 = 0.08
 directional_shadow_split_3 = 0.2
-directional_shadow_fade_start = 0.5
+directional_shadow_blend_splits = true
 directional_shadow_max_distance = 200.0
+sky_mode = 1
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay" unique_id=842982889]
 transform = Transform3D(-0.42274655198447, -0.54468659232747, -0.72429404865975, -0.84027198208955, 0.53495231900061, 0.0881420019694, 0.339453, 0.64586572330056, -0.68383414, 0, 0, 0)
@@ -355,6 +356,7 @@ light_energy = 0.0
 directional_shadow_split_1 = 0.08
 directional_shadow_split_2 = 0.16
 directional_shadow_blend_splits = true
+sky_mode = 1
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388886696]
 process_mode = 3

@@ -7,6 +7,9 @@ const Gizmos = preload("uid://diallkouwe5cd")
 const TerrainInstanceTemporary = preload("uid://dumv2y8oq3f1x")
 
 
+const CLASS_TERRAIN3D: StringName = &'Terrain3D'
+
+
 var gizmos: Gizmos
 var toolbar: Toolbar
 var tool_mode: Toolbar.Tool = Toolbar.Tool.NONE
@@ -67,6 +70,8 @@ func _handles(object: Object) -> bool:
                object is TerrainInstanceNode
             or object is TerrainInstanceRegion
             or object is TerrainRegionPolygon
+            # For drawing gizmos
+            or object.get_class() == CLASS_TERRAIN3D
     )
 
 func _edit(object: Object) -> void:
@@ -132,6 +137,17 @@ func _edit(object: Object) -> void:
                     'Please move the polygon to be a direct child of a TerrainInstanceRegion, nested ' +
                     'children are not supported. Use additional regions if you need more scene organization.'
             )
+
+    # For drawing gizmos
+    elif object is Node3D:
+        if (
+                object.get_class() == CLASS_TERRAIN3D
+        ):
+            for child in object.get_children():
+                if child is TerrainInstanceNode:
+                    edited_node = child
+                    edited_node.show_gizmos()
+                    break
 
     toolbar.update_visibility()
 

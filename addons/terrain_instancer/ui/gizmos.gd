@@ -49,7 +49,7 @@ func _init() -> void:
     SPHERE_FADED_MATERIAL.render_priority = priority - 2
 
     SURFACE_MATERIAL = SPHERE_MATERIAL.duplicate(true)
-    SURFACE_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.08)
+    SURFACE_MATERIAL.albedo_color = Color(0.5, 0.8, 1.0, 0.02)
     SURFACE_MATERIAL.render_priority = priority
 
     SURFACE_FADED_MATERIAL = SURFACE_MATERIAL.duplicate(true)
@@ -58,7 +58,7 @@ func _init() -> void:
     SURFACE_FADED_MATERIAL.render_priority = priority - 3
 
     SURFACE_SUBTRACT_MATERIAL = SURFACE_MATERIAL.duplicate(true)
-    SURFACE_SUBTRACT_MATERIAL.albedo_color = Color(1.0, 0.3, 0.25, 0.08)
+    SURFACE_SUBTRACT_MATERIAL.albedo_color = Color(1.0, 0.3, 0.25, 0.02)
 
     SURFACE_SUBTRACT_FADED_MATERIAL = SURFACE_FADED_MATERIAL.duplicate(true)
     SURFACE_SUBTRACT_FADED_MATERIAL.albedo_color = SURFACE_SUBTRACT_MATERIAL.albedo_color.lightened(0.5)

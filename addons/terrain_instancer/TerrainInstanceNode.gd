@@ -2,7 +2,6 @@
 class_name TerrainInstanceNode extends Node3D
 
 
-const CLASS_TERRAIN3D: StringName = &'Terrain3D'
 const Plugin = preload("uid://khsyydwj7rw2")
 
 
@@ -86,7 +85,7 @@ func setup_terrain() -> void:
         return
 
     # For Terrain3D
-    if parent.get_class() == CLASS_TERRAIN3D:
+    if parent.get_class() == Plugin.CLASS_TERRAIN3D:
         terrain = parent
         # Terrain3DCollision.InstanceCollisionMode::INSTANCE_COLLISION_MANUAL
         terrain.collision_mode = 3
@@ -156,7 +155,7 @@ func get_instance_collision_data() -> Variant:
     if not terrain:
         return null
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         # Produce an array of cells to have collision for
         # Using a dictionary for optimized set-like behavior
         var cell_set: Dictionary
@@ -248,7 +247,7 @@ func dispatch_instance_collision_update(data: Variant) -> void:
     if not terrain:
         return
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         terrain.collision.set_instance_collision_cells(data)
         return
 
@@ -258,7 +257,7 @@ func intersect_terrain(origin: Vector3, direction: Vector3) -> Vector3:
     if not terrain:
         return Vector3.INF
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var pos: Vector3 = terrain.get_intersection(origin, direction, true)
         if pos.z > 3.4e38 or is_nan(pos.y):
             return Vector3.INF
@@ -272,7 +271,7 @@ func project_terrain(point: Vector2) -> Vector2:
     if not terrain:
         return Vector2.INF
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         return Vector2(point / terrain.vertex_spacing)
 
     return Vector2.INF
@@ -282,7 +281,7 @@ func project_global(point: Vector2) -> Vector3:
     if not terrain:
         return Vector3.INF
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var pos: Vector3 = Vector3(point.x, 0.0, point.y)
         pos = pos * terrain.vertex_spacing
         pos.y = terrain.data.get_height(pos)
@@ -298,7 +297,7 @@ func snap_terrain(location: Vector3) -> Vector2i:
     if not terrain:
         return Vector2i.MAX
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         location /= terrain.vertex_spacing
         var shape_size: int = terrain.collision_shape_size
         return Vector2i(
@@ -314,7 +313,7 @@ func terrain_has(point: Vector2) -> bool:
     if not terrain:
         return false
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         # Annoyingly, hole test returns FALSE when outside of regions!
         var pos := Vector3(point.x, 0, point.y)
         if terrain.data.get_control(pos) == 4294967295:
@@ -330,7 +329,7 @@ func get_height(point: Vector2) -> float:
     if not terrain:
         return NAN
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         return terrain.data.get_height(Vector3(point.x, 0.0, point.y))
 
     return NAN
@@ -341,7 +340,7 @@ func get_normal(point: Vector2) -> Vector3:
     if not terrain:
         return Vector3.ZERO
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var n: Vector3 = terrain.data.get_normal(Vector3(point.x, 0.0, point.y))
         if n.is_finite():
             return n
@@ -355,7 +354,7 @@ func get_instance_indexes(area: Rect2) -> Array:
         return []
 
     # Terrain3D indexes is an array of region locations
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var vertex_spacing: float = terrain.vertex_spacing
         var region_size: int = terrain.region_size
         var region_scale: float = region_size * vertex_spacing
@@ -399,7 +398,7 @@ func get_instance_data(index: Variant) -> Dictionary:
     if not terrain:
         return {}
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         # Index is a region location
         var vertex_spacing: float = terrain.vertex_spacing
         var region_size: int = terrain.region_size
@@ -448,7 +447,7 @@ func set_instance_data(indexes: Array, data: Array[Dictionary]) -> void:
     if not terrain:
         return
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         for i in range(indexes.size()):
             var region_loc: Vector2i = indexes[i]
             var region = terrain.data.get_region(region_loc)
@@ -487,7 +486,7 @@ func add_instances(instance_data: Dictionary) -> void:
     if not terrain:
         return
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         for id in instance_data:
             var data: Dictionary = instance_data.get(id)
             terrain.instancer.add_transforms(
@@ -506,7 +505,7 @@ func get_instance_name(instance_id: int) -> String:
     if not terrain:
         return str(instance_id)
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var asset = terrain.assets.get_mesh_asset(instance_id)
         if not asset:
             return str(instance_id)
@@ -523,7 +522,7 @@ func get_instance_lod_mesh(instance_id: int, lod: int = 0) -> Mesh:
     if not terrain:
         return null
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var asset = terrain.assets.get_mesh_asset(instance_id)
         if not asset:
             return null
@@ -537,7 +536,7 @@ func get_instance_scene(instance_id: int) -> PackedScene:
     if not terrain:
         return null
 
-    if terrain.get_class() == CLASS_TERRAIN3D:
+    if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
         var asset = terrain.assets.get_mesh_asset(instance_id)
         if not asset:
             return null

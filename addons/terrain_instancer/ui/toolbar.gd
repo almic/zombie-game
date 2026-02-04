@@ -151,15 +151,23 @@ func update_visibility() -> void:
         btn_add_instance.show()
         btn_edit_instance.show()
 
+        sep_region_populate.show()
+        btn_populate_region.show()
+        btn_clear_region.show()
+
     else:
         sep_region.hide()
         btn_select.hide()
-        btn_remove_vertex.hide()
+        btn_add_vertex.hide()
         btn_remove_vertex.hide()
 
         sep_instances.hide()
         btn_add_instance.hide()
         btn_edit_instance.hide()
+
+        sep_region_populate.hide()
+        btn_populate_region.hide()
+        btn_clear_region.hide()
 
 func create_region_node() -> TerrainInstanceRegion:
     var region := TerrainInstanceRegion.new()

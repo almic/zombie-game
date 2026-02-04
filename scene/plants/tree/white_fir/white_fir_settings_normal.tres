@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="TerrainInstanceSettings" format=3 uid="uid://dgqqpycwlv4k3"]
+
+[ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_7b82j"]
+[ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_rjtrt"]
+
+[sub_resource type="Curve" id="Curve_icy4k"]
+_limits = [0.0, 1.0, 0.0, 45.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(28, 0), -0.085, 0.0, 0, 0]
+point_count = 2
+
+[resource]
+resource_name = "White Fir Normal"
+script = ExtResource("1_7b82j")
+id = 3
+seed = 956180086
+density = 6.0
+density_slope = SubResource("Curve_icy4k")
+minimum_distances = {
+0: 5.0,
+3: 3.5
+}
+v_height_offset = -0.15
+v_height_high = 0.05
+v_spin_low = 3.14159265358979
+v_spin_high = 3.14159265358979
+v_tilt_low = 0.017453292
+v_tilt_high = 0.017453292
+v_scale_low = 0.05
+v_scale_high = 0.05
+slope_fix_enabled = true
+slope_fix_base_radius = 0.46
+slope_fix_limit = 1.0
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"

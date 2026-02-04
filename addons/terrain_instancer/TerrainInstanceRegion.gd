@@ -415,7 +415,7 @@ func clear_region() -> void:
     instance_node.set_instance_data(new_indexes, new_data)
 
 func populate_region(editor_mode: bool = false) -> void:
-    var start: int = Time.get_ticks_usec()
+    print('Preparing region "%s" for instance population...' % self.name)
 
     # Ensure triangle mesh is up-to-date
     update_shapes()
@@ -434,25 +434,32 @@ func populate_region(editor_mode: bool = false) -> void:
         )
         return
 
+    # Gather valid instances and check some are enabled
     var instances: Array[TerrainInstanceSettings]
+    var instances_enabled: int = 0
     for i in range(settings.instances.size()):
         var inst: TerrainInstanceSettings = settings.instances[i]
-        if (not inst.enabled) or inst.id == -1:
+        if inst.id == -1:
             continue
 
         instances.append(inst)
+        if inst.enabled:
+            instances_enabled += 1
 
-    if instances.size() == 0:
+    if instances_enabled < 1:
         EditorInterface.get_editor_toaster().push_toast(
-                "No enabled instances, nothing to populate",
+                "No valid & enabled instances, nothing to populate",
                 EditorToaster.SEVERITY_WARNING
         )
         return
 
     # Get the area rect from the mesh AABB
-    var box: AABB = AABB()
+    var box: AABB
     for polygon in shapes:
-        box = box.merge(polygon.mesh.get_aabb())
+        if box.has_surface():
+            box = box.merge(polygon.mesh.get_aabb())
+        else:
+            box = polygon.mesh.get_aabb()
 
     var x1: int = box.position.x
     var y1: int = box.position.z
@@ -461,14 +468,25 @@ func populate_region(editor_mode: bool = false) -> void:
 
     # Compute "chunks" that will be populated
     var chunks: Dictionary
-    var c_x1: int = floori(float(x1) / 16.0)
-    var c_y1: int = floori(float(y1) / 16.0)
-    var c_x2: int = ceili(float(x2) / 16.0) - 1
-    var c_y2: int = ceili(float(y2) / 16.0) - 1
+    var c_x1: int = floori(float(x1) / CHUNK_SIZE)
+    var c_y1: int = floori(float(y1) / CHUNK_SIZE)
+    var c_x2: int = ceili(float(x2) / CHUNK_SIZE) - 1
+    var c_y2: int = ceili(float(y2) / CHUNK_SIZE) - 1
+
+    var start: int = Time.get_ticks_usec()
+    var existing_found: int = _prepare_chunks(instances, box, chunks)
+    var end: int = Time.get_ticks_usec()
+    if editor_mode:
+        print(
+                'Loaded %d existing instances in %.3f seconds' % [
+                    existing_found,
+                    float(end - start) / 1e6
+                ]
+        )
 
     var chunk: Vector2i
     var chunk_total: int = 0
-    var chunk_max: int = (c_x2 - c_x1 + 1) * (c_y2 - c_y1 + 1) * instances.size()
+    var chunk_max: int = (c_x2 - c_x1 + 1) * (c_y2 - c_y1 + 1) * instances_enabled
     var full_total: int = 0
     var data: Dictionary
 
@@ -482,7 +500,9 @@ func populate_region(editor_mode: bool = false) -> void:
     var size_y: int = (c_y2 - c_y1) + 1
     var chunks_to_process: int = size_x * size_y
 
-    print('Starting region population, %d chunks with %d instance types' % [chunks_to_process, instances.size()])
+
+    print('Starting region population, %d chunks with %d enabled instance types' % [chunks_to_process, instances_enabled])
+    start = Time.get_ticks_usec()
 
     hash_chunk_x.resize(size_x)
     hash_chunk_y.resize(size_y)
@@ -497,14 +517,18 @@ func populate_region(editor_mode: bool = false) -> void:
     var i_hash: int
     var y_hash: int
 
-    var inst_index: int = 0
+    var inst_index: int = -1
     for instance in instances:
+        inst_index += 1
+
+        if not instance.enabled:
+            continue
+
         var xforms: Array[Transform3D]
         var colors: PackedColorArray
         var instance_total: int = 0
 
         i_hash = hash_inst[inst_index]
-        inst_index += 1
 
         chunk.y = c_y1
         var y_index: int = 0
@@ -515,7 +539,8 @@ func populate_region(editor_mode: bool = false) -> void:
             y_index += 1
             x_index = 0
             while chunk.x <= c_x2:
-                rng.seed = y_hash ^ hash_chunk_x[x_index]
+                var chunk_seed = y_hash ^ hash_chunk_x[x_index]
+                rng.seed = chunk_seed
                 x_index += 1
                 var count_added: int = _populate_chunk(rng, instance, chunk, chunks)
                 if count_added > 0:
@@ -523,8 +548,15 @@ func populate_region(editor_mode: bool = false) -> void:
                     xforms.resize(xforms.size() + count_added)
                     colors.resize(colors.size() + count_added)
 
+                    var first: int = positions.size() - count_added
                     var i: int = 0
                     while i < count_added:
+                        var pos_theta: Vector4 = positions[first + i]
+                        var xform: Transform3D = Transform3D.IDENTITY
+                        xform.origin = Vector3(pos_theta.x, pos_theta.y, pos_theta.z)
+
+                        rng.seed = chunk_seed ^ hash(xform.origin)
+
                         var rand_height: float = instance.rand_height(rng)
                         var rand_spin: float = instance.rand_spin(rng)
                         var tilt_amount: float = instance.rand_tilt(rng)
@@ -532,9 +564,6 @@ func populate_region(editor_mode: bool = false) -> void:
                         var scale_amount: float = instance.rand_scale(rng)
                         var rand_color: Color = instance.rand_color(rng).srgb_to_linear()
 
-                        var pos_theta: Vector4 = positions[i]
-                        var xform: Transform3D = Transform3D.IDENTITY
-                        xform.origin = Vector3(pos_theta.x, pos_theta.y, pos_theta.z)
                         xform.basis = xform.basis.rotated(Vector3.DOWN, rand_spin)
 
                         if instance.slope_fix_enabled:
@@ -584,7 +613,7 @@ func populate_region(editor_mode: bool = false) -> void:
         data.set(instance.id, { &'xforms': xforms, &'colors': colors })
 
     # NOTE: do not time the terrain placement side
-    var end: int = Time.get_ticks_usec()
+    end = Time.get_ticks_usec()
 
     if editor_mode:
         print(
@@ -633,6 +662,9 @@ func _populate_chunk(
         pos.x += chunk.x * CHUNK_SIZE
         pos.y += chunk.y * CHUNK_SIZE
 
+        if _is_pos_too_close(pos, instance, chunk, chunks):
+            continue
+
         ray_pos.x = pos.x
         ray_pos.z = pos.y
 
@@ -653,9 +685,6 @@ func _populate_chunk(
         if has_subtract or (not has_add):
             continue
 
-        if not instance_node.terrain_has(pos):
-            continue
-
         var theta: float = 0
         if slope_curve or instance.slope_fix_enabled:
             var normal: Vector3 = instance_node.get_normal(pos)
@@ -673,16 +702,14 @@ func _populate_chunk(
             if slope_prob > probability:
                 continue
 
+        if not instance_node.terrain_has(pos):
+            continue
+
         var height: float = instance_node.get_height(pos)
         if is_nan(height):
             continue
 
-        var pos_3d: Vector3 = Vector3(pos.x, height, pos.y)
-
-        if _is_pos_too_close(pos_3d, instance, chunk, chunks):
-            continue
-
-        var pos_theta: Vector4 = Vector4(pos_3d.x, pos_3d.y, pos_3d.z, theta)
+        var pos_theta: Vector4 = Vector4(pos.x, height, pos.y, theta)
 
         # Place in chunk now
         positions.append(pos_theta)
@@ -696,12 +723,11 @@ func _populate_chunk(
     return count_added
 
 func _is_pos_too_close(
-        pos: Vector3,
+        pos: Vector2,
         instance: TerrainInstanceSettings,
         chunk: Vector2i,
         chunks: Dictionary,
 ) -> bool:
-    var pos2: Vector2 = Vector2(pos.x, pos.z)
     for other_id in instance.minimum_distances:
         var other_chunks: Dictionary = chunks.get(other_id, {})
         if not other_chunks:
@@ -729,10 +755,75 @@ func _is_pos_too_close(
                 for other_pos in positions:
                     # Ignore height
                     var other2: Vector2 = Vector2(other_pos.x, other_pos.z)
-                    if pos2.distance_squared_to(other2) < minimum_distance_squared:
+                    if pos.distance_squared_to(other2) < minimum_distance_squared:
                         return true
 
                 y += 1
             x += 1
 
     return false
+
+func _prepare_chunks(
+        instances: Array[TerrainInstanceSettings],
+        box: AABB,
+        chunks: Dictionary,
+) -> int:
+
+    # Build set of instance types to manage
+    var ids: Array[int]
+    var largest_min_distance: float = 0.0
+    for inst in instances:
+        if ids.has(inst.id):
+            continue
+        ids.append(inst.id)
+        for dist in inst.minimum_distances.values():
+            if dist > largest_min_distance:
+                largest_min_distance = dist
+
+    if ids.size() == 0:
+        return 0
+
+    box.grow(largest_min_distance)
+    var area: Rect2 = Rect2(box.position.x, box.position.z, box.size.x, box.size.z)
+    var indexes: Array = instance_node.get_instance_indexes(area)
+
+    var total_found: int = 0
+    for index in indexes:
+        var inst_data: Dictionary = instance_node.get_instance_data(index)
+        for inst_id in inst_data:
+            if not ids.has(inst_id):
+                continue
+
+            var inst_chunks: Dictionary
+            if chunks.has(inst_id):
+                inst_chunks = chunks.get(inst_id)
+
+            var cell_data: Dictionary = inst_data.get(inst_id)
+            for cell in cell_data:
+                var mesh_data: Dictionary = cell_data.get(cell)
+                var xforms: Array = mesh_data.get(&'xform')
+                var i: int = 0
+                var size: int = xforms.size()
+                while i < size:
+                    var xform: Transform3D = xforms[i]
+                    i += 1
+
+                    if not area.has_point(Vector2(xform.origin.x, xform.origin.z)):
+                        continue
+
+                    var chunk: Vector2i = Vector2i(
+                            floori(xform.origin.x / CHUNK_SIZE),
+                            floori(xform.origin.z / CHUNK_SIZE)
+                    )
+
+                    var positions: PackedVector4Array
+                    if inst_chunks.has(chunk):
+                        positions = inst_chunks.get(chunk)
+                    positions.append(Vector4(xform.origin.x, xform.origin.y, xform.origin.z, 0.0))
+                    inst_chunks.set(chunk, positions)
+
+                    total_found += 1
+
+            chunks.set(inst_id, inst_chunks)
+
+    return total_found

@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="TerrainInstanceSettings" format=3 uid="uid://dmjlolcrs1dh6"]
+
+[ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_mjb85"]
+[ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_thdqu"]
+
+[sub_resource type="Curve" id="Curve_yidmw"]
+_limits = [0.0, 1.0, 0.0, 45.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(25, 0), -0.1, 0.0, 0, 0]
+point_count = 2
+
+[resource]
+resource_name = "Douglas Fir Normal"
+script = ExtResource("1_mjb85")
+id = 0
+seed = 1770769841
+density = 6.0
+density_slope = SubResource("Curve_yidmw")
+minimum_distances = {
+0: 4.8,
+3: 5.0
+}
+v_height_offset = -0.15
+v_height_high = 0.05
+v_spin_low = 3.14159265358979
+v_spin_high = 3.14159265358979
+v_tilt_low = 0.017453292
+v_tilt_high = 0.017453292
+v_scale_low = 0.05
+v_scale_high = 0.1
+slope_fix_enabled = true
+slope_fix_base_radius = 0.64
+slope_fix_limit = 1.0
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"

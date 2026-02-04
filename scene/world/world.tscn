@@ -77,7 +77,8 @@
 [ext_resource type="Texture2D" uid="uid://dxcbxv68vekkj" path="res://textures/road/crosswalk_decal.tres" id="56_ubgmn"]
 [ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="56_uxmrl"]
 [ext_resource type="Script" uid="uid://behs32dwn6xbp" path="res://addons/csg_extra/csg_curve/csg_curve_point.gd" id="57_i2hso"]
-[ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="57_yidmw"]
+[ext_resource type="Resource" uid="uid://dmjlolcrs1dh6" path="res://scene/plants/tree/douglas_fir/douglas_fir_settings_normal.tres" id="57_icy4k"]
+[ext_resource type="Resource" uid="uid://dgqqpycwlv4k3" path="res://scene/plants/tree/white_fir/white_fir_settings_normal.tres" id="58_fvo7w"]
 [ext_resource type="Resource" uid="uid://dc4dm4qwu046j" path="res://scene/world/polygon2d/curb_71_sharp.tres" id="58_hyeqt"]
 [ext_resource type="Script" uid="uid://g1tug1pbf30t" path="res://addons/terrain_instancer/res/TerrainInstanceRegionSettings.gd" id="58_icy4k"]
 [ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
@@ -106,64 +107,14 @@ radius = 0.6
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dprur"]
 
-[sub_resource type="Curve" id="Curve_yidmw"]
-_limits = [0.0, 1.0, 0.0, 45.0]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(30, 0), -0.1, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Resource" id="Resource_icy4k"]
-script = ExtResource("56_uxmrl")
-id = 0
-seed = 1770769841
-density = 6.0
-density_slope = SubResource("Curve_yidmw")
-minimum_distances = {
-0: 4.7
-}
-v_height_offset = -0.15
-v_height_high = 0.05
-v_spin_low = 3.14159265358979
-v_spin_high = 3.14159265358979
-v_tilt_low = 0.017453292
-v_tilt_high = 0.017453292
-v_scale_low = 0.05
-v_scale_high = 0.1
-slope_fix_enabled = true
-slope_fix_base_radius = 0.64
-slope_fix_limit = 1.0
-metadata/_custom_type_script = "uid://vr4nxiaugcwm"
-
-[sub_resource type="Curve" id="Curve_icy4k"]
-_limits = [0.0, 1.0, 0.0, 45.0]
-_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(35, 0), -0.085, 0.0, 0, 0]
-point_count = 2
-
-[sub_resource type="Resource" id="Resource_fvo7w"]
-script = ExtResource("56_uxmrl")
-id = 3
-seed = 956180086
-density = 6.0
-density_slope = SubResource("Curve_icy4k")
-minimum_distances = {
-0: 5.0,
-3: 3.5
-}
-v_height_offset = -0.15
-v_height_high = 0.05
-v_spin_low = 3.14159265358979
-v_spin_high = 3.14159265358979
-v_tilt_low = 0.017453292
-v_tilt_high = 0.017453292
-v_scale_low = 0.05
-v_scale_high = 0.05
-slope_fix_enabled = true
-slope_fix_base_radius = 0.46
-slope_fix_limit = 1.0
-metadata/_custom_type_script = "uid://vr4nxiaugcwm"
-
 [sub_resource type="Resource" id="Resource_dsaby"]
 script = ExtResource("58_icy4k")
-instances = Array[ExtResource("56_uxmrl")]([SubResource("Resource_icy4k"), SubResource("Resource_fvo7w")])
+instances = Array[ExtResource("56_uxmrl")]([ExtResource("57_icy4k"), ExtResource("58_fvo7w")])
+metadata/_custom_type_script = "uid://g1tug1pbf30t"
+
+[sub_resource type="Resource" id="Resource_icy4k"]
+script = ExtResource("58_icy4k")
+instances = Array[ExtResource("56_uxmrl")]([ExtResource("57_icy4k"), ExtResource("58_fvo7w")])
 metadata/_custom_type_script = "uid://g1tug1pbf30t"
 
 [sub_resource type="Resource" id="Resource_dayhp"]
@@ -877,7 +828,20 @@ metadata/_edit_lock_ = true
 
 [node name="MainArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/CabinArea" unique_id=2056786455]
 script = ExtResource("59_yidmw")
-vertices = PackedInt32Array(-221, 516, -220, 537, -215, 557, -205, 581, -103, 565, -104, 542, -112, 525, -118, 498, -125, 482, -139, 453, -134, 427, -130, 400, -131, 384, -196, 381, -207, 417, -214, 443, -222, 492)
+vertices = PackedInt32Array(-217, 518, -200, 531, -178, 534, -143, 533, -118, 498, -125, 482, -139, 453, -155, 442, -180, 449, -183, 471, -190, 496, -213, 504)
+metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
+metadata/_edit_lock_ = true
+
+[node name="EastForest" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=1102254799]
+script = ExtResource("55_fs5wv")
+seed = 1714493046
+settings = SubResource("Resource_icy4k")
+metadata/_custom_type_script = "uid://ba7dj46pupxe5"
+metadata/_edit_lock_ = true
+
+[node name="EastArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/EastForest" unique_id=488010291]
+script = ExtResource("59_yidmw")
+vertices = PackedInt32Array(1069, 612, 970, -118, 855, -103, 747, -78, 756, -34, 758, 75, 749, 122, 715, 219, 706, 285, 715, 360, 735, 411, 767, 489, 775, 587, 754, 658)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 

@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bth8ce3x71scl"
-path.bptc="res://.godot/imported/grass_rocky_n.jpg-f5a6ecbf576e99f1d1e53b397779caa9.bptc.ctex"
+uid="uid://dxbgaqlqosit6"
+path.bptc="res://.godot/imported/ground_mud_n.jpg-5da7aec803d6cd9daa8f199deed09b0d.bptc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://textures/terrain/grass_rocky_n.jpg"
-dest_files=["res://.godot/imported/grass_rocky_n.jpg-f5a6ecbf576e99f1d1e53b397779caa9.bptc.ctex"]
+source_file="res://textures/terrain/ground_mud_n.jpg"
+dest_files=["res://.godot/imported/ground_mud_n.jpg-5da7aec803d6cd9daa8f199deed09b0d.bptc.ctex"]
 
 [params]
 

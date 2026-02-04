@@ -31,10 +31,12 @@ _shader_parameters = {
 &"auto_shader": null,
 &"auto_slope": 1.794,
 &"bias_distance": 512.0,
-&"blend_sharpness": 0.547,
+&"blend_sharpness": 0.90000004,
 &"depth_blur": 0.0,
+&"enable_textures": true,
 &"flat_terrain_normals": false,
 &"general": null,
+&"ground_level": 0.0,
 &"macro_variation": null,
 &"macro_variation1": Color(1, 0.943244, 0.919604, 1),
 &"macro_variation2": Color(0.899196, 1, 0.823027, 1),
@@ -48,9 +50,9 @@ _shader_parameters = {
 &"noise2_scale": 0.076,
 &"noise_texture": SubResource("NoiseTexture2D_fj7yv"),
 &"projection_threshold": 0.8,
+&"region_blend": 0.25,
 &"vertical_projection": true
 }
 world_background = 0
 texture_filtering = 1
-auto_shader_enabled = true
 shader_override = ExtResource("1_tvpb4")

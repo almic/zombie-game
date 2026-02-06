@@ -219,8 +219,7 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
 
         // Reduce greatly at the horizon
         bloom *= pow(max(transmittance.g, transmittance.b), 2.0 / PI);
-
-        alpha += step(0.0002, bloom) * bloom;
+        alpha += bloom;
     }
 
     float sun_angle = length(eye_dir - sun_direction);
@@ -286,5 +285,5 @@ void sky() {
         color.rgb += sun_color.rgb * sun_color.a;
     }
 
-    COLOR = color;
+    COLOR = max(color, vec3(0.0));
 }

@@ -5,7 +5,7 @@
 // https://www.shadertoy.com/view/msXXDS
 
 
-#define AEROSOL_TYPE 2
+#define AEROSOL_TYPE 0
 
 
 const float PI = 3.14159265358979323846;
@@ -50,7 +50,7 @@ const float ozone_concentration = 337.0;
 // Scattering/ Mie constants.
 
 #if   AEROSOL_TYPE == 0 // Background
-const float aerosol_turbidity = 0.008;
+const float aerosol_turbidity = 0.004;
 const vec4 aerosol_absorption_cross_section = vec4(4.5517e-19, 5.9269e-19, 6.9143e-19, 8.5228e-19);
 const vec4 aerosol_scattering_cross_section = vec4(1.8921e-26, 1.6951e-26, 1.7436e-26, 2.1158e-26);
 const float aerosol_base_density = 2.584e17;

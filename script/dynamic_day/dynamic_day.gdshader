@@ -13,17 +13,9 @@ uniform float sun_angular_diameter;
 uniform mat3 moon_basis;
 uniform float moon_angular_diameter;
 
-// Ground illumination when sun is overhead
-const float ZENITH_ILLUMINANCE = 100000.0;
-
 // Spectral stuff copied from common_inc.glsl
 // Sun spectral brightness (color), can be changed
-const vec4 SUN_SPECTRAL = vec4(1.679, 1.828, 1.986, 1.307) * TAU;
-// precomputed ground irradiance at zenith
-const vec4 ZENITH_IRRADIANCE =
-        // Scale to illuminance scale factor
-        (ZENITH_ILLUMINANCE / 100000.0)
-        * SUN_SPECTRAL;
+const vec4 SUN_SPECTRAL = vec4(1.679, 1.828, 1.986, 1.307);
 // Spectral to RGB matrix, don't touch this!
 // > Seriously, this is correct! I double-checked August 26, 2025!
 const highp mat4 M = mat4(
@@ -201,6 +193,7 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
 
     float xy = dot(eye_dir, vec3(0.0, 1.0, 0.0));
     vec4 transmittance = transmittance_from_lut(xy, 0.5 * xy * xy);
+    vec3 color = linear_srgb_from_spectral_samples(SUN_SPECTRAL * transmittance);
 
     float sun_diameter_radians = sun_angular_diameter * PI / 180.0;
     float alpha = 0.0;
@@ -211,14 +204,9 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
     if (cos_theta < min_sun_cos_theta)
     {
         float offset = min_sun_cos_theta - cos_theta;
+        float inv_bloom = 1.0 / (0.02 + offset * 2000.0) * 0.004;
 
-        float gaussian = exp(-offset * 50000.0) * 0.5;
-        float inv_bloom = 1.0 / (0.02 + offset * 300.0) * 0.01;
-
-        float bloom = smoothstep(0.006, 1.0, gaussian + inv_bloom);
-
-        // Reduce greatly at the horizon
-        bloom *= pow(max(transmittance.g, transmittance.b), 2.0 / PI);
+        float bloom = smoothstep(0.0, 1.0, inv_bloom);
         alpha += bloom;
     }
 
@@ -231,16 +219,7 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
     // Apply moon mask
     alpha = clamp(alpha, 0.0, 1.0) * moon_mask;
 
-    // Sun spectral color
-    vec4 zenith_transmittance = transmittance_from_lut(1.0, 0.0);
-    vec4 space_irradiance = ZENITH_IRRADIANCE / zenith_transmittance;
-    space_irradiance *= pow(max(transmittance, vec4(0.0)), vec4(1.2));
-
-    // Sun color
-    return vec4(
-            linear_srgb_from_spectral_samples(space_irradiance / (1.5 * PI)),
-            alpha
-    );
+    return vec4(color, alpha);
 }
 
 vec3 gamma_func(vec3 color)
@@ -282,7 +261,12 @@ void sky() {
         vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
         //sun_color.rgb = 1.0 - exp(-k * sun_color.rgb);
 
-        color.rgb += sun_color.rgb * sun_color.a;
+        color.rgb = mix(
+                mix(color.rgb, sun_color.rgb, sun_color.a),
+                mix(color.rgb, color.rgb * sun_color.rgb, sun_color.a),
+                1.0 - clamp(dot(EYEDIR, vec3(0.0, 1.0, 0.0) * 2.8), 0.0, 1.0)
+        );
+        //color.rgb = vec3(sun_color.a);
     }
 
     COLOR = max(color, vec3(0.0));

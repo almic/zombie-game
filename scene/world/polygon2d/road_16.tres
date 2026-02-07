@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="Polygon2DResource" load_steps=2 format=3 uid="uid://cg12imm42ch4x"]
+[gd_resource type="Resource" script_class="Polygon2DResource" format=3 uid="uid://cg12imm42ch4x"]
 
 [ext_resource type="Script" uid="uid://hutnddwuoerd" path="res://addons/csg_extra/poly_resource.gd" id="1_g7q6o"]
 

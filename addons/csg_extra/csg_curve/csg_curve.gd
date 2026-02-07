@@ -72,6 +72,8 @@ func update_children() -> void:
     var last: CSGCurvePoint3D = null
     for node in get_children():
         if node is CSGCurvePoint3D:
+            node._is_first = false
+            node._is_last = false
             if last == null:
                 node._is_first = true
             last = node
@@ -141,8 +143,8 @@ func update_points() -> void:
 
             curve.set_point_out(i + skip, Vector3.ZERO)
 
-            if point.handle_length > 0:
-                curve.set_point_in(i + skip, -point.basis.z * point.handle_length)
+            if point.handle_in > 0:
+                curve.set_point_in(i + skip, -point.basis.z * point.handle_in)
             else:
                 curve.set_point_in(i + skip, Vector3.ZERO)
 
@@ -152,15 +154,15 @@ func update_points() -> void:
         curve.set_point_position(i + skip, point.position)
         curve.set_point_tilt(i + skip, tilt)
 
-        if not point.straight_length > 0 and point.handle_length > 0:
-            if is_first:
+        if not point.straight_length > 0 and (point.handle_in > 0 or point.handle_out > 0):
+            if is_first or is_zero_approx(point.handle_in):
                 curve.set_point_in(i + skip, Vector3.ZERO)
             else:
-                curve.set_point_in(i + skip, -point.basis.z * point.handle_length)
-            if is_last:
+                curve.set_point_in(i + skip, -point.basis.z * point.handle_in)
+            if is_last or is_zero_approx(point.handle_out):
                 curve.set_point_out(i + skip, Vector3.ZERO)
             else:
-                curve.set_point_out(i + skip, point.basis.z * point.handle_length)
+                curve.set_point_out(i + skip, point.basis.z * point.handle_out)
         else:
             curve.set_point_in(i + skip, Vector3.ZERO)
             curve.set_point_out(i + skip, Vector3.ZERO)
@@ -176,8 +178,8 @@ func update_points() -> void:
 
             curve.set_point_in(i + skip + 1, Vector3.ZERO)
 
-            if point.handle_length > 0:
-                curve.set_point_out(i + skip + 1, point.basis.z * point.handle_length)
+            if point.handle_out > 0:
+                curve.set_point_out(i + skip + 1, point.basis.z * point.handle_out)
             else:
                 curve.set_point_out(i + skip + 1, Vector3.ZERO)
 

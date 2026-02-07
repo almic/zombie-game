@@ -205,10 +205,6 @@ polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 script = ExtResource("54_k8or8")
 polygon = PackedVector2Array(-0.75, -0.35, -0.75, 0.35, 0.75, 0.35, 0.75, -0.35)
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
-material = ExtResource("31_i8b61")
-size = Vector2(4096, 4096)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xxc2j"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_c4lkr"]
@@ -292,6 +288,18 @@ orientation = 2
 [sub_resource type="PlaneMesh" id="PlaneMesh_icy4k"]
 size = Vector2(0.1, 0.1)
 orientation = 2
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_avgpp"]
+material = ExtResource("31_i8b61")
+size = Vector2(850, 1300)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_qg5jb"]
+material = ExtResource("31_i8b61")
+size = Vector2(350, 932)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_dsaby"]
+material = ExtResource("31_i8b61")
+size = Vector2(16, 16)
 
 [node name="world" type="Node3D" unique_id=668092810 groups=["world"]]
 process_mode = 3
@@ -865,7 +873,7 @@ metadata/_edit_lock_ = true
 [node name="MainStreets" type="Node" parent="LevelBlocking/Town/Roads" unique_id=1296208523]
 
 [node name="AbleStreet" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=1476200412 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -359, 2, -170)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -359, 4, -170)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -878,19 +886,19 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="AbleStreet2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet" unique_id=986420541]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0.1, -345.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 6.46, -345.55)
 size = Vector3(10.2, 0.2, 295.1)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="AbleStreet3" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet" unique_id=90895401]
-transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -48.1251, 0.1, -119.696)
+transform = Transform3D(0.766044, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766044, -48.125, 2.165, -119.696)
 size = Vector3(10.2, 0.2, 125.7)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="AbleStreetCurve1" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet" unique_id=353184671]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.1, -49)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.42, -49)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
@@ -910,17 +918,17 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve1" unique_id=957253307]
 script = ExtResource("57_i2hso")
-handle_length = 9.0
+handle_out = 9.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve1" unique_id=1746464796]
 transform = Transform3D(0.76604444, 0, 0.64278760968654, 0, 1, 0, -0.64278760968654, 0, 0.76604444, 7.74, 0, 22.55)
 script = ExtResource("57_i2hso")
-handle_length = 9.0
+handle_in = 9.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="AbleStreetCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet" unique_id=1008400251]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 0.1, -198)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -100, 5.505, -198)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
@@ -940,21 +948,52 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve2" unique_id=358169080]
 script = ExtResource("57_i2hso")
-handle_length = 13.0
+handle_out = 13.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/AbleStreet/AbleStreetCurve2" unique_id=189192753]
 transform = Transform3D(0.76604444, 0, 0.64278760968654, 0, 1, 0, -0.64278760968654, 0, 0.76604444, 11.46, 0, 30.17)
 script = ExtResource("57_i2hso")
-handle_length = 14.0
+handle_in = 14.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BriskStreet" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=982080915 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -359)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 4, -359)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 metadata/_edit_lock_ = true
+
+[node name="BriskStreet1" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/BriskStreet" unique_id=1461600521]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, -7, 0.14, -1, 0.25, 1, 0.25, 7, 0.14, 8.9, 0.1, 8.9, -0.1)
+mode = 2
+path_node = NodePath("")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 0.5
+path_rotation = 2
+path_rotation_accurate = false
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = ExtResource("53_f0qux")
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("50_hyeqt")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/BriskStreet/BriskStreet1" unique_id=513841211]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 144)
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/BriskStreet/BriskStreet1" unique_id=777480325]
+transform = Transform3D(-1, 0, 0, 0, 0.99984769515639, 0.01745240643728, 0, 0.01745240643728, -0.99984769515639, 0, 3.65, 20.347)
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BriskStreet" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/BriskStreet" unique_id=978352377]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -78)
@@ -975,7 +1014,7 @@ collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="CherryStreet" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet" unique_id=1115116660]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -18.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.475, -18.9)
 size = Vector3(17.8, 0.2, 359.8)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
@@ -1002,19 +1041,19 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve1" unique_id=936727221]
 script = ExtResource("57_i2hso")
 straight_length = 7.0
-handle_length = 30.0
+handle_out = 30.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve1" unique_id=1972778567]
 transform = Transform3D(0.70710678118655, 0, -0.70710678118655, 0, 1, 0, 0.70710678118655, 0, 0.70710678118655, -69, -0.9, 72.98)
 script = ExtResource("57_i2hso")
 straight_length = 6.0
-handle_length = 20.0
+handle_in = 20.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CherryStreetCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet" unique_id=1793721675]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.1, -198.8)
-polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, 8.9, 0.1, 8.9, -0.1)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 9.57, -198.8)
+polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, -7, 0.14, -1, 0.25, 1, 0.25, 7, 0.14, 8.9, 0.1, 8.9, -0.1)
 mode = 2
 path_node = NodePath("")
 path_interval_type = 0
@@ -1034,18 +1073,18 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve2" unique_id=467558673]
 script = ExtResource("57_i2hso")
 straight_length = 1.5
-handle_length = 66.7
+handle_out = 66.7
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/CherryStreet/CherryStreetCurve2" unique_id=702808054]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 109.2, 0, 109.2)
 script = ExtResource("57_i2hso")
 straight_length = 1.5
-handle_length = 66.7
+handle_in = 66.7
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="DeltaRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=195795947 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -508)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 10.445, -508)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1058,25 +1097,25 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="DeltaRoad2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad" unique_id=337527924]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -79.65, 0.1, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -79.65, 2.35, 0)
 size = Vector3(10.2, 0.2, 142.7)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="DeltaRoadParking" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad" unique_id=1058680278]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -110.85, 0.1, 7.3)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -110.85, 3.06, 7.3)
 size = Vector3(4.4, 0.2, 43.5)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="DeltaRoadParking2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad" unique_id=552769164]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -47.1, 0.1, 7.45)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -47.1, 2.345, 7.45)
 size = Vector3(3.06, 0.2, 37.98)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="ParkingSpots3" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad" unique_id=301814176]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -93.6, 0.15, 9.1)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -93.6, 3.1, 9.1)
 metadata/_edit_lock_ = true
 
 [node name="Line1" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad/ParkingSpots3" unique_id=724133171]
@@ -1146,7 +1185,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="ParkingSpots4" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad" unique_id=1043557527]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -64.8, 0.15, 9.1)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -64.8, 2.388, 9.1)
 metadata/_edit_lock_ = true
 
 [node name="Line1" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/DeltaRoad/ParkingSpots4" unique_id=1377826294]
@@ -1216,7 +1255,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="ElderDrive" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=1440955032]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -225, 2, -508)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -225, 7.61, -508)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1249,24 +1288,24 @@ script = ExtResource("57_i2hso")
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive/ElderDrive" unique_id=1798248469]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, -71.2)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 3.768148, -71.2)
 script = ExtResource("57_i2hso")
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="ElderDrive2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive" unique_id=976332814]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, -36.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.295, -36.2)
 size = Vector3(10.2, 0.2, 55.6)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="ElderDrive3" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive" unique_id=1208322450]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -41, 0.1, -79)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -41, 6.385, -79)
 size = Vector3(10.2, 0.2, 52)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="ElderDriveCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive" unique_id=521720709]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.1, -64)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 5.8120774, -64)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
@@ -1286,13 +1325,13 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive/ElderDriveCurve" unique_id=1446841562]
 script = ExtResource("57_i2hso")
-handle_length = 8.667
+handle_out = 8.667
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive/ElderDriveCurve" unique_id=43226426]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 0, 15)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 15, 0.5801256, 15)
 script = ExtResource("57_i2hso")
-handle_length = 8.667
+handle_in = 8.667
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="Curb1" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/ElderDrive" unique_id=481577427]
@@ -1316,7 +1355,7 @@ polygon_resource = ExtResource("58_hyeqt")
 metadata/_custom_type_script = "uid://cqs4rjvcjvx3p"
 
 [node name="FoxRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=1191377218]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -250, 2, -207)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -250, 2.8, -207)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1329,14 +1368,14 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="GrayRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=1907833993 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -667)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 17.09, -667)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="GrayRoad" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/GrayRoad" unique_id=1706037087]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -80.9, 0.1, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -80.9, 3.09, 0)
 size = Vector3(10.2, 0.2, 147.6)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
@@ -1348,7 +1387,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="HardyDrive" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=932897294 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 2, -428)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 10.905, -428)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1361,19 +1400,19 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="HardyRoadParking" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/HardyDrive" unique_id=2025738731]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -31.85, 0.1, -7.3)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -31.85, 0.82, -7.3)
 size = Vector3(4.4, 0.2, 43.5)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="HardyRoadParking2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/HardyDrive" unique_id=1016822641]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31.9, 0.1, -7.3)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 31.9, 0.15, -7.3)
 size = Vector3(4.4, 0.2, 43.6)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="ParkingSpots3" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/HardyDrive" unique_id=1571265690]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.4, 0.15, -9.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.4, 0.19, -9.1)
 metadata/_edit_lock_ = true
 
 [node name="Line1" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/HardyDrive/ParkingSpots3" unique_id=1844793950]
@@ -1443,7 +1482,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="ParkingSpots4" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/HardyDrive" unique_id=2031310660]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.4, 0.15, -9.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.4, 0.87, -9.1)
 metadata/_edit_lock_ = true
 
 [node name="Line1" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/HardyDrive/ParkingSpots4" unique_id=1240187276]
@@ -1513,7 +1552,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="IrisRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=1456806870]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -350)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 5.35, -350)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1526,13 +1565,13 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="IrisRoad2" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad" unique_id=757128104]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -29.3, 0.1, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -29.3, 3.255, 0)
 size = Vector3(10.2, 0.2, 39.4)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="IrisRoadCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad" unique_id=227942096]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -49, 0.1, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -49, 3.6326397, 0)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
@@ -1553,24 +1592,24 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/IrisRoadCurve" unique_id=395740370]
 script = ExtResource("57_i2hso")
 straight_length = 3.0
-handle_length = 19.0
+handle_out = 19.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/IrisRoadCurve" unique_id=1526433595]
-transform = Transform3D(0.5, 0, 0.86602540378444, 0, 1, 0, -0.86602540378444, 0, 0.5, 30.75, 0, 44.51)
+transform = Transform3D(0.5, 0, 0.86602540378444, 0, 1, 0, -0.86602540378444, 0, 0.5, 30.75, -0.5044327, 44.51)
 script = ExtResource("57_i2hso")
 straight_length = 4.0
-handle_length = 20.0
+handle_in = 20.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="IrisRoad3" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad" unique_id=1683525394]
-transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -100, 0.1, 42)
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -100, 2.63, 42)
 size = Vector3(10.2, 0.2, 26)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Lanes" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad" unique_id=1499213792]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 0.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.5, 2.36, 0)
 metadata/_edit_lock_ = true
 
 [node name="Stripe1" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/Lanes" unique_id=1459880725]
@@ -1586,7 +1625,7 @@ material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
 [node name="Parking" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad" unique_id=2146065625]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.375, 0)
 metadata/_edit_lock_ = true
 
 [node name="ParkingSpots" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets/IrisRoad/Parking" unique_id=733846799]
@@ -1701,13 +1740,13 @@ collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="KeplerStreet" type="CSGBox3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet" unique_id=1774243059]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -52, 0.1, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -52, 0.97, 0)
 size = Vector3(10.2, 0.2, 124)
 material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="KeplerStreetCurve" type="CSGPolygon3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet" unique_id=1755695448]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0.1, 0)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 10, 0.9651143, 0)
 polygon = PackedVector2Array(-5.1, -0.1, -5.1, 0.1, 5.1, 0.1, 5.1, -0.1)
 mode = 2
 path_node = NodePath("")
@@ -1727,18 +1766,18 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet/KeplerStreetCurve" unique_id=981829397]
 script = ExtResource("57_i2hso")
-handle_length = 27.0
+handle_out = 27.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Roads/MainStreets/KeplerStreet/KeplerStreetCurve" unique_id=1404993931]
-transform = Transform3D(0.70710678118655, 0, -0.70710678118655, 0, 1, 0, 0.70710678118655, 0, 0.70710678118655, -36, -0.9, 67)
+transform = Transform3D(0.70710678118655, 0, -0.70710678118655, 0, 1, 0, 0.70710678118655, 0, 0.70710678118655, -36, -1.6448779, 67)
 script = ExtResource("57_i2hso")
 straight_length = 12.0
-handle_length = 27.0
+handle_in = 27.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="OatesRoad" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/MainStreets" unique_id=1185673920 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 2, -587)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 13.75, -587)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1753,14 +1792,14 @@ metadata/_edit_lock_ = true
 [node name="SideStreets" type="Node" parent="LevelBlocking/Town/Roads" unique_id=42409440]
 
 [node name="LilyDrive" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/SideStreets" unique_id=1163470332]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -475.6, 2, -587)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -475.6, 14.83, -587)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="LillyDrive" type="CSGBox3D" parent="LevelBlocking/Town/Roads/SideStreets/LilyDrive" unique_id=1078109031]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.45, 0.1, 0)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 8.45, 1.8850574, 0)
 size = Vector3(11, 0.2, 6.1)
 material = ExtResource("53_f0qux")
 
@@ -1772,7 +1811,7 @@ material = ExtResource("53_f0qux")
 [node name="Alleys" type="Node" parent="LevelBlocking/Town/Roads" unique_id=2106397688]
 
 [node name="Alley1" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/Alleys" unique_id=1371266846 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -359)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 15, -359)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1796,7 +1835,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="Alley2" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/Alleys" unique_id=2033807468 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2, -359)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 16.135, -359)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1821,7 +1860,7 @@ material = ExtResource("23_6lidv")
 [node name="Intersections" type="Node" parent="LevelBlocking/Town/Roads" unique_id=239880703]
 
 [node name="Able_Delta" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1747931923 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -457.45, 2.1, -508.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -457.45, 14.2, -508.6)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1830,7 +1869,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Able_Fox" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=26346706]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -355.55, 2.1, -207)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -355.55, 4.67, -207)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1839,7 +1878,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Able_Gray" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1763717493 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -457.5, 2.1, -665.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -457.5, 22.505, -665.5)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1848,7 +1887,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Able_Hardy" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=189995294 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -457.05, 2.1, -428)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -457.05, 11.77, -428)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1857,7 +1896,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Able_Iris" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1886737101]
-transform = Transform3D(0.766045, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766045, -409.408, 2.1, -294.348)
+transform = Transform3D(0.766045, 0, 0.642788, 0, 1, 0, -0.642788, 0, 0.766045, -409.408, 7.715, -294.348)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1866,7 +1905,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Able_Kepler" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=37174333]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -358.9, 2.1, -160)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -358.9, 3.57, -160)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1875,7 +1914,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Brisk_Delta" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=533635636 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2.1, -508)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 12.36, -508)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1884,7 +1923,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Brisk_Elder" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=392271441]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -298.45, 2.1, -587)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -298.45, 14.51, -587)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1893,7 +1932,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Brisk_Fox" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1897181213]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2.1, -208.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 4.1, -208.55)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1902,7 +1941,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Brisk_Gray" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=126998865]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2.1, -665.45)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 18.735, -665.45)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1911,7 +1950,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Brisk_Hardy" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=242821013 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -301.55, 2.1, -428)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -301.55, 10.21, -428)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1920,7 +1959,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Brisk_Iris" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=856675854]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -300, 2.1, -350)
+transform = Transform3D(1, 0, 0, 0, 0.99984769515639, -0.01745240643728, 0, 0.01745240643728, 0.99984769515639, -300, 8.1, -350)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1929,7 +1968,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Cherry_Delta" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=741476248]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -142.55, 2.1, -508)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -142.55, 10.12, -508)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1938,7 +1977,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Cherry_Fox" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1983140674]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -142.55, 2.1, -207)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -142.55, 2.4, -207)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1947,7 +1986,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Cherry_Iris" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=6829554]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -141, 2.1, -350)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -141, 6.13, -350)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1965,7 +2004,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Delta_Elder" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=416405469]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -225, 2.1, -508)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -225, 11.32, -508)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -1994,7 +2033,7 @@ size = Vector3(8, 0.26, 1.82)
 texture_albedo = ExtResource("56_ubgmn")
 
 [node name="Delta_Oates" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1494318148 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -378.9, 2.1, -509.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -378.9, 13.48, -509.5)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -2003,7 +2042,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Gray_Oates" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1477299257 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 2.1, -665.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 21.055, -665.5)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -2012,7 +2051,7 @@ material = ExtResource("53_f0qux")
 metadata/_edit_lock_ = true
 
 [node name="Iris_Elder" type="CSGBox3D" parent="LevelBlocking/Town/Roads/Intersections" unique_id=1386803010]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -225, 2.1, -351.55)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -225, 7.285, -351.55)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -2023,7 +2062,7 @@ metadata/_edit_lock_ = true
 [node name="Parking" type="Node" parent="LevelBlocking/Town/Roads" unique_id=20274108]
 
 [node name="School1Parking" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/Parking" unique_id=2128836839]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -499, 2, -463)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -499, 12.045, -463)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -2819,7 +2858,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="PrivateParking1" type="CSGCombiner3D" parent="LevelBlocking/Town/Roads/Parking" unique_id=985997111]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -275.2, 2, -480.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -275.2, 11.04, -480.7)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -3053,7 +3092,7 @@ material = ExtResource("52_f0qux")
 [node name="Sidewalks" type="Node" parent="LevelBlocking/Town" unique_id=1992744075]
 
 [node name="Path" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks" unique_id=831046926]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -224.8, 2, -278.5)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -224.8, 4.19, -278.5)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -3061,7 +3100,7 @@ size = Vector3(125.2, 0.7, 7.8)
 material = ExtResource("23_6lidv")
 
 [node name="BlockA" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=745493804 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420, 2, -625.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -420, 16.64, -625.7)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -3323,14 +3362,14 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_out = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CurbCorner1" unique_id=803323077]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3, 0, -3)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_in = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CurbCorner2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockA" unique_id=792366496]
@@ -3356,14 +3395,14 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_out = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CurbCorner2" unique_id=1714628968]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3, 0, -3)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_in = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CurbCorner3" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockA" unique_id=1324924391]
@@ -3389,18 +3428,18 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.64
-handle_length = 0.83
+handle_out = 0.83
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockA/CurbCorner3" unique_id=2024615139]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 1.56, 0, -2.2)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 0.83
+handle_in = 0.83
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BlockB" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=432388780 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -343.1, 2, -622.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -343.1, 15.495, -622.2)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -3486,7 +3525,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="BlockC" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=973505758 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -419.4, 2, -551.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -419.4, 13.795, -551.4)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -3740,14 +3779,14 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_out = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockC/CurbCorner1" unique_id=1974229338]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3, 0, -3)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_in = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CurbCorner2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockC" unique_id=606729471]
@@ -3773,14 +3812,14 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_out = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockC/CurbCorner2" unique_id=517231651]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 3, 0, -3)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 1.8
+handle_in = 1.8
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CurbCorner3" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockC" unique_id=1101855239]
@@ -3806,18 +3845,18 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_length = 0.83
+handle_out = 0.83
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="end" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockC/CurbCorner3" unique_id=927133273]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 2.2, 0, -1.56)
 script = ExtResource("57_i2hso")
 straight_length = 0.64
-handle_length = 0.83
+handle_in = 0.83
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="BlockD" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1790332766 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342, 2, -552.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342, 13.28, -552.7)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -3903,7 +3942,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="BlockE" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=791136937]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -198, 2, -614)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -198, 11.16, -614)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -4016,12 +4055,12 @@ polygon_resource = SubResource("Resource_oslxn")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve" unique_id=1118871513]
 script = ExtResource("57_i2hso")
-handle_length = 12.0
+handle_out = 12.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve" unique_id=684274138]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.35, 0, 21.35)
 script = ExtResource("57_i2hso")
-handle_length = 12.0
+handle_in = 12.0
 
 [node name="ConcreteCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockE" unique_id=541658808]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 47.35, 0, 56.2)
@@ -4044,16 +4083,16 @@ polygon_resource = SubResource("Resource_ubgmn")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve2" unique_id=865879419]
 script = ExtResource("57_i2hso")
 straight_length = 1.5
-handle_length = 61.4
+handle_out = 61.4
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockE/ConcreteCurve2" unique_id=108228211]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 99.55, 0, 99.55)
 script = ExtResource("57_i2hso")
 straight_length = 1.5
-handle_length = 61.4
+handle_in = 61.4
 
 [node name="BlockF" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1980817647]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -260, 2, -548)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -260, 12.36, -548)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -4152,16 +4191,16 @@ polygon_resource = SubResource("Resource_cvfj6")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockF/ConcreteCurve" unique_id=2118239547]
 script = ExtResource("57_i2hso")
 straight_length = 1.67
-handle_length = 4.5
+handle_out = 4.5
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockF/ConcreteCurve" unique_id=1853272647]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 8.65, 0, 8.65)
 script = ExtResource("57_i2hso")
 straight_length = 1.67
-handle_length = 4.5
+handle_in = 4.5
 
 [node name="BlockG" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=484498902 groups=["nav_group", "sound_group:rock"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379.6, 2, -468.1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379.6, 11.12, -468.1)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -4234,13 +4273,13 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockG/CurvedConcrete1" unique_id=705608571]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0, -5.5)
 script = ExtResource("57_i2hso")
-handle_length = 3.0
+handle_out = 3.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockG/CurvedConcrete1" unique_id=1839527534]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 0, 7)
 script = ExtResource("57_i2hso")
-handle_length = 3.0
+handle_in = 3.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CurvedConcrete2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockG" unique_id=1304300410]
@@ -4265,13 +4304,13 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockG/CurvedConcrete2" unique_id=1825294246]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.7, 0, -7)
 script = ExtResource("57_i2hso")
-handle_length = 3.0
+handle_out = 3.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockG/CurvedConcrete2" unique_id=1092631783]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.7, 0, 5.5)
 script = ExtResource("57_i2hso")
-handle_length = 3.0
+handle_in = 3.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="Curb1" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockG" unique_id=1818958283]
@@ -4384,14 +4423,14 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.81
-handle_length = 1.1
+handle_out = 1.1
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockG/Curb3" unique_id=471975971]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.81, 0, 4.4)
 script = ExtResource("57_i2hso")
 straight_length = 2.4
-handle_length = 1.1
+handle_in = 1.1
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="Curb4" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockG" unique_id=1242641577]
@@ -4417,14 +4456,14 @@ metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -2.81, 0, 4.4)
 script = ExtResource("57_i2hso")
 straight_length = 2.4
-handle_length = 1.1
+handle_out = 1.1
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockG/Curb4" unique_id=1437114285]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 0.81
-handle_length = 1.1
+handle_in = 1.1
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
 [node name="Gutter1" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockG" unique_id=1482804288]
@@ -4708,7 +4747,7 @@ sides = 24
 material = ExtResource("27_4tdq6")
 
 [node name="BlockH" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1949655526]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 2, -384)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 8.505, -384)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -4917,13 +4956,13 @@ polygon_resource = SubResource("Resource_mcrc3")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve7" unique_id=2102602185]
 script = ExtResource("57_i2hso")
 straight_length = 3.0
-handle_length = 19.25
+handle_out = 19.25
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve7" unique_id=1604965748]
 transform = Transform3D(0.49999788, 0, 0.86602662818354, 0, 1, 0, -0.86602662818354, 0, 0.49999788, 35.18, 0, 52.15)
 script = ExtResource("57_i2hso")
 straight_length = 5.0
-handle_length = 25.25
+handle_in = 25.25
 
 [node name="GrassCurve9" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH" unique_id=1277594687]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 30, 0, 27.4)
@@ -4946,13 +4985,13 @@ polygon_resource = SubResource("Resource_1yx4f")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve9" unique_id=1725694619]
 script = ExtResource("57_i2hso")
 straight_length = 3.0
-handle_length = 19.0
+handle_out = 19.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve9" unique_id=31878272]
 transform = Transform3D(0.49999788, 0, 0.86602662818354, 0, 1, 0, -0.86602662818354, 0, 0.49999788, 34.04, 0, 50.2)
 script = ExtResource("57_i2hso")
 straight_length = 5.0
-handle_length = 24.0
+handle_in = 24.0
 
 [node name="ConcreteCurve8" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH" unique_id=761185927]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -71.15, 0, 17)
@@ -4974,13 +5013,13 @@ polygon_resource = SubResource("Resource_6ywls")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve8" unique_id=1457607275]
 script = ExtResource("57_i2hso")
-handle_length = 10.25
+handle_out = 10.25
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/ConcreteCurve8" unique_id=535031879]
 transform = Transform3D(0.76604296521822, 0, 0.64278937097596, 0, 1, 0, -0.64278937097596, 0, 0.76604296521822, 9.44, 0, 23.57)
 script = ExtResource("57_i2hso")
 straight_length = 2.0
-handle_length = 10.5
+handle_in = 10.5
 
 [node name="GrassCurve10" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockH" unique_id=2012644622]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -73.4, 0, 17)
@@ -5002,16 +5041,16 @@ polygon_resource = SubResource("Resource_76ay1")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve10" unique_id=593908740]
 script = ExtResource("57_i2hso")
-handle_length = 10.5
+handle_out = 10.5
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockH/GrassCurve10" unique_id=1448559168]
 transform = Transform3D(0.76604296521822, 0, 0.64278937097596, 0, 1, 0, -0.64278937097596, 0, 0.76604296521822, 9.97, 0, 25.01)
 script = ExtResource("57_i2hso")
 straight_length = 2.0
-handle_length = 11.0
+handle_in = 11.0
 
 [node name="BlockI" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=84522085]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -347, 2, -285)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -347, 5.085, -285)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -5204,13 +5243,13 @@ polygon_resource = SubResource("Resource_4dcww")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve5" unique_id=469935393]
 script = ExtResource("57_i2hso")
 straight_length = 4.0
-handle_length = 12.0
+handle_out = 12.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve5" unique_id=1144430205]
 transform = Transform3D(0.49999788, 0, 0.86602662818354, 0, 1, 0, -0.86602662818354, 0, 0.49999788, 26.32, 0, 36.84)
 script = ExtResource("57_i2hso")
 straight_length = 8.0
-handle_length = 16.0
+handle_in = 16.0
 
 [node name="GrassCurve8" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI" unique_id=1660345300]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -2, 0, -58.4)
@@ -5233,13 +5272,13 @@ polygon_resource = SubResource("Resource_11pln")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve8" unique_id=2109574514]
 script = ExtResource("57_i2hso")
 straight_length = 4.0
-handle_length = 13.227
+handle_out = 13.227
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve8" unique_id=1942875825]
 transform = Transform3D(0.49999788, 0, 0.86602662818354, 0, 1, 0, -0.86602662818354, 0, 0.49999788, 27.45, 0, 38.79)
 script = ExtResource("57_i2hso")
 straight_length = 8.0
-handle_length = 16.0
+handle_in = 16.0
 
 [node name="ConcreteCurve6" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI" unique_id=1658721320]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -3.15, 0, 64.6)
@@ -5261,12 +5300,12 @@ polygon_resource = SubResource("Resource_utqjd")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve6" unique_id=114539081]
 script = ExtResource("57_i2hso")
-handle_length = 11.0
+handle_out = 11.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/ConcreteCurve6" unique_id=1261159810]
 transform = Transform3D(0.76604425079543, 0, 0.64278783888875, 0, 1, 0, -0.64278783888875, 0, 0.76604425079543, 9.72, 0, 26.69)
 script = ExtResource("57_i2hso")
-handle_length = 7.5
+handle_in = 7.5
 
 [node name="GrassCurve7" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockI" unique_id=1136262429]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -5.4, 0, 64.6)
@@ -5288,15 +5327,15 @@ polygon_resource = SubResource("Resource_85d2q")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve7" unique_id=2055449777]
 script = ExtResource("57_i2hso")
-handle_length = 6.5
+handle_out = 6.5
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockI/GrassCurve7" unique_id=755985606]
 transform = Transform3D(0.76604425079543, 0, 0.64278783888875, 0, 1, 0, -0.64278783888875, 0, 0.76604425079543, 9.19, 0, 25.24)
 script = ExtResource("57_i2hso")
-handle_length = 11.5
+handle_in = 11.5
 
 [node name="BlockJ" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1612106284]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -261.6, 2, -426.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -261.6, 8.25, -426.6)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -5444,7 +5483,7 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="BlockK" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1122398752]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -182.8, 2, -426.7)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -182.8, 7.23, -426.7)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -5519,7 +5558,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="BlockL" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=613612955]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -257.5, 2, -288)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -257.5, 4.275, -288)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -5578,7 +5617,7 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="BlockM" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1020950225]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -188.3, 2, -279.9)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -188.3, 3.405, -279.9)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -5631,7 +5670,7 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="BlockN" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=696139978]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -482.8, 2, -587.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -482.8, 15.075, -587.3)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -5792,7 +5831,7 @@ material = ExtResource("23_6lidv")
 metadata/_edit_lock_ = true
 
 [node name="BlockO" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1753986592]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -476, 2, -492)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -476, 12.18, -492)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -6203,7 +6242,7 @@ material = ExtResource("27_4tdq6")
 metadata/_edit_lock_ = true
 
 [node name="BlockP" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=581753071]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -440.4, 2, -274.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -440.4, 4.205, -274.2)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -6316,13 +6355,13 @@ polygon_resource = SubResource("Resource_4d3y0")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve9" unique_id=271686715]
 script = ExtResource("57_i2hso")
 straight_length = 2.0
-handle_length = 14.25
+handle_out = 14.25
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve9" unique_id=894680394]
 transform = Transform3D(0.76604296521822, 0, 0.64278937097596, 0, 1, 0, -0.64278937097596, 0, 0.76604296521822, 13.57, 0, 35.82)
 script = ExtResource("57_i2hso")
 straight_length = 2.0
-handle_length = 13.25
+handle_in = 13.25
 
 [node name="GrassCurve11" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP" unique_id=348257678]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.2, 0, -93.8)
@@ -6345,13 +6384,13 @@ polygon_resource = SubResource("Resource_xxc2j")
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve11" unique_id=1937098667]
 script = ExtResource("57_i2hso")
 straight_length = 2.0
-handle_length = 14.0
+handle_out = 14.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve11" unique_id=1624934284]
 transform = Transform3D(0.76604296521822, 0, 0.64278937097596, 0, 1, 0, -0.64278937097596, 0, 0.76604296521822, 13.04, 0, 34.4)
 script = ExtResource("57_i2hso")
 straight_length = 2.0
-handle_length = 13.0
+handle_in = 13.0
 
 [node name="ConcreteCurve10" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP" unique_id=1105080069]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 72.55, 0, 53)
@@ -6373,12 +6412,12 @@ polygon_resource = SubResource("Resource_c4lkr")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve10" unique_id=1623938813]
 script = ExtResource("57_i2hso")
-handle_length = 6.5
+handle_out = 6.5
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/ConcreteCurve10" unique_id=849464575]
 transform = Transform3D(0.76604296521822, 0, 0.64278937097596, 0, 1, 0, -0.64278937097596, 0, 0.76604296521822, 5.57, 0, 14.62)
 script = ExtResource("57_i2hso")
-handle_length = 4.5
+handle_in = 4.5
 
 [node name="GrassCurve12" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockP" unique_id=616862459]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 74.8, 0, 53.8)
@@ -6400,15 +6439,15 @@ polygon_resource = SubResource("Resource_cqpt1")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve12" unique_id=1362521423]
 script = ExtResource("57_i2hso")
-handle_length = 7.0
+handle_out = 7.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockP/GrassCurve12" unique_id=2058507085]
 transform = Transform3D(0.76604296521822, 0, 0.64278937097596, 0, 1, 0, -0.64278937097596, 0, 0.76604296521822, 6.24, 0, 17)
 script = ExtResource("57_i2hso")
-handle_length = 6.25
+handle_in = 6.25
 
 [node name="BlockQ" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1630361351]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -314, 2, -180)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -314, 2.59, -180)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -6541,12 +6580,12 @@ metadata/_edit_lock_ = true
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve" unique_id=892037242]
 script = ExtResource("57_i2hso")
-handle_length = 5.0
+handle_out = 5.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve" unique_id=312935364]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 0, 22.7)
 script = ExtResource("57_i2hso")
-handle_length = 5.0
+handle_in = 5.0
 
 [node name="ConcreteCurve2" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ" unique_id=1681775127]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -8.7, 0, -15.35)
@@ -6570,13 +6609,13 @@ metadata/_edit_lock_ = true
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve2" unique_id=1319934189]
 script = ExtResource("57_i2hso")
 straight_length = 0.5
-handle_length = 2.0
+handle_out = 2.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve2" unique_id=1685181375]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 6)
 script = ExtResource("57_i2hso")
 straight_length = 0.5
-handle_length = 2.0
+handle_in = 2.0
 
 [node name="ConcreteCurve3" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ" unique_id=1314386568]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 24, 0, 16.15)
@@ -6599,13 +6638,13 @@ metadata/_edit_lock_ = true
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve3" unique_id=406860230]
 script = ExtResource("57_i2hso")
-handle_length = 27.5
+handle_out = 27.5
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve3" unique_id=107735691]
 transform = Transform3D(0.7071083109379, 0, -0.70710525143189, 0, 1, 0, 0.70710525143189, 0, 0.7071083109379, -36.53, -0.9, 69.91)
 script = ExtResource("57_i2hso")
 straight_length = 12.0
-handle_length = 28.0
+handle_in = 28.0
 
 [node name="ConcreteCurve4" type="CSGPolygon3D" parent="LevelBlocking/Town/Sidewalks/BlockQ" unique_id=443034075]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 95.68, -0.9, 52.68)
@@ -6630,13 +6669,13 @@ metadata/_edit_lock_ = true
 transform = Transform3D(0.70710689672598, 0, 0.70710666564709, 0, 1, 0, -0.70710666564709, 0, 0.70710689672598, 0, 0, 0)
 script = ExtResource("57_i2hso")
 straight_length = 8.0
-handle_length = 19.0
+handle_out = 19.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockQ/ConcreteCurve4" unique_id=2082348137]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 67.78, 0.9, 67.67)
 script = ExtResource("57_i2hso")
 straight_length = 7.5
-handle_length = 22.2
+handle_in = 22.2
 
 [node name="Grass8" type="CSGBox3D" parent="LevelBlocking/Town/Sidewalks/BlockQ" unique_id=943319312]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 93.5, 0, -17.1)
@@ -6669,7 +6708,7 @@ collision_layer = 16
 collision_mask = 0
 
 [node name="BlockT" type="CSGCombiner3D" parent="LevelBlocking/Town/Sidewalks" unique_id=1827282898]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -378, 2, -678)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -378, 17.55, -678)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -6737,12 +6776,12 @@ polygon_resource = SubResource("Resource_yidmw")
 
 [node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockT/ConcreteCurve" unique_id=718030901]
 script = ExtResource("57_i2hso")
-handle_length = 3.0
+handle_out = 3.0
 
 [node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Town/Sidewalks/BlockT/ConcreteCurve" unique_id=551477291]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 0, 8.4)
 script = ExtResource("57_i2hso")
-handle_length = 3.0
+handle_in = 3.0
 
 [node name="RoundGrass11" type="CSGCylinder3D" parent="LevelBlocking/Town/Sidewalks/BlockT" unique_id=1047443783]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70.4, 0, 3.4)
@@ -6757,7 +6796,7 @@ metadata/_edit_lock_ = true
 [node name="HouseBlocks" type="Node" parent="LevelBlocking/Town/Buildings" unique_id=1477060063]
 
 [node name="HouseBlock1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=65019332 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 2.35, -617.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 16.425, -617.4)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -6960,7 +6999,7 @@ size = Vector3(9.15, 1.82, 0.04)
 material = ExtResource("23_6lidv")
 
 [node name="HouseBlock2" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=1295049996 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -343, 2, -625)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -343, 15.66, -625)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7037,7 +7076,7 @@ material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
 [node name="HouseBlock3" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=1710289782 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 2.35, -553.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 14.16, -553.4)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7266,7 +7305,7 @@ size = Vector3(3.91, 1.82, 0.04)
 material = ExtResource("23_6lidv")
 
 [node name="HouseBlock4" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=2078182228 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342, 2, -554)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -342, 13.535, -554)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7343,7 +7382,7 @@ material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
 [node name="HouseBlock5" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=402013271]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 2, -375.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -417.1, 10.09, -375.3)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7358,7 +7397,7 @@ material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
 [node name="HouseBlock6" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=1599635678]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -497.2, 2, -587.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -497.2, 15.09, -587.6)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7427,7 +7466,7 @@ material = ExtResource("21_t6jhs")
 metadata/_edit_lock_ = true
 
 [node name="ApartmentBlock1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/HouseBlocks" unique_id=1646920425]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -259.7, 2, -548.3)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -259.7, 13.39, -548.3)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7444,7 +7483,7 @@ metadata/_edit_lock_ = true
 [node name="Special" type="Node" parent="LevelBlocking/Town/Buildings" unique_id=854289744]
 
 [node name="Bank" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=1419510776]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -245.02, 2.35, -411.99)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -245.02, 9.14, -411.99)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7461,7 +7500,7 @@ size = Vector3(10.66, 3.048, 15.24)
 material = ExtResource("53_64map")
 
 [node name="Dentist" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=451138320]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -319.4, 2, -538)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -319.4, 13.435, -538)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7474,7 +7513,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="Sheriff" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=2021008851]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -162.54, 2, -429.6)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -162.54, 8.16, -429.6)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7486,7 +7525,7 @@ size = Vector3(12.2, 4.8768, 18.28)
 material = ExtResource("53_64map")
 
 [node name="Highschool" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=1769555411]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -257.9, 2, -243.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -257.9, 4.085, -243.8)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7499,7 +7538,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="Elementary" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=393266784]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -505.8, 2, -373.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -505.8, 9.145, -373.4)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7529,7 +7568,7 @@ material = ExtResource("53_pb8w5")
 metadata/_edit_lock_ = true
 
 [node name="Cemetery" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=999307610]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -346.4, 2, -697.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -346.4, 21.93, -697.8)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7542,7 +7581,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="Church" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=1922203640]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -273, 2, -697.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -273, 18.41, -697.8)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7555,7 +7594,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="FireStation" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=1287058276]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79.3, 2, -325.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -79.3, 4.315, -325.5)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7568,14 +7607,14 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="HealthPlaza" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=1037674043]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -350.4, 2, -295.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -350.4, 6.46, -295.2)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 metadata/_edit_lock_ = true
 
 [node name="Clinic" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special/HealthPlaza" unique_id=153841232]
-transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -12, 0, -35)
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -12, 1.82, -35)
 metadata/_edit_lock_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/Special/HealthPlaza/Clinic" unique_id=971105606]
@@ -7585,7 +7624,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="Surgery" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special/HealthPlaza" unique_id=922546675]
-transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -26.4153, 0, 2.81335)
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -26.415, 0.72, 2.813)
 metadata/_edit_lock_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/Special/HealthPlaza/Surgery" unique_id=35631830]
@@ -7595,7 +7634,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="UrgentCare" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special/HealthPlaza" unique_id=1342703221]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 24.4724, 0, 5.59376)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 24.472, 0.27, 5.594)
 metadata/_edit_lock_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/Special/HealthPlaza/UrgentCare" unique_id=1711808655]
@@ -7615,7 +7654,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="TownHall" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=530571099]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -172, 2, -307.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -172, 4.955, -307.4)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7628,7 +7667,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="Library" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=601307949]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -205.2, 2, -308.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -205.2, 5.745, -308.4)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7641,7 +7680,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="NatParkService" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=1806134686]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -98, 2, -430)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -98, 7.14, -430)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -7654,7 +7693,7 @@ material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
 [node name="ParkingGarage" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=386097957]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -335.8, 2, -389)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -335.8, 9.44, -389)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -8201,7 +8240,7 @@ metadata/_edit_lock_ = true
 [node name="ShopBlocks" type="Node" parent="LevelBlocking/Town/Buildings" unique_id=1488593909]
 
 [node name="ShopBlock1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks" unique_id=1421042395]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -263, 2.35, -428)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -263, 8.5, -428)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
@@ -8274,7 +8313,7 @@ size = Vector3(6.38, 0.2, 29.1)
 material = ExtResource("53_f0qux")
 
 [node name="Shop1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=998654172]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.93, 0, 1.54)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.93, 0.95, 1.54)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop1" unique_id=1232639471]
@@ -8288,7 +8327,7 @@ size = Vector3(18.28, 3.6576, 21.34)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop2" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=825209149]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0, 0.02)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 1.42, 0.02)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop2" unique_id=1137843877]
@@ -8297,7 +8336,7 @@ size = Vector3(15.24, 5.4864, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop3" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=1330552932]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0, 13.74)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 1.125, 13.74)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop3" unique_id=251987442]
@@ -8311,7 +8350,7 @@ size = Vector3(12.2, 3.6576, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop4" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=513491188]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0, 25.94)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0.785, 25.94)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop4" unique_id=133714695]
@@ -8325,7 +8364,7 @@ size = Vector3(12.2, 3.048, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop5" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=499802626]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0, 36.61)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0.575, 36.61)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop5" unique_id=1499855426]
@@ -8334,7 +8373,7 @@ size = Vector3(9.14, 4.2672, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop6" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=1002539555]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0, 48.8)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0.185, 48.8)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop6" unique_id=1715157210]
@@ -8348,7 +8387,7 @@ size = Vector3(15.24, 3.048, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop7" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=2093029796]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.46, 0, 25.91)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.46, 0.485, 25.91)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop7" unique_id=2011483120]
@@ -8357,7 +8396,7 @@ size = Vector3(9.14, 4.2672, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop8" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=205090012]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.93, 0, 36.58)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.93, 0.165, 36.58)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop8" unique_id=1035776959]
@@ -8371,7 +8410,7 @@ size = Vector3(12.2, 3.3528, 21.34)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop9" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=1116418218]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.93, 0, 53.35)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 14.93, -0.395, 53.35)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop9" unique_id=862679782]
@@ -8380,7 +8419,7 @@ size = Vector3(21.92, 5.4864, 21.34)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop10" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=287284778]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 0, -22.57)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -14.46, 2.165, -22.57)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop10" unique_id=984307857]
@@ -8389,7 +8428,7 @@ size = Vector3(9.14, 3.6576, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop11" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=199504506]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.46, 0, -62.03)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.46, 2.81, -62.03)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop11" unique_id=24345146]
@@ -8398,7 +8437,7 @@ size = Vector3(9.14, 3.9624, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop12" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=1545072721]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.46, 0, -51.36)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 16.46, 2.49, -51.36)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop12" unique_id=1723630760]
@@ -8407,7 +8446,7 @@ size = Vector3(12.2, 4.572, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop13" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=1975377383]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17.98, 0, -40.69)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17.98, 2.25, -40.69)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop13" unique_id=383571268]
@@ -8416,7 +8455,7 @@ size = Vector3(9.14, 3.5052, 15.24)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop14" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=872406281]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17.98, 0, -31.55)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 17.98, 2.025, -31.55)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Shop14" unique_id=1264897309]
@@ -8425,7 +8464,7 @@ size = Vector3(9.14, 4.2672, 15.24)
 material = ExtResource("52_pb8w5")
 
 [node name="Wall" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1" unique_id=247575]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53, 0, 64.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.53, 0.1, 64.5)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock1/Wall" unique_id=1157548397]
@@ -8457,12 +8496,13 @@ size = Vector3(4.58, 2.64, 0.24)
 material = ExtResource("23_6lidv")
 
 [node name="ShopBlock2" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks" unique_id=264454916]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -183, 2.35, -428)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -183, 6.995, -428)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 
 [node name="Street" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=1296295929]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.665, 0)
 metadata/_edit_group_ = true
 
 [node name="Concrete1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Street" unique_id=61319792]
@@ -8471,7 +8511,7 @@ size = Vector3(73.1, 0.7, 1.82)
 material = ExtResource("23_6lidv")
 
 [node name="Concrete4" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Street" unique_id=817168095]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12.84, -0.35, 13.6399996)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 12.84, 0.685, 13.64)
 size = Vector3(18.28, 0.7, 3.04)
 material = ExtResource("23_6lidv")
 
@@ -8481,12 +8521,12 @@ size = Vector3(21.34, 0.7, 3.04)
 material = ExtResource("23_6lidv")
 
 [node name="Concrete6" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Street" unique_id=245140943]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9.7899994, -0.35, 33.4699967)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -9.79, 0.275, 33.47)
 size = Vector3(33.54, 0.7, 3.06)
 material = ExtResource("23_6lidv")
 
 [node name="Concrete8" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Street" unique_id=1119511339]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10.4099987, -0.35, 28.85)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 10.41, -0.35, 28.85)
 size = Vector3(73.1, 0.7, 1.82)
 material = ExtResource("23_6lidv")
 
@@ -8501,7 +8541,7 @@ size = Vector3(15.94, 0.2, 73.1)
 material = ExtResource("53_f0qux")
 
 [node name="Shop1" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=746951131]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.93, 0, -1.6)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.93, 2.07, -1.6)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop1" unique_id=780497723]
@@ -8515,7 +8555,7 @@ size = Vector3(12.2, 3.6576, 21.34)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop2" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=932315625]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.93, 0, 10.6)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.93, 1.77, 10.6)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop2" unique_id=234397099]
@@ -8529,7 +8569,7 @@ size = Vector3(12.2, 3.9624, 21.34)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop3" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=243852236]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20.46, 0, 22.8)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20.46, 1.48, 22.8)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop3" unique_id=666725729]
@@ -8544,7 +8584,7 @@ size = Vector3(12.2, 3.9624, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop4" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=1259098129]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20.46, 0, 33.47)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20.46, 1.255, 33.47)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop4" unique_id=68915913]
@@ -8559,7 +8599,7 @@ size = Vector3(9.14, 3.3528, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop5" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=2065981492]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20.46, 0, 44.14)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -20.46, 0.955, 44.14)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop5" unique_id=266810500]
@@ -8574,7 +8614,7 @@ size = Vector3(12.2, 3.6576, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop6" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=517679162]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.93, 0, 57.86)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -18.93, 0.505, 57.86)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop6" unique_id=751786721]
@@ -8584,7 +8624,7 @@ material = ExtResource("52_pb8w5")
 metadata/_edit_group_ = true
 
 [node name="Shop8" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=86763715]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 0, 9.07)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 1.325, 9.07)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop8" unique_id=306631948]
@@ -8598,7 +8638,7 @@ size = Vector3(9.14, 3.048, 15.24)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop9" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=529086600]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 0, 18.21)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 1.11, 18.21)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop9" unique_id=706226784]
@@ -8612,7 +8652,7 @@ size = Vector3(9.14, 3.048, 15.24)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop10" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=1414572535]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.46, 0, 28.11)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 20.46, 0.81, 28.11)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop10" unique_id=2084260960]
@@ -8626,7 +8666,7 @@ size = Vector3(10.66, 3.6576, 18.28)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop11" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=1421516511]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 0, 38.01)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 0.585, 38.01)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop11" unique_id=396434860]
@@ -8640,7 +8680,7 @@ size = Vector3(9.14, 3.6576, 15.24)
 material = ExtResource("52_pb8w5")
 
 [node name="Shop12" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=1835865696]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 0, 48.68)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 21.98, 0.29, 48.68)
 metadata/_edit_group_ = true
 
 [node name="floor1" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Shop12" unique_id=1512775225]
@@ -8668,7 +8708,7 @@ size = Vector3(10.82, 3.9624, 16.76)
 material = ExtResource("52_pb8w5")
 
 [node name="Wall" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2" unique_id=623307397]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.29, 0, 65.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.29, 0.585, 65.5)
 metadata/_edit_group_ = true
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/ShopBlocks/ShopBlock2/Wall" unique_id=1245610179]
@@ -8726,13 +8766,13 @@ size = Vector3(1.82, 1.38, 1.72)
 material = ExtResource("22_cm2xv")
 
 [node name="Park" type="CSGCombiner3D" parent="LevelBlocking/Town" unique_id=784273620 groups=["nav_group"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -389.89, 2.4, -475)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -389.89, 11.705, -475)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
 
 [node name="halfpipe" type="CSGCombiner3D" parent="LevelBlocking/Town/Park" unique_id=1017757409]
-transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 8.489, 0, 1.934)
+transform = Transform3D(-0.258819, 0, -0.965926, 0, 1, 0, 0.965926, 0, -0.258819, 8.489, 0.8, 1.934)
 
 [node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Park/halfpipe" unique_id=1664216361]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, 0)
@@ -9004,6 +9044,187 @@ collision_mask = 0
 size = Vector3(1.872, 1.849, 4.912)
 material = ExtResource("22_cm2xv")
 
+[node name="Roads" type="Node" parent="LevelBlocking" unique_id=1886173689]
+
+[node name="CSGCurve3D" type="CSGPolygon3D" parent="LevelBlocking/Roads" unique_id=1024731947]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -220.294, 1.1, -102.578)
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+polygon = PackedVector2Array(-8.08, -0.1, -8.08, 0.09, -8.05, 0.1, -6.46, 0.14, -3.24, 0.21, -1, 0.25, 1, 0.25, 3.24, 0.21, 6.46, 0.14, 8.05, 0.1, 8.08, 0.09, 8.08, -0.1)
+mode = 2
+path_node = NodePath("")
+path_interval_type = 0
+path_interval = 1.0
+path_simplify_angle = 1.0
+path_rotation = 2
+path_rotation_accurate = false
+path_local = true
+path_continuous_u = true
+path_u_distance = 1.0
+path_joined = false
+material = ExtResource("53_f0qux")
+script = ExtResource("48_dayhp")
+polygon_resource = ExtResource("52_oslxn")
+metadata/_custom_type_script = "uid://bhilt3o6lupmy"
+
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=600641398]
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_out = 20.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1130042130]
+transform = Transform3D(0.96892945345238, 0, -0.24733724796817, 0, 1, 0, 0.24733724796817, 0, 0.96892945345238, -20.4683447, 0.239795, 128.0000577)
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_in = 16.0
+handle_out = 16.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D3" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1992458776]
+transform = Transform3D(0.91149751871367, 0.01162611386284, 0.41114122495229, -0.01753867201521, 0.99978987448199, 0.010611403, -0.41093147, -0.01688313832573, 0.91150989642324, -21.72511, 0.6436892, 276.2297428)
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_in = 60.0
+handle_out = 27.89
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D4" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1052765095]
+transform = Transform3D(0.9612623, -0.018656092, 0.27500319882539, 0.0111980216954, 0.99952634338111, 0.02866519138772, -0.27540772218464, -0.02447527574026, 0.961015893437, 28.4500708, 2.619007, 352.6504646)
+script = ExtResource("57_i2hso")
+handle_in = 31.0
+handle_out = 0.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D5" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1069225596]
+transform = Transform3D(0.94628325282756, -0.0054595029449, -0.32329274542694, 0.018971568, 0.9990724, 0.03865858056248, 0.32278179165181, -0.04271533770019, 0.945509, 32.0112757, 5.62686, 437.5502679)
+script = ExtResource("57_i2hso")
+straight_length = 4.0
+handle_in = 33.575
+handle_out = 30.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D6" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=867365134]
+transform = Transform3D(0.92298200914266, -0.00582994132113, -0.38479893786649, 0, 0.99988524915725, -0.01514887843186, 0.38484309893642, 0.013982142, 0.92287609617926, 10.3929486, 7.9549696, 499.6447647)
+script = ExtResource("57_i2hso")
+straight_length = 8.0
+handle_in = 23.0
+handle_out = 36.14
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D7" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=848909014]
+transform = Transform3D(0.9998020661306, 0.01989544070828, 0, -0.01987086710454, 0.99856716, -0.04968651, -0.00098853502223, 0.049676675, 0.99876486255848, -7.232822, 2.155373, 609.1354535)
+script = ExtResource("57_i2hso")
+straight_length = 6.0
+handle_in = 18.665
+handle_out = 47.32
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D8" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=845119044]
+transform = Transform3D(0.785909, 0.0097391085161, 0.61826546931075, -0.00700544080357, 0.999952, -0.00684657721126, -0.61830248630899, 0.0010495645162, 0.78593952301589, 37.4690603, -1.1229485, 732.5091715)
+script = ExtResource("57_i2hso")
+straight_length = 6.0
+handle_in = 46.39
+handle_out = 51.765
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D9" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1469021008]
+transform = Transform3D(0.51125259865009, -0.00407512293326, 0.85942084, -0.00640531455441, 0.99994291741414, 0.00855183364888, -0.85940662803995, -0.00987700796688, 0.5111973125855, 172.21771, -0.651168, 836.1207734)
+script = ExtResource("57_i2hso")
+straight_length = 6.0
+handle_in = 51.165
+handle_out = 27.885
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D10" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1508311156]
+transform = Transform3D(-0.08223334185065, -0.00347959374874, 0.99660702883103, -0.0029357383459, 0.9999904, 0.00324916914909, -0.99660877927522, -0.0026585874, -0.08224276858437, 279.9151441, -0.851115, 859.6473877)
+script = ExtResource("57_i2hso")
+straight_length = 6.0
+handle_in = 22.695
+handle_out = 15.405
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D11" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1653920355]
+transform = Transform3D(-0.0914898543174, -0.09263923329313, 0.99148756, 0.01511619760696, 0.99541944, 0.09440145949048, -0.99569127099061, 0.02362429763794, -0.08967043, 389.32727, 4.7668415, 832.64557)
+script = ExtResource("57_i2hso")
+straight_length = 6.0
+handle_in = 35.04
+handle_out = 10.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D12" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=443171328]
+transform = Transform3D(0.05404306499758, -0.09249654123036, 0.99424531026608, 0.01866747, 0.99561999791553, 0.09160974451281, -0.9983641, 0.013609174, 0.055533033, 461.85187, 14.071464, 831.461219)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 18.79
+handle_out = 30.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D13" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=989909845]
+transform = Transform3D(0.44149835749713, -0.07723967118068, 0.8939313, -0.0030832563, 0.99615142390648, 0.08759471547692, -0.89725676027419, -0.0414291424602, 0.43956107, 543.2116466, 22.644596, 851.9788)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 25.265
+handle_out = 20.69
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D14" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=307781740]
+transform = Transform3D(0.00767638663568, 0.00021415272858, 0.99997051317868, -0.02788674573108, 0.9996111, 0, -0.99958161372684, -0.027885923, 0.00767937322778, 601.6950374, 27.204689, 875.9364385)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 31.61
+handle_out = 20.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D15" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=275071866]
+transform = Transform3D(0.07497872682633, -0.00174041549959, 0.9971836, 0, 0.99999847691329, 0.0017453283659, -0.99718513352512, -0.00013086249877, 0.07497861, 684.977308, 27.4502329, 879.4027)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 20.0
+handle_out = 18.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D16" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=831844549]
+transform = Transform3D(0.52974976680948, 0.10610346698936, 0.84149108067652, 0.03630366100628, 0.9883983300341, -0.14748147471242, -0.84737667466295, 0.108677484, 0.51975184055327, 736.2338781, 22.7613065, 896.9495706)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 21.31
+handle_out = 33.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D17" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=222899496]
+transform = Transform3D(0.89744161519916, 0.05194254666533, 0.43806452, 0.01330838667448, 0.98940352307031, -0.14458062, -0.44093245985395, 0.1355826, 0.88724062433208, 783.4937364, 11.879052, 953.7271)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 25.0
+handle_out = 6.42
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D18" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=2004003736]
+transform = Transform3D(0.85291250462201, -0.00285007072273, 0.52204610577638, -0.02688316758264, 0.99841859123076, 0.04937217825357, -0.52136125168652, -0.0561444, 0.85148708237895, 805.5361794, 12.367589, 1003.7451988)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 25.0
+handle_out = 25.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D19" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1264386767]
+transform = Transform3D(0.5960144, -0.04158098202116, 0.80189642465195, -0.0069289017, 0.99835481546336, 0.05691794763115, -0.80294386121126, -0.03948017699155, 0.59474571992396, 855.5926, 15.0442387, 1056.9627001)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 25.0
+handle_out = 14.4
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D20" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=265924488]
+transform = Transform3D(0.59142224350791, 0, 0.80636203, 0, 1, 0, -0.80636203, 0, 0.59142224350791, 893.6105775, 15.488944, 1085.1790959)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 19.625
+handle_out = 10.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
 [node name="Cabin" parent="." unique_id=1547512681 instance=ExtResource("42_fur4y")]
 transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, -134.262, 0.65, 476.161)
 
@@ -9035,11 +9256,6 @@ spot_range = 18.048
 spot_attenuation = 2.0
 spot_angle = 44.25
 spot_angle_attenuation = 0.466516
-
-[node name="WaterLevel" type="MeshInstance3D" parent="." unique_id=349622508]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
-mesh = SubResource("PlaneMesh_avgpp")
-metadata/_edit_lock_ = true
 
 [node name="Cameras" type="Node" parent="." unique_id=2069384509]
 
@@ -10086,4 +10302,30 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 mesh = SubResource("PlaneMesh_icy4k")
 
 [node name="Marker3D" type="Marker3D" parent="." unique_id=868034028]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 124.1862854, 38, -924.9878)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 616.2762854, -1.2, 698.9622)
+gizmo_extents = 5.0
+
+[node name="Marker3D2" type="Marker3D" parent="Marker3D" unique_id=271760029]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 272.99, -4.44, 890.73)
+gizmo_extents = 5.0
+
+[node name="DouglasFirA" parent="." unique_id=49391743 instance=ExtResource("91_dsaby")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 592.3084417, -0.5832097, 707.9500274)
+
+[node name="Water" type="Node" parent="." unique_id=1485865112]
+
+[node name="LakeWater" type="MeshInstance3D" parent="Water" unique_id=349622508]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 276.7345356, -1, 55.6561077)
+mesh = SubResource("PlaneMesh_avgpp")
+skeleton = NodePath("../..")
+
+[node name="Rapids" type="MeshInstance3D" parent="Water" unique_id=2056828583]
+transform = Transform3D(0.9449489, 0.00571073976654, 0.32716806210817, 0, 0.99984769515639, -0.01745240643728, -0.3272178989791, 0.01649163247744, 0.94480499186125, 768.925, -9.153, 1139.185)
+visible = false
+mesh = SubResource("PlaneMesh_qg5jb")
+skeleton = NodePath("../..")
+
+[node name="WaterfallBase" type="MeshInstance3D" parent="Water" unique_id=1943137737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1116, 36, -1000)
+mesh = SubResource("PlaneMesh_dsaby")
+skeleton = NodePath("../..")

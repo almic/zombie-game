@@ -1,7 +1,7 @@
-[gd_resource type="Resource" script_class="Polygon2DResource" load_steps=2 format=3 uid="uid://dwa7t74j4im87"]
+[gd_resource type="Resource" script_class="Polygon2DResource" format=3 uid="uid://dwa7t74j4im87"]
 
 [ext_resource type="Script" uid="uid://hutnddwuoerd" path="res://addons/csg_extra/poly_resource.gd" id="1_nxpqu"]
 
 [resource]
 script = ExtResource("1_nxpqu")
-polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, 8.9, 0.1, 8.9, -0.1)
+polygon = PackedVector2Array(-8.9, -0.1, -8.9, 0.1, -7, 0.14, -1, 0.25, 1, 0.25, 7, 0.14, 8.9, 0.1, 8.9, -0.1)

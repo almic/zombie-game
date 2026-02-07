@@ -13,13 +13,22 @@ var straight_length: float = 1.0:
         update_gizmos()
         modified.emit()
 
-## Length of the handles at this point
+## Length of the handle-in at this point
 @export_range(0, 0, 0.001, 'hide_slider', 'or_less', 'or_greater')
-var handle_length: float = 1.0:
+var handle_in: float = 1.0:
     set(value):
-        handle_length = value
+        handle_in = value
         update_gizmos()
         modified.emit()
+
+## Length of the handle-out at this point
+@export_range(0, 0, 0.001, 'hide_slider', 'or_less', 'or_greater')
+var handle_out: float = 1.0:
+    set(value):
+        handle_out = value
+        update_gizmos()
+        modified.emit()
+
 
 ## Set by the editor plugin when selected, a parent CGSCurve3D is selected, or
 ## a sibling CSGCurvePoint3D is selected and both share a parent CSGCurve3D

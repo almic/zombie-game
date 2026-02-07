@@ -70,24 +70,30 @@ func draw_curve_point(gizmo: EditorNode3DGizmo, node: CSGCurvePoint3D) -> void:
     var transform: Transform3D = Transform3D.IDENTITY
     if node._is_first or node._is_last:
         var dir: Vector3
+        var length: float
         if node._is_first:
             dir = Vector3.MODEL_FRONT
+            length = node.handle_out
         else:
             dir = Vector3.MODEL_REAR
+            length = node.handle_in
         if node.straight_length > 0:
             gizmo.add_mesh(make_billboard(COLOR_RED), get_material("square"), transform.translated_local(dir * node.straight_length))
-        if node.handle_length > 0:
-            gizmo.add_mesh(make_billboard(COLOR_BLUE), get_material("circle"), transform.translated_local(dir * (node.straight_length + node.handle_length)))
+        if length > 0:
+            gizmo.add_mesh(make_billboard(COLOR_BLUE), get_material("circle"), transform.translated_local(dir * (node.straight_length + length)))
     else:
         if node.straight_length > 0:
             var t: Vector3 = Vector3.MODEL_FRONT * node.straight_length * 0.5
             var m: Mesh = make_billboard(COLOR_RED)
             gizmo.add_mesh(m, get_material("square"), transform.translated_local(t))
             gizmo.add_mesh(m, get_material("square"), transform.translated_local(-t))
-        if node.handle_length > 0:
-            var t: Vector3 = Vector3.MODEL_FRONT * (node.straight_length * 0.5 + node.handle_length)
+        if node.handle_in > 0:
+            var t: Vector3 = Vector3.MODEL_FRONT * (node.straight_length * 0.5 + node.handle_in)
+            var m: Mesh = make_billboard(COLOR_BLUE)
+            gizmo.add_mesh(m, get_material("circle"), transform.translated_local(-t))
+        if node.handle_out > 0:
+            var t: Vector3 = Vector3.MODEL_FRONT * (node.straight_length * 0.5 + node.handle_out)
             var m: Mesh = make_billboard(COLOR_BLUE)
             gizmo.add_mesh(m, get_material("circle"), transform.translated_local(t))
-            gizmo.add_mesh(m, get_material("circle"), transform.translated_local(-t))
 
     gizmo.add_unscaled_billboard(get_material("square"), 0.05, COLOR_RED)

@@ -9058,7 +9058,7 @@ material = ExtResource("22_cm2xv")
 
 [node name="Roads" type="Node" parent="LevelBlocking" unique_id=1886173689]
 
-[node name="CSGCurve3D" type="CSGPolygon3D" parent="LevelBlocking/Roads" unique_id=1024731947]
+[node name="Juniper" type="CSGPolygon3D" parent="LevelBlocking/Roads" unique_id=1024731947]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -220.294, 1.1, -102.578)
 use_collision = true
 collision_layer = 16
@@ -9080,52 +9080,53 @@ script = ExtResource("48_dayhp")
 polygon_resource = ExtResource("52_oslxn")
 metadata/_custom_type_script = "uid://bhilt3o6lupmy"
 
-[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=600641398]
+[node name="CSGCurvePoint3D" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=600641398]
 script = ExtResource("57_i2hso")
 straight_length = 4.0
-handle_out = 20.0
+handle_out = 33.805
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1130042130]
-transform = Transform3D(0.96892945345238, 0, -0.24733724796817, 0, 1, 0, 0.24733724796817, 0, 0.96892945345238, -20.4683447, 0.239795, 128.0000577)
+[node name="CSGCurvePoint3D2" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1130042130]
+transform = Transform3D(0.95861626, 0, -0.28470138894223, 0, 1, 0, 0.28470138894223, 0, 0.95861626, -20.4683447, 0.239795, 128.0000577)
 script = ExtResource("57_i2hso")
-straight_length = 4.0
-handle_in = 16.0
-handle_out = 16.0
+straight_length = 0.0
+handle_in = 44.82
+handle_out = 38.49
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D3" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1992458776]
+[node name="CSGCurvePoint3D3" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1992458776]
 transform = Transform3D(0.91149751871367, 0.01162611386284, 0.41114122495229, -0.01753867201521, 0.99978987448199, 0.010611403, -0.41093147, -0.01688313832573, 0.91150989642324, -21.72511, 0.6436892, 276.2297428)
 script = ExtResource("57_i2hso")
-straight_length = 4.0
+straight_length = 0.0
 handle_in = 60.0
 handle_out = 27.89
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D4" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1052765095]
-transform = Transform3D(0.9612623, -0.018656092, 0.27500319882539, 0.0111980216954, 0.99952634338111, 0.02866519138772, -0.27540772218464, -0.02447527574026, 0.961015893437, 28.4500708, 2.619007, 352.6504646)
+[node name="CSGCurvePoint3D4" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1052765095]
+transform = Transform3D(0.96095678538623, -0.030582933, 0.27500319882539, 0.0236002545336, 0.99931043, 0.02866519138772, -0.27569023, -0.0210558644339, 0.961015893437, 28.4500708, 2.619007, 352.6504646)
 script = ExtResource("57_i2hso")
-handle_in = 31.0
-handle_out = 0.0
+straight_length = 0.0
+handle_in = 28.525
+handle_out = 22.145
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D5" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1069225596]
+[node name="CSGCurvePoint3D5" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1069225596]
 transform = Transform3D(0.94628325282756, -0.0054595029449, -0.32329274542694, 0.018971568, 0.9990724, 0.03865858056248, 0.32278179165181, -0.04271533770019, 0.945509, 32.0112757, 5.62686, 437.5502679)
 script = ExtResource("57_i2hso")
-straight_length = 4.0
+straight_length = 0.0
 handle_in = 33.575
 handle_out = 30.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D6" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=867365134]
+[node name="CSGCurvePoint3D6" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=867365134]
 transform = Transform3D(0.92298200914266, -0.00582994132113, -0.38479893786649, 0, 0.99988524915725, -0.01514887843186, 0.38484309893642, 0.013982142, 0.92287609617926, 10.3929486, 7.9549696, 499.6447647)
 script = ExtResource("57_i2hso")
-straight_length = 8.0
+straight_length = 0.0
 handle_in = 23.0
 handle_out = 36.14
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D7" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=848909014]
+[node name="CSGCurvePoint3D7" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=848909014]
 transform = Transform3D(0.9998020661306, 0.01989544070828, 0, -0.01987086710454, 0.99856716, -0.04968651, -0.00098853502223, 0.049676675, 0.99876486255848, -7.232822, 2.155373, 609.1354535)
 script = ExtResource("57_i2hso")
 straight_length = 6.0
@@ -9133,87 +9134,103 @@ handle_in = 18.665
 handle_out = 47.32
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D8" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=845119044]
+[node name="CSGCurvePoint3D8" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=845119044]
 transform = Transform3D(0.785909, 0.0097391085161, 0.61826546931075, -0.00700544080357, 0.999952, -0.00684657721126, -0.61830248630899, 0.0010495645162, 0.78593952301589, 37.4690603, -1.1229485, 732.5091715)
 script = ExtResource("57_i2hso")
-straight_length = 6.0
+straight_length = 0.0
 handle_in = 46.39
 handle_out = 51.765
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D9" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1469021008]
-transform = Transform3D(0.51125259865009, -0.00407512293326, 0.85942084, -0.00640531455441, 0.99994291741414, 0.00855183364888, -0.85940662803995, -0.00987700796688, 0.5111973125855, 172.21771, -0.651168, 836.1207734)
+[node name="CSGCurvePoint3D9" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1469021008]
+transform = Transform3D(0.51108553377318, 0.01368953688601, 0.85942084, -0.04114197678094, 0.9991167, 0.00855183364888, -0.85854465, -0.03972899058865, 0.5111973125855, 172.21771, -0.651168, 836.1207734)
 script = ExtResource("57_i2hso")
-straight_length = 6.0
-handle_in = 51.165
-handle_out = 27.885
+straight_length = 0.0
+handle_in = 49.6
+handle_out = 30.675
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D10" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1508311156]
-transform = Transform3D(-0.08223334185065, -0.00347959374874, 0.99660702883103, -0.0029357383459, 0.9999904, 0.00324916914909, -0.99660877927522, -0.0026585874, -0.08224276858437, 279.9151441, -0.851115, 859.6473877)
+[node name="CSGCurvePoint3D10" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1508311156]
+transform = Transform3D(-0.08212588137291, -0.00545616101697, 0.99660702883103, -0.02698297729562, 0.99963060057472, 0.00324916914909, -0.9962566228362, -0.02662458362797, -0.08224276858437, 279.9151441, -0.851115, 859.6473877)
 script = ExtResource("57_i2hso")
-straight_length = 6.0
-handle_in = 22.695
-handle_out = 15.405
+straight_length = 0.0
+handle_in = 26.995
+handle_out = 17.525
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D11" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1653920355]
-transform = Transform3D(-0.0914898543174, -0.09263923329313, 0.99148756, 0.01511619760696, 0.99541944, 0.09440145949048, -0.99569127099061, 0.02362429763794, -0.08967043, 389.32727, 4.7668415, 832.64557)
+[node name="CSGCurvePoint3D22" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=2142078672]
+transform = Transform3D(-0.29845429447353, 0.00495532353936, 0.9544110638912, 0.08640798, 0.9960202, 0.021849317, -0.95050444233689, 0.08898975485328, -0.29769468997404, 322.36606, -0.5693715, 848.3420174)
 script = ExtResource("57_i2hso")
-straight_length = 6.0
-handle_in = 35.04
-handle_out = 10.0
+straight_length = 0.0
+handle_in = 7.84
+handle_out = 7.335
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D12" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=443171328]
-transform = Transform3D(0.05404306499758, -0.09249654123036, 0.99424531026608, 0.01866747, 0.99561999791553, 0.09160974451281, -0.9983641, 0.013609174, 0.055533033, 461.85187, 14.071464, 831.461219)
+[node name="CSGCurvePoint3D11" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1653920355]
+transform = Transform3D(-0.09422764566561, -0.11298017, 0.9891191, 0.04496969762308, 0.99204254, 0.11759809686936, -0.99453450271371, 0.05556137943032, -0.08839715, 389.3074, 4.9866856, 832.6573925)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 27.455
+handle_out = 22.465
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D12" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=443171328]
+transform = Transform3D(0.04851232283554, -0.09551344171893, 0.99424531026608, 0.07716140490604, 0.99280097310032, 0.09160974451281, -0.99583767532935, 0.07227316423074, 0.055533033, 461.9415969, 13.1388106, 831.3933244)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
 handle_in = 18.79
 handle_out = 30.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D13" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=989909845]
-transform = Transform3D(0.44149835749713, -0.07723967118068, 0.8939313, -0.0030832563, 0.99615142390648, 0.08759471547692, -0.89725676027419, -0.0414291424602, 0.43956107, 543.2116466, 22.644596, 851.9788)
+[node name="CSGCurvePoint3D13" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=989909845]
+transform = Transform3D(0.43678374005356, -0.12085528338832, 0.8914112, 0.04794176586232, 0.99265327040619, 0.11109037524846, -0.89828813, -0.00578664229318, 0.43936882607382, 543.2116466, 22.644596, 851.9788)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
 handle_in = 25.265
-handle_out = 20.69
+handle_out = 14.07
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D14" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=307781740]
-transform = Transform3D(0.00767638663568, 0.00021415272858, 0.99997051317868, -0.02788674573108, 0.9996111, 0, -0.99958161372684, -0.027885923, 0.00767937322778, 601.6950374, 27.204689, 875.9364385)
+[node name="CSGCurvePoint3D14" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=307781740]
+transform = Transform3D(0.00764944580878, 0.00067731233341, 0.99997051317868, -0.08819891, 0.99610289352944, 0, -0.99607351069552, -0.08819631, 0.00767937322778, 601.6950374, 27.204689, 875.9364385)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
 handle_in = 31.61
-handle_out = 20.0
+handle_out = 27.74
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D15" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=275071866]
-transform = Transform3D(0.07497872682633, -0.00174041549959, 0.9971836, 0, 0.99999847691329, 0.0017453283659, -0.99718513352512, -0.00013086249877, 0.07497861, 684.977308, 27.4502329, 879.4027)
+[node name="CSGCurvePoint3D21" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1114665063]
+transform = Transform3D(0.02443217815265, 0, 0.99970148978119, 0, 1.00000001090308, 0, -0.99970148978118, 0, 0.02443217815265, 652.4561603, 26.8691898, 877.6651879)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_in = 20.0
+handle_in = 9.0
+handle_out = 9.0
+metadata/_custom_type_script = "uid://behs32dwn6xbp"
+
+[node name="CSGCurvePoint3D15" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=275071866]
+transform = Transform3D(0.07489561064791, -0.00393522908105, 0.9971836, 0.02928239387407, 0.99956965, 0.0017453283659, -0.99676135003053, 0.029069206, 0.07497861, 684.977308, 27.4502329, 879.4027)
+script = ExtResource("57_i2hso")
+straight_length = 0.0
+handle_in = 12.0
 handle_out = 18.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D16" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=831844549]
-transform = Transform3D(0.52974976680948, 0.10610346698936, 0.84149108067652, 0.03630366100628, 0.9883983300341, -0.14748147471242, -0.84737667466295, 0.108677484, 0.51975184055327, 736.2338781, 22.7613065, 896.9495706)
+[node name="CSGCurvePoint3D16" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=831844549]
+transform = Transform3D(0.53598845, 0.06789068788541, 0.84149108067652, 0.10699883532124, 0.98326012012552, -0.14748147471242, -0.83741724, 0.16908693, 0.51975184055327, 736.2338781, 22.7613065, 896.9495706)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
 handle_in = 21.31
 handle_out = 33.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D17" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=222899496]
-transform = Transform3D(0.89744161519916, 0.05194254666533, 0.43806452, 0.01330838667448, 0.98940352307031, -0.14458062, -0.44093245985395, 0.1355826, 0.88724062433208, 783.4937364, 11.879052, 953.7271)
+[node name="CSGCurvePoint3D17" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=222899496]
+transform = Transform3D(0.8987638847555, -0.00484232779154, 0.43840624527544, 0.05071046111283, 0.99437606, -0.09297686214106, -0.43549044604094, 0.10579603, 0.89395484899266, 783.4937364, 11.879052, 953.7271)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
-handle_in = 25.0
-handle_out = 6.42
+handle_in = 10.43
+handle_out = 14.415
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D18" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=2004003736]
+[node name="CSGCurvePoint3D18" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=2004003736]
 transform = Transform3D(0.85291250462201, -0.00285007072273, 0.52204610577638, -0.02688316758264, 0.99841859123076, 0.04937217825357, -0.52136125168652, -0.0561444, 0.85148708237895, 805.5361794, 12.367589, 1003.7451988)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
@@ -9221,7 +9238,7 @@ handle_in = 25.0
 handle_out = 25.0
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D19" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=1264386767]
+[node name="CSGCurvePoint3D19" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=1264386767]
 transform = Transform3D(0.5960144, -0.04158098202116, 0.80189642465195, -0.0069289017, 0.99835481546336, 0.05691794763115, -0.80294386121126, -0.03948017699155, 0.59474571992396, 855.5926, 15.0442387, 1056.9627001)
 script = ExtResource("57_i2hso")
 straight_length = 0.0
@@ -9229,7 +9246,7 @@ handle_in = 25.0
 handle_out = 14.4
 metadata/_custom_type_script = "uid://behs32dwn6xbp"
 
-[node name="CSGCurvePoint3D20" type="Node3D" parent="LevelBlocking/Roads/CSGCurve3D" unique_id=265924488]
+[node name="CSGCurvePoint3D20" type="Node3D" parent="LevelBlocking/Roads/Juniper" unique_id=265924488]
 transform = Transform3D(0.59142224350791, 0, 0.80636203, 0, 1, 0, -0.80636203, 0, 0.59142224350791, 893.6105775, 15.488944, 1085.1790959)
 script = ExtResource("57_i2hso")
 straight_length = 0.0

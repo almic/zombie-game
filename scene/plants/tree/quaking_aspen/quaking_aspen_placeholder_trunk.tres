@@ -1,0 +1,25 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://df5xnhvvk8swa"]
+
+[sub_resource type="Gradient" id="Gradient_aaqrs"]
+offsets = PackedFloat32Array(0.2842377, 0.47803617)
+colors = PackedColorArray(0.65012825, 0.6501283, 0.65012825, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_s2ah4"]
+noise_type = 2
+seed = 331718058
+frequency = 0.0245
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_mkofd"]
+height = 128
+noise = SubResource("FastNoiseLite_s2ah4")
+color_ramp = SubResource("Gradient_aaqrs")
+seamless = true
+invert = true
+seamless_blend_skirt = 0.625
+
+[resource]
+resource_name = "Trunk"
+cull_mode = 2
+albedo_color = Color(0.9137255, 0.90588236, 0.7411765, 1)
+albedo_texture = SubResource("NoiseTexture2D_mkofd")
+uv1_scale = Vector3(1.7, 1, 1)

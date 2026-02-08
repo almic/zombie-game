@@ -2,6 +2,11 @@
 
 [ext_resource type="ArrayMesh" uid="uid://c83578yk7xn7i" path="res://scene/plants/tree/douglas_fir/douglas_fir_placeholder.res" id="1_mavvc"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mavvc"]
+diffuse_mode = 2
+specular_mode = 1
+albedo_color = Color(0.18039216, 0.38431373, 0.019607844, 1)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_mavvc"]
 radius = 0.61
 height = 5.0
@@ -9,7 +14,12 @@ height = 5.0
 [node name="DouglasFirA" type="Area3D" unique_id=49391743]
 
 [node name="LOD0" type="MeshInstance3D" parent="." unique_id=1798792148]
+visible = false
 mesh = ExtResource("1_mavvc")
+
+[node name="LOD1" type="MeshInstance3D" parent="." unique_id=345002057]
+mesh = ExtResource("1_mavvc")
+surface_material_override/1 = SubResource("StandardMaterial3D_mavvc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2002533242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

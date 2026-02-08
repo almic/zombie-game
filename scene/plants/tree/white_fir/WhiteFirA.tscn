@@ -2,6 +2,12 @@
 
 [ext_resource type="ArrayMesh" uid="uid://cgyr503km6sss" path="res://scene/plants/tree/white_fir/white_fir_placeholder.res" id="1_hvyi5"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hvyi5"]
+diffuse_mode = 2
+specular_mode = 1
+albedo_color = Color(0.03137255, 0.5764706, 0.18039216, 1)
+roughness = 0.9
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_hvyi5"]
 radius = 0.45
 height = 5.0
@@ -9,7 +15,12 @@ height = 5.0
 [node name="WhiteFirA" type="Area3D" unique_id=59122117]
 
 [node name="LOD0" type="MeshInstance3D" parent="." unique_id=604238131]
+visible = false
 mesh = ExtResource("1_hvyi5")
+
+[node name="LOD1" type="MeshInstance3D" parent="." unique_id=903314076]
+mesh = ExtResource("1_hvyi5")
+surface_material_override/1 = SubResource("StandardMaterial3D_hvyi5")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=906613066]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

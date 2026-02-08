@@ -13,46 +13,203 @@
 [ext_resource type="Texture2D" uid="uid://d0svq28o8kelx" path="res://textures/terrain/ground_mud_d.jpg" id="11_iiu0x"]
 [ext_resource type="Texture2D" uid="uid://dxbgaqlqosit6" path="res://textures/terrain/ground_mud_n.jpg" id="12_poec8"]
 
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_52o3w"]
-name = "DouglasFirA"
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_iiu0x"]
+name = "Doug 1"
 scene_file = ExtResource("1_1jhe2")
 density = 0.01
-last_lod = 0
-last_shadow_lod = 0
+last_lod = 1
+last_shadow_lod = 1
 lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_poec8"]
+name = "Doug 2"
+id = 1
+scene_file = ExtResource("1_1jhe2")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_52o3w"]
+name = "Doug 3"
+id = 2
+scene_file = ExtResource("1_1jhe2")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_5psgt"]
+name = "Doug 4"
+id = 3
+scene_file = ExtResource("1_1jhe2")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
 collision_layers = 16
 collision_mask = 0
 
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_sk1as"]
-name = "NarrowleafCottonwoodA"
-id = 1
+name = "Cotton 1"
+id = 4
 scene_file = ExtResource("2_11ygp")
 density = 0.01
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 256.0
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_yaf0c"]
+name = "Cotton 2"
+id = 5
+scene_file = ExtResource("2_11ygp")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_uirkv"]
+name = "Cotton 3"
+id = 6
+scene_file = ExtResource("2_11ygp")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_hqr0i"]
+name = "Cotton 4"
+id = 7
+scene_file = ExtResource("2_11ygp")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_if5mi"]
+name = "Cotton 5"
+id = 8
+scene_file = ExtResource("2_11ygp")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
 collision_layers = 16
 collision_mask = 0
 
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_cbe56"]
-name = "QuakingAspenA"
-id = 2
+name = "Aspen 1"
+id = 9
 scene_file = ExtResource("3_iiu0x")
 density = 0.02094615202784
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 256.0
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_tenbn"]
+name = "Aspen 2"
+id = 10
+scene_file = ExtResource("3_iiu0x")
+density = 0.02094615202784
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_5i3n4"]
+name = "Aspen 3"
+id = 11
+scene_file = ExtResource("3_iiu0x")
+density = 0.02094615202784
+last_lod = 1
+last_shadow_lod = 1
+lod1_range = 128.0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_afoef"]
+name = "Aspen 4"
+id = 12
+scene_file = ExtResource("3_iiu0x")
+density = 0.02094615202784
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
 collision_layers = 16
 collision_mask = 0
 
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_6mpko"]
-name = "WhiteFirA"
-id = 3
+name = "White Fir 1"
+id = 13
 scene_file = ExtResource("4_poec8")
 density = 0.01
-last_lod = 0
-last_shadow_lod = 0
+last_lod = 1
+last_shadow_lod = 1
 lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_v1jcv"]
+name = "White Fir 2"
+id = 14
+scene_file = ExtResource("4_poec8")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_gbmad"]
+name = "White Fir 3"
+id = 15
+scene_file = ExtResource("4_poec8")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
+
+[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_0o6f6"]
+name = "White Fir 4"
+id = 16
+scene_file = ExtResource("4_poec8")
+density = 0.01
+last_lod = 1
+last_shadow_lod = 1
+lod0_range = 127.0
+lod1_range = 4097.0
 collision_layers = 16
 collision_mask = 0
 
@@ -93,5 +250,5 @@ normal_texture = ExtResource("12_poec8")
 uv_scale = 0.4
 
 [resource]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_52o3w"), SubResource("Terrain3DMeshAsset_sk1as"), SubResource("Terrain3DMeshAsset_cbe56"), SubResource("Terrain3DMeshAsset_6mpko")])
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_iiu0x"), SubResource("Terrain3DMeshAsset_poec8"), SubResource("Terrain3DMeshAsset_52o3w"), SubResource("Terrain3DMeshAsset_5psgt"), SubResource("Terrain3DMeshAsset_sk1as"), SubResource("Terrain3DMeshAsset_yaf0c"), SubResource("Terrain3DMeshAsset_uirkv"), SubResource("Terrain3DMeshAsset_hqr0i"), SubResource("Terrain3DMeshAsset_if5mi"), SubResource("Terrain3DMeshAsset_cbe56"), SubResource("Terrain3DMeshAsset_tenbn"), SubResource("Terrain3DMeshAsset_5i3n4"), SubResource("Terrain3DMeshAsset_afoef"), SubResource("Terrain3DMeshAsset_6mpko"), SubResource("Terrain3DMeshAsset_v1jcv"), SubResource("Terrain3DMeshAsset_gbmad"), SubResource("Terrain3DMeshAsset_0o6f6")])
 texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_bc84e"), SubResource("Terrain3DTextureAsset_wukud"), SubResource("Terrain3DTextureAsset_il2jm"), SubResource("Terrain3DTextureAsset_52o3w")])

@@ -1,0 +1,33 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://4yscxpfkgwss"]
+
+[ext_resource type="Shader" uid="uid://cqbl32kxqhp8" path="res://shader/foliage.gdshader" id="1_waufd"]
+
+[sub_resource type="Gradient" id="Gradient_w8x2r"]
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_lafxf"]
+seed = 440347
+frequency = 0.2125
+fractal_octaves = 4
+fractal_lacunarity = 1.2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_tebbq"]
+width = 256
+height = 256
+noise = SubResource("FastNoiseLite_lafxf")
+color_ramp = SubResource("Gradient_w8x2r")
+seamless = true
+normalize = false
+seamless_blend_skirt = 1.0
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_waufd")
+shader_parameter/back_face = true
+shader_parameter/albedo = Color(0.9019608, 0.64705884, 0.06666667, 1)
+shader_parameter/texture_albedo = SubResource("NoiseTexture2D_tebbq")
+shader_parameter/alpha_scissor_threshold = 0.530000025175
+shader_parameter/roughness = 0.70000003325
+shader_parameter/specular = 0.0
+shader_parameter/uv1_scale = Vector3(0.09, 2, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)

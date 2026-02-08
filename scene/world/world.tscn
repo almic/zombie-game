@@ -854,6 +854,18 @@ vertices = PackedInt32Array(1069, 612, 970, -118, 855, -103, 747, -78, 756, -34,
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 
+[node name="IslandTrees" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=1537603505]
+script = ExtResource("55_fs5wv")
+seed = 2715453188
+metadata/_custom_type_script = "uid://ba7dj46pupxe5"
+metadata/_edit_lock_ = true
+
+[node name="IslandArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/IslandTrees" unique_id=1889409829]
+script = ExtResource("59_yidmw")
+vertices = PackedInt32Array(361, 163, 358, 166, 357, 173, 359, 183, 359, 195, 359, 223, 361, 242, 367, 260, 375, 278, 385, 296, 393, 311, 401, 323, 408, 333, 414, 342, 420, 346, 424, 344, 424, 340, 419, 327, 414, 312, 409, 295, 402, 274, 397, 258, 390, 239, 384, 220, 379, 203, 377, 189, 370, 172, 366, 164)
+metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
+metadata/_edit_lock_ = true
+
 [node name="LevelBlocking" type="Node" parent="." unique_id=1272451309]
 
 [node name="LongRoad" type="CSGBox3D" parent="LevelBlocking" unique_id=1517932403]
@@ -10308,9 +10320,6 @@ gizmo_extents = 5.0
 [node name="Marker3D2" type="Marker3D" parent="Marker3D" unique_id=271760029]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 272.99, -4.44, 890.73)
 gizmo_extents = 5.0
-
-[node name="DouglasFirA" parent="." unique_id=49391743 instance=ExtResource("91_dsaby")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 592.3084417, -0.5832097, 707.9500274)
 
 [node name="Water" type="Node" parent="." unique_id=1485865112]
 

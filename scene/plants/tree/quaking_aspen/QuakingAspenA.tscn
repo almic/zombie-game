@@ -1,16 +1,32 @@
-[gd_scene load_steps=3 format=3 uid="uid://cd0ht2igqoi33"]
+[gd_scene format=3 uid="uid://cd0ht2igqoi33"]
 
 [ext_resource type="ArrayMesh" uid="uid://brei67fql1e72" path="res://scene/plants/tree/quaking_aspen/quaking_aspen_placeholder.res" id="1_ifay6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_odnhj"]
+diffuse_mode = 2
+specular_mode = 2
+albedo_color = Color(0.9137255, 0.90588236, 0.7411765, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ifay6"]
+diffuse_mode = 2
+specular_mode = 2
+albedo_color = Color(0.8235294, 0.7019608, 0.039215688, 1)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ifay6"]
 radius = 0.25
 height = 5.0
 
-[node name="QuakingAspenA" type="Area3D"]
+[node name="QuakingAspenA" type="Area3D" unique_id=2075031692]
 
-[node name="LOD0" type="MeshInstance3D" parent="."]
+[node name="LOD0" type="MeshInstance3D" parent="." unique_id=246066734]
+visible = false
 mesh = ExtResource("1_ifay6")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="LOD1" type="MeshInstance3D" parent="." unique_id=355114355]
+mesh = ExtResource("1_ifay6")
+surface_material_override/0 = SubResource("StandardMaterial3D_odnhj")
+surface_material_override/1 = SubResource("StandardMaterial3D_ifay6")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1071843146]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 shape = SubResource("CapsuleShape3D_ifay6")

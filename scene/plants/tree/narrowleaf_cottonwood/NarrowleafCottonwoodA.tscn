@@ -2,6 +2,11 @@
 
 [ext_resource type="ArrayMesh" uid="uid://clsa231thep7j" path="res://scene/plants/tree/narrowleaf_cottonwood/narrowleaf_cottonwood_placeholder.res" id="1_utq1x"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_utq1x"]
+diffuse_mode = 2
+specular_mode = 1
+albedo_color = Color(0.9019608, 0.64705884, 0.06666667, 1)
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_utq1x"]
 radius = 0.29
 height = 5.0
@@ -9,7 +14,12 @@ height = 5.0
 [node name="NarrowleafCottonwoodA" type="Area3D" unique_id=1285741677]
 
 [node name="LOD0" type="MeshInstance3D" parent="." unique_id=1885256377]
+visible = false
 mesh = ExtResource("1_utq1x")
+
+[node name="LOD1" type="MeshInstance3D" parent="." unique_id=1808620662]
+mesh = ExtResource("1_utq1x")
+surface_material_override/1 = SubResource("StandardMaterial3D_utq1x")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=84836266]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

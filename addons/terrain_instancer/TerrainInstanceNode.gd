@@ -248,7 +248,8 @@ func dispatch_instance_collision_update(data: Variant) -> void:
         return
 
     if terrain.get_class() == Plugin.CLASS_TERRAIN3D:
-        terrain.collision.set_instance_collision_cells(data)
+        if terrain.collision.instance_collision_mode == 3: # INSTANCE_COLLISION_MANUAL
+            terrain.collision.set_instance_collision_cells(data)
         return
 
 ## Given a ray origin and direction, finds the point of intersection on the

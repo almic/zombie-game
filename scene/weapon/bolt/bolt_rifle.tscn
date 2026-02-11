@@ -1,4 +1,4 @@
-[gd_scene load_steps=36 format=3 uid="uid://2ub41p5mtrf1"]
+[gd_scene format=3 uid="uid://2ub41p5mtrf1"]
 
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_h6unu"]
 [ext_resource type="Script" uid="uid://dg2m1isyocicv" path="res://scene/weapon/bolt/bolt_rifle.gd" id="2_jj4xa"]
@@ -11,6 +11,7 @@
 [ext_resource type="AnimationNodeBlendTree" uid="uid://4tfq1m1mtxok" path="res://animation/bolt/bolt_anim_tree.tres" id="10_cxsjy"]
 
 [sub_resource type="Compositor" id="Compositor_1i8ia"]
+resource_name = "DisableCompositor"
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_jj4xa"]
 viewport_path = NodePath("Mesh/SubViewport")
@@ -152,7 +153,7 @@ _data = {
 &"RESET": ExtResource("5_tda2x")
 }
 
-[node name="bolt_rifle" type="Node3D" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker")]
+[node name="bolt_rifle" type="Node3D" unique_id=1084031096 node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker")]
 script = ExtResource("2_jj4xa")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")
@@ -161,28 +162,28 @@ reload_marker = NodePath("ReloadMarker")
 magazine_marker = NodePath("Mesh/MagazineMarker")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="Mesh" type="Node3D" parent="."]
+[node name="Mesh" type="Node3D" parent="." unique_id=1162578188]
 unique_name_in_owner = true
 
-[node name="ScopeCameraTarget" type="Marker3D" parent="Mesh"]
+[node name="ScopeCameraTarget" type="Marker3D" parent="Mesh" unique_id=1371581244]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.048, -0.02)
 gizmo_extents = 0.0
 metadata/_edit_lock_ = true
 
-[node name="SubViewport" type="SubViewport" parent="Mesh"]
+[node name="SubViewport" type="SubViewport" parent="Mesh" unique_id=396626811]
 handle_input_locally = false
 use_hdr_2d = true
 size = Vector2i(768, 768)
 
-[node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport"]
+[node name="ScopeCamera" type="Camera3D" parent="Mesh/SubViewport" unique_id=171161052]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.048, -0.02)
 compositor = SubResource("Compositor_1i8ia")
 fov = 5.0
 metadata/_edit_lock_ = true
 
-[node name="ScopePicture" type="MeshInstance3D" parent="Mesh"]
+[node name="ScopePicture" type="MeshInstance3D" parent="Mesh" unique_id=285737606]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.048, 0.26)
 layers = 5
@@ -190,135 +191,135 @@ mesh = SubResource("QuadMesh_jj4xa")
 skeleton = NodePath("../protomesh/scope")
 metadata/_edit_lock_ = true
 
-[node name="protomesh" type="Node3D" parent="Mesh"]
+[node name="protomesh" type="Node3D" parent="Mesh" unique_id=2070811011]
 metadata/_edit_lock_ = true
 
-[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=1659821823]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.3)
 layers = 5
 mesh = SubResource("CylinderMesh_6wx1y")
 metadata/_edit_lock_ = true
 
-[node name="bolt" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="bolt" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=2138738639]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.118)
 layers = 5
 mesh = SubResource("CylinderMesh_tda2x")
 
-[node name="cap" type="MeshInstance3D" parent="Mesh/protomesh/bolt"]
+[node name="cap" type="MeshInstance3D" parent="Mesh/protomesh/bolt" unique_id=1950928419]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.082, 0)
 layers = 5
 mesh = SubResource("SphereMesh_ry02v")
 metadata/_edit_lock_ = true
 
-[node name="handle" type="MeshInstance3D" parent="Mesh/protomesh/bolt"]
+[node name="handle" type="MeshInstance3D" parent="Mesh/protomesh/bolt" unique_id=960456170]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.0265, -0.062, 0)
 layers = 5
 mesh = SubResource("CapsuleMesh_jj4xa")
 metadata/_edit_lock_ = true
 
-[node name="bolt_connector" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="bolt_connector" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=624686613]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.017)
 layers = 5
 mesh = SubResource("CylinderMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="bolt_2" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector"]
+[node name="bolt_2" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector" unique_id=408553400]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.012, 0)
 layers = 5
 mesh = SubResource("CylinderMesh_ec11v")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="bolt_barrel" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector"]
+[node name="bolt_barrel" type="MeshInstance3D" parent="Mesh/protomesh/bolt_connector" unique_id=1706706657]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.011, 0)
 layers = 5
 mesh = SubResource("CylinderMesh_ord0y")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="under_barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="under_barrel" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=1545219334]
 transform = Transform3D(0, 0, 1, -1, 0, 0, 0, -1, 0, 0, -0.025, -0.165)
 layers = 5
 mesh = SubResource("PrismMesh_1i8ia")
 metadata/_edit_lock_ = true
 
-[node name="body" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="body" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=100379117]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.025, 0.125)
 layers = 5
 mesh = SubResource("BoxMesh_cxsjy")
 metadata/_edit_lock_ = true
 
-[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=926087668]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.01, 0.094)
 layers = 5
 mesh = SubResource("BoxMesh_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="scope" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="scope" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=379043501]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.048, 0.128)
 layers = 5
 mesh = SubResource("CylinderMesh_qo7cl")
 skeleton = NodePath("../rail")
 
-[node name="scope2" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
+[node name="scope2" type="MeshInstance3D" parent="Mesh/protomesh/scope" unique_id=478914597]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.084, 0)
 layers = 5
 mesh = SubResource("CylinderMesh_ry02v")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="scope3" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
+[node name="scope3" type="MeshInstance3D" parent="Mesh/protomesh/scope" unique_id=1100451062]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
 layers = 5
 mesh = SubResource("CylinderMesh_jj4xa")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="scope4" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
+[node name="scope4" type="MeshInstance3D" parent="Mesh/protomesh/scope" unique_id=1091040428]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.069, 0)
 layers = 5
 mesh = SubResource("CylinderMesh_1i8ia")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="scope5" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
+[node name="scope5" type="MeshInstance3D" parent="Mesh/protomesh/scope" unique_id=1144125246]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.106, 0)
 layers = 5
 mesh = SubResource("CylinderMesh_cxsjy")
 skeleton = NodePath("../../rail")
 metadata/_edit_lock_ = true
 
-[node name="leg1" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
+[node name="leg1" type="MeshInstance3D" parent="Mesh/protomesh/scope" unique_id=482699951]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.047, -0.0175957)
 layers = 5
 mesh = SubResource("BoxMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="legbase" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg1"]
+[node name="legbase" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg1" unique_id=1419030617]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0035)
 layers = 5
 mesh = SubResource("BoxMesh_qo7cl")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="leg2" type="MeshInstance3D" parent="Mesh/protomesh/scope"]
+[node name="leg2" type="MeshInstance3D" parent="Mesh/protomesh/scope" unique_id=781315329]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.047, -0.0176)
 layers = 5
 mesh = SubResource("BoxMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="legbase2" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg2"]
+[node name="legbase2" type="MeshInstance3D" parent="Mesh/protomesh/scope/leg2" unique_id=677471097]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0035)
 layers = 5
 mesh = SubResource("BoxMesh_qo7cl")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="inner_scope" type="CSGCombiner3D" parent="Mesh/protomesh/scope"]
+[node name="inner_scope" type="CSGCombiner3D" parent="Mesh/protomesh/scope" unique_id=1382629347]
 layers = 5
 metadata/_edit_lock_ = true
 
-[node name="scope_eye" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
+[node name="scope_eye" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" unique_id=1862000683]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.106, 0)
 radius = 0.014
 height = 0.056
@@ -326,7 +327,7 @@ sides = 64
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="scope_middle" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
+[node name="scope_middle" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" unique_id=2002663045]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.015, 0)
 radius = 0.012
 height = 0.186
@@ -334,7 +335,7 @@ sides = 6
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="scope_end" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
+[node name="scope_end" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" unique_id=2016463285]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.13, 0)
 radius = 0.018
 height = 0.044
@@ -342,7 +343,7 @@ sides = 18
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="cut" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope"]
+[node name="cut" type="CSGCylinder3D" parent="Mesh/protomesh/scope/inner_scope" unique_id=784681259]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.009, 0)
 operation = 2
 radius = 0.01
@@ -351,61 +352,58 @@ sides = 52
 material = ExtResource("2_h6unu")
 metadata/_edit_lock_ = true
 
-[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=1368803275]
 transform = Transform3D(0, 0, 1, -1, 0, 0, 0, -1, 0, 0, -0.11, 0.425)
 layers = 5
 mesh = SubResource("PrismMesh_l3tjp")
 metadata/_edit_lock_ = true
 
-[node name="stock_2" type="MeshInstance3D" parent="Mesh/protomesh/stock"]
+[node name="stock_2" type="MeshInstance3D" parent="Mesh/protomesh/stock" unique_id=1608753324]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -0.1095, 0, 0)
 layers = 5
 mesh = SubResource("PrismMesh_ord0y")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="stock_3" type="MeshInstance3D" parent="Mesh/protomesh/stock"]
+[node name="stock_3" type="MeshInstance3D" parent="Mesh/protomesh/stock" unique_id=1030668492]
 transform = Transform3D(0, -1, 0, 0, 0, -1, 1, 0, 0, -0.075, 0, 0)
 layers = 5
 mesh = SubResource("BoxMesh_ec11v")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh/stock"]
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh/stock" unique_id=1008644393]
 transform = Transform3D(0, -0.906308, -0.422618, 0, 0.422618, -0.906308, 1, 0, 0, -0.042, 0.1507, 0)
 layers = 5
 mesh = SubResource("BoxMesh_n7l1y")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="MagazineMarker" type="Marker3D" parent="Mesh"]
+[node name="MagazineMarker" type="Marker3D" parent="Mesh" unique_id=1580231987]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.055, 0.09)
 gizmo_extents = 0.0
 metadata/_edit_lock_ = true
 
-[node name="RifleMagMesh" parent="Mesh/MagazineMarker" instance=ExtResource("4_qo7cl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+[node name="RifleMagMesh" parent="Mesh/MagazineMarker" unique_id=739846285 instance=ExtResource("4_qo7cl")]
 
-[node name="BarrelMarker" type="Marker3D" parent="Mesh"]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh" unique_id=1552569540]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.61)
 visible = false
 metadata/_edit_lock_ = true
 
-[node name="EjectMarker" type="Marker3D" parent="Mesh"]
+[node name="EjectMarker" type="Marker3D" parent="Mesh" unique_id=211061892]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0119953, 0, 0.094)
 visible = false
 
-[node name="ReloadMarker" type="Marker3D" parent="."]
+[node name="ReloadMarker" type="Marker3D" parent="." unique_id=1571363017]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.055, 0.09)
 visible = false
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_jj4xa"),
-&"bolt": ExtResource("6_ry02v")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1699289172]
+libraries/ = SubResource("AnimationLibrary_jj4xa")
+libraries/bolt = ExtResource("6_ry02v")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=2122976039]
 unique_name_in_owner = true
 active = false
 root_node = NodePath("%AnimationTree/..")

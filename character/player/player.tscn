@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://ni06m8vhlyt4"]
+[gd_scene format=3 uid="uid://ni06m8vhlyt4"]
 
 [ext_resource type="Script" uid="uid://d3d3h5saxicc8" path="res://character/player/player.gd" id="1_y482n"]
 [ext_resource type="Resource" uid="uid://cxngkconoga1a" path="res://data/input/actions/first_person/move.tres" id="2_otwb2"]
@@ -52,7 +52,7 @@ height = 1.7
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
 
-[node name="player" type="CharacterBody3D" node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["player", "zombie_target"]]
+[node name="player" type="CharacterBody3D" unique_id=173820620 node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["player", "zombie_target"]]
 process_mode = 1
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 collision_mask = 115
@@ -93,7 +93,7 @@ movement_sound_map = ExtResource("26_8bmvw")
 sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
 sight_points_no_depth = true
 
-[node name="collider" type="CollisionShape3D" parent="."]
+[node name="collider" type="CollisionShape3D" parent="." unique_id=148615387]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("CapsuleShape3D_qh58e")
@@ -101,33 +101,32 @@ debug_color = Color(0, 0.6, 0.69803923, 0.19607843)
 debug_fill = false
 metadata/_edit_lock_ = true
 
-[node name="capsule" type="MeshInstance3D" parent="collider"]
+[node name="capsule" type="MeshInstance3D" parent="collider" unique_id=1162563198]
 layers = 524288
 gi_mode = 0
 mesh = SubResource("CapsuleMesh_glpr6")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="Neck" type="Node3D" parent="."]
+[node name="Neck" type="Node3D" parent="." unique_id=1364333742]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.395, 0)
 metadata/_edit_lock_ = true
 
-[node name="CameraTarget" type="Node3D" parent="Neck"]
+[node name="CameraTarget" type="Node3D" parent="Neck" unique_id=1597187228]
 unique_name_in_owner = true
 editor_description = "Target position for the Camera3D, used to smooth vertical jitter."
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
 metadata/_edit_lock_ = true
 
-[node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget"]
+[node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget" unique_id=678954323]
 unique_name_in_owner = true
 cull_mask = 524287
 current = true
 near = 0.02
-far = 2000.0
 metadata/_edit_lock_ = true
 
-[node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
+[node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" unique_id=906250424 node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
 script = ExtResource("7_qh58e")
@@ -140,10 +139,10 @@ aim_duration = 0.25
 metadata/_custom_type_script = "uid://n578e74oit7v"
 metadata/_edit_lock_ = true
 
-[node name="hud" parent="Neck/CameraTarget/Camera3D" instance=ExtResource("11_vuhga")]
+[node name="hud" parent="Neck/CameraTarget/Camera3D" unique_id=1649981851 instance=ExtResource("11_vuhga")]
 metadata/_edit_lock_ = true
 
-[node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D"]
+[node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D" unique_id=1151300626]
 unique_name_in_owner = true
 editor_description = "Weapon targetting raycast so weapons aim correctly"
 exclude_parent = false
@@ -155,9 +154,9 @@ debug_shape_custom_color = Color(0, 0, 0, 0)
 debug_shape_thickness = 1
 metadata/_edit_lock_ = true
 
-[node name="Flashlight" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D"]
+[node name="Flashlight" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D" unique_id=1737080198]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.413982)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.414)
 visible = false
 light_intensity_lumens = 2500.0
 light_temperature = 6000.0
@@ -171,7 +170,7 @@ spot_angle = 33.0
 spot_angle_attenuation = 0.0116912
 metadata/_edit_lock_ = true
 
-[node name="Hurtbox" type="Area3D" parent="."]
+[node name="Hurtbox" type="Area3D" parent="." unique_id=950143746]
 unique_name_in_owner = true
 visible = false
 collision_layer = 8
@@ -181,13 +180,13 @@ script = ExtResource("5_px5sl")
 metadata/_custom_type_script = "uid://cx8x5g2jhcrm6"
 metadata/_edit_lock_ = true
 
-[node name="collider" type="CollisionShape3D" parent="Hurtbox"]
+[node name="collider" type="CollisionShape3D" parent="Hurtbox" unique_id=620579255]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.85, 0)
 shape = SubResource("SphereShape3D_wfnr8")
 debug_color = Color(1, 0, 0.14509805, 0.19607843)
 debug_fill = false
 
-[node name="Hitbox" type="Area3D" parent="."]
+[node name="Hitbox" type="Area3D" parent="." unique_id=31177870]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.01)
 visible = false
 collision_layer = 0
@@ -199,48 +198,48 @@ hitbox_owner = NodePath("..")
 metadata/_custom_type_script = "uid://dc77cbpvaw8jo"
 metadata/_edit_lock_ = true
 
-[node name="collider" type="CollisionShape3D" parent="Hitbox"]
+[node name="collider" type="CollisionShape3D" parent="Hitbox" unique_id=1202087204]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CylinderShape3D_i6sc0")
 debug_color = Color(1, 0, 0.14509805, 0.19607843)
 debug_fill = false
 
-[node name="SightNodes" type="Node3D" parent="."]
+[node name="SightNodes" type="Node3D" parent="." unique_id=18760960]
 visible = false
 
-[node name="eyes" type="Marker3D" parent="SightNodes"]
+[node name="eyes" type="Marker3D" parent="SightNodes" unique_id=1670056268]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.54, 0)
 gizmo_extents = 0.05
 
-[node name="left_head" type="Marker3D" parent="SightNodes"]
+[node name="left_head" type="Marker3D" parent="SightNodes" unique_id=1078428608]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.16, 1.4, 0)
 gizmo_extents = 0.05
 
-[node name="right_head" type="Marker3D" parent="SightNodes"]
+[node name="right_head" type="Marker3D" parent="SightNodes" unique_id=623128802]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.16, 1.4, 0)
 gizmo_extents = 0.05
 
-[node name="mid_chest" type="Marker3D" parent="SightNodes"]
+[node name="mid_chest" type="Marker3D" parent="SightNodes" unique_id=1215296069]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
 gizmo_extents = 0.05
 
-[node name="left_chest" type="Marker3D" parent="SightNodes"]
+[node name="left_chest" type="Marker3D" parent="SightNodes" unique_id=267326539]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.32, 0.9, 0)
 gizmo_extents = 0.05
 
-[node name="right_chest" type="Marker3D" parent="SightNodes"]
+[node name="right_chest" type="Marker3D" parent="SightNodes" unique_id=1370123082]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.32, 0.9, 0)
 gizmo_extents = 0.05
 
-[node name="left_leg" type="Marker3D" parent="SightNodes"]
+[node name="left_leg" type="Marker3D" parent="SightNodes" unique_id=1172945854]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22, 0.34, 0)
 gizmo_extents = 0.05
 
-[node name="right_leg" type="Marker3D" parent="SightNodes"]
+[node name="right_leg" type="Marker3D" parent="SightNodes" unique_id=1153307527]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, 0.34, 0)
 gizmo_extents = 0.05
 
-[node name="MovementSoundPlayer" type="Node3D" parent="." node_paths=PackedStringArray("source_node")]
+[node name="MovementSoundPlayer" type="Node3D" parent="." unique_id=1243250451 node_paths=PackedStringArray("source_node")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.3)
 script = ExtResource("32_2pong")

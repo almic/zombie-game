@@ -19,7 +19,6 @@ seamless_blend_skirt = 0.625
 
 [resource]
 resource_name = "Trunk"
-cull_mode = 2
 albedo_color = Color(0.9137255, 0.90588236, 0.7411765, 1)
 albedo_texture = SubResource("NoiseTexture2D_mkofd")
 uv1_scale = Vector3(1.7, 1, 1)

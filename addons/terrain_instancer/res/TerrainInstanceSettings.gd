@@ -5,9 +5,17 @@ class_name TerrainInstanceSettings extends Resource
 signal on_randomize(type: StringName)
 
 
-## The matching mesh asset ID of the terrain asset
+## The main matching mesh asset ID of the terrain asset
 @export_range(-1, 10, 1, 'or_greater')
 var id: int = -1
+
+## The mesh asset ID weights of this instance group. Can be used to place variations of the
+## primary asset. When populating, existing assets with these IDs are mapped to the primary ID.
+@export_custom(
+    PROPERTY_HINT_DICTIONARY_TYPE,
+    "2/1:0,10,1,or_greater;2/1:0,10,1,or_greater"
+)
+var ids: Dictionary[int, int]
 
 @export var enabled: bool = true
 
@@ -187,6 +195,12 @@ func _property_get_revert(property: StringName) -> Variant:
         return v_colors # Do not allow reverting colors...
     return null
 
+func rand_id(rng: RandomNumberGenerator) -> int:
+    var result: int = _vary_id(rng, ids)
+    if result != -1:
+        return result
+    return id
+
 func rand_color(rng: RandomNumberGenerator) -> Color:
     return _vary_color(rng, v_colors)
 
@@ -213,6 +227,23 @@ static func _vary(rng: RandomNumberGenerator, base: float, low: float, high: flo
         return rng.randf_range(base - low, base + high)
 
     return clampf(rng.randfn(base, d), base - low, base + high)
+
+static func _vary_id(rng: RandomNumberGenerator, ids: Dictionary[int, int]) -> int:
+    print(ids)
+    var max_ticket: int = 0
+    for id in ids:
+        max_ticket += ids.get(id)
+
+    if max_ticket < 1:
+        return -1
+
+    var ticket: int = rng.randi_range(1, max_ticket)
+    for id in ids:
+        ticket -= ids.get(id)
+        if ticket <= 0:
+            return id
+
+    return -1
 
 static func _vary_color(rng: RandomNumberGenerator, colors: Array[TerrainInstanceColorSettings]) -> Color:
     # Compute ticket range

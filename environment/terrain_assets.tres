@@ -151,7 +151,10 @@ scene_file = ExtResource("3_iiu0x")
 density = 0.02094615202784
 last_lod = 1
 last_shadow_lod = 1
-lod1_range = 128.0
+lod0_range = 127.0
+lod1_range = 4097.0
+collision_layers = 16
+collision_mask = 0
 
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_afoef"]
 name = "Aspen 4"

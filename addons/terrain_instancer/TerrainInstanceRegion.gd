@@ -232,9 +232,12 @@ func edit_instance(near: Vector3) -> bool:
     # Build set of instance types to manage
     var ids: Array[int]
     for inst in settings.instances:
-        if ids.has(inst.id):
-            continue
-        ids.append(inst.id)
+        if not ids.has(inst.id):
+            ids.append(inst.id)
+        for id in inst.ids:
+            if ids.has(id):
+                continue
+            ids.append(id)
 
     if ids.size() == 0:
         return false
@@ -339,9 +342,12 @@ func clear_region() -> void:
     # Build set of instance types to manage
     var ids: Array[int]
     for inst in settings.instances:
-        if ids.has(inst.id):
-            continue
-        ids.append(inst.id)
+        if not ids.has(inst.id):
+            ids.append(inst.id)
+        for id in inst.ids:
+            if ids.has(id):
+                continue
+            ids.append(id)
 
     var box: AABB = AABB()
     for polygon in shapes:
@@ -524,8 +530,10 @@ func populate_region(editor_mode: bool = false) -> void:
         if not instance.enabled:
             continue
 
+        var ids: PackedInt32Array
         var xforms: Array[Transform3D]
         var colors: PackedColorArray
+
         var instance_total: int = 0
 
         i_hash = hash_inst[inst_index]
@@ -545,6 +553,7 @@ func populate_region(editor_mode: bool = false) -> void:
                 var count_added: int = _populate_chunk(rng, instance, chunk, chunks)
                 if count_added > 0:
                     var positions: PackedVector4Array = chunks.get(instance.id).get(chunk)
+                    ids.resize(ids.size() + count_added)
                     xforms.resize(xforms.size() + count_added)
                     colors.resize(colors.size() + count_added)
 
@@ -557,6 +566,7 @@ func populate_region(editor_mode: bool = false) -> void:
 
                         rng.seed = chunk_seed ^ hash(xform.origin)
 
+                        var rand_id: int = instance.rand_id(rng)
                         var rand_height: float = instance.rand_height(rng)
                         var rand_spin: float = instance.rand_spin(rng)
                         var tilt_amount: float = instance.rand_tilt(rng)
@@ -586,6 +596,7 @@ func populate_region(editor_mode: bool = false) -> void:
                         if not is_equal_approx(scale_amount, 1.0):
                             xform = xform.scaled_local(Vector3(scale_amount, scale_amount, scale_amount))
 
+                        ids[i + instance_total] = rand_id
                         xforms[i + instance_total] = xform
                         colors[i + instance_total] = rand_color
                         i += 1
@@ -609,8 +620,47 @@ func populate_region(editor_mode: bool = false) -> void:
 
             chunk.y += 1
 
+        # Prepare data efficiently
+        var placements: Dictionary
+        var id_totals: Dictionary[int, int]
+        for id in ids:
+            id_totals.set(id, id_totals.get(id, 0) + 1)
+
+        for id in id_totals:
+            var size: int = id_totals.get(id)
+
+            var id_xforms: Array[Transform3D]
+            var id_colors: PackedColorArray
+            id_xforms.resize(size)
+            id_colors.resize(size)
+
+            var id_data: Dictionary = { &'xforms': id_xforms, &'colors': id_colors }
+            placements.set(
+                    id,
+                    {
+                        &'data': id_data,
+                        &'index': 0,
+                    }
+            )
+
+        var i: int = 0
+        for id in ids:
+            var item: Dictionary = placements.get(id)
+            var index: int = item.index
+            item.data.colors.set(index, colors[i])
+            item.data.xforms.set(index, xforms[i])
+            item.index = index + 1
+            i += 1
+
         # Save to data
-        data.set(instance.id, { &'xforms': xforms, &'colors': colors })
+        for item in placements:
+            var item_data: Dictionary = placements.get(item).data
+            if data.has(item):
+                var db: Dictionary = data.get(item)
+                db.xforms.append_array(item_data.xforms)
+                db.colors.append_array(item_data.colors)
+            else:
+                data.set(item, item_data)
 
     # NOTE: do not time the terrain placement side
     end = Time.get_ticks_usec()
@@ -770,15 +820,36 @@ func _prepare_chunks(
 ) -> int:
 
     # Build set of instance types to manage
-    var ids: Array[int]
+    var ids: Dictionary[int, PackedInt32Array]
     var largest_min_distance: float = 0.0
     for inst in instances:
-        if ids.has(inst.id):
-            continue
-        ids.append(inst.id)
+        # Collect largest distance requirement
         for dist in inst.minimum_distances.values():
             if dist > largest_min_distance:
                 largest_min_distance = dist
+
+        # Map self
+        if not ids.has(inst.id):
+            ids.set(inst.id, PackedInt32Array([inst.id]))
+        else:
+            var mapping: PackedInt32Array = ids.get(inst.id)
+            if not mapping.has(inst.id):
+                mapping.append(inst.id)
+                ids.set(inst.id, mapping)
+
+        if inst.ids.size() == 0:
+            continue
+
+        # Map placed
+        for id in inst.ids:
+            if not ids.has(id):
+                ids.set(id, PackedInt32Array([inst.id]))
+                continue
+
+            var mapping: PackedInt32Array = ids.get(id)
+            if not mapping.has(inst.id):
+                mapping.append(inst.id)
+                ids.set(inst.id, mapping)
 
     if ids.size() == 0:
         return 0
@@ -794,9 +865,7 @@ func _prepare_chunks(
             if not ids.has(inst_id):
                 continue
 
-            var inst_chunks: Dictionary
-            if chunks.has(inst_id):
-                inst_chunks = chunks.get(inst_id)
+            var key_ids: PackedInt32Array = ids.get(inst_id)
 
             var cell_data: Dictionary = inst_data.get(inst_id)
             for cell in cell_data:
@@ -816,14 +885,22 @@ func _prepare_chunks(
                             floori(xform.origin.z / CHUNK_SIZE)
                     )
 
-                    var positions: PackedVector4Array
-                    if inst_chunks.has(chunk):
-                        positions = inst_chunks.get(chunk)
-                    positions.append(Vector4(xform.origin.x, xform.origin.y, xform.origin.z, 0.0))
-                    inst_chunks.set(chunk, positions)
+                    var pos: Vector4 = Vector4(xform.origin.x, xform.origin.y, xform.origin.z, 0.0)
+                    for id in key_ids:
+                        var inst_chunks: Dictionary
+                        if chunks.has(id):
+                            inst_chunks = chunks.get(id)
+
+                        var positions: PackedVector4Array
+                        if inst_chunks.has(chunk):
+                            positions = inst_chunks.get(chunk)
+
+                        positions.append(pos)
+
+                        inst_chunks.set(chunk, positions)
+
+                        chunks.set(id, inst_chunks)
 
                     total_found += 1
-
-            chunks.set(inst_id, inst_chunks)
 
     return total_found

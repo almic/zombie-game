@@ -317,7 +317,7 @@ var viewer_basis: Basis
 var planet_viewer_basis: Basis
 
 var moon_view: MoonView
-var moon_phase_angle: float
+var moon_phase_cos_theta: float
 var moon_mesh: MeshInstance3D
 var moon_camera: Camera3D
 var moon_view_shader: ShaderMaterial
@@ -462,7 +462,7 @@ func update_sky(_delta: float, force: bool = false) -> void:
     var sun_true: Vector3 = Sun.basis.z
     var moon_true: Basis = Moon.basis
 
-    moon_phase_angle = moon_true.z.dot(sun_true)
+    moon_phase_cos_theta = moon_true.z.dot(-sun_true)
 
     # Add refraction to apparant elevation of sky lights
     for light in [Sun, Moon] as Array[DirectionalLight3D]:
@@ -533,11 +533,15 @@ func update_sky(_delta: float, force: bool = false) -> void:
 
 func tick_sky_lights(delta: float) -> void:
     if Moon.visible:
+        var sin_half_theta: float = sqrt((1.0 - moon_phase_cos_theta) / 2.0)
+        Moon.light_energy = max(
+            1.35 - 5.738 * sin_half_theta,
+            pow(1.0 - sin_half_theta, 2.0)
+        )
         if moon_light_energy.is_target_set and not moon_light_energy.is_done:
             # Moon light energy calculation
             # NOTE: the Moon is far brighter when at opposition with the Sun, so
             #       squaring the phase angle produces such an effect.
-            Moon.light_energy = moon_phase_angle * moon_phase_angle
             Moon.light_energy *= moon_light_energy.update(delta)
 
     if not sun_light_color.is_done:

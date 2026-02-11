@@ -84,6 +84,8 @@
 [ext_resource type="PackedScene" uid="uid://ds4lrtno0cui1" path="res://scene/debug/color_squares/color_squares.tscn" id="58_pb8w5"]
 [ext_resource type="Script" uid="uid://c5sknaqxkqhcr" path="res://addons/terrain_instancer/TerrainRegionPolygon.gd" id="59_yidmw"]
 [ext_resource type="Resource" uid="uid://b6qycvnywnt4n" path="res://scene/world/polygon2d/curb_76_round.tres" id="61_cvfj6"]
+[ext_resource type="Resource" uid="uid://dj3i87kgxr8a" path="res://scene/plants/tree/narrowleaf_cottonwood/narrowleaf_cottonwood_settings_normal.tres" id="61_fvo7w"]
+[ext_resource type="Resource" uid="uid://psr65qseemvf" path="res://scene/plants/tree/quaking_aspen/quaking_aspen_settings_normal.tres" id="62_dsaby"]
 [ext_resource type="Resource" uid="uid://da3rj8kluvsn8" path="res://scene/world/polygon2d/curb_52_sharp.tres" id="62_mcrc3"]
 [ext_resource type="Resource" uid="uid://cu1woxx6vcyr6" path="res://scene/world/polygon2d/sidewalk_220.tres" id="64_1yx4f"]
 [ext_resource type="Resource" uid="uid://c2wtc3kd0rcpc" path="res://scene/world/polygon2d/street_gutter_76.tres" id="65_6ywls"]
@@ -115,6 +117,11 @@ metadata/_custom_type_script = "uid://g1tug1pbf30t"
 [sub_resource type="Resource" id="Resource_icy4k"]
 script = ExtResource("58_icy4k")
 instances = Array[ExtResource("56_uxmrl")]([ExtResource("57_icy4k"), ExtResource("58_fvo7w")])
+metadata/_custom_type_script = "uid://g1tug1pbf30t"
+
+[sub_resource type="Resource" id="Resource_e5bey"]
+script = ExtResource("58_icy4k")
+instances = Array[ExtResource("56_uxmrl")]([ExtResource("61_fvo7w"), ExtResource("62_dsaby")])
 metadata/_custom_type_script = "uid://g1tug1pbf30t"
 
 [sub_resource type="Resource" id="Resource_dayhp"]
@@ -354,17 +361,21 @@ directional_shadow_split_3 = 0.2
 directional_shadow_blend_splits = true
 directional_shadow_max_distance = 200.0
 sky_mode = 1
+metadata/_edit_lock_ = true
 
 [node name="MoonLight" type="DirectionalLight3D" parent="DynamicDay" unique_id=842982889]
 transform = Transform3D(-0.42274655198447, -0.54468659232747, -0.72429404865975, -0.84027198208955, 0.53495231900061, 0.0881420019694, 0.339453, 0.64586572330056, -0.68383414, 0, 0, 0)
 top_level = true
+visible = false
 light_intensity_lux = 0.5
-light_temperature = 7100.0
+light_temperature = 12000.0
 light_energy = 0.0
+shadow_enabled = true
 directional_shadow_split_1 = 0.08
 directional_shadow_split_2 = 0.16
 directional_shadow_blend_splits = true
 sky_mode = 1
+metadata/_edit_lock_ = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388886696]
 process_mode = 3
@@ -857,12 +868,13 @@ metadata/_edit_lock_ = true
 [node name="IslandTrees" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=1537603505]
 script = ExtResource("55_fs5wv")
 seed = 2715453188
+settings = SubResource("Resource_e5bey")
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"
 metadata/_edit_lock_ = true
 
 [node name="IslandArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/IslandTrees" unique_id=1889409829]
 script = ExtResource("59_yidmw")
-vertices = PackedInt32Array(361, 163, 358, 166, 357, 173, 359, 183, 359, 195, 359, 223, 361, 242, 367, 260, 375, 278, 385, 296, 393, 311, 401, 323, 408, 333, 414, 342, 420, 346, 424, 344, 424, 340, 419, 327, 414, 312, 409, 295, 402, 274, 397, 258, 390, 239, 384, 220, 379, 203, 377, 189, 370, 172, 366, 164)
+vertices = PackedInt32Array(361, 159, 357, 161, 354, 165, 354, 173, 355, 189, 354, 214, 356, 240, 362, 260, 370, 280, 380, 298, 388, 313, 395, 324, 409, 344, 416, 351, 422, 354, 426, 351, 428, 346, 425, 329, 418, 310, 412, 291, 406, 270, 400, 255, 394, 242, 389, 218, 383, 201, 379, 187, 372, 170, 367, 162)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 

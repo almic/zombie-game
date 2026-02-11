@@ -1,0 +1,20 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://btarg6f4g52wq"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b8h3v"]
+transparency = 1
+cull_mode = 1
+depth_draw_mode = 1
+shading_mode = 0
+albedo_color = Color(1, 1, 1, 0.03137255)
+stencil_mode = 3
+stencil_flags = 1
+
+[resource]
+next_pass = SubResource("StandardMaterial3D_b8h3v")
+transparency = 1
+depth_draw_mode = 1
+specular_mode = 2
+albedo_color = Color(0.2, 0.2, 0.2, 0.62352943)
+stencil_mode = 3
+stencil_flags = 4
+stencil_color = Color(1, 1, 1, 0.050980393)

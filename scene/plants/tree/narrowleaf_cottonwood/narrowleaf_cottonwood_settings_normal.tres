@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="TerrainInstanceSettings" format=3 uid="uid://dj3i87kgxr8a"]
+
+[ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_32omp"]
+[ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_toasi"]
+
+[resource]
+resource_name = "Cottonwood Normal"
+script = ExtResource("1_32omp")
+id = 4
+ids = Dictionary[int, int]({
+4: 1,
+5: 1,
+6: 1,
+7: 1,
+8: 1
+})
+seed = 3238174822
+density = 7.0
+minimum_distances = {
+4: 4.2,
+9: 3.0
+}
+v_height_offset = -0.15
+v_height_high = 0.05
+v_spin_low = 3.14159265358979
+v_spin_high = 3.14159265358979
+v_tilt_low = 0.034906585
+v_tilt_high = 0.034906585
+v_scale_low = 0.1
+v_scale_high = 0.2
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"

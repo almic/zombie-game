@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="TerrainInstanceSettings" format=3 uid="uid://psr65qseemvf"]
+
+[ext_resource type="Script" uid="uid://vr4nxiaugcwm" path="res://addons/terrain_instancer/res/TerrainInstanceSettings.gd" id="1_dd4aj"]
+[ext_resource type="Script" uid="uid://dmr3brsptijju" path="res://addons/terrain_instancer/res/TerrainInstanceColorSettings.gd" id="2_ssc8n"]
+
+[resource]
+resource_name = "Aspen Normal"
+script = ExtResource("1_dd4aj")
+id = 9
+ids = Dictionary[int, int]({
+9: 1,
+10: 1,
+11: 1,
+12: 1
+})
+seed = 1715262217
+density = 10.0
+minimum_distances = {
+4: 3.0,
+9: 2.2
+}
+v_height_offset = -0.15
+v_height_high = 0.05
+v_spin_low = 3.14159265358979
+v_spin_high = 3.14159265358979
+v_tilt_low = 0.017453292
+v_tilt_high = 0.017453292
+v_scale_low = 0.1
+v_scale_high = 0.2
+metadata/_custom_type_script = "uid://vr4nxiaugcwm"

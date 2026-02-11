@@ -19,9 +19,11 @@ var light_curve: float = -3.39794
 ## multiplies the color.
 @export var night_vision_color: Color = Color(1.05, 0.97, 1.27)
 
+## LUT applied to color after tone-mapping and night adaptation.
+# @export var look_up_table: Texture3D
 
 var sampler: RID
-
+# var lut_id: RID
 
 
 func _init() -> void:
@@ -38,6 +40,9 @@ func _create_shader() -> void:
     sampler_state.mag_filter = RenderingDevice.SAMPLER_FILTER_LINEAR
     sampler_state.min_filter = RenderingDevice.SAMPLER_FILTER_LINEAR
     sampler = rd.sampler_create(sampler_state)
+
+    # LUT texture
+    # lut_id = rd.texture_create(, RDTextureView.new(), look_up_table.)
 
 func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) -> void:
 
@@ -99,6 +104,12 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
         exposure_texture.binding = 1
         exposure_texture.add_id(sampler)
         exposure_texture.add_id(AutoExposureGlobal.exposure_texture)
+
+        #var lut_texture: RDUniform = RDUniform.new()
+        #lut_texture.uniform_type = RenderingDevice.UNIFORM_TYPE_SAMPLER_WITH_TEXTURE
+        #lut_texture.binding = 2
+        #lut_texture.add_id(sampler)
+        #lut_texture.add_id()
 
         var uniform_set = UniformSetCacheRD.get_cache(shader, 0, [ screen_texture, exposure_texture ])
 

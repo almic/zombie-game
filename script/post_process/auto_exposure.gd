@@ -24,7 +24,6 @@ var light_curve: float = -3.39794
 @export var night_vision_sensitivity: Color = Color(0.011223, 0.390058, 0.598719)
 
 
-
 var current: RID
 var buffers: Array[RID]
 var buffer_size: Vector2i
@@ -36,6 +35,9 @@ var read_pipeline: RID
 var interpolate_pipeline: RID
 
 var sampler: RID
+
+
+var _waiting_for_exposure: bool = false
 
 
 func _shader_path() -> StringName:
@@ -172,6 +174,20 @@ func setup_buffers(size: Vector2i) -> void:
             rd.texture_clear(current, clear_color, 0, 1, 0, 1)
             break
 
+func queue_exposure_result() -> void:
+    if _waiting_for_exposure:
+        return
+
+    _waiting_for_exposure = true
+    rd.texture_get_data_async(AutoExposureGlobal.exposure_texture, 0, on_exposure_calculated)
+
+func on_exposure_calculated(data: PackedByteArray) -> void:
+    _waiting_for_exposure = false
+
+    var color: Color = Image.create_from_data(1, 1, false, Image.Format.FORMAT_RGF, data).get_pixel(0, 0)
+    var ev: float = log(color.r * 100.0 / 12.5) / log(2.0)
+    print("ev: %.3f\ncolor: %.6f" % [ev, color.r])
+
 func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) -> void:
 
     if not (
@@ -296,3 +312,5 @@ func _render_callback(p_effect_callback_type: int, p_render_data: RenderData) ->
     current = buffers[buffers.size() - 1]
     AutoExposureGlobal.exposure_texture = current
     buffers[buffers.size() - 1] = tmp
+
+    #queue_exposure_result()

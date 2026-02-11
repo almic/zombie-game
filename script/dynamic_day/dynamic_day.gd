@@ -322,7 +322,6 @@ var moon_mesh: MeshInstance3D
 var moon_camera: Camera3D
 var moon_view_shader: ShaderMaterial
 var moon_orbit_basis: Basis
-var moon_light_energy: Interpolation = Interpolation.new(30.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 
 
 ## Sun light color interpolation, changes as the sun moves through the sky
@@ -340,8 +339,6 @@ func _init() -> void:
     sun_angular_diameter = sun_angular_diameter
 
     update_periods()
-
-    moon_light_energy.current = 0.0
 
 func _notification(what:int) -> void:
     # NOTE: Prevent shader parameters from saving to disk.
@@ -486,34 +483,6 @@ func update_sky(_delta: float, force: bool = false) -> void:
 
     apply_time_changes()
 
-    # Sun light energy calculation
-    Sun.light_energy = (
-              sky_compute.moon_shadowing
-            * light_horizon(Sun.basis.z, _sun_radians)
-            # NOTE: better effect, make color more important to energy
-            * sqrt(Sun.light_color.srgb_to_linear().get_luminance())
-    )
-
-    # Disable sun light when energy is too low
-    Sun.visible = Sun.light_energy > 0.000001
-
-    # Enable moon when fully above horizon
-    Moon.visible = Moon.basis.z.y > 0.00275
-
-    # Brightness of the Sun to enable Moon shadows, in LUX
-    const sun_low_light_level = 1000
-
-    if not Moon.visible:
-        Moon.shadow_enabled = false
-    else:
-        if Sun.light_energy * Sun.light_intensity_lux < sun_low_light_level:
-            if not Moon.shadow_enabled:
-                Moon.shadow_enabled = true
-                moon_light_energy.set_target_delta(1.0, 1.0, 0.0)
-        elif not moon_light_energy.is_target_set or not is_zero_approx(moon_light_energy.target):
-            Moon.shadow_enabled = false
-            moon_light_energy.set_target_delta(0.0, -moon_light_energy.current)
-
     # BUG: Godot only updates textures in-game, wack
     if not Engine.is_editor_hint():
         # NOTE: Sun light color can change abruptly, and it's relatively cheap
@@ -532,17 +501,35 @@ func update_sky(_delta: float, force: bool = false) -> void:
 
 
 func tick_sky_lights(delta: float) -> void:
-    if Moon.visible:
-        var sin_half_theta: float = sqrt((1.0 - moon_phase_cos_theta) / 2.0)
-        Moon.light_energy = max(
-            1.35 - 5.738 * sin_half_theta,
-            pow(1.0 - sin_half_theta, 2.0)
-        )
-        if moon_light_energy.is_target_set and not moon_light_energy.is_done:
-            # Moon light energy calculation
-            # NOTE: the Moon is far brighter when at opposition with the Sun, so
-            #       squaring the phase angle produces such an effect.
-            Moon.light_energy *= moon_light_energy.update(delta)
+    # Sun light energy calculation
+    Sun.light_energy = (
+              sky_compute.moon_shadowing
+            * light_horizon(Sun.basis.z, _sun_radians)
+            # NOTE: better effect, make color more important to energy
+            * sqrt(Sun.light_color.srgb_to_linear().get_luminance())
+    )
+
+    # Disable sun light when energy is too low
+    Sun.visible = Sun.light_energy > 0.000001
+
+    # Can enable moon when fully above horizon
+    if Moon.basis.z.y > 0.00275:
+        if Sun.visible:
+            Moon.visible = false
+            Moon.light_energy = 0.0
+        else:
+            var sin_half_theta: float = sqrt((1.0 - moon_phase_cos_theta) / 2.0)
+            Moon.light_energy = max(
+                1.35 - 5.738 * sin_half_theta,
+                pow(1.0 - sin_half_theta, 2.0)
+            )
+            if Moon.light_energy > 0.0:
+                Moon.visible = true
+            else:
+                Moon.visible = false
+    else:
+        Moon.visible = false
+        Moon.light_energy = 0.0
 
     if not sun_light_color.is_done:
         Sun.light_color = sun_light_color.update(delta)

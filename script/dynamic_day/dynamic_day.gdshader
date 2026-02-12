@@ -259,26 +259,7 @@ void sky() {
 
         // Drawing the Sun disk
         vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
-        if (false) {
-        color.rgb = mix(
-                mix(color.rgb, color.rgb + sun_color.rgb, sun_color.a),
-                mix(
-                    color.rgb,
-                    pow(
-                        vec3(
-                            max(color.r, sun_color.r),
-                            (sun_color.g + color.g) / 2.0,
-                            max(min(color.b, sun_color.b), 0.0)
-                        ),
-                        vec3(2.0)
-                    ) + sun_color.rgb,
-                    sun_color.a
-                ),
-                1.0 - clamp(dot(EYEDIR, vec3(0.0, 1.0, 0.0) * 2.8), 0.0, 1.0)
-        );
-        } else {
-            color.rgb += min(color.rgb, vec3(1.0)) * (min(length(color.rgb), 1.0) * sun_color.rgb) * sun_color.a;
-        }
+        color.rgb += min(color.rgb, vec3(1.0)) * (min(length(color.rgb), 1.0) * sun_color.rgb) * sun_color.a;
     }
 
     COLOR = max(color, vec3(0.0));

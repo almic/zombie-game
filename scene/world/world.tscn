@@ -10342,14 +10342,6 @@ mesh = SubResource("PlaneMesh_e5bey")
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 mesh = SubResource("PlaneMesh_icy4k")
 
-[node name="Marker3D" type="Marker3D" parent="." unique_id=868034028]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 616.2762854, -1.2, 698.9622)
-gizmo_extents = 5.0
-
-[node name="Marker3D2" type="Marker3D" parent="Marker3D" unique_id=271760029]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 272.99, -4.44, 890.73)
-gizmo_extents = 5.0
-
 [node name="Water" type="Node" parent="." unique_id=1485865112]
 
 [node name="LakeWater" type="MeshInstance3D" parent="Water" unique_id=349622508]

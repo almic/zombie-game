@@ -5,7 +5,7 @@
 // https://www.shadertoy.com/view/msXXDS
 
 
-#define AEROSOL_TYPE 0
+#define AEROSOL_TYPE 1
 
 
 const float PI = 3.14159265358979323846;
@@ -20,12 +20,12 @@ const float gg = g*g;
 
 // These could be put into a uniform for crazy effects, but for most
 // uses they stay constant.
-const float EYE_ALTITUDE = 0.15;
+const float EYE_ALTITUDE = 0.35;
 const float EARTH_RADIUS = 6371.0;
 const float ATMOSPHERE_THICKNESS = 100.0;
 const float ATMOSPHERE_RADIUS = EARTH_RADIUS + ATMOSPHERE_THICKNESS;
 const float EYE_DISTANCE_TO_EARTH_CENTER = EARTH_RADIUS + EYE_ALTITUDE;
-const vec4 GROUND_ALBEDO = vec4(0.1);
+const vec4 GROUND_ALBEDO = vec4(0.3);
 
 // These are real values for sun irradiance, rayleigh scattering, and ozone
 // absorption, sampled at wavelengths 630, 560, 490, 430 nanometers.
@@ -45,7 +45,7 @@ const vec4 ozone_absorption_cross_section = vec4(3.472e-21, 3.914e-21, 1.349e-21
 
 // In the source material, the author varies ozone concentrations. This value is the
 // average of those values.
-const float ozone_concentration = 337.0;
+const float ozone_concentration = 300.0;
 
 // Scattering/ Mie constants.
 

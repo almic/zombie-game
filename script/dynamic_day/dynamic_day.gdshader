@@ -214,6 +214,7 @@ vec4 get_sun_color(vec3 eye_dir, float moon_mask)
     if (sun_angle < sun_diameter_radians)
     { // Sun disk adding
         alpha += max(0.0, smooth_disk(sun_angle, sun_diameter_radians, factor));
+        color.r = max(color.r, 4.0);
     }
 
     // Apply moon mask
@@ -254,19 +255,30 @@ void sky() {
         // We have to translate EYEDIR into "moon-space" so there's no distortions.
         // Must double the diameter to be correct
         vec4 moon_color = get_moon_color(EYEDIR);
-        //moon_color.rgb = 1.0 - exp(-k * moon_color.rgb);
         color += moon_color.rgb * moon_color.a;
 
         // Drawing the Sun disk
         vec4 sun_color = get_sun_color(EYEDIR, 1.0 - moon_color.a);
-        //sun_color.rgb = 1.0 - exp(-k * sun_color.rgb);
-
+        if (false) {
         color.rgb = mix(
-                mix(color.rgb, sun_color.rgb, sun_color.a),
-                mix(color.rgb, color.rgb * sun_color.rgb, sun_color.a),
+                mix(color.rgb, color.rgb + sun_color.rgb, sun_color.a),
+                mix(
+                    color.rgb,
+                    pow(
+                        vec3(
+                            max(color.r, sun_color.r),
+                            (sun_color.g + color.g) / 2.0,
+                            max(min(color.b, sun_color.b), 0.0)
+                        ),
+                        vec3(2.0)
+                    ) + sun_color.rgb,
+                    sun_color.a
+                ),
                 1.0 - clamp(dot(EYEDIR, vec3(0.0, 1.0, 0.0) * 2.8), 0.0, 1.0)
         );
-        //color.rgb = vec3(sun_color.a);
+        } else {
+            color.rgb += min(color.rgb, vec3(1.0)) * (min(length(color.rgb), 1.0) * sun_color.rgb) * sun_color.a;
+        }
     }
 
     COLOR = max(color, vec3(0.0));

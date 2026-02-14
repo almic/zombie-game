@@ -7716,11 +7716,25 @@ size = Vector3(30, 6, 20)
 material = ExtResource("53_64map")
 metadata/_edit_lock_ = true
 
+[node name="GasStation" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=679004462]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -170.7848605, 3.6395626, -240.9079242)
+use_collision = true
+collision_layer = 16
+collision_mask = 0
+metadata/_edit_lock_ = true
+
+[node name="CSGBox3D" type="CSGBox3D" parent="LevelBlocking/Town/Buildings/Special/GasStation" unique_id=2003643815]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+size = Vector3(16, 6, 11)
+material = ExtResource("53_64map")
+metadata/_edit_lock_ = true
+
 [node name="ParkingGarage" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special" unique_id=386097957]
 transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -335.8, 9.44, -389)
 use_collision = true
 collision_layer = 16
 collision_mask = 0
+metadata/_edit_lock_ = true
 
 [node name="structure" type="CSGCombiner3D" parent="LevelBlocking/Town/Buildings/Special/ParkingGarage" unique_id=192425328]
 

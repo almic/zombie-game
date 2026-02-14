@@ -62,7 +62,7 @@ void main()
     float night_luminance = v.r * color.r + v.g * color.g + v.b * color.b;
     vec3 night_color = params.night_vision_color * auto_values.g * night_luminance;
     float night_curve = curve(auto_values.r + color_luminance, params.light_curve);
-    color.rgb = mix(color.rgb, night_color, night_curve * night_curve);
+    //color.rgb = mix(color.rgb, night_color, night_curve * night_curve);
 
     color.rgb = tonemap(color.rgb, params.white);
 

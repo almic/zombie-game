@@ -274,24 +274,6 @@ func spawn_zombie(delta: float) -> void:
     if zombie is Zombie:
         zombie.attack_damage = 20
 
-        var mind: BehaviorMind = zombie.mind
-        if enable_targeting:
-            for sense in mind.senses:
-                if sense is BehaviorSenseVision:
-                    if not sense.target_groups.has('zombie_target'):
-                        sense.target_groups.append('zombie_target')
-                elif sense is BehaviorSenseHearing:
-                    if not sense.target_groups.has('zombie_target'):
-                        sense.target_groups.append('zombie_target')
-        else:
-            for sense in mind.senses:
-                if sense is BehaviorSenseVision:
-                    if sense.target_groups.has('zombie_target'):
-                        sense.target_groups.erase('zombie_target')
-                elif sense is BehaviorSenseHearing:
-                    if sense.target_groups.has('zombie_target'):
-                        sense.target_groups.erase('zombie_target')
-
 
 func update_spawn_points() -> void:
     _spawn_points.assign(get_tree().get_nodes_in_group('zombie_spawn'))
@@ -402,25 +384,4 @@ func on_focus_exited() -> void:
 func set_zombie_targeting(enabled: bool) -> void:
     enable_targeting = enabled
 
-    if enable_targeting:
-        for zomb in _zombies:
-            var mind := zomb.mind
-            for sense in mind.senses:
-                if sense is BehaviorSenseVision:
-                    if not sense.target_groups.has('zombie_target'):
-                        sense.target_groups.append('zombie_target')
-                elif sense is BehaviorSenseHearing:
-                    if not sense.target_groups.has('zombie_target'):
-                        sense.target_groups.append('zombie_target')
-                # TODO: add other primary senses
-    else:
-        for zomb in _zombies:
-            var mind := zomb.mind
-            for sense in mind.senses:
-                if sense is BehaviorSenseVision:
-                    if sense.target_groups.has('zombie_target'):
-                        sense.target_groups.erase('zombie_target')
-                elif sense is BehaviorSenseHearing:
-                    if sense.target_groups.has('zombie_target'):
-                        sense.target_groups.erase('zombie_target')
-                # TODO: add other primary senses
+    # TODO: iterate zombies and set "DO_TARGETING" tag or something on mind

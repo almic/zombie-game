@@ -438,12 +438,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." unique_id=426770923 instance=ExtResource("4_036b0")]
 physics_interpolation_mode = 1
-transform = Transform3D(0, 0, -1.00000051197437, 0, 1, 0, 1.00000051197437, 0, 0, -145.59, 2.25, -207.11)
+transform = Transform3D(-1.00000051197437, 0, 0, 0, 1, 0, 0, 0, -1.00000051197437, -358.8398067, 12.839268, -484.2568135)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." unique_id=978147832 groups=["zombie"] instance=ExtResource("19_ckxcn")]
-process_mode = 4
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -387.8943, 7.1446788, 399.2130057)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -359.4486429, 12.5391449, -473.9680675)
 velocity = Vector3(0, -938.906, 0)
 
 [node name="WeaponPickups" type="Node" parent="." unique_id=1247351212]
@@ -484,7 +483,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupShotgun" type="Marker3D" parent="WeaponPickups" unique_id=1750032670]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.42, -484.565)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -358.7909031, 12.4699245, -484.565)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("19_udj0i")
@@ -9327,7 +9326,7 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -368.0724358, 3.83, -697.232
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." unique_id=273614056 instance=ExtResource("54_x6gsb")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -639.28, 15.8706825, -118.1)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -301.5851658, 8.1724774, -351.7898)
 
 [node name="Race" type="Node3D" parent="." unique_id=1034726807]
 visible = false

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="BehaviorMindSettings" format=3 uid="uid://d2w5ho0mluo71"]
+
+[ext_resource type="Script" uid="uid://br3s0fowwjlu3" path="res://addons/behavior/core/mind/mind_settings.gd" id="1_binr1"]
+[ext_resource type="Script" uid="uid://25owkc0pke7d" path="res://addons/behavior/core/sense/hearing/hearing_settings.gd" id="2_5r4sx"]
+[ext_resource type="Script" uid="uid://beflq8u4bpx5x" path="res://addons/behavior/core/sense/vision/vision_settings.gd" id="3_psa6v"]
+
+[sub_resource type="Resource" id="Resource_yc06d"]
+script = ExtResource("2_5r4sx")
+
+[sub_resource type="Resource" id="Resource_rq72r"]
+script = ExtResource("3_psa6v")
+target_groups = Array[StringName]([&"zombie_target"])
+
+[resource]
+resource_name = "basic_zombie_mind_settings"
+script = ExtResource("1_binr1")
+sense_vision = SubResource("Resource_rq72r")
+sense_hearing = SubResource("Resource_yc06d")

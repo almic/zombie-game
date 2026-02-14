@@ -2,6 +2,8 @@
 
 class_name Zombie extends CharacterBase
 
+const DEFAULT_MIND_SETTINGS = preload("uid://d2w5ho0mluo71")
+
 
 ## NOTE: do not call any methods on nav_agent until mind processing is done!
 ##       many methods force a path update, which could cause bugs.
@@ -26,6 +28,18 @@ class_name Zombie extends CharacterBase
 @onready var leg_r_1: HurtBox = %leg_r1
 @onready var leg_r_2: HurtBox = %leg_r2
 @onready var foot_r: HurtBox = %foot_r
+
+
+@export_group("Vision")
+
+## Eyes available for seeing other characters, eyes will be cycled so that more
+## eyes do not increase the number of raycasts on targets. Ensure the given node's
+## forward (-Z) faces the direction of vision.
+@export var eyes: Array[Node3D] = []
+
+
+func get_eyes() -> Array[Node3D]:
+    return eyes
 
 
 @export_group("Movement")
@@ -95,6 +109,9 @@ var rotate_stop_time: float = 0.25
 var anim_state_machine: AnimationNodeStateMachine
 ## Locomotion state machine playback
 var locomotion: AnimationNodeStateMachinePlayback
+## Mind state
+@export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
+var mind_state: BehaviorMindState
 
 
 ## The last player who damaged the zombie
@@ -177,14 +194,10 @@ func _ready() -> void:
     life.hurt.connect(on_hurt)
     life.check_health()
 
-
-    mind.debug_root = %MindDebugMarker
-
-    var vision: BehaviorSenseVision = mind.get_sense(BehaviorSenseVision.NAME)
-    if vision:
-        vision.on_sense.connect(func(_s): update_eyes())
-
     nav_agent.navigation_finished.connect(on_navigate_finished)
+
+    if not mind_state:
+        mind_state = BehaviorMindState.new(self, DEFAULT_MIND_SETTINGS)
 
 
 func _process(_delta: float) -> void:
@@ -205,7 +218,8 @@ func _physics_process(delta: float) -> void:
     if not life.is_alive:
         return
 
-    mind.update(delta)
+    if mind_state:
+        mind_state.tick(delta)
 
     # NOTE: move based on currently seen rotation, otherwise it looks like they
     #       move at a sharper angle than they should be

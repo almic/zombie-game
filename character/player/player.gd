@@ -16,6 +16,19 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 @onready var flashlight: SpotLight3D = %Flashlight
 
 
+@export_group("Vision")
+
+## Visible points on this character which are detected by other characters.
+@export var sight_points: Array[Node3D] = []
+
+## If the sight points have no depth, meaning they will be oriented towards the
+## viewer for detection. Best for players who cannot see their body.
+@export var sight_points_no_depth: bool = false
+
+func get_sight_points() -> Array[Node3D]:
+    return sight_points
+
+
 @export_group("Combat")
 @export var life: LifeResource
 @export var right_hand: bool = true

@@ -73,8 +73,6 @@ class FluidDetails:
     func has_fluid() -> bool:
         return area != null
 
-@export var mind: BehaviorMind
-
 
 @export_group("Movement")
 
@@ -156,21 +154,6 @@ var step_snap_down_max_angle: float = deg_to_rad(5.0):
 var step_snap_down_max_cos_theta: float = -1
 
 
-@export_group("Vision")
-
-## Eyes available for seeing other characters, eyes will be cycled so that more
-## eyes do not increase the number of raycasts on targets. Ensure the given node's
-## forward (-Z) faces the direction of vision.
-@export var eyes: Array[Node3D] = []
-
-## Visible points on this character which are detected by other characters.
-@export var sight_points: Array[Node3D] = []
-
-## If the sight points have no depth, meaning they will be oriented towards the
-## viewer for detection. Best for players who cannot see their body.
-@export var sight_points_no_depth: bool = false
-
-
 ## Collider used for terrain/ body collision
 var collider: CollisionShape3D
 
@@ -206,10 +189,6 @@ var fluid_state: FluidState = FluidState.AIR
 var fluid_details: FluidDetails = FluidDetails.new()
 
 
-# Vision stuff
-var next_eye: int = 0
-
-
 # NOTE: for development, delete later
 var _debug_ready_called: bool = false
 var _debug_ready_called_error_printed: bool = false
@@ -223,10 +202,6 @@ func _ready() -> void:
     wall_slide_angle = wall_slide_angle
     step_up_max_contact_angle = step_up_max_contact_angle
     step_snap_down_max_angle = step_snap_down_max_angle
-
-    if mind and not Engine.is_editor_hint():
-        mind = mind.duplicate(true)
-        mind.parent = self as CharacterBase
 
     if Engine.is_editor_hint():
         return
@@ -631,28 +606,6 @@ func update_movement(delta: float, speed: float = top_speed) -> void:
     acceleration = real_velocity - last_velocity
     #var vel_speed: float = velocity.length()
     #print('speed = ' + str(vel_speed))
-
-## Cycles the active eye for the primary vision sense
-func update_eyes() -> void:
-    if eyes.is_empty():
-        return
-
-    var eye_idx: int = next_eye
-    next_eye = (next_eye + 1) % eyes.size()
-
-    if not mind:
-        return
-
-    var vision: BehaviorSenseVision = mind.get_sense(BehaviorSenseVision.NAME) as BehaviorSenseVision
-    if not vision:
-        return
-
-    var eye: Node3D = eyes[eye_idx]
-    vision.debug_eye = eye
-
-    var eye_xform: Transform3D = eye.global_transform
-    vision.eye_pos = eye_xform.origin
-    vision.eye_dir = -eye_xform.basis.z
 
 
 @warning_ignore('shadowed_variable_base_class')

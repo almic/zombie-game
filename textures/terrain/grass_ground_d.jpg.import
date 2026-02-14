@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dhm02ktyg4mxk"
-path.bptc="res://.godot/imported/grass_ground_d.jpg-9f38b84960189abb9f42f53fd8bd52d2.bptc.ctex"
+path.s3tc="res://.godot/imported/grass_ground_d.jpg-9f38b84960189abb9f42f53fd8bd52d2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,16 +12,16 @@ metadata={
 [deps]
 
 source_file="res://textures/terrain/grass_ground_d.jpg"
-dest_files=["res://.godot/imported/grass_ground_d.jpg-9f38b84960189abb9f42f53fd8bd52d2.bptc.ctex"]
+dest_files=["res://.godot/imported/grass_ground_d.jpg-9f38b84960189abb9f42f53fd8bd52d2.s3tc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=true
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
-compress/hdr_compression=1
+compress/hdr_compression=0
 compress/normal_map=2
 compress/channel_pack=0
 mipmaps/generate=true
@@ -32,7 +32,7 @@ process/channel_remap/red=0
 process/channel_remap/green=1
 process/channel_remap/blue=2
 process/channel_remap/alpha=8
-process/fix_alpha_border=true
+process/fix_alpha_border=false
 process/premult_alpha=false
 process/normal_map_invert_y=false
 process/hdr_as_srgb=false

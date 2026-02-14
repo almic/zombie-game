@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c8wvlmb8s5fob"
-path.bptc="res://.godot/imported/skin.png-e051ff92ae7dcf7b91f7c07cfe69bfbf.bptc.ctex"
+path.s3tc="res://.godot/imported/skin.png-e051ff92ae7dcf7b91f7c07cfe69bfbf.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,16 +12,16 @@ metadata={
 [deps]
 
 source_file="res://model/zombie/skin.png"
-dest_files=["res://.godot/imported/skin.png-e051ff92ae7dcf7b91f7c07cfe69bfbf.bptc.ctex"]
+dest_files=["res://.godot/imported/skin.png-e051ff92ae7dcf7b91f7c07cfe69bfbf.s3tc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=true
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0
-compress/hdr_compression=1
+compress/hdr_compression=0
 compress/normal_map=2
 compress/channel_pack=0
 mipmaps/generate=true

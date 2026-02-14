@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://coxs2jiel83vg"
-path.bptc="res://.godot/imported/flashlight_function.png-e2cc52e8361a3bcd1b2d4fe1dd13d169.bptc.ctex"
+path.s3tc="res://.godot/imported/flashlight_function.png-e2cc52e8361a3bcd1b2d4fe1dd13d169.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,12 +12,12 @@ metadata={
 [deps]
 
 source_file="res://textures/light_func/flashlight_function.png"
-dest_files=["res://.godot/imported/flashlight_function.png-e2cc52e8361a3bcd1b2d4fe1dd13d169.bptc.ctex"]
+dest_files=["res://.godot/imported/flashlight_function.png-e2cc52e8361a3bcd1b2d4fe1dd13d169.s3tc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=true
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0

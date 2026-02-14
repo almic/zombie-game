@@ -589,7 +589,7 @@ func on_override_toggle(enabled: bool) -> void:
         copy_or_extend.dialog_text = (
                 'Would you like to extend the current resource or copy its values?\n'
                 + 'Extending will create a blank resource that inherits all the '
-                + 'values from the current resource. Copying will perform a shallow '
+                + 'values from the current resource.\nCopying will perform a shallow '
                 + 'copy of all the base properties.'
         )
         copy_or_extend.ok_button_text = 'Extend'

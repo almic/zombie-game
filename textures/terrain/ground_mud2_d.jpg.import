@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b0qmm215ojqwq"
-path.bptc="res://.godot/imported/ground_mud2_d.jpg-f03329ae4470592ac08644c1e25a25f7.bptc.ctex"
+path.s3tc="res://.godot/imported/ground_mud2_d.jpg-f03329ae4470592ac08644c1e25a25f7.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -12,12 +12,12 @@ metadata={
 [deps]
 
 source_file="res://textures/terrain/ground_mud2_d.jpg"
-dest_files=["res://.godot/imported/ground_mud2_d.jpg-f03329ae4470592ac08644c1e25a25f7.bptc.ctex"]
+dest_files=["res://.godot/imported/ground_mud2_d.jpg-f03329ae4470592ac08644c1e25a25f7.s3tc.ctex"]
 
 [params]
 
 compress/mode=2
-compress/high_quality=true
+compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
 compress/rdo_quality_loss=0.0

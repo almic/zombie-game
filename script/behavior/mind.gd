@@ -1,5 +1,5 @@
 ## Container for a memory bank, goals, actions, and senses
-class_name BehaviorMind extends Resource
+class_name BehaviorMindOld extends Resource
 
 
 static var DEBUG_SCENE: PackedScene = preload("uid://cma3vinjxx686")

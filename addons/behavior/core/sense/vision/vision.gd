@@ -5,7 +5,7 @@ class_name BehaviorSenseVision
 const NAME = &"vision"
 
 
-static func update(mind: BehaviorMindState, settings: BehaviorSenseVisionSettings) -> void:
+static func update(mind: BehaviorMind, settings: BehaviorSenseVisionSettings) -> void:
     if settings.fov_cos_half < 0.001:
         return
 
@@ -25,6 +25,10 @@ static func update(mind: BehaviorMindState, settings: BehaviorSenseVisionSetting
     var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.new()
     query.collision_mask = settings.mask
     for target in targets:
+        # Skip nodes awaiting processing
+        if mind.has_sense_event(NAME, target.get_path()):
+            continue
+
         query.exclude = [mind.agent.get_rid(), target.get_rid()]
 
         var points: PackedVector3Array
@@ -101,6 +105,14 @@ static func update(mind: BehaviorMindState, settings: BehaviorSenseVisionSetting
                     distance = sqrt(distance_sq)
                     direction /= distance
                 print('I see %s! Direction %s, Distance %.2f' % [target.name, direction, distance])
+
+                mind.add_sense_event(
+                        NAME,
+                        target.get_path(),
+                        Vector4(direction.x, direction.y, direction.z, distance)
+                )
+
+                print(mind.sensory_events)
 
                 break
 

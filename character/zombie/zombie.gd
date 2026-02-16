@@ -109,9 +109,9 @@ var rotate_stop_time: float = 0.25
 var anim_state_machine: AnimationNodeStateMachine
 ## Locomotion state machine playback
 var locomotion: AnimationNodeStateMachinePlayback
-## Mind state
+## Mind
 @export_custom(PROPERTY_HINT_NONE, '', PROPERTY_USAGE_STORAGE)
-var mind_state: BehaviorMindState
+var mind: BehaviorMind
 
 
 ## The last player who damaged the zombie
@@ -196,8 +196,8 @@ func _ready() -> void:
 
     nav_agent.navigation_finished.connect(on_navigate_finished)
 
-    if not mind_state:
-        mind_state = BehaviorMindState.new(self, DEFAULT_MIND_SETTINGS)
+    if not mind:
+        mind = BehaviorMind.new(self, DEFAULT_MIND_SETTINGS)
 
 
 func _process(_delta: float) -> void:
@@ -218,8 +218,8 @@ func _physics_process(delta: float) -> void:
     if not life.is_alive:
         return
 
-    if mind_state:
-        mind_state.tick(delta)
+    if mind:
+        mind.tick(delta)
 
     # NOTE: move based on currently seen rotation, otherwise it looks like they
     #       move at a sharper angle than they should be

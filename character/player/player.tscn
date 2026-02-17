@@ -52,11 +52,13 @@ height = 1.7
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
 
-[node name="player" type="CharacterBody3D" unique_id=173820620 node_paths=PackedStringArray("camera_smooth_target_node", "sight_points") groups=["player", "zombie_target"]]
+[node name="player" type="CharacterBody3D" unique_id=173820620 node_paths=PackedStringArray("sight_points", "camera_smooth_target_node") groups=["player", "zombie_target"]]
 process_mode = 1
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0)
 collision_mask = 115
 script = ExtResource("1_y482n")
+sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
+sight_points_no_depth = true
 life = ExtResource("3_lqp71")
 weapon_position = Vector3(0.225, -0.195, -0.605)
 camera_smooth_enabled = false
@@ -90,8 +92,6 @@ exit_vehicle = ExtResource("25_k6mlu")
 brake = ExtResource("25_2pong")
 handbrake = ExtResource("26_r212m")
 movement_sound_map = ExtResource("26_8bmvw")
-sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
-sight_points_no_depth = true
 
 [node name="collider" type="CollisionShape3D" parent="." unique_id=148615387]
 unique_name_in_owner = true

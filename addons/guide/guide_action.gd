@@ -37,7 +37,7 @@ enum GUIDEActionState {
 ## If this action triggers, lower-priority actions cannot trigger
 ## if they share input with this action unless these actions are
 ## chorded with this action.
-@export var block_lower_priority_actions:bool = true:
+@export var block_lower_priority_actions:bool = false:
 	set(value):
 		if block_lower_priority_actions == value:
 			return

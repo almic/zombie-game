@@ -25,6 +25,7 @@
 [ext_resource type="Resource" uid="uid://d3ao7jq6qeasg" path="res://data/weapon/type/pistol/pistol.tres" id="17_lpj8c"]
 [ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="18_udj0i"]
 [ext_resource type="PackedScene" uid="uid://vvkd1vnbarkk" path="res://character/zombie/zombie.tscn" id="19_ckxcn"]
+[ext_resource type="PackedScene" uid="uid://dkr80d2pi0d41" path="res://addons/guide/debugger/guide_debugger.tscn" id="19_e5bey"]
 [ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="19_g0i7g"]
 [ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="19_t6jhs"]
 [ext_resource type="Resource" uid="uid://df0njg4igaivy" path="res://data/weapon/type/shotgun/shotgun.tres" id="19_udj0i"]
@@ -395,6 +396,9 @@ visible = false
 unique_name_in_owner = true
 process_mode = 3
 mouse_filter = 2
+
+[node name="GuideDebugger" parent="CanvasLayer" unique_id=971981970 instance=ExtResource("19_e5bey")]
+visible = false
 
 [node name="NavTesting" type="Node" parent="." unique_id=794575428]
 

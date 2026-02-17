@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="GUIDEAction" load_steps=2 format=3 uid="uid://dkxs81p2pc2v5"]
+[gd_resource type="Resource" script_class="GUIDEAction" format=3 uid="uid://dkxs81p2pc2v5"]
 
 [ext_resource type="Script" uid="uid://cluhc11vixkf1" path="res://addons/guide/guide_action.gd" id="1_le8ys"]
 

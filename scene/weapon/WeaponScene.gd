@@ -255,9 +255,12 @@ func travel(node: StringName, immediate: bool = false) -> void:
         push_warning('Did you override WeaponScene\'s _ready() method? Make sure you call super._ready()!!!')
 
     var anim_node: AnimationNodeAnimation = state_machine.get_node(node) as AnimationNodeAnimation
-    if anim_node:
-        anim_target = node
-        is_anim_traveling = true
+    if not anim_node:
+        push_error('Missing animation node "%s" for %s' % [node, self.name])
+        return
+
+    anim_target = node
+    is_anim_traveling = true
     print('Traveling to ' + node + ' (' + anim_node.animation + ')')
     anim_state.travel(node)
 

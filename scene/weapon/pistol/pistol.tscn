@@ -1,6 +1,6 @@
-[gd_scene load_steps=9 format=3 uid="uid://lum7snfoxdml"]
+[gd_scene format=3 uid="uid://lum7snfoxdml"]
 
-[ext_resource type="Script" uid="uid://ddecsnlrrapmh" path="res://scene/weapon/WeaponScene.gd" id="1_pe3ky"]
+[ext_resource type="Script" uid="uid://qpx47y7pq0ni" path="res://scene/weapon/pistol/pistol.gd" id="1_pe3ky"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_b3nnr"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="3_cj22s"]
 [ext_resource type="Animation" uid="uid://oobxti24hjyk" path="res://animation/pistol/pistol_reset.res" id="4_cj22s"]
@@ -13,7 +13,7 @@ _data = {
 &"RESET": ExtResource("4_cj22s")
 }
 
-[node name="Pistol" type="Node3D" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker")]
+[node name="Pistol" type="Node3D" unique_id=264754222 node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker")]
 script = ExtResource("1_pe3ky")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/protomesh/BarrelMarker")
@@ -22,35 +22,35 @@ reload_marker = NodePath("ReloadMarker")
 magazine_marker = NodePath("Mesh/MagazineMarker")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="Mesh" type="Node3D" parent="."]
+[node name="Mesh" type="Node3D" parent="." unique_id=1711359242]
 unique_name_in_owner = true
 
-[node name="protomesh" type="CSGCombiner3D" parent="Mesh"]
+[node name="protomesh" type="CSGCombiner3D" parent="Mesh" unique_id=1403657499]
 
-[node name="top" type="CSGBox3D" parent="Mesh/protomesh"]
+[node name="top" type="CSGBox3D" parent="Mesh/protomesh" unique_id=576620136]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.002)
 size = Vector3(0.039, 0.053, 0.276)
 material = ExtResource("2_b3nnr")
 
-[node name="slide_cut" type="CSGBox3D" parent="Mesh/protomesh/top"]
+[node name="slide_cut" type="CSGBox3D" parent="Mesh/protomesh/top" unique_id=1845037895]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.011, 0)
 operation = 2
 size = Vector3(0.04, 0.035, 0.285)
 material = ExtResource("2_b3nnr")
 
-[node name="barrel" type="CSGCylinder3D" parent="Mesh/protomesh/top"]
+[node name="barrel" type="CSGCylinder3D" parent="Mesh/protomesh/top" unique_id=1727890822]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.1)
 radius = 0.012
 height = 0.094
 sides = 16
 material = ExtResource("2_b3nnr")
 
-[node name="slide" type="CSGBox3D" parent="Mesh/protomesh"]
+[node name="slide" type="CSGBox3D" parent="Mesh/protomesh" unique_id=610966071]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.011, 0)
 size = Vector3(0.041, 0.035, 0.285)
 material = ExtResource("3_cj22s")
 
-[node name="barrel_cut" type="CSGCylinder3D" parent="Mesh/protomesh/slide"]
+[node name="barrel_cut" type="CSGCylinder3D" parent="Mesh/protomesh/slide" unique_id=2012880514]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.011, -0.1)
 operation = 2
 radius = 0.013
@@ -58,45 +58,43 @@ height = 0.09
 sides = 16
 material = ExtResource("3_cj22s")
 
-[node name="grip" type="CSGBox3D" parent="Mesh/protomesh"]
+[node name="grip" type="CSGBox3D" parent="Mesh/protomesh" unique_id=1166939269]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.076, 0.105)
 size = Vector3(0.039, 0.1, 0.07)
 material = ExtResource("2_b3nnr")
 
-[node name="mag_cut" type="CSGBox3D" parent="Mesh/protomesh/grip"]
+[node name="mag_cut" type="CSGBox3D" parent="Mesh/protomesh/grip" unique_id=760531580]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.05, -0.0065)
 operation = 2
 size = Vector3(0.045, 0.017, 0.06)
 material = ExtResource("2_b3nnr")
 
-[node name="BarrelMarker" type="Marker3D" parent="Mesh/protomesh"]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh/protomesh" unique_id=911626313]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.16)
 gizmo_extents = 0.0
 
-[node name="EjectMarker" type="Marker3D" parent="Mesh"]
+[node name="EjectMarker" type="Marker3D" parent="Mesh" unique_id=1780512458]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.032, 0.02, 0.029)
 gizmo_extents = 0.0
 
-[node name="MagazineMarker" type="Marker3D" parent="Mesh"]
+[node name="MagazineMarker" type="Marker3D" parent="Mesh" unique_id=426680776]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.064, 0.099)
 gizmo_extents = 0.0
 
-[node name="PistolMagMesh" parent="Mesh/MagazineMarker" instance=ExtResource("5_pe3ky")]
+[node name="PistolMagMesh" parent="Mesh/MagazineMarker" unique_id=294918927 instance=ExtResource("5_pe3ky")]
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_tk5x8"),
-&"pistol": ExtResource("6_tk5x8")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1366465490]
+libraries/ = SubResource("AnimationLibrary_tk5x8")
+libraries/pistol = ExtResource("6_tk5x8")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=263001248]
 unique_name_in_owner = true
 root_node = NodePath("%AnimationTree/..")
 tree_root = ExtResource("7_pe3ky")
 advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 
-[node name="ReloadMarker" type="Marker3D" parent="."]
+[node name="ReloadMarker" type="Marker3D" parent="." unique_id=322352936]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.064, 0.099)
 visible = false
 gizmo_extents = 0.0

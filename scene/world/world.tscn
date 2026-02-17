@@ -438,17 +438,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." unique_id=426770923 instance=ExtResource("4_036b0")]
 physics_interpolation_mode = 1
-transform = Transform3D(-1.00000051197437, 0, 0, 0, 1, 0, 0, 0, -1.00000051197437, -358.8398067, 12.839268, -484.2568135)
+transform = Transform3D(-1.00000051197437, 0, 0, 0, 1, 0, 0, 0, -1.00000051197437, -318.0618367, 13.061959, -508.3853816)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." unique_id=978147832 groups=["zombie"] instance=ExtResource("19_ckxcn")]
+process_mode = 4
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -359.4486429, 12.5391449, -473.9680675)
 velocity = Vector3(0, -938.906, 0)
 
 [node name="WeaponPickups" type="Node" parent="." unique_id=1247351212]
 
 [node name="PickupShovel" type="Marker3D" parent="WeaponPickups" unique_id=198544490]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324, 2.43, -455.6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -316.333356, 13.6200726, -513.6842266)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("15_4duv0")
@@ -465,7 +466,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupPistol" type="Marker3D" parent="WeaponPickups" unique_id=1324967126]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -319.952, 2.1, -509.636)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -322.6735075, 13.6981557, -513.7273861)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("17_lpj8c")
@@ -483,7 +484,7 @@ shape = SubResource("CapsuleShape3D_d2i0j")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupShotgun" type="Marker3D" parent="WeaponPickups" unique_id=1750032670]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -358.7909031, 12.4699245, -484.565)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -320.6014, 13.6307199, -513.6742891)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("19_udj0i")
@@ -503,7 +504,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
 [node name="PickupRifle" type="Marker3D" parent="WeaponPickups" unique_id=209074231]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.729, 2.1, -514.572)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -325.6858725, 13.6777074, -513.6231015)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("21_dt3as")
@@ -523,7 +524,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
 [node name="PickupBolt" type="Marker3D" parent="WeaponPickups" unique_id=395807016]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -322.51, 2.1, -506.307)
+transform = Transform3D(0.64278760968654, 0, 0.76604444, 0, 1, 0, -0.76604444, 0, 0.64278760968654, -318.4617696, 13.6546328, -513.6378674)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("23_x6gsb")
@@ -543,7 +544,7 @@ debug_color = Color(0.35, 0.866, 0.152, 0.757)
 metadata/_edit_lock_ = true
 
 [node name="PickupRevolver" type="Marker3D" parent="WeaponPickups" unique_id=220743742]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -323.726, 2.1, -514.532)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.1490897, 13.664763, -513.6098815)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("25_pb8w5")
@@ -565,7 +566,7 @@ metadata/_edit_lock_ = true
 [node name="AmmoPickups" type="Node" parent="." unique_id=918745158]
 
 [node name="PickupBuckshot" type="Marker3D" parent="AmmoPickups" unique_id=1969435064]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.6, 2.1, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -320.3029, 13.6499292, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("43_0wajj")
@@ -584,7 +585,7 @@ shape = SubResource("BoxShape3D_mhi7v")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupSlug" type="Marker3D" parent="AmmoPickups" unique_id=1129895625]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.6, 2.41, -451.2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.2130802, 13.6314151, -514.4256189)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("45_3wrw6")
@@ -603,7 +604,7 @@ shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupFMJ" type="Marker3D" parent="AmmoPickups" unique_id=1478118229]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.122, 2.1, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -325.6670188, 13.6625409, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("49_il2y7")
@@ -621,7 +622,7 @@ shape = SubResource("BoxShape3D_dt3as")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="PickupMagnum" type="Marker3D" parent="AmmoPickups" unique_id=402462742]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -325.672, 2.1, -514.44)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -318.3584445, 13.6625409, -514.44)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("31_rf70f")
@@ -639,7 +640,7 @@ shape = SubResource("BoxShape3D_pb8w5")
 debug_color = Color(0.35, 0.866, 0.152, 0.757)
 
 [node name="Pickup9mm" type="Marker3D" parent="AmmoPickups" unique_id=1517717844]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -324.4, 2.1, -514.4)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -322.683307, 13.6625409, -514.4)
 top_level = true
 script = ExtResource("36_ddy8d")
 item_type = ExtResource("45_51258")

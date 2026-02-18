@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://dpw3tt0t5w2c4"]
+[gd_scene format=3 uid="uid://dpw3tt0t5w2c4"]
 
 [ext_resource type="Script" uid="uid://bwqhte63kxw8" path="res://scene/weapon/rifle/rifle.gd" id="2_fyojs"]
 [ext_resource type="Material" uid="uid://dyqjebm1whfam" path="res://material/level/flat_black.tres" id="2_pgrwu"]
@@ -51,7 +51,7 @@ _data = {
 &"RESET": ExtResource("5_qqsv1")
 }
 
-[node name="Rifle" type="Node3D" node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker", "recoil_marker")]
+[node name="Rifle" type="Node3D" unique_id=941762066 node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker", "recoil_marker")]
 script = ExtResource("2_fyojs")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")
@@ -61,74 +61,72 @@ magazine_marker = NodePath("Mesh/MagazineMarker")
 recoil_marker = NodePath("RecoilMarker")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
-[node name="Mesh" type="Node3D" parent="."]
+[node name="Mesh" type="Node3D" parent="." unique_id=453309742]
 unique_name_in_owner = true
 
-[node name="protomesh" type="Node3D" parent="Mesh"]
+[node name="protomesh" type="Node3D" parent="Mesh" unique_id=128493872]
 
-[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=629102417]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.22)
 mesh = SubResource("CylinderMesh_xkfre")
 
-[node name="body" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="body" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=616076075]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.01, 0.025)
 mesh = SubResource("BoxMesh_qqsv1")
 
-[node name="barrel_cover" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="barrel_cover" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=509701068]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.29)
 mesh = SubResource("CylinderMesh_fyojs")
 
-[node name="stock_attach" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="stock_attach" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=424675614]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.00944, 0.225)
 mesh = SubResource("BoxMesh_mbpeo")
 
-[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="stock" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=1592785144]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0.36)
 mesh = SubResource("BoxMesh_3c15l")
 
-[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=471961148]
 transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, -0.09, 0.135)
 mesh = SubResource("BoxMesh_3d6q2")
 
-[node name="charge_handle" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="charge_handle" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=438118399]
 transform = Transform3D(0, -1, 0, 1, 0, 0, 0, 0, 1, -0.04, 0, 0.015)
 mesh = SubResource("CylinderMesh_mbpeo")
 
-[node name="handle_track" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="handle_track" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=1132084723]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -0.026, 0, 0.05)
 mesh = SubResource("QuadMesh_3c15l")
 
-[node name="BarrelMarker" type="Marker3D" parent="Mesh"]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh" unique_id=1228888531]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.48)
 visible = false
 
-[node name="MagazineMarker" type="Marker3D" parent="Mesh"]
+[node name="MagazineMarker" type="Marker3D" parent="Mesh" unique_id=388184145]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.075, -0.04)
 gizmo_extents = 0.0
 
-[node name="RifleMagMesh" parent="Mesh/MagazineMarker" instance=ExtResource("4_y8syv")]
+[node name="RifleMagMesh" parent="Mesh/MagazineMarker" unique_id=986579736 instance=ExtResource("4_y8syv")]
 
-[node name="EjectMarker" type="Marker3D" parent="Mesh"]
+[node name="EjectMarker" type="Marker3D" parent="Mesh" unique_id=825084316]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.02, 0, -0.04)
 visible = false
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_3d6q2"),
-&"rifle": ExtResource("6_fyojs")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=728988824]
+libraries/ = SubResource("AnimationLibrary_3d6q2")
+libraries/rifle = ExtResource("6_fyojs")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=1745206538]
 unique_name_in_owner = true
 root_node = NodePath("%AnimationTree/..")
 tree_root = ExtResource("7_fyojs")
 advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
 
-[node name="ReloadMarker" type="Marker3D" parent="."]
+[node name="ReloadMarker" type="Marker3D" parent="." unique_id=928488855]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.075, -0.04)
 visible = false
 
-[node name="RecoilMarker" type="Marker3D" parent="."]
+[node name="RecoilMarker" type="Marker3D" parent="." unique_id=1663003280]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.42)
 visible = false

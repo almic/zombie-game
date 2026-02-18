@@ -398,6 +398,7 @@ process_mode = 3
 mouse_filter = 2
 
 [node name="GuideDebugger" parent="CanvasLayer" unique_id=971981970 instance=ExtResource("19_e5bey")]
+process_mode = 4
 visible = false
 
 [node name="NavTesting" type="Node" parent="." unique_id=794575428]

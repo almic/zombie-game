@@ -152,6 +152,9 @@ func _process(delta: float) -> void:
         if _melee_timer == 0.0:
             _melee_transform = aim_target_transform()
 
+#var last_fire_time: int = 0
+#var last_fire_count: int = 0
+
 func _physics_process(_delta: float) -> void:
     if Engine.is_editor_hint():
         return
@@ -162,6 +165,7 @@ func _physics_process(_delta: float) -> void:
         from_node = controller
 
     var i: int = 0
+    #var s: int = 0
     var size: int = weapon_fire_queue.size()
     while i < size:
         if not played_effects:
@@ -169,7 +173,7 @@ func _physics_process(_delta: float) -> void:
             trigger_sound()
             trigger_particle()
 
-        if weapon_type.melee_is_primary:
+        if weapon_type.melee_only:
             weapon_type.fire_melee(
                     from_node,
                     weapon_fire_queue[i],
@@ -183,9 +187,21 @@ func _physics_process(_delta: float) -> void:
                 weapon_fire_queue[i],
                 weapon_fire_queue[i + 1]
         )
+        #s += 1
         i += 2
 
     weapon_fire_queue.clear()
+
+    # NOTE: for debugging RPM of weapons
+    #if s > 0:
+        #if last_fire_count == 0:
+            #last_fire_time = Time.get_ticks_usec()
+        #else:
+            #var t: int = Time.get_ticks_usec()
+            #var rpm: float = last_fire_count * 60000000.0 / (t - last_fire_time)
+            #last_fire_time = t
+            #print(rpm)
+        #last_fire_count = s
 
     if _melee_transform is Transform3D:
         on_weapon_melee(_melee_transform)
@@ -351,27 +367,36 @@ func switch_ammo() -> bool:
 
 ## Updates weapon trigger, returns 'true' if weapon has actuated and will soon fire
 func update_trigger(triggered: bool, delta: float) -> bool:
+    if weapon_type.melee_only:
+        if triggered and weapon_type.can_melee():
+            _weapon_scene.goto_fire()
+            weapon_fire_queue.append(aim_target_transform())
+            return true
+        return false
+
     var mechanism: TriggerMechanism = weapon_type.trigger_mechanism
     var actuated: bool = false
     var emit_updated: bool = false
 
-    while true:
-        delta = mechanism.tick(triggered, delta)
+    # TODO: Fix recoil system, should be purely impulse driven and not boolean
+    # NOTE: Turn off recoil rise when we stop triggering
+    if not triggered:
+        _is_recoil_rising = false
 
-        if mechanism.should_trigger() and weapon_type.can_fire():
-            # NOTE: goto_fire() must be BEFORE actuated because of spaghetti with revolvers
-            _weapon_scene.goto_fire()
-            mechanism.actuated()
+    mechanism.update_trigger(triggered)
+
+    while true:
+        var can_fire: bool = weapon_type.can_fire()
+        mechanism.update_can_fire(can_fire)
+        delta = mechanism.tick(delta)
+
+        # Consider a failed actuation if could not fire
+        if mechanism.actuated and can_fire:
             actuated = true
-        # NOTE: Turn off recoil rise when we stop triggering
-        elif not triggered:
-            _is_recoil_rising = false
 
         for action in mechanism.get_actions():
             if action == TriggerMechanism.Action.FIRE:
-                if weapon_type.melee_is_primary:
-                    weapon_fire_queue.append(aim_target_transform())
-                    continue
+                _weapon_scene.goto_fire()
 
                 var ammo: AmmoResource = weapon_type.get_ammo_to_fire()
                 if ammo:
@@ -391,7 +416,7 @@ func update_trigger(triggered: bool, delta: float) -> bool:
                 on_weapon_charged()
                 continue
 
-        if delta == 0.0:
+        if delta <= 0.0:
             break
 
     if emit_updated:
@@ -579,8 +604,8 @@ func on_weapon_fire() -> bool:
         return false
 
     # NOTE: Dev only, should be removed later
-    if weapon_type.melee_is_primary:
-        print_debug('on_weapon_fire() must not be called for melee-primary weapons!')
+    if weapon_type.melee_only:
+        print_debug('on_weapon_fire() must not be called for melee-only weapons!')
         return false
 
     # Turn on recoil rise when firing, before fire_round as it may become empty

@@ -7,25 +7,24 @@
 [ext_resource type="Resource" uid="uid://bfs5d6tx6ise" path="res://data/weapon/type/pistol/pistol_sound.tres" id="3_1v76v"]
 [ext_resource type="PackedScene" uid="uid://lum7snfoxdml" path="res://scene/weapon/pistol/pistol.tscn" id="4_6v0uo"]
 [ext_resource type="PackedScene" uid="uid://hd5ypgu0xccr" path="res://scene/weapon/pistol/pistol_mag_mesh.tscn" id="5_5uu0m"]
-[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="6_1v76v"]
 [ext_resource type="PackedScene" uid="uid://cu1aswulumms5" path="res://ui/weapon/pistol/pistol_ui.tscn" id="6_b060m"]
+[ext_resource type="Script" uid="uid://ccudtj1s0f1ct" path="res://script/weapon/TriggerMechanism.gd" id="9_b060m"]
 [ext_resource type="Texture2D" uid="uid://buhlyxv70vjtb" path="res://icon/pistol_side_DEV_ONLY.png" id="10_b060m"]
 
-[sub_resource type="Resource" id="Resource_1v76v"]
-resource_local_to_scene = true
-script = ExtResource("6_1v76v")
-fire_delay = 15.0
-eject_delay = 30.0
-charge_delay = 60.0
-cycle_time = 140.0
-metadata/_custom_type_script = "uid://crckednuhsmu2"
+[sub_resource type="Resource" id="Resource_ywk7f"]
+script = ExtResource("9_b060m")
+fire_delay = 5.0
+eject_delay = 17.0
+charge_delay = 26.0
+reset_delay = 27.0
+metadata/_custom_type_script = "uid://ccudtj1s0f1ct"
 
 [resource]
 script = ExtResource("2_257ta")
 name = "Pistol"
 melee_delay = 0.0
 melee_damage = 20.0
-trigger_mechanism = SubResource("Resource_1v76v")
+trigger_mechanism = SubResource("Resource_ywk7f")
 can_chamber = true
 projectile_inaccuracy = 0.8
 projectile_hit_mask = 88

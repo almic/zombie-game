@@ -879,12 +879,9 @@ func update_weapon_node(delta: float) -> void:
                     update_input_buffer(fire_primary)
                 else:
                     update_input_buffer(fire_primary, FIRE_INPUT_BUFFER_TIME)
-        elif is_input_buffered(fire_primary):
-            # NOTE: If the action was blocked, keep trying anyway
-            #       because we may be waiting to charge/ reload
-            actuated = weapon_node.update_trigger(true, 0.0)
-            if actuated:
-                clear_input_buffer()
+        # NOTE: We only use fire buffer for reloading/ charging
+        #       weapon handles actuations directly from input
+        # elif is_input_buffered(fire_primary):
 
     # NOTE: do this after so we can change buffer times if we are reloading
     if triggered:

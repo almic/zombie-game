@@ -4,22 +4,15 @@
 [ext_resource type="Script" uid="uid://bwkctbyfo4j26" path="res://script/weapon/WeaponResource.gd" id="1_rk4e1"]
 [ext_resource type="PackedScene" uid="uid://b56tvacq2n1j2" path="res://scene/weapon/shovel/shovel.tscn" id="2_vhskp"]
 [ext_resource type="PackedScene" uid="uid://b0v8ucjne12wc" path="res://ui/weapon/shovel/shovel_ui.tscn" id="3_mihyk"]
-[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="4_vhskp"]
 [ext_resource type="Texture2D" uid="uid://c3iy0wun6awan" path="res://icon/shovel_flat.png" id="5_olet3"]
-
-[sub_resource type="Resource" id="Resource_olet3"]
-script = ExtResource("4_vhskp")
-cycle_time = 0.65
-metadata/_custom_type_script = "uid://crckednuhsmu2"
 
 [resource]
 script = ExtResource("1_rk4e1")
 name = "Shovel"
 slot = 2
-melee_is_primary = true
+melee_only = true
 melee_damage = 35.0
 melee_impact = 100.0
-trigger_mechanism = SubResource("Resource_olet3")
 projectile_range = 0.0
 projectile_hit_mask = 0
 crosshair_enabled = false

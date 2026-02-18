@@ -8,14 +8,12 @@
 [ext_resource type="Resource" uid="uid://nqh0w26v06v4" path="res://data/weapon/ammo/slug.tres" id="3_jxl5a"]
 [ext_resource type="PackedScene" uid="uid://27ly31oguhqu" path="res://scene/weapon/shotgun/shotgun.tscn" id="5_1fb0h"]
 [ext_resource type="PackedScene" uid="uid://bucw1701uwbvx" path="res://ui/weapon/shotgun/shotgun_ui.tscn" id="6_vfjio"]
-[ext_resource type="Script" uid="uid://crckednuhsmu2" path="res://script/weapon/trigger/SingleFireMechanism.gd" id="7_jxl5a"]
 [ext_resource type="Texture2D" uid="uid://catrmqsiu168b" path="res://icon/shotgun_side.png" id="9_6v8yj"]
+[ext_resource type="Script" uid="uid://ccudtj1s0f1ct" path="res://script/weapon/TriggerMechanism.gd" id="9_vfjio"]
 
-[sub_resource type="Resource" id="Resource_6v8yj"]
-script = ExtResource("7_jxl5a")
-fire_delay = 10.0
-cycle_time = 0.0
-metadata/_custom_type_script = "uid://crckednuhsmu2"
+[sub_resource type="Resource" id="Resource_30v3l"]
+script = ExtResource("9_vfjio")
+metadata/_custom_type_script = "uid://ccudtj1s0f1ct"
 
 [resource]
 script = ExtResource("1_y8x2t")
@@ -24,7 +22,7 @@ slot = 3
 melee_damage = 25.0
 melee_impact = 400.0
 melee_collision = 88
-trigger_mechanism = SubResource("Resource_6v8yj")
+trigger_mechanism = SubResource("Resource_30v3l")
 can_chamber = true
 projectile_inaccuracy = 0.45
 projectile_hit_mask = 88

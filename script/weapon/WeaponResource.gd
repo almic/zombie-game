@@ -18,8 +18,8 @@ var slot: int = 1
 
 @export_group("Melee", "melee")
 
-## The weapon's primary fire is a melee attack
-@export var melee_is_primary: bool = false
+## This is a melee only weapon
+@export var melee_only: bool = false
 
 ## Delay between melee input and actual collision test.
 @export_range(0.1, 500.0, 0.1, 'or_greater', 'suffix:ms')
@@ -391,8 +391,8 @@ func can_eject() -> bool:
     return is_chambered()
 
 func can_fire() -> bool:
-    if melee_is_primary:
-        return true
+    if melee_only:
+        return false
 
     if can_chamber:
         if is_chambered():

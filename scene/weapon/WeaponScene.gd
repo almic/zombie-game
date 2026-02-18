@@ -247,7 +247,7 @@ func seek(time: float) -> void:
 func travel(node: StringName, immediate: bool = false) -> void:
     if immediate:
         anim_state.start(node)
-        print('Teleporting to ' + node)
+        #print('Teleporting to ' + node)
         return
 
     # NOTE: For development only, remove later
@@ -261,7 +261,7 @@ func travel(node: StringName, immediate: bool = false) -> void:
 
     anim_target = node
     is_anim_traveling = true
-    print('Traveling to ' + node + ' (' + anim_node.animation + ')')
+    #print('Traveling to ' + node + ' (' + anim_node.animation + ')')
     anim_state.travel(node)
 
 ## Weapon is ready to be used

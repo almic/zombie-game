@@ -9,3 +9,6 @@ var trigger:GUIDETrigger:
 
 func _accepts_drop_data(data:Resource) -> bool:
 	return data is GUIDETrigger
+
+	
+	

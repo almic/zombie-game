@@ -11,8 +11,8 @@ extends GUIDEInput
 		finger_count = value
 		emit_changed()
 
-## The index of the finger for which the position/delta should be reported
-## (0 = first finger, 1 = second finger, etc.). If -1, reports the average position/delta for
+## The index of the finger for which the position/delta should be reported 
+## (0 = first finger, 1 = second finger, etc.). If -1, reports the average position/delta for 
 ## all fingers currently touching.
 @export_range(-1, 4, 1, "or_greater") var finger_index:int = 0:
 	set(value):
@@ -20,3 +20,7 @@ extends GUIDEInput
 			value = -1
 		finger_index = value
 		emit_changed()
+
+
+func _device_type() -> DeviceType:
+	return DeviceType.TOUCH

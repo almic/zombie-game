@@ -9,3 +9,6 @@ var modifier:GUIDEModifier:
 
 func _accepts_drop_data(data:Resource) -> bool:
 	return data is GUIDEModifier
+	
+
+

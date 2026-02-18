@@ -36,7 +36,7 @@ func _update_state(input: Vector3, delta: float, value_type: GUIDEAction.GUIDEAc
 			if trigger_when == TriggerWhen.INPUT_IS_STABLE:
 				return GUIDETriggerState.NONE
 			return GUIDETriggerState.TRIGGERED
-
+		
 		if not _is_actuated(_last_value, value_type):
 			# we went from "not actuated" to actuated, start
 			_initial_value = input
@@ -44,19 +44,19 @@ func _update_state(input: Vector3, delta: float, value_type: GUIDEAction.GUIDEAc
 				return GUIDETriggerState.TRIGGERED
 			else:
 				return GUIDETriggerState.ONGOING
-
+		
 		# calculate how far the input is from the initial value
 		if _initial_value.distance_squared_to(input) > (max_deviation * max_deviation):
 			_deviated = true
 			if trigger_when == TriggerWhen.INPUT_IS_STABLE:
 				return GUIDETriggerState.NONE
 			return GUIDETriggerState.TRIGGERED
-
+		
 		if trigger_when == TriggerWhen.INPUT_IS_STABLE:
 			return GUIDETriggerState.TRIGGERED
-
+		
 		return GUIDETriggerState.ONGOING
-
+	
 	# if the input is not actuated
 	_deviated = false
 	return GUIDETriggerState.NONE

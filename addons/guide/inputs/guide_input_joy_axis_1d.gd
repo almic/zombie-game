@@ -9,14 +9,14 @@ extends GUIDEInputJoyBase
 		if value == axis:
 			return
 		axis = value
-		emit_changed()
+		emit_changed()	
 
 func _begin_usage() -> void:
 	_state.joy_axis_state_changed.connect(_refresh)
-
+	
 func _end_usage() -> void:
 	_state.joy_axis_state_changed.disconnect(_refresh)
-
+	
 func _refresh() -> void:
 	_value.x = _state.get_joy_axis_value(joy_index, axis)
 
@@ -26,15 +26,15 @@ func is_same_as(other:GUIDEInput) -> bool:
 		other.axis == axis and \
 		other.joy_index == joy_index
 
-func _to_string():
+func _to_string() -> String:
 	return "(GUIDEInputJoyAxis1D: axis=" + str(axis) + ", joy_index="  + str(joy_index) + ")"
 
 func _editor_name() -> String:
 	return "Joy Axis 1D"
-
+	
 func _editor_description() -> String:
 	return "The input from a single joy axis."
-
+	
 
 func _native_value_type() -> GUIDEAction.GUIDEActionValueType:
 	return GUIDEAction.GUIDEActionValueType.AXIS_1D

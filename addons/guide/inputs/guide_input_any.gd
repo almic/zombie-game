@@ -7,7 +7,7 @@ extends GUIDEInput
 
 ## Should input from mouse buttons be considered? Deprecated, use
 ## mouse_buttons instead.
-## @deprecated
+## @deprecated 
 var mouse:bool:
 	get: return mouse_buttons
 	set(value): mouse_buttons = value
@@ -21,7 +21,7 @@ var joy:bool:
 
 ## Should input from mouse buttons be considered?
 @export var mouse_buttons:bool = false
-
+		
 ## Should input from mouse movement be considered?
 @export var mouse_movement:bool = false
 
@@ -33,7 +33,7 @@ var joy:bool:
 @export var joy_buttons:bool = false
 
 ## Should input from gamepad/joystick axes be considered?
-@export var joy_axes:bool = false
+@export var joy_axes:bool = false 
 
 ## Minimum strength of a single joy axis actuation before it is considered
 ## as actuated.
@@ -50,6 +50,10 @@ func _needs_reset() -> bool:
 	# Needs reset because we cannot detect the absence of input.
 	return true
 
+func _reset() -> void:
+	_value = Vector3.ZERO
+	_refresh()
+
 func _begin_usage() -> void:
 	# subscribe to relevant input events
 	if mouse_movement:
@@ -64,9 +68,9 @@ func _begin_usage() -> void:
 		_state.joy_axis_state_changed.connect(_refresh)
 	if touch:
 		_state.touch_state_changed.connect(_refresh)
-
+		
 	_refresh()
-
+	
 func _end_usage() -> void:
 	# unsubscribe from input events
 	if mouse_movement:
@@ -88,19 +92,19 @@ func _refresh() -> void:
 	# reset at the end of the frame.
 	if not _value.is_zero_approx():
 		return
-
-	if keyboard and _state.is_any_key_pressed():
+	
+	if keyboard and _state.is_any_key_pressed():		
 		_value = Vector3.RIGHT
 		return
 
 	if mouse_buttons and _state.is_any_mouse_button_pressed():
 		_value = Vector3.RIGHT
 		return
-
+	
 	if mouse_movement and _state.get_mouse_delta_since_last_frame().length() >= minimum_mouse_movement_distance:
 		_value = Vector3.RIGHT
 		return
-
+		
 	if joy_buttons and _state.is_any_joy_button_pressed():
 		_value = Vector3.RIGHT
 		return
@@ -108,12 +112,12 @@ func _refresh() -> void:
 	if joy_axes and _state.is_any_joy_axis_actuated(minimum_joy_axis_actuation_strength):
 		_value = Vector3.RIGHT
 		return
-
+		
 	if touch and _state.is_any_finger_down():
 		_value = Vector3.RIGHT
 		return
-
-	_value = Vector3.ZERO
+		
+	_value = Vector3.ZERO		
 
 
 func is_same_as(other:GUIDEInput) -> bool:
@@ -129,17 +133,17 @@ func is_same_as(other:GUIDEInput) -> bool:
 
 func _editor_name() -> String:
 	return "Any Input"
-
-
+	
+	
 func _editor_description() -> String:
 	return "Input that triggers if any input from the given device class is given."
-
-
+	
+	
 func _native_value_type() -> GUIDEAction.GUIDEActionValueType:
 	return GUIDEAction.GUIDEActionValueType.BOOL
 
 # support for legacy properties
-func _get_property_list():
+func _get_property_list() -> Array[Dictionary]:
 	return [
 		{
 			"name": "mouse",
@@ -152,3 +156,16 @@ func _get_property_list():
 			"usage": PROPERTY_USAGE_NO_EDITOR
 		}
 	]
+	
+func _device_type() -> DeviceType:
+	var result:DeviceType = DeviceType.NONE
+	if joy_axes or joy_buttons:
+		result |= DeviceType.JOY
+	if mouse_buttons or mouse_movement:
+		result |= DeviceType.MOUSE
+	if keyboard:
+		result |= DeviceType.KEYBOARD
+	if touch:
+		result |= DeviceType.TOUCH
+		
+	return result

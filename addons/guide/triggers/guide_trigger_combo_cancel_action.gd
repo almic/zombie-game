@@ -3,7 +3,7 @@ class_name GUIDETriggerComboCancelAction
 extends Resource
 
 @export var action:GUIDEAction
-@export_flags("Triggered:1", "Started:2", "Ongoing:4", "Cancelled:8","Completed:16")
+@export_flags("Triggered:1", "Started:2", "Ongoing:4", "Cancelled:8","Completed:16") 
 var completion_events:int = GUIDETriggerCombo.ActionEventType.TRIGGERED
 
 var _has_fired:bool = false
@@ -24,7 +24,8 @@ func _prepare():
 	if completion_events & GUIDETriggerCombo.ActionEventType.COMPLETED:
 		action.completed.connect(_fired)
 	_has_fired = false
-
-
+		
+		
 func _fired():
 	_has_fired = true
+	

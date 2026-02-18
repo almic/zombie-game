@@ -14,7 +14,7 @@ extends Resource
 		override_action_settings = value
 		emit_changed()
 
-## If true, players can remap this input mapping. Note that the
+## If true, players can remap this input mapping. Note that the 
 ## action to which this input is bound also needs to be remappable
 ## for this setting to have an effect.
 @export var is_remappable:bool = false:
@@ -23,7 +23,7 @@ extends Resource
 			return
 		is_remappable = value
 		emit_changed()
-
+		
 ## The display name of the input mapping shown to the player. If empty,
 ## the display name of the action is used.
 @export var display_name:String = "":
@@ -41,7 +41,7 @@ extends Resource
 			return
 		display_category = value
 		emit_changed()
-
+		
 
 @export_group("Mappings")
 ## The input to be actuated
@@ -83,33 +83,33 @@ var _trigger_list:Array[GUIDETrigger] = []
 var _implicit_count:int = 0
 var _explicit_count:int = 0
 
-## Called when the mapping is started to be used by GUIDE. Calculates
+## Called when the mapping is started to be used by GUIDE. Calculates 
 ## the number of implicit and explicit triggers so we don't need to do this
 ## per frame. Also creates a default trigger when none is set.
 ## finally initializes the _last_value of all triggers to the current
 ## state of the input.
 func _initialize(value_type:GUIDEAction.GUIDEActionValueType) -> void :
 	_trigger_list.clear()
-
+	
 	_implicit_count = 0
 	_explicit_count = 0
 	_trigger_hold_threshold = -1.0
-
+	
 	if triggers.is_empty():
 		# make a default trigger and use that
-		var default_trigger = GUIDETriggerDown.new()
+		var default_trigger := GUIDETriggerDown.new()
 		default_trigger.actuation_threshold = 0
 		_explicit_count = 1
 		_trigger_list.append(default_trigger)
 		return
-
+		
 	# Collect the current input value
 	var input_value:Vector3 = input._value if input != null else Vector3.ZERO
-
+	
 	# Run it through all modifiers
 	for modifier:GUIDEModifier in modifiers:
-		input_value = modifier._modify_input(input_value, 0, value_type)
-
+		input_value = modifier._modify_input(input_value, 0, value_type)		
+	
 	for trigger in triggers:
 		match trigger._get_trigger_type():
 			GUIDETrigger.GUIDETriggerType.EXPLICIT:
@@ -117,7 +117,7 @@ func _initialize(value_type:GUIDEAction.GUIDEActionValueType) -> void :
 			GUIDETrigger.GUIDETriggerType.IMPLICIT:
 				_implicit_count += 1
 		_trigger_list.append(trigger)
-
+		
 		# collect the hold threshold for hinting the UI about how long
 		# the input must be held down. This is only relevant for hold triggers
 		if trigger is GUIDETriggerHold:
@@ -125,34 +125,34 @@ func _initialize(value_type:GUIDEAction.GUIDEActionValueType) -> void :
 				_trigger_hold_threshold = trigger.hold_treshold
 			else:
 				_trigger_hold_threshold = min(_trigger_hold_threshold, trigger.hold_treshold)
-
+		
 		# initialize the last value, so that e.g. the "pressed" trigger
-		# will not immediately trigger when the key was already
+		# will not immediately trigger when the key was already 
 		# pressed when the trigger came to life.
 		trigger._last_value = input_value
+		
 
-
-func _update_state(delta:float, value_type:GUIDEAction.GUIDEActionValueType):
+func _update_state(delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> void:
 	# Collect the current input value
 	var input_value:Vector3 = input._value if input != null else Vector3.ZERO
-
+	
 	# Run it through all modifiers
 	for modifier:GUIDEModifier in modifiers:
 		input_value = modifier._modify_input(input_value, delta, value_type)
-
+		
 	_value = input_value
-
+	
 	var triggered_implicits:int = 0
 	var triggered_explicits:int = 0
 	var triggered_blocked:int = 0
-
+	
 	# Run over all triggers
 	var result:int = GUIDETrigger.GUIDETriggerState.NONE
 	for trigger:GUIDETrigger in _trigger_list:
 		var trigger_result:GUIDETrigger.GUIDETriggerState = trigger._update_state(_value, delta, value_type)
 		trigger._last_value = _value
-
-		var trigger_type = trigger._get_trigger_type()
+		
+		var trigger_type := trigger._get_trigger_type()
 		if trigger_result == GUIDETrigger.GUIDETriggerState.TRIGGERED:
 			match trigger_type:
 				GUIDETrigger.GUIDETriggerType.EXPLICIT:
@@ -161,28 +161,30 @@ func _update_state(delta:float, value_type:GUIDEAction.GUIDEActionValueType):
 					triggered_implicits += 1
 				GUIDETrigger.GUIDETriggerType.BLOCKING:
 					triggered_blocked += 1
-
+			
 		# we only care about the nuances of explicit triggers. implicits and blocking
-		# can only really return yes or no, so they have no nuance
-		if trigger_type == GUIDETrigger.GUIDETriggerType.EXPLICIT:
+		# can only really return yes or no, so they have no nuance		
+		if trigger_type == GUIDETrigger.GUIDETriggerType.EXPLICIT: 
 			# Higher value results take precedence over lower value results
 			result = max(result, trigger_result)
-
+	
 	# final collection
 	if triggered_blocked > 0:
 		# some blocker triggered which means that this cannot succeed
 		_state = GUIDETrigger.GUIDETriggerState.NONE
 		return
-
+	
 	if triggered_implicits < _implicit_count:
 		# not all implicits triggered, which also fails this binding
 		_state = GUIDETrigger.GUIDETriggerState.NONE
 		return
-
+	
 	if _explicit_count == 0 and _implicit_count > 0:
 		# if no explicits exist, its enough when all implicits trigger
 		_state = GUIDETrigger.GUIDETriggerState.TRIGGERED
 		return
-
+		
 	# return the best result
 	_state = result
+
+	

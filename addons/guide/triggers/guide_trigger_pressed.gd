@@ -12,7 +12,7 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 	if _is_actuated(input, value_type):
 		if not _is_actuated(_last_value, value_type):
 			return GUIDETriggerState.TRIGGERED
-
+		
 	return GUIDETriggerState.NONE
 
 

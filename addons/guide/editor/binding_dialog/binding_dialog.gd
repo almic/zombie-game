@@ -6,7 +6,7 @@ const Utils = preload("../utils.gd")
 
 signal input_selected(input:GUIDEInput)
 
-@onready var _input_display = %InputDisplay
+@onready var _input_display:RichTextLabel = %InputDisplay
 @onready var _available_types:Container = %AvailableTypes
 @onready var _none_available:Control = %NoneAvailable
 @onready var _some_available:Control = %SomeAvailable
@@ -22,24 +22,22 @@ signal input_selected(input:GUIDEInput)
 @onready var _detect_2d_button:Button = %Detect2DButton
 @onready var _detect_3d_button:Button = %Detect3DButton
 
-var _scanner:ClassScanner
 var _last_detected_input:GUIDEInput
 
-
-func initialize(scanner:ClassScanner):
-	_scanner = scanner
+	
+func initialize() -> void:
 	_setup_dialog()
-
-func _setup_dialog():
+	
+func _setup_dialog() -> void:
 	# we need to bind this here. if we bind it in the editor, the editor
 	# will crash when opening the scene because it will delete the node it
 	# just tries to edit.
 	focus_exited.connect(_on_close_requested)
-
+	
 	_show_inputs_of_value_type(GUIDEAction.GUIDEActionValueType.BOOL)
 	_instructions_label.text = tr("Press one of the buttons above to detect an input.")
 	_accept_detection_button.visible = false
-
+	
 
 func _on_close_requested():
 	hide()
@@ -48,37 +46,37 @@ func _on_close_requested():
 
 func _show_inputs_of_value_type(type:GUIDEAction.GUIDEActionValueType) -> void:
 	var items:Array[GUIDEInput] = []
-
+	
 	_select_bool_button.set_pressed_no_signal(type == GUIDEAction.GUIDEActionValueType.BOOL)
 	_select_1d_button.set_pressed_no_signal(type == GUIDEAction.GUIDEActionValueType.AXIS_1D)
 	_select_2d_button.set_pressed_no_signal(type == GUIDEAction.GUIDEActionValueType.AXIS_2D)
 	_select_3d_button.set_pressed_no_signal(type == GUIDEAction.GUIDEActionValueType.AXIS_3D)
-
-	var all_inputs = _scanner.find_inheritors("GUIDEInput")
+	
+	var all_inputs := ClassScanner.find_inheritors("GUIDEInput")
 	for script in all_inputs.values():
 		var dummy:GUIDEInput = script.new()
 		if dummy._native_value_type() == type:
 			items.append(dummy)
-
+			
 	_some_available.visible = not items.is_empty()
 	_none_available.visible = items.is_empty()
-
+	
 	if items.is_empty():
 		return
-
+		
 	items.sort_custom(func(a,b): return a._editor_name().nocasecmp_to(b._editor_name()) < 0)
 	Utils.clear(_available_types)
-
+	
 	for item in items:
-		var button = Button.new()
+		var button := Button.new()
 		button.text = item._editor_name()
 		button.tooltip_text = item._editor_description()
-		button.pressed.connect(_deliver.bind(item))
+		button.pressed.connect(_deliver.bind(item))	
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-
-		_available_types.add_child(button)
-
-
+		
+		_available_types.add_child(button)	
+		
+	
 func _deliver(input:GUIDEInput):
 	input_selected.emit(input)
 	hide()
@@ -120,7 +118,7 @@ func _begin_detect_input(type:GUIDEAction.GUIDEActionValueType):
 	_accept_detection_button.visible = false
 	_input_display.visible = false
 	_input_detector.detect(type)
-
+	
 
 func _on_detect_bool_button_pressed():
 	_detect_bool_button.release_focus()
@@ -140,7 +138,7 @@ func _on_detect_2d_button_pressed():
 func _on_detect_3d_button_pressed():
 	_detect_3d_button.release_focus()
 	_begin_detect_input(GUIDEAction.GUIDEActionValueType.AXIS_3D)
-
+	
 
 func _on_accept_detection_button_pressed():
 	input_selected.emit(_last_detected_input)

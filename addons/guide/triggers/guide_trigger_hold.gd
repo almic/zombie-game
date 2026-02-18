@@ -20,7 +20,7 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 	# if the input is actuated, accumulate time and check if the hold threshold has been reached
 	if _is_actuated(input, value_type):
 		_accumulated_time += delta
-
+		
 		if _accumulated_time >= hold_treshold:
 			# if the trigger is one shot and we already shot, then we will not trigger again.
 			if is_one_shot and _did_shoot:

@@ -26,15 +26,15 @@ func is_same_as(other:GUIDETrigger) -> bool:
 		return false
 	if cancellation_actions.size() != other.cancellation_actions.size():
 		return false
-
+		
 	for i in range(steps.size()):
 		if not steps[i].is_same_as(other.steps[i]):
 			return false
-
+			
 	for i in range(cancellation_actions.size()):
 		if not cancellation_actions[i].is_same_as(other.cancellation_actions[i]):
 			return false
-
+			
 	return true
 
 func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> GUIDETriggerState:
@@ -49,36 +49,36 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 		for action in cancellation_actions:
 			action._prepare()
 		_reset()
-
-
+		
+		
 	var current_action := steps[_current_step].action
 	if current_action == null:
 		push_warning("Step ", _current_step , " has no action ", resource_path)
 		return GUIDETriggerState.NONE
-
+		
 	# check if any of our cancellation actions fired
 	for action in cancellation_actions:
 		# if the action is the current action we don't count its firing as cancellation
 		if action.action == current_action:
 			continue
-
+			
 		if action._has_fired:
 			if enable_debug_print:
 				print("Combo cancelled by action '", action.action._editor_name(), "'.")
 			_reset()
 			return GUIDETriggerState.NONE
-
+	
 	# check if any of the steps has fired out of order
 	for step in steps:
 		if step.action == current_action:
 			continue
-
+			
 		if step._has_fired:
 			if enable_debug_print:
 				print("Combo out of order step by action '", step.action._editor_name(), "'.")
 			_reset()
 			return GUIDETriggerState.NONE
-
+			
 	# check if we took too long (unless we're in the first step)
 	if _current_step > 0:
 		_remaining_time -= delta
@@ -98,25 +98,25 @@ func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 				print("Combo fired.")
 			_reset()
 			return GUIDETriggerState.TRIGGERED
-
+			
 		# otherwise, pick the next step
 		_current_step += 1
 		if enable_debug_print:
 			print("Combo advanced to step " , _current_step, ".")
 		_remaining_time = steps[_current_step].time_to_actuate
-
-		# Reset all steps and cancellation actions to "not fired" in
-		# case they were triggered by this action. Otherwise a double-tap
+		
+		# Reset all steps and cancellation actions to "not fired" in 
+		# case they were triggered by this action. Otherwise a double-tap 
 		# would immediately fire for both taps once the first is through
 		for step in steps:
 			step._has_fired = false
 		for action in cancellation_actions:
 			action._has_fired = false
-
+	
 	# and in any case we're still processing.
-	return GUIDETriggerState.ONGOING
-
-
+	return GUIDETriggerState.ONGOING		
+	
+		
 func _reset():
 	if enable_debug_print:
 		print("Combo reset.")
@@ -125,10 +125,11 @@ func _reset():
 	for step in steps:
 		step._has_fired = false
 	for action in cancellation_actions:
-		action._has_fired = false
+		action._has_fired = false	
 
 func _editor_name() -> String:
 	return "Combo"
 
 func _editor_description() -> String:
 	return "Fires, when the input exceeds the actuation threshold."
+

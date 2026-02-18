@@ -11,5 +11,5 @@ func _enter_tree() -> void:
 func _process(delta: float) -> void:
 	for input:GUIDEInput in _inputs_to_reset:
 		input._reset()
-
+		
 	GUIDE._input_state._reset()

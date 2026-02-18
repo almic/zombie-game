@@ -11,8 +11,8 @@ extends GUIDEModifier
 		x = value
 		_update_caches()
 		emit_changed()
-
-## Whether the Y axis should be inverted.
+		
+## Whether the Y axis should be inverted.		
 @export var y:bool = true:
 	set(value):
 		if y == value:
@@ -42,16 +42,16 @@ func _update_caches():
 	_multiplier.x = -1 if x else 1
 	_multiplier.y = -1 if y else 1
 	_multiplier.z = -1 if z else 1
-
+		
 
 func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> Vector3:
 	if not input.is_finite():
 		return Vector3.INF
-
+		
 	return input * _multiplier
 
 func _editor_name() -> String:
-	return "Negate"
+	return "Negate"	
 
 
 func _editor_description() -> String:

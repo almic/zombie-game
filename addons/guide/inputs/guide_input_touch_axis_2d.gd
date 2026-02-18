@@ -4,7 +4,7 @@ extends GUIDEInputTouchAxisBase
 
 func _apply_value(value:Vector2):
 	_value = Vector3(value.x, value.y, 0)
-
+		
 func is_same_as(other:GUIDEInput):
 	return other is GUIDEInputTouchAxis2D and \
 		other.finger_count == finger_count and \
@@ -19,7 +19,7 @@ func _to_string():
 func _editor_name() -> String:
 	return "Touch Axis2D"
 
-
+	
 func _editor_description() -> String:
 	return "2D relative movement of a touching finger."
 

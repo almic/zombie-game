@@ -12,18 +12,18 @@ var action:GUIDEAction:
 	set(value):
 		if is_instance_valid(action):
 			action.changed.disconnect(_refresh)
-
+		
 		action = value
-
+	
 		if is_instance_valid(action):
 			action.changed.connect(_refresh)
-
-		# action_changed can only be emitted by
+	
+		# action_changed can only be emitted by 
 		# dragging an action into this, not when setting
 		# the property
 		_refresh()
 
-
+		
 func _refresh():
 	if not is_instance_valid(action):
 		_line_edit.text = "<none>"
@@ -31,7 +31,7 @@ func _refresh():
 		_type_icon.texture = preload("missing_action.svg")
 		_type_icon.tooltip_text = "Missing action"
 	else:
-		_line_edit.text = action._editor_name()
+		_line_edit.text = action._editor_name()	
 		_line_edit.tooltip_text = action.resource_path
 		## Update the icon to reflect the given value type.
 		match action.action_value_type:

@@ -39,7 +39,7 @@ func _update_state(input: Vector3, delta: float, value_type:GUIDEAction.GUIDEAct
 			# Otherwise, the tap is not triggered, but we reset the accumulated time
 			# so the trigger is now again ready to be triggered.
 			_accumulated_time = 0
-
+			
  		# in either case, the trigger is not triggered.
 		return GUIDETriggerState.NONE
 

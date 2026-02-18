@@ -38,9 +38,9 @@ func _modify_input(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActio
 		_:
 			push_error("Unknown order ", order , " this is most likely a bug, please report it.")
 			return input
-
+			
 func _editor_name() -> String:
-	return "Input Swizzle"
-
+	return "Input Swizzle"				
+			
 func _editor_description() -> String:
 	return "Swizzle the input vector components. Useful to map 1D input to 2D or vice versa."

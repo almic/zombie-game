@@ -1,14 +1,23 @@
 ## The GUIDEInputState holds the current state of all input. It is basically a wrapper around Godot's Input
 ## class that provides some additional functionality like getting the information if any key or mouse button
-## is currently pressed. It also is the single entry point for all input events from Godot, so we don't have
+## is currently pressed. It also is the single entry point for all input events from Godot, so we don't have 
 ## process them in every GUIDEInput object and duplicate input handling code everywere. This also improves performance.
-##
+## 
 class_name GUIDEInputState
 
 ## Device ID for a virtual joystick that means "any joystick".
 ## This relies on the fact that Godot's device IDs for joysticks are always >= 0.
 ## https://github.com/godotengine/godot/blob/80a3d205f1ad22e779a64921fb56d62b893881ae/core/input/input.cpp#L1821
 const ANY_JOY_DEVICE_ID: int = -1
+
+## We assign a virtual device ID for the virtual joystick inputs.
+## Virtual joystick device IDs will be negative, starting with -2 and going down from there.
+## This relies on the fact that Godot's device IDs for joysticks are always >= 0.
+const VIRTUAL_JOY_DEVICE_ID_OFFSET: int = -2
+
+## The set of currently connected virtual joy devices. Key is the device id,
+## value is the number of virtual sticks connected with this device id.
+var _virtual_joy_devices:Dictionary = {}
 
 ## Signalled, when the keyboard state has changed.
 signal keyboard_state_changed()
@@ -28,16 +37,16 @@ signal touch_state_changed()
 var _keys: Dictionary = {}
 # Fingers that are currently touching the screen. Key is the finger index, value is the position (Vector2).
 var _finger_positions: Dictionary = {}
-# The mouse movement since the last frame.
+# The mouse movement since the last frame. 
 var _mouse_movement: Vector2 = Vector2.ZERO
 # Mouse buttons that are currently pressed. Key is the button index, value is not important. The presence of a key
 # in the dictionary indicates that the button is currently pressed.
 var _mouse_buttons: Dictionary = {}
-# Joy buttons that are currently pressed. Key is device id, value is a dictionary with the button index as key. The
-# value of the inner dictionary is not important. The presence of a key in the inner dictionary indicates that the button
+# Joy buttons that are currently pressed. Key is device id, value is a dictionary with the button index as key. The 
+# value of the inner dictionary is not important. The presence of a key in the inner dictionary indicates that the button 
 # is currently pressed.
 var _joy_buttons: Dictionary = {}
-# Current values of joy axes. Key is device id, value is a dictionary with the axis index as key.
+# Current values of joy axes. Key is device id, value is a dictionary with the axis index as key. 
 # The value of the inner dictionary is the axis value. Once an axis is actuated, it will be added to the dictionary.
 # We will not remove it anymore after that.
 var _joy_axes: Dictionary = {}
@@ -62,6 +71,112 @@ func _init():
 	_clear()
 
 
+## Connects a new virtual joystick and returns its device id.
+## The returned device id will be negative, starting with -2 and going down from there.
+## Since virtual sticks are UI components and not real hardware, we need to give the
+## UI elements the chance to tell to which virtual stick they belong. For this
+## we introduce the stick_index. Any UI element tells which virtual stick it belongs to
+## by providing the same stick_index.
+func connect_virtual_stick(stick_index:int) -> int:
+	# we treat an invalid stick index as a stick index of 0 but print an error
+	# to let the user know something is wrong
+	if stick_index < 0:
+		push_error("Invalid stick index " + str(stick_index) + " for virtual stick. Must be >= 0.")
+		stick_index = 0	
+
+	var device_id:int = VIRTUAL_JOY_DEVICE_ID_OFFSET - stick_index
+	if _virtual_joy_devices.has(device_id):
+		# just record the additional connection and return the existing device id
+		_virtual_joy_devices[device_id] += 1
+		return device_id
+	
+	# new device
+	_virtual_joy_devices[device_id] = 1
+	
+	_refresh_joy_device_ids(0, 0)
+	
+	return device_id
+	
+	
+## Disconnects the virtual joystick with the given device id.
+## If no such device is connected, nothing happens.
+func disconnect_virtual_stick(device_id:int) -> void:
+	if not _virtual_joy_devices.has(device_id):
+		return
+		
+	var count:int = _virtual_joy_devices[device_id]
+	if count > 1:
+		# just reduce the connection count, but don't remove the device yet
+		_virtual_joy_devices[device_id] -= 1
+		return
+		
+	# last connection went away, so we can remove the device	
+	_virtual_joy_devices.erase(device_id)
+	_joy_index_to_device_id.erase(device_id)
+	
+	if _joy_buttons.has(device_id):
+		_joy_buttons.erase(device_id)
+		_recalculate_any_joy_buttons()
+		joy_button_state_changed.emit()
+
+	if _joy_axes.has(device_id):
+		_joy_axes.erase(device_id)
+		_recalculate_any_joy_axes()
+		joy_axis_state_changed.emit()
+
+## Recalculates a specific button state for ANY_JOY_DEVICE_ID based on all connected devices.
+func _recalculate_any_joy_button(button: int) -> void:
+	var any_value: bool = false
+	for device_id in _joy_buttons.keys():
+		if device_id != ANY_JOY_DEVICE_ID and _joy_buttons[device_id].has(button):
+			any_value = true
+			break
+
+	if any_value:
+		_joy_buttons[ANY_JOY_DEVICE_ID][button] = true
+	else:
+		_joy_buttons[ANY_JOY_DEVICE_ID].erase(button)
+
+
+## Recalculates all button states for ANY_JOY_DEVICE_ID based on all connected devices.
+func _recalculate_any_joy_buttons() -> void:
+	_joy_buttons[ANY_JOY_DEVICE_ID].clear()
+	for device_id in _joy_buttons.keys():
+		if device_id != ANY_JOY_DEVICE_ID:
+			for button in _joy_buttons[device_id].keys():
+				_joy_buttons[ANY_JOY_DEVICE_ID][button] = true
+
+
+## Recalculates a specific axis value for ANY_JOY_DEVICE_ID based on all connected devices.
+## Uses the maximum actuation across all devices.
+func _recalculate_any_joy_axis(axis: int) -> void:
+	var any_value: float = 0.0
+	var maximum_actuation: float = 0.0
+	for device_id in _joy_axes.keys():
+		if device_id != ANY_JOY_DEVICE_ID and _joy_axes[device_id].has(axis):
+			var strength: float = abs(_joy_axes[device_id][axis])
+			if strength > maximum_actuation:
+				maximum_actuation = strength
+				any_value = _joy_axes[device_id][axis]
+
+	_joy_axes[ANY_JOY_DEVICE_ID][axis] = any_value
+
+
+## Recalculates all axis values for ANY_JOY_DEVICE_ID based on all connected devices.
+func _recalculate_any_joy_axes() -> void:
+	# Collect all unique axes that have been actuated on any device
+	var all_axes: Dictionary = {}
+	for device_id in _joy_axes.keys():
+		if device_id != ANY_JOY_DEVICE_ID:
+			for axis in _joy_axes[device_id].keys():
+				all_axes[axis] = true
+
+	# Recalculate each axis
+	_joy_axes[ANY_JOY_DEVICE_ID].clear()
+	for axis in all_axes.keys():
+		_recalculate_any_joy_axis(axis)
+
+
 # Used by the automated tests to make sure we don't have any leftovers from the
 # last test.
 func _clear():
@@ -77,6 +192,14 @@ func _clear():
 	# ensure we have an entry for the virtual "any device id"
 	_joy_buttons[ANY_JOY_DEVICE_ID] = {}
 	_joy_axes[ANY_JOY_DEVICE_ID] = {}
+	
+	# also clear all virtual joy devices, these can be set up again by the next test
+	for device_id in _virtual_joy_devices.keys():
+		_joy_index_to_device_id.erase(device_id)
+	
+	_virtual_joy_devices.clear()
+	
+	# pending states are created on demand, so we don't need to clear them here
 
 
 # Called when any joy device is connected or disconnected. This will refresh the joy device ids and clear out any
@@ -84,10 +207,20 @@ func _clear():
 func _refresh_joy_device_ids(_ignore1, _ignore2):
 	# refresh the joy device ids
 	_joy_index_to_device_id.clear()
+	# get the real joys from the input system
 	var connected_joys:Array[int] = Input.get_connected_joypads()
+	# append the currently connected virtual joys
+	
+	connected_joys.append_array(_virtual_joy_devices.keys())
 	for i in connected_joys.size():
 		var device_id:int = connected_joys[i]
-		_joy_index_to_device_id[i] = device_id
+		if device_id > 0:
+			# godot's joys
+			_joy_index_to_device_id[i] = device_id
+		else:
+			# virtual joys
+			_joy_index_to_device_id[device_id] = device_id
+			
 		# ensure we have an inner dictionary for the device id
 		# by setting this here, we don't need to check for the device id
 		# on every input event
@@ -113,6 +246,7 @@ func _refresh_joy_device_ids(_ignore1, _ignore2):
 			_joy_buttons.erase(device_id)
 
 	if dirty:
+		_recalculate_any_joy_buttons()
 		# notify all inputs that the joy state has changed
 		joy_button_state_changed.emit()
 
@@ -123,6 +257,7 @@ func _refresh_joy_device_ids(_ignore1, _ignore2):
 			_joy_axes.erase(device_id)
 
 	if dirty:
+		_recalculate_any_joy_axes()
 		# notify all inputs that the joy state has changed
 		joy_axis_state_changed.emit()
 
@@ -145,7 +280,7 @@ func _reset() -> void:
 			keyboard_state_changed.emit()
 
 	_pending_keys.clear()
-
+	
 	# apply pending mouse button state
 	for button in _pending_mouse_buttons.keys():
 		var is_down = _pending_mouse_buttons[button]
@@ -155,9 +290,9 @@ func _reset() -> void:
 		elif not is_down and _mouse_buttons.has(button):
 			_mouse_buttons.erase(button)
 			mouse_button_state_changed.emit()
-
+			
 	_pending_mouse_buttons.clear()
-
+	
 	# apply pending joy button state
 	for joy in _pending_joy_buttons.keys():
 		for button in _pending_joy_buttons[joy]:
@@ -169,27 +304,18 @@ func _reset() -> void:
 			elif not is_down and _joy_buttons[joy].has(button):
 				_joy_buttons[joy].erase(button)
 				changed = true
-
-			# only evaluate the ANY_JOY device if actually something changed.
-			# otherwise the inner value would not change
+	
+			# Recalculate ANY_JOY_DEVICE_ID and emit signal if something changed
 			if changed:
-				var any_value: bool = false
-				for inner in _joy_buttons.keys():
-					if inner != ANY_JOY_DEVICE_ID and _joy_buttons[inner].has(button):
-						any_value = true
-						break
-
-				if any_value:  # we don't need to check the change state here as we'r going to send an event anyways.
-					_joy_buttons[ANY_JOY_DEVICE_ID][button] = true
-				else:
-					_joy_buttons[ANY_JOY_DEVICE_ID].erase(button)
+				_recalculate_any_joy_button(button)
 				joy_button_state_changed.emit()
 
 		# and clear out the pending buttons for this joy
-		_pending_joy_buttons[joy].clear()
+		_pending_joy_buttons[joy].clear()		
 
-## Processes an input event and updates the state.
+## Processes an input event and updates the state. 
 func _input(event: InputEvent) -> void:
+	# print("%s - %s" % [Engine.get_process_frames(), event])
 	# ----------------------- KEYBOARD -----------------------------
 	if event is InputEventKey:
 		var index: int = event.physical_keycode
@@ -222,7 +348,7 @@ func _input(event: InputEvent) -> void:
 		mouse_position_changed.emit()
 		return
 
-	# ----------------------- MOUSE BUTTONS -----------------------
+	# ----------------------- MOUSE BUTTONS -----------------------		
 	if event is InputEventMouseButton:
 		var index: int = event.button_index
 
@@ -252,8 +378,9 @@ func _input(event: InputEvent) -> void:
 		var device_id: int = event.device
 		var button: int = event.button_index
 
-		# _refresh_joy_device_ids ensures we have an inner dictionary for the device id
-		# so we don't need to check for it here
+		# Ignore stray events from disconnected devices
+		if not _joy_buttons.has(device_id):
+			return
 
 		if _pending_joy_buttons[device_id].has(button):
 			_pending_joy_buttons[device_id][button] = event.pressed
@@ -268,24 +395,10 @@ func _input(event: InputEvent) -> void:
 		elif not event.pressed and _joy_buttons[device_id].has(button):
 			_joy_buttons[device_id].erase(button)
 			changed = true
-
-		# finally set the ANY_JOY_DEVICE_ID state based on what we know
-		# only do this if the button value actually changed. Otherwise
-		# the Any value would not change either.
+		
+		# Recalculate ANY_JOY_DEVICE_ID and emit signal if something changed
 		if changed:
-			var any_value: bool = false
-			for inner in _joy_buttons.keys():
-				if inner != ANY_JOY_DEVICE_ID and _joy_buttons[inner].has(button):
-					any_value = true
-					break
-
-			if any_value:
-				_joy_buttons[ANY_JOY_DEVICE_ID][button] = true
-			else:
-				_joy_buttons[ANY_JOY_DEVICE_ID].erase(button)
-
-		# Emit the joy button state changed signal if something changed
-		if changed:
+			_recalculate_any_joy_button(button)
 			joy_button_state_changed.emit()
 		return
 
@@ -294,22 +407,15 @@ func _input(event: InputEvent) -> void:
 		var device_id: int = event.device
 		var axis: int = event.axis
 
+		# Ignore stray events from disconnected devices
+		if not _joy_axes.has(device_id):
+			return
+
 		# update the axis value
 		_joy_axes[device_id][axis] = event.axis_value
 
-		# for the ANY_JOY_DEVICE_ID, we apply the maximum actuation of all devices (in any direction)
-		var any_value: float = 0.0
-		var maximum_actuation: float = 0.0
-		for inner in _joy_axes.keys():
-			if inner != ANY_JOY_DEVICE_ID and _joy_axes[inner].has(axis):
-				var strength: float = abs(_joy_axes[inner][axis])
-				if strength > maximum_actuation:
-					maximum_actuation = strength
-					any_value = _joy_axes[inner][axis]
-
-		_joy_axes[ANY_JOY_DEVICE_ID][axis] = any_value
-
-		# Emit the joy axis state changed signal
+		# Recalculate ANY_JOY_DEVICE_ID for this axis and emit signal
+		_recalculate_any_joy_axis(axis)
 		joy_axis_state_changed.emit()
 		return
 
@@ -337,7 +443,7 @@ func is_key_pressed(key: Key) -> bool:
 	return _keys.has(key)
 
 # Returns true if at least one key in the given array is currently pressed.
-func is_at_least_one_key_pressed(keys:Array[Key]) -> bool:
+func is_at_least_one_key_pressed(keys:Array[Key]) -> bool:	
 	for key in keys:
 		if _keys.has(key):
 			return true
@@ -354,6 +460,7 @@ func is_any_key_pressed() -> bool:
 ## Gets the mouse movement since the last frame.
 ## If no movement has been detected, returns Vector2.ZERO.
 func get_mouse_delta_since_last_frame() -> Vector2:
+	# print("%s DELTA %s" % [Engine.get_process_frames(), _mouse_movement])
 	return _mouse_movement
 
 ## Returns the current mouse position in the root viewport.
@@ -361,7 +468,7 @@ func get_mouse_position() -> Vector2:
 	return Engine.get_main_loop().root.get_mouse_position()
 
 
-## Returns true if the mouse button with the given index is currently pressed.
+## Returns true if the mouse button with the given index is currently pressed.	
 func is_mouse_button_pressed(button_index: MouseButton) -> bool:
 	return _mouse_buttons.has(button_index)
 
@@ -382,7 +489,7 @@ func get_joy_axis_value(index:int, axis:JoyAxis) -> float:
 	return 0.0
 
 ## Returns true, if the given joy button is currentely pressed on the device with the given index.
-func is_joy_button_pressed(index:int, button:JoyButton) -> bool:
+func is_joy_button_pressed(index:int, button:JoyButton) -> bool:	
 	var device_id: int = _joy_index_to_device_id.get(index, -9999)
 	# unknown device
 	if device_id == -9999:
@@ -391,7 +498,7 @@ func is_joy_button_pressed(index:int, button:JoyButton) -> bool:
 		return _joy_buttons[device_id].has(button)
 	return false
 
-## Returns true, if currently any joy button is pressed on any device.
+## Returns true, if currently any joy button is pressed on any device.	
 func is_any_joy_button_pressed() -> bool:
 	for inner in _joy_buttons.values():
 		if not inner.is_empty():
@@ -409,7 +516,7 @@ func is_any_joy_axis_actuated(minimum_strength: float) -> bool:
 ## Gets the finger position of the finger at the given index.
 ## If finger_index is < 0, returns the average of all finger positions.
 ## Will only return a position if the amount of fingers
-## currently touching matches finger_count.
+## currently touching matches finger_count. 
 ##
 ## If no finger position can be determined, returns Vector2.INF.
 func get_finger_position(finger_index: int, finger_count: int) -> Vector2:
@@ -431,7 +538,14 @@ func get_finger_position(finger_index: int, finger_count: int) -> Vector2:
 
 	result /= float(finger_count)
 	return result
+	
+## Returns the positions of all fingers currently touching.
+## If no finger touches, returns an empty array.	
+func get_finger_positions() -> Array[Vector2]:
+	var result:Array[Vector2] = []
+	result.assign(_finger_positions.values())
+	return result
 
-## Returns true, if currently any finger is touching the screen.
+## Returns true, if currently any finger is touching the screen.	
 func is_any_finger_down() -> bool:
 	return not _finger_positions.is_empty()

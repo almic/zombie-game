@@ -11,14 +11,14 @@ func is_same_as(other:GUIDETrigger) -> bool:
 		return false
 	return action == other.action
 
-func _get_trigger_type() -> GUIDETriggerType:
+func _get_trigger_type() -> GUIDETriggerType: 
 	return GUIDETriggerType.IMPLICIT
 
 func _update_state(input:Vector3, delta:float, value_type:GUIDEAction.GUIDEActionValueType) -> GUIDETriggerState:
 	if action == null:
 		push_warning("Chorded trigger without action will never trigger.")
 		return GUIDETriggerState.NONE
-
+	
 	if action.is_triggered():
 		return GUIDETriggerState.TRIGGERED
 	return GUIDETriggerState.NONE

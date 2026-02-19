@@ -8,6 +8,11 @@
 
 config_version=5
 
+[Guide]
+
+"Editor/Joy Icons"=2
+"Editor/Joy Type"=1
+
 [animation]
 
 compatibility/default_parent_skeleton_in_mesh_instance_3d=true

@@ -4,12 +4,14 @@
 class_name RevolverWeapon extends WeaponResource
 
 
-## Special signal for the scene to handle any state changes
-signal state_updated()
-
-
 ## Additional offset when fanning the hammer, on top of the scene offset
 @export var fan_offset: Vector3 = Vector3.ZERO
+
+## Time to switch into fan the hammer mode
+@export var fan_into_time: float = 0.35
+
+## Time to switch out of fan the hammer mode
+@export var fan_out_time: float = 0.65
 
 
 ## Holds ammo expend state, 0 for used, 1 for unused
@@ -18,26 +20,18 @@ var _cylinder_ammo_state: PackedByteArray = []
 ## Position of the cylinder, from 0 to reserve size.
 var _cylinder_position: int = 0
 
-
-## Updated by the animated weapon scene, used by the revolver UI to synchronize
-## with the visual rotation
-@warning_ignore('unused_private_class_variable')
-var _animated_cylinder_rotation: float = 0
-
 ## If the hammer is cocked
 var hammer_cocked: bool = false
 
 
 func _init() -> void:
-    rotate_cylinder.call_deferred(0, false)
+    rotate_cylinder.call_deferred(0)
 
 
 ## Rotates the cylinder by a given number of places. Positive is clockwise,
 ## negative is counter-clockwise.
-func rotate_cylinder(places: int = 1, emit_updated: bool = true) -> void:
+func rotate_cylinder(places: int = 1) -> void:
     _cylinder_position = wrapi(_cylinder_position + places, 0, ammo_reserve_size)
-    if emit_updated:
-        state_updated.emit()
 
 func get_reserve_total() -> int:
     return _cylinder_ammo_state.count(1)
@@ -59,7 +53,6 @@ func eject_round() -> bool:
         return false
 
     _mixed_reserve[_cylinder_position] = 0
-    state_updated.emit()
 
     if _cylinder_ammo_state[_cylinder_position]:
         # Recover round to ammo stock
@@ -77,16 +70,33 @@ func eject_round() -> bool:
 func can_eject() -> bool:
     return _mixed_reserve[_cylinder_position] > 0
 
-## For the revolver, you can always pull the trigger when cycled
+## You can always pull the trigger for the revolver
 func can_fire() -> bool:
-    return trigger_mechanism.is_ready()
+    return true
 
 func can_charge() -> bool:
     return not hammer_cocked
 
-## For the revolver, you can always unload
+## For the revolver, you can unload if there are any rounds
 func can_unload() -> bool:
+    for t in _mixed_reserve:
+        if t != 0:
+            return true
+    return false
+
+## Fan the hammer mode
+func has_alt_mode() -> bool:
     return true
+
+## Fan the hammer mode
+func get_alt_transform() -> Transform3D:
+    return Transform3D.IDENTITY.translated(fan_offset)
+
+## Fan the hammer mode
+func get_alt_switch_time() -> float:
+    if alt_mode:
+        return fan_into_time
+    return fan_out_time
 
 ## If the round in position is live
 func is_round_live() -> bool:
@@ -99,8 +109,7 @@ func charge_weapon() -> void:
     hammer_cocked = true
     if trigger_mechanism is DoubleActionMechanism:
         trigger_mechanism.primed = true
-    rotate_cylinder(1, false)
-    state_updated.emit()
+    rotate_cylinder(1)
 
 ## Loading a round places it into the current position. This clobbers whatever
 ## is at that position, so be sure it is empty!
@@ -133,7 +142,6 @@ func load_rounds(count: int = 1, type: int = 0) -> void:
         pos = wrapi(_cylinder_position - i, 0, ammo_reserve_size)
         _mixed_reserve.set(pos, type)
         _cylinder_ammo_state.set(pos, 1)
-    state_updated.emit()
 
     # NOTE: This is for debugging, should be removed later
     if _mixed_reserve.size() > ammo_reserve_size:
@@ -145,7 +153,6 @@ func unload_rounds() -> void:
         if _cylinder_ammo_state[i]:
             continue
         _mixed_reserve.set(i, 0)
-    state_updated.emit()
 
 func get_ammo_to_fire() -> AmmoResource:
     if not is_round_live():
@@ -157,18 +164,18 @@ func get_ammo_to_fire() -> AmmoResource:
 func fire_round() -> bool:
     var updated_ammo: bool = false
 
+    if alt_mode:
+        # In fan-the-hammer mode, ensure the weapon is always charged
+        charge_weapon()
+
     if is_round_live():
         _cylinder_ammo_state[_cylinder_position] = 0
         updated_ammo = true
 
     if hammer_cocked:
         hammer_cocked = false
+        updated_ammo = true
         if trigger_mechanism is DoubleActionMechanism:
             trigger_mechanism.primed = false
-        state_updated.emit()
-
-    # If we are empty, signal
-    if updated_ammo and get_reserve_total() < 1:
-        out_of_ammo.emit()
 
     return updated_ammo

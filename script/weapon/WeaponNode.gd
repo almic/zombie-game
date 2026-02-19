@@ -55,6 +55,7 @@ const RECOIL_SPLIT = 0.5
 const RECOIL_ALT_SPLIT = 1.0 - RECOIL_SPLIT
 
 var aim_transform: Transform3D
+var alt_mode_transform: Transform3D
 var sway_transform: Transform3D
 var recoil_transform: Transform3D
 
@@ -77,6 +78,11 @@ var _weapon_aim: Interpolation = Interpolation.new(aim_duration, Tween.TRANS_SIN
 var _weapon_aim_target: Vector2
 var _weapon_aim_next_target: bool
 var _weapon_aim_ticks: int = AIM_TICK_RATE
+
+## If the weapon has an alt fire mode
+var _has_alt_mode: bool = false
+var _alt_transform: Transform3D
+var _alt_interp: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 
 
 var continue_reload: bool = false:
@@ -142,6 +148,9 @@ func _process(delta: float) -> void:
         interpolate_recoil(delta)
 
         var scene_transform = Transform3D.IDENTITY.translated(weapon_type.scene_offset)
+        if _has_alt_mode:
+            interpolate_alt_mode(delta)
+            scene_transform *= alt_mode_transform
         scene_transform *= aim_transform
         scene_transform *= recoil_transform
         scene_transform *= sway_transform
@@ -211,6 +220,7 @@ func _physics_process(_delta: float) -> void:
         if aim_enabled and aim_target:
             update_aim_target()
 
+
 func interpolate_aim(delta: float) -> void:
     if _weapon_aim_next_target:
         _weapon_aim.set_target_delta(_weapon_aim_target, _weapon_aim_target - _weapon_aim.current)
@@ -221,6 +231,28 @@ func interpolate_aim(delta: float) -> void:
     _weapon_aim.update(delta)
     aim_transform = Transform3D.IDENTITY.rotated(Vector3.UP, _weapon_aim.current.x)
     aim_transform = aim_transform.rotated_local(Vector3.RIGHT, _weapon_aim.current.y)
+
+func interpolate_alt_mode(delta: float) -> void:
+    if weapon_type.alt_mode:
+        if _alt_interp.target != 1.0:
+            _alt_interp.set_target_delta(1.0, 1.0 - _alt_interp.current)
+        elif _alt_interp.is_done:
+            return
+        var progress: float = _alt_interp.update(delta)
+        if _alt_interp.is_done:
+            alt_mode_transform = _alt_transform
+            return
+        alt_mode_transform = Transform3D.IDENTITY.interpolate_with(_alt_transform, progress)
+    else:
+        if _alt_interp.target != 0.0:
+            _alt_interp.set_target_delta(0.0, -_alt_interp.current)
+        elif _alt_interp.is_done:
+            return
+        var progress: float = _alt_interp.update(delta)
+        if _alt_interp.is_done:
+            alt_mode_transform = Transform3D.IDENTITY
+            return
+        alt_mode_transform = _alt_transform.interpolate_with(Transform3D.IDENTITY, 1.0 - progress)
 
 func interpolate_recoil(delta: float) -> void:
     recoil_transform = Transform3D.IDENTITY
@@ -323,8 +355,16 @@ func weapon_projectile_transform() -> Transform3D:
 func aim_target_transform() -> Transform3D:
     return aim_target.global_transform
 
+## Set if the weapon is aiming. This reduces recoil power when aiming.
 func set_aiming(value: bool) -> void:
     _is_aiming = value
+
+## Toggle's the weapon's alt mode
+func toggle_alt_mode() -> void:
+    if weapon_type and _has_alt_mode:
+        weapon_type.set_alt_mode(not weapon_type.alt_mode)
+        _alt_interp.reset(_alt_interp.current)
+        _alt_interp.duration = weapon_type.get_alt_switch_time()
 
 func set_continue_reload(value: bool) -> void:
     continue_reload = value
@@ -421,6 +461,7 @@ func update_trigger(triggered: bool, delta: float) -> bool:
 
     if emit_updated:
         weapon_updated.emit()
+        _weapon_scene.on_weapon_updated(weapon_type)
 
     return actuated
 
@@ -478,7 +519,8 @@ func trigger_particle(activate: bool = true) -> void:
 
 func load_weapon_type(type: WeaponResource) -> void:
     if weapon_type:
-        weapon_type.out_of_ammo.disconnect(on_weapon_empty)
+        if _has_alt_mode and not weapon_type.is_alt_mode_persistent():
+            weapon_type.alt_mode = false
 
     weapon_type = type
 
@@ -486,7 +528,11 @@ func load_weapon_type(type: WeaponResource) -> void:
     continue_reload = false
     continue_unload = false
     _is_recoil_rising = false
+    _has_alt_mode = false
+    _alt_transform = Transform3D.IDENTITY
+    alt_mode_transform = Transform3D.IDENTITY
 
+    _alt_interp.reset(0.0)
     _weapon_aim.reset(Vector2.ZERO)
     _recoil_kick.reset(Vector2.ZERO)
     _recoil_recovery.reset(0.0)
@@ -506,10 +552,11 @@ func load_weapon_type(type: WeaponResource) -> void:
         return
 
     weapon_type.ammo_bank = ammo_bank
+    _has_alt_mode = weapon_type.has_alt_mode()
+    if _has_alt_mode:
+        _alt_transform = weapon_type.get_alt_transform()
 
     _recoil_recovery.duration = weapon_type.recoil_recover_time
-
-    weapon_type.out_of_ammo.connect(on_weapon_empty)
 
     if _weapon_scene:
         if weapon_type.ammo_can_mix:
@@ -521,6 +568,8 @@ func load_weapon_type(type: WeaponResource) -> void:
         else:
             _weapon_scene.set_magazine_scene(weapon_type.scene_magazine)
             _weapon_scene.set_reload_scene(weapon_type.scene_magazine)
+        _weapon_scene.on_weapon_updated(weapon_type)
+        _weapon_scene.goto_ready()
 
     _weapon_audio_player.sound = weapon_type.sound_effect
 
@@ -534,6 +583,9 @@ func _load_weapon_scene() -> void:
         _weapon_scene.round_unloaded.disconnect(on_weapon_round_unloaded)
         _weapon_scene.magazine_loaded.disconnect(on_weapon_magazine_loaded)
         _weapon_scene.magazine_unloaded.disconnect(on_weapon_magazine_unloaded)
+
+        if _weapon_scene is RevolverWeaponScene:
+            _weapon_scene.cylinder_rotated.disconnect(on_cylinder_rotated)
 
         remove_child(_weapon_scene)
         _weapon_scene.queue_free()
@@ -558,8 +610,8 @@ func _load_weapon_scene() -> void:
     add_child(_weapon_scene)
 
     # NOTE: Special case for revolver scene and weapon
-    if weapon_type is RevolverWeapon:
-        _weapon_scene.set_revolver(weapon_type)
+    if _weapon_scene is RevolverWeaponScene:
+        _weapon_scene.cylinder_rotated.connect(on_cylinder_rotated)
 
     _weapon_scene.global_transform = global_transform.translated(weapon_type.scene_offset)
     _weapon_scene.charged.connect(on_weapon_charged)
@@ -570,7 +622,6 @@ func _load_weapon_scene() -> void:
     _weapon_scene.round_unloaded.connect(on_weapon_round_unloaded)
     _weapon_scene.magazine_loaded.connect(on_weapon_magazine_loaded)
     _weapon_scene.magazine_unloaded.connect(on_weapon_magazine_unloaded)
-    _weapon_scene.goto_ready()
 
 func _load_particle_system() -> void:
     if _particle_system and _particle_system.get_parent() == self:
@@ -599,6 +650,12 @@ func _load_particle_system() -> void:
         add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
+func on_cylinder_rotated(steps: int) -> void:
+    if weapon_type is RevolverWeapon:
+        weapon_type.rotate_cylinder(steps)
+        _weapon_scene.on_weapon_updated(weapon_type)
+
+## Returns true if the weapon state changed, used to consolidate weapon firing updates
 func on_weapon_fire() -> bool:
     if not weapon_type:
         return false
@@ -608,15 +665,16 @@ func on_weapon_fire() -> bool:
         print_debug('on_weapon_fire() must not be called for melee-only weapons!')
         return false
 
+    # TODO: recoil system change to impulses
     # Turn on recoil rise when firing, before fire_round as it may become empty
     if weapon_type.recoil_enabled:
         _is_recoil_rising = true
 
-    # NOTE: If ammo state wasn't modified, then we should not rise or kick
-    if not weapon_type.fire_round():
-        _is_recoil_rising = false
-        return false
+    var updated: bool = weapon_type.fire_round()
+    # TODO: change recoil system to be impulse based. The result of this method
+    #       should have no impact on recoil!
 
+    # TODO: recoil system change to impulses
     # NOTE: Always apply recoil kick
     if weapon_type.recoil_enabled:
         # TODO: Probably make it sway back and forth instead
@@ -663,11 +721,7 @@ func on_weapon_fire() -> bool:
         _recoil_kick.transition = Tween.TRANS_SPRING
         _recoil_kick.set_target_delta(target, target - _recoil_kick.current)
 
-    return true
-
-func on_weapon_empty() -> void:
-    # NOTE: better recoil stop on the tick we empty the gun
-    _is_recoil_rising = false
+    return updated
 
 func on_weapon_melee(melee_transform: Transform3D) -> void:
     if not weapon_type:
@@ -689,6 +743,7 @@ func on_weapon_charged() -> void:
 
     weapon_type.charge_weapon()
     weapon_updated.emit()
+    _weapon_scene.on_weapon_updated(weapon_type)
 
 func on_weapon_uncharged() -> void:
     if not weapon_type:
@@ -729,6 +784,7 @@ func on_weapon_round_ejected() -> void:
 
     if weapon_type.eject_round():
         weapon_updated.emit()
+        _weapon_scene.on_weapon_updated(weapon_type)
 
     if not round_dict:
         return
@@ -764,3 +820,4 @@ func on_weapon_magazine_unloaded() -> void:
 
     weapon_type.unload_rounds()
     weapon_updated.emit()
+    _weapon_scene.on_weapon_updated(weapon_type)

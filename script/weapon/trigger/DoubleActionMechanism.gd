@@ -54,8 +54,7 @@ func tick(delta: float) -> float:
         if delta >= _delay_timer:
             delta -= _delay_timer
             _delay_timer = 0.0
-            if can_fire:
-                fire()
+            fire()
         else:
             _delay_timer -= delta
             delta = 0.0

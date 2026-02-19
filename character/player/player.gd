@@ -158,7 +158,7 @@ var drive_steer_acceleration_limit: float = 1.0
 @export var move: GUIDEAction
 @export var fire_primary: GUIDEAction
 @export var aim: GUIDEAction
-@export var fan_hammer: GUIDEAction
+@export var weapon_alt: GUIDEAction
 @export var flashlight_action: GUIDEAction
 @export var interact: GUIDEAction
 @export var charge: GUIDEAction
@@ -295,12 +295,6 @@ const GENERIC_INPUT_BUFFER_TIME = 0.8
 const FIRE_INPUT_BUFFER_TIME = 0.13
 
 
-## How long aim action must be triggered to actually aim, only for the revolver
-## as fanning is two rapid aim inputs.
-const REVOLVER_AIM_TIME = 0.075
-var _revolver_aim_time: float = 0.0
-
-
 func _ready() -> void:
     super._ready()
 
@@ -419,19 +413,11 @@ func update_first_person(delta: float) -> void:
     if not _top_speed.is_done:
         _top_speed.update(delta)
 
-    update_aiming(_handle_input && aim.is_triggered(), delta)
-
-    var was_fanning: bool
-    var revolver: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
-    if revolver:
-        was_fanning = revolver.is_fanning
+    update_aiming(_handle_input && aim.is_triggered())
 
     # NOTE: Must be before camera update, so the weapon fires where it appears
     #       to point right now
     update_weapon_node(delta)
-
-    if revolver:
-        update_fanning(revolver, was_fanning)
 
     if not _weapon_position.is_done:
         _weapon_position.update(delta)
@@ -728,35 +714,22 @@ func get_camera() -> Camera3D:
 func set_recoil_transform(recoil_transform: Transform3D) -> void:
     _recoil_transform = recoil_transform
 
-func update_aiming(should_aim: bool, delta: float = 0.0) -> void:
+func update_aiming(should_aim: bool) -> void:
     var aim_starting: bool = false
     var aim_ending: bool = false
     if should_aim and weapon_node.can_aim():
         if not _aim_is_aiming:
-            # NOTE: Special revolver input, aiming is delayed, charges if not
-            #       charged, and cancels fan hammer state.
+            aim_starting = true
+
+            # NOTE: Special revolver input, charges if not charged, and cancels
+            #       fan hammer state.
             if weapon_node.weapon_type is RevolverWeapon:
-                var revolver_scene: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
-                if revolver_scene and revolver_scene.is_fanning:
-                    revolver_scene.is_fanning = false
-
-                if is_zero_approx(_revolver_aim_time):
-                    _revolver_aim_time = REVOLVER_AIM_TIME
-                else:
-                    _revolver_aim_time -= delta
-
-                if _revolver_aim_time < 0.001:
-                    aim_starting = true
-                    _revolver_aim_time = 0.0
-
-                    if weapon_node.weapon_type.can_charge():
-                        weapon_node.charge()
-            else:
-                aim_starting = true
-
+                if weapon_node.weapon_type.can_charge():
+                    weapon_node.charge()
+                if weapon_node.weapon_type.alt_mode:
+                    weapon_node.toggle_alt_mode()
     elif _aim_is_aiming:
         aim_ending = true
-        _revolver_aim_time = 0.0
 
     if aim_starting:
         _aim_is_aiming = true
@@ -782,7 +755,12 @@ func update_aiming(should_aim: bool, delta: float = 0.0) -> void:
 
     elif aim_ending:
         _aim_is_aiming = false
-        weapon_node.set_aiming(false)
+
+        # NOTE: Special revolver case, alt mode uses aim recoil reduction
+        if weapon_node.weapon_type is RevolverWeapon and weapon_node.weapon_type.alt_mode:
+            pass # do nothing
+        else:
+            weapon_node.set_aiming(false)
 
         _fov.duration = look_aim_return_time
         _fov.set_target_delta(fov, fov - _fov.current)
@@ -798,18 +776,6 @@ func update_aiming(should_aim: bool, delta: float = 0.0) -> void:
 
         _weapon_position.duration = look_aim_return_time
         _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
-
-func update_fanning(revolver: RevolverWeaponScene, was_fanning: bool) -> void:
-    if revolver.is_fanning and not revolver.can_fan():
-        revolver.is_fanning = false
-        weapon_node.set_aiming(false)
-        _weapon_position.duration = look_aim_return_time
-        _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
-    elif not was_fanning and revolver.is_fanning:
-        weapon_node.set_aiming(true)
-        _weapon_position.duration = look_aim_time
-        var target_position: Vector3 = weapon_position + weapon_node.weapon_type.fan_offset
-        _weapon_position.set_target_delta(target_position, target_position - _weapon_position.current)
 
 func interpolate_camera_smooth(delta: float) -> void:
     if not camera_smooth_enabled:
@@ -898,25 +864,14 @@ func update_weapon_node(delta: float) -> void:
     else:
         _melee_ready = true
 
-    if _handle_input and fan_hammer.is_triggered():
-        # NOTE: ignore this action unless we have a revolver
-        if weapon_node.weapon_type is RevolverWeapon:
-            weapon_node.continue_reload = false
-            update_last_input(fan_hammer)
+    if _handle_input and weapon_alt.is_triggered():
+        weapon_node.continue_reload = false
+        weapon_node.toggle_alt_mode()
+        update_last_input(weapon_alt)
 
-            var revolver_scene: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
-            if revolver_scene:
-                var okay: bool = revolver_scene.goto_fan()
-                if okay:
-                    clear_input_buffer(fan_hammer)
-                else:
-                    update_input_buffer(fan_hammer)
-    elif is_input_buffered(fan_hammer):
-        var revolver_scene: RevolverWeaponScene = weapon_node._weapon_scene as RevolverWeaponScene
-        if revolver_scene:
-            var okay: bool = revolver_scene.goto_fan()
-            if okay:
-                clear_input_buffer()
+        # NOTE: special revolver behavior, give aim recoil reduction in alt mode
+        if weapon_node.weapon_type is RevolverWeapon:
+            weapon_node.set_aiming(weapon_node.weapon_type.alt_mode)
 
     if _handle_input and charge.is_triggered():
         weapon_node.continue_reload = false
@@ -943,10 +898,7 @@ func update_weapon_node(delta: float) -> void:
             #       This is because it charges as part of a longer fire animation
             pass
         else:
-            actuated = weapon_node.charge()
-            if actuated:
-                # Requeue the primary fire action as buffer is too short normally
-                update_input_buffer(fire_primary)
+            weapon_node.charge()
 
     if _handle_input and reload.is_triggered():
         var do_reload: bool = false
@@ -1148,7 +1100,7 @@ func set_score(value: int) -> void:
     get_tree().call_group('hud', 'update_score', score)
 
 func update_weapon_hud() -> void:
-    get_tree().call_group('hud', 'update_weapon_hud', weapon_node.weapon_type)
+    get_tree().call_group('hud', 'update_weapon_hud', weapon_node)
 
 func update_vehicle_hud() -> void:
     get_tree().call_group('hud', 'update_vehicle_hud', current_vehicle)
@@ -1173,7 +1125,6 @@ func pickup_item(item: Pickup) -> void:
         if item.item_count > 0:
             add_ammo(weapon.get_default_ammo(), item.item_count)
 
-
         if weapon_index == 0:
             # New and first weapon, pull it out
             select_weapon(weapon.slot)
@@ -1181,14 +1132,19 @@ func pickup_item(item: Pickup) -> void:
             # New weapon with ammo, but not swapping, give our ammo bank
             weapon.ammo_bank = ammo_bank
 
+        var update_hud: bool = false
         if item.item_count > 0:
             weapon.load_rounds(item.item_count, weapon.get_default_ammo().type)
-            update_weapon_hud()
+            update_hud = true
 
         # For the revolver, rotate to one after the highest live round index
         var revolver: RevolverWeapon = weapon as RevolverWeapon
         if revolver:
             revolver_spin_to_next(revolver)
+            update_hud = true
+
+        if update_hud:
+            update_weapon_hud()
 
     elif item.item_type is AmmoResource:
         var ammo: AmmoResource = item.item_type as AmmoResource
@@ -1266,7 +1222,7 @@ func revolver_spin_to_next(revolver: RevolverWeapon) -> void:
     else:
         spin = -backward
 
-    revolver.rotate_cylinder(spin)
+    weapon_node.on_cylinder_rotated(spin)
 
 func connect_hurtboxes() -> void:
     hurtbox.enable()

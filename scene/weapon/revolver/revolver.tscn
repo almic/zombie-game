@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://c8nmtmax1l5vn"]
+[gd_scene format=3 uid="uid://c8nmtmax1l5vn"]
 
 [ext_resource type="Script" uid="uid://b8c38fv1c1av1" path="res://scene/weapon/revolver/revolver.gd" id="1_0b5uw"]
 [ext_resource type="Material" uid="uid://dxyayckyjwrdj" path="res://material/level/flat_orange.tres" id="2_aal8d"]
@@ -76,7 +76,7 @@ _data = {
 &"RESET": ExtResource("6_6ngox")
 }
 
-[node name="Revolver" type="Node3D" node_paths=PackedStringArray("unload_marker", "projectile_marker", "particle_marker", "reload_marker")]
+[node name="Revolver" type="Node3D" unique_id=640640485 node_paths=PackedStringArray("unload_marker", "projectile_marker", "particle_marker", "reload_marker")]
 script = ExtResource("1_0b5uw")
 unload_marker = NodePath("UnloadMarker")
 projectile_marker = NodePath("Mesh/BarrelMarker")
@@ -84,30 +84,30 @@ particle_marker = NodePath("Mesh/BarrelMarker")
 reload_marker = NodePath("ReloadMarker")
 metadata/_custom_type_script = "uid://b8c38fv1c1av1"
 
-[node name="Mesh" type="Node3D" parent="."]
+[node name="Mesh" type="Node3D" parent="." unique_id=246958618]
 unique_name_in_owner = true
 
-[node name="protomesh" type="Node3D" parent="Mesh"]
+[node name="protomesh" type="Node3D" parent="Mesh" unique_id=668311291]
 
-[node name="cylinder_axel" type="Node3D" parent="Mesh/protomesh"]
+[node name="cylinder_axel" type="Node3D" parent="Mesh/protomesh" unique_id=1968343811]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0055, -0.057, 0)
 
-[node name="cylinder_spin" type="Node3D" parent="Mesh/protomesh/cylinder_axel"]
+[node name="cylinder_spin" type="Node3D" parent="Mesh/protomesh/cylinder_axel" unique_id=1076185352]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0055, 0.037, 0)
 
-[node name="plunger_slide" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin"]
+[node name="plunger_slide" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" unique_id=1612327814]
 
-[node name="plunger" type="MeshInstance3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide"]
+[node name="plunger" type="MeshInstance3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide" unique_id=441632673]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.034)
 mesh = SubResource("CylinderMesh_65eug")
 skeleton = NodePath("../../../..")
 metadata/_edit_lock_ = true
 
-[node name="thing" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide"]
+[node name="thing" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide" unique_id=2068419331]
 metadata/_edit_lock_ = true
 
-[node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=635942882]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.034)
 radius = 0.0166016
 height = 0.002
@@ -115,7 +115,7 @@ sides = 28
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=26621603]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0.035)
 operation = 2
 radius = 0.009
@@ -124,7 +124,7 @@ sides = 16
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=618732408]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, 0.01, 0.035)
 operation = 2
 radius = 0.009
@@ -133,7 +133,7 @@ sides = 16
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=1416432915]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, -0.01, 0.035)
 operation = 2
 radius = 0.009
@@ -142,7 +142,7 @@ sides = 16
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=2043036136]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.02, 0.035)
 operation = 2
 radius = 0.009
@@ -151,7 +151,7 @@ sides = 16
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=1909712451]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, -0.01, 0.035)
 operation = 2
 radius = 0.009
@@ -160,7 +160,7 @@ sides = 16
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing"]
+[node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/plunger_slide/thing" unique_id=676957659]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, 0.01, 0.035)
 operation = 2
 radius = 0.009
@@ -169,10 +169,10 @@ sides = 16
 material = ExtResource("2_aal8d")
 metadata/_edit_lock_ = true
 
-[node name="cylinder" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin"]
+[node name="cylinder" type="CSGCombiner3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" unique_id=1620428944]
 metadata/_edit_lock_ = true
 
-[node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="cylinder" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=330599375]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
 radius = 0.0317383
 height = 0.07
@@ -180,7 +180,7 @@ sides = 32
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="port1" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=137817008]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 operation = 2
 radius = 0.009
@@ -189,7 +189,7 @@ sides = 18
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="port2" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=666887325]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, 0.01, 0)
 operation = 2
 radius = 0.009
@@ -198,7 +198,7 @@ sides = 18
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="port3" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=2132018077]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, -0.0173, -0.01, 0)
 operation = 2
 radius = 0.009
@@ -207,7 +207,7 @@ sides = 18
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="port4" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=381578017]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, -0.02, 0)
 operation = 2
 radius = 0.009
@@ -216,7 +216,7 @@ sides = 18
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="port5" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=145123354]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, -0.01, 0)
 operation = 2
 radius = 0.009
@@ -225,7 +225,7 @@ sides = 18
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="port6" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=1457797454]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0.0173, 0.01, 0)
 operation = 2
 radius = 0.009
@@ -234,7 +234,7 @@ sides = 18
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="thing_cut" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder"]
+[node name="thing_cut" type="CSGCylinder3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/cylinder" unique_id=1234256856]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.0341)
 operation = 2
 radius = 0.0166016
@@ -243,152 +243,151 @@ sides = 28
 material = ExtResource("3_3pk32")
 metadata/_edit_lock_ = true
 
-[node name="PortMarkers" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin"]
+[node name="PortMarkers" type="Node3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin" unique_id=970883912]
 
-[node name="Port1Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
+[node name="Port1Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers" unique_id=297758307]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
 gizmo_extents = 0.0
 
-[node name="BuckshotMesh" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers/Port1Marker" instance=ExtResource("4_a06wg")]
+[node name="BuckshotMesh" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers/Port1Marker" unique_id=454099651 instance=ExtResource("4_a06wg")]
 visible = false
 
-[node name="Port2Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
+[node name="Port2Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers" unique_id=174735415]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0173, 0.01, 0)
 gizmo_extents = 0.0
 
-[node name="Port3Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
+[node name="Port3Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers" unique_id=469694722]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0173, -0.01, 0)
 gizmo_extents = 0.0
 
-[node name="Port4Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
+[node name="Port4Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers" unique_id=1736657223]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 gizmo_extents = 0.0
 
-[node name="Port5Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
+[node name="Port5Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers" unique_id=1458311153]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0173, -0.01, 0)
 gizmo_extents = 0.0
 
-[node name="Port6Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers"]
+[node name="Port6Marker" type="Marker3D" parent="Mesh/protomesh/cylinder_axel/cylinder_spin/PortMarkers" unique_id=1405459787]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0173, 0.01, 0)
 gizmo_extents = 0.0
 
-[node name="hammer_axel" type="Node3D" parent="Mesh/protomesh"]
+[node name="hammer_axel" type="Node3D" parent="Mesh/protomesh" unique_id=329387589]
+unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0128, 0.06)
 
-[node name="hammer2" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel"]
+[node name="hammer2" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel" unique_id=2039935403]
 transform = Transform3D(1, 0, 0, 0, 0.258819, -0.965926, 0, 0.965926, 0.258819, 0, 0.0166377, 0.0016139)
 mesh = SubResource("BoxMesh_t0xa3")
 skeleton = NodePath("../hammer")
 metadata/_edit_lock_ = true
 
-[node name="hammer" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel"]
+[node name="hammer" type="MeshInstance3D" parent="Mesh/protomesh/hammer_axel" unique_id=2113081034]
 transform = Transform3D(1, 0, 0, 0, 0.939693, 0.34202, 0, -0.34202, 0.939693, 0, 0.008804, -0.0066913)
 mesh = SubResource("BoxMesh_10oke")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="frame" type="Node3D" parent="Mesh/protomesh"]
+[node name="frame" type="Node3D" parent="Mesh/protomesh" unique_id=1813828596]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.02, 0)
 metadata/_edit_lock_ = true
 
-[node name="frame1" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="frame1" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=1414855128]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0345, 0)
 mesh = SubResource("BoxMesh_taqe3")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="frame2" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="frame2" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=2014816337]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.037, 0)
 mesh = SubResource("BoxMesh_sqmra")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="frame3" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="frame3" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=644352928]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.043)
 mesh = SubResource("BoxMesh_s7c88")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="frame4" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="frame4" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=766638492]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.043)
 mesh = SubResource("BoxMesh_s7c88")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="plate" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="plate" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=2008435313]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0.0385)
 mesh = SubResource("CylinderMesh_56dd1")
 metadata/_edit_lock_ = true
 
-[node name="plunger_well" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="plunger_well" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=297450435]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0035, -0.08)
 mesh = SubResource("BoxMesh_jqqyl")
 metadata/_edit_lock_ = true
 
-[node name="irons" type="MeshInstance3D" parent="Mesh/protomesh/frame"]
+[node name="irons" type="MeshInstance3D" parent="Mesh/protomesh/frame" unique_id=1735094317]
 transform = Transform3D(0.939693, -0.34202, 0, 0.34202, 0.939693, 0, 0, 0, 1, -0.00675, 0.0383, 0.034)
 mesh = SubResource("BoxMesh_kcauo")
 metadata/_edit_lock_ = true
 
-[node name="irons2" type="MeshInstance3D" parent="Mesh/protomesh/frame/irons"]
+[node name="irons2" type="MeshInstance3D" parent="Mesh/protomesh/frame/irons" unique_id=1484485280]
 transform = Transform3D(0.766045, 0.642788, 0, -0.642788, 0.766045, 0, 0, 0, 1, 0.0126859, -0.0046173, 0)
 mesh = SubResource("BoxMesh_kcauo")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="barrel" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=1749103854]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -0.136001)
 mesh = SubResource("CylinderMesh_wdyuu")
 metadata/_edit_lock_ = true
 
-[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh/barrel"]
+[node name="rail" type="MeshInstance3D" parent="Mesh/protomesh/barrel" unique_id=1230067135]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.005, 0.0125)
 mesh = SubResource("BoxMesh_sb7xs")
 metadata/_edit_lock_ = true
 
-[node name="sight" type="MeshInstance3D" parent="Mesh/protomesh/barrel"]
+[node name="sight" type="MeshInstance3D" parent="Mesh/protomesh/barrel" unique_id=710381919]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.085, 0.017954)
 mesh = SubResource("BoxMesh_7jtif")
 metadata/_edit_lock_ = true
 
-[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh"]
+[node name="grip" type="MeshInstance3D" parent="Mesh/protomesh" unique_id=685064212]
 transform = Transform3D(1, 0, 0, 0, 0.939874, 0.341521, 0, -0.341521, 0.939874, 0, -0.09, 0.084)
 mesh = SubResource("BoxMesh_epxfg")
 metadata/_edit_lock_ = true
 
-[node name="grip2" type="MeshInstance3D" parent="Mesh/protomesh/grip"]
+[node name="grip2" type="MeshInstance3D" parent="Mesh/protomesh/grip" unique_id=898634659]
 transform = Transform3D(1, 0, 0, 0, 0.984808, -0.173648, 0, 0.173648, 0.984808, 0, 0.0542, -9.999999999999999e-05)
 mesh = SubResource("BoxMesh_y58f1")
 skeleton = NodePath("../..")
 metadata/_edit_lock_ = true
 
-[node name="BarrelMarker" type="Marker3D" parent="Mesh"]
+[node name="BarrelMarker" type="Marker3D" parent="Mesh" unique_id=2107811380]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.24)
 gizmo_extents = 0.0
 
-[node name="ReloadMarker" type="Marker3D" parent="."]
+[node name="ReloadMarker" type="Marker3D" parent="." unique_id=1897670405]
 visible = false
 gizmo_extents = 0.0
 
-[node name="BuckshotMesh" parent="ReloadMarker" instance=ExtResource("4_a06wg")]
+[node name="BuckshotMesh" parent="ReloadMarker" unique_id=448473256 instance=ExtResource("4_a06wg")]
 
-[node name="UnloadMarker" type="Marker3D" parent="."]
+[node name="UnloadMarker" type="Marker3D" parent="." unique_id=1460632559]
 visible = false
 gizmo_extents = 0.0
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-libraries = {
-&"": SubResource("AnimationLibrary_63nye"),
-&"revolver": ExtResource("7_5kojq")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=52342462]
+libraries/ = SubResource("AnimationLibrary_63nye")
+libraries/revolver = ExtResource("7_5kojq")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=413509987]
 unique_name_in_owner = true
 deterministic = false
 root_node = NodePath("%AnimationTree/..")

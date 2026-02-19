@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cvryaecomxuny"]
+[gd_scene format=3 uid="uid://cvryaecomxuny"]
 
 [ext_resource type="Script" uid="uid://bb3ce8qxdd1cn" path="res://ui/weapon/revolver/revolver_ui.gd" id="1_u1q8u"]
 [ext_resource type="Shader" uid="uid://dj4g8012f8klw" path="res://ui/rotate_ui.gdshader" id="2_13c1h"]
@@ -13,7 +13,7 @@ shader_parameter/rotation = -0.2618
 shader_parameter/pivot = Vector2(0.5, 0.5)
 shader_parameter/size = Vector2(401.786, 180)
 
-[node name="revolver_ui" type="MarginContainer"]
+[node name="revolver_ui" type="MarginContainer" unique_id=90844777]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -25,34 +25,34 @@ theme_override_constants/margin_bottom = 8
 script = ExtResource("1_u1q8u")
 metadata/_custom_type_script = "uid://n24dm7nfx3mh"
 
-[node name="weapon_texture" type="TextureRect" parent="."]
+[node name="weapon_texture" type="TextureRect" parent="." unique_id=283176637]
 unique_name_in_owner = true
 material = SubResource("ShaderMaterial_u1q8u")
-custom_minimum_size = Vector2(1.45519e-11, 180)
+custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 0
 texture = ExtResource("2_cetoc")
 expand_mode = 3
 
-[node name="cylinder_margin" type="MarginContainer" parent="."]
+[node name="cylinder_margin" type="MarginContainer" parent="." unique_id=886127350]
 layout_mode = 2
 theme_override_constants/margin_left = 191
 theme_override_constants/margin_top = 38
 
-[node name="cylinder_size" type="MarginContainer" parent="cylinder_margin"]
+[node name="cylinder_size" type="MarginContainer" parent="cylinder_margin" unique_id=43562880]
 layout_mode = 2
 theme_override_constants/margin_left = 112
 theme_override_constants/margin_top = 112
 theme_override_constants/margin_right = 112
 theme_override_constants/margin_bottom = 112
 
-[node name="Control" type="Control" parent="cylinder_margin/cylinder_size"]
+[node name="Control" type="Control" parent="cylinder_margin/cylinder_size" unique_id=911671274]
 layout_mode = 2
 
-[node name="cylinder" type="TextureRect" parent="cylinder_margin/cylinder_size/Control"]
+[node name="cylinder" type="TextureRect" parent="cylinder_margin/cylinder_size/Control" unique_id=1995326610]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(1.45519e-11, 224)
+custom_minimum_size = Vector2(0, 224)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -65,7 +65,7 @@ size_flags_vertical = 0
 texture = ExtResource("4_6okdm")
 expand_mode = 3
 
-[node name="port1" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+[node name="port1" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder" unique_id=301439440]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
@@ -78,7 +78,7 @@ texture = ExtResource("5_u1q8u")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="port2" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+[node name="port2" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder" unique_id=1561051210]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
@@ -86,13 +86,13 @@ offset_left = 17.0
 offset_top = 44.0
 offset_right = 81.0
 offset_bottom = 108.0
-rotation = -1.0472
+rotation = -1.0471975511966
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="port3" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+[node name="port3" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder" unique_id=1872835369]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
@@ -100,13 +100,13 @@ offset_left = 17.0
 offset_top = 116.0
 offset_right = 81.0
 offset_bottom = 180.0
-rotation = -2.0944
+rotation = -2.0943951023932
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="port4" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+[node name="port4" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder" unique_id=317805538]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
@@ -114,13 +114,13 @@ offset_left = 80.0
 offset_top = 152.0
 offset_right = 144.0
 offset_bottom = 216.0
-rotation = -3.14159
+rotation = -3.14159265358979
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="port5" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+[node name="port5" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder" unique_id=1542949965]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
@@ -128,13 +128,13 @@ offset_left = 143.0
 offset_top = 116.0
 offset_right = 207.0
 offset_bottom = 180.0
-rotation = -4.18879
+rotation = -4.18879020478639
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="port6" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder"]
+[node name="port6" type="TextureRect" parent="cylinder_margin/cylinder_size/Control/cylinder" unique_id=1216946444]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 0
@@ -142,13 +142,13 @@ offset_left = 143.0
 offset_top = 44.0
 offset_right = 207.0
 offset_bottom = 108.0
-rotation = -5.23599
+rotation = -5.23598775598299
 pivot_offset = Vector2(32, 32)
 texture = ExtResource("5_u1q8u")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="marker" type="TextureRect" parent="cylinder_margin/cylinder_size/Control"]
+[node name="marker" type="TextureRect" parent="cylinder_margin/cylinder_size/Control" unique_id=2078981445]
 unique_name_in_owner = true
 layout_mode = 0
 offset_left = -9.0

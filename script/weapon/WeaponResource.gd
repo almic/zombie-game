@@ -5,16 +5,13 @@
 class_name WeaponResource extends PickupResource
 
 
-## When the gun fires the last bullet in reserve
-signal out_of_ammo()
-
-
 ## Weapon name in UI elements
 @export var name: String
 
 ## The unique slot of the weapon
 @export_range(1, 10, 1)
 var slot: int = 1
+
 
 @export_group("Melee", "melee")
 
@@ -241,6 +238,9 @@ var ammo_bank: Dictionary:
 ## Current ammo stock used for actions
 var ammo_stock: Dictionary
 
+## Alternate fire mode for weapon
+var alt_mode: bool = false
+
 
 # Cached map of supported ammo IDs to ammo resource
 var _ammo_cache: Dictionary
@@ -378,6 +378,9 @@ func set_ammo_bank(value: Dictionary) -> void:
 func set_ammo_reserve_size(value: int) -> void:
     ammo_reserve_size = value
 
+func set_alt_mode(value: bool) -> void:
+    alt_mode = value
+
 func is_chambered() -> bool:
     return _chambered_round_type > 0
 
@@ -431,6 +434,27 @@ func can_unload() -> bool:
     # NOTE: weapon unloading should always emit a signal to eject any
     #       chambered round as part of the animation.
     return is_chambered() or get_reserve_total() > 0
+
+## If the weapon has alternate fire behavior. Should return a consistent value.
+func has_alt_mode() -> bool:
+    return false
+
+## If the weapon's alternate fire mode is persistent when switching out the weapon.
+## Should return a consistent value.
+func is_alt_mode_persistent() -> bool:
+    return false
+
+## If the weapon needs an alt mode transform, return it here. This transform is
+## applied after scene offset, and interpolated when switching modes. Should
+## return a consistent value.
+func get_alt_transform() -> Transform3D:
+    return Transform3D.IDENTITY
+
+## Return the amount of time it should take to interpolate into/ out of alternate
+## transform. This should return the time it will take to switch to the current
+## value of alt_mode.
+func get_alt_switch_time() -> float:
+    return 0.0
 
 ## Charges the weapon; puts one in the chamber
 func charge_weapon() -> void:
@@ -593,10 +617,6 @@ func fire_round() -> bool:
             else:
                 _mixed_reserve.remove_at(0)
             updated_ammo = true
-
-    # If we are empty, signal
-    if updated_ammo and get_reserve_total() < 1:
-        out_of_ammo.emit()
 
     return updated_ammo
 

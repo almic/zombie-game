@@ -13,7 +13,7 @@
 [ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/first_person/melee.tres" id="8_fkbv7"]
 [ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/first_person/weapon_next.tres" id="8_muf2e"]
 [ext_resource type="Resource" uid="uid://bt316ku33273" path="res://data/input/actions/first_person/flashlight.tres" id="9_a5sw3"]
-[ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/first_person/fan_hammer.tres" id="9_aph6w"]
+[ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/first_person/weapon_alt.tres" id="9_aph6w"]
 [ext_resource type="Resource" uid="uid://ct4rucnve6vku" path="res://data/input/actions/first_person/weapon_prev.tres" id="9_jo6ux"]
 [ext_resource type="Resource" uid="uid://dheiirlyouuld" path="res://data/input/actions/first_person/weapon_charge.tres" id="10_aph6w"]
 [ext_resource type="Resource" uid="uid://cgw33mhjg1seu" path="res://data/input/actions/first_person/reload.tres" id="10_muf2e"]
@@ -72,7 +72,7 @@ look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
 fire_primary = ExtResource("5_eu8pa")
 aim = ExtResource("8_7mvkq")
-fan_hammer = ExtResource("9_aph6w")
+weapon_alt = ExtResource("9_aph6w")
 flashlight_action = ExtResource("9_a5sw3")
 interact = ExtResource("11_nphxe")
 charge = ExtResource("10_aph6w")

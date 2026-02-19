@@ -55,15 +55,19 @@ func _process(_delta: float) -> void:
 
 
 ## Extend per weapon, update the UI to match the weapon state
-func update(weapon: WeaponResource) -> void:
-    if not weapon:
+func update(weapon: WeaponNode) -> void:
+    var weapon_type: WeaponResource
+    if weapon:
+        weapon_type = weapon.weapon_type
+
+    if not weapon_type:
         weapon_texture.texture = null
         return
 
-    weapon_texture.texture = weapon.ui_texture
+    weapon_texture.texture = weapon_type.ui_texture
 
     if enable_auto_rows:
-        update_reserve_rows(weapon)
+        update_reserve_rows(weapon_type)
 
 static func apply_rect_sizes(parents: Array[Variant]) -> void:
     for parent in parents:

@@ -139,26 +139,44 @@ func update_health(health: float) -> void:
 func update_time(clock_time: String) -> void:
     time.text = clock_time
 
-func update_weapon_hud(weapon: WeaponResource) -> void:
-    if not _weapon_hud_scene_path or weapon.scene_ui.resource_path != _weapon_hud_scene_path:
+func update_weapon_hud(weapon: WeaponNode) -> void:
+    # Clear current UI
+    if _weapon_ui_scene and (
+               (not weapon)
+            or (not weapon.weapon_type)
+            or (not weapon.weapon_type.scene_ui)
+    ):
+        weapon_hud.remove_child(_weapon_ui_scene)
+        _weapon_ui_scene.queue_free()
+        _weapon_ui_scene = null
+        return
+
+    var weapon_type: WeaponResource
+    if weapon:
+        weapon_type = weapon.weapon_type
+
+    if (
+                weapon_type
+            and weapon_type.scene_ui
+            and weapon_type.scene_ui.resource_path != _weapon_hud_scene_path
+    ):
         if _weapon_ui_scene:
             weapon_hud.remove_child(_weapon_ui_scene)
             _weapon_ui_scene.queue_free()
             _weapon_ui_scene = null
 
-        if weapon:
-            _weapon_ui_scene = weapon.scene_ui.instantiate() as WeaponUI
-            _weapon_hud_scene_path = weapon.scene_ui.resource_path
+        _weapon_ui_scene = weapon_type.scene_ui.instantiate() as WeaponUI
+        _weapon_hud_scene_path = weapon_type.scene_ui.resource_path
 
-            # NOTE: temporary for development, should be removed
-            if not _weapon_ui_scene:
-                push_error('Weapon type does not have a UI scene set correctly! Investigate!')
-                return
+        # NOTE: temporary for development, should be removed
+        if not _weapon_ui_scene:
+            push_error('Weapon type does not have a UI scene set correctly! Investigate!')
+            return
 
-            weapon_hud.add_child(_weapon_ui_scene)
+        weapon_hud.add_child(_weapon_ui_scene)
 
-    if weapon:
-        var stock: Dictionary = weapon.ammo_stock
+    if weapon_type:
+        var stock: Dictionary = weapon_type.ammo_stock
 
         if Engine.is_editor_hint() and not stock:
             stock = _preview_stock_ammo
@@ -177,10 +195,8 @@ func update_weapon_hud(weapon: WeaponResource) -> void:
             stock_texture.texture = null
             stock_amount.text = ''
 
-    if not _weapon_ui_scene:
-        return
-
-    _weapon_ui_scene.update(weapon)
+    if _weapon_ui_scene:
+        _weapon_ui_scene.update(weapon)
 
 func update_vehicle_hud(vehicle: JoltVehicle) -> void:
     if not vehicle:

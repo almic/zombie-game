@@ -23,6 +23,7 @@ const MAX_SPIN_RATE: float = deg_to_rad(480.0)
 
 
 var revolver_weapon: RevolverWeapon
+var revolver_scene: RevolverWeaponScene
 var cylinder_interp: Interpolation = Interpolation.new(0.0, Tween.TRANS_EXPO, Tween.EASE_OUT)
 var ports: Array[TextureRect]
 
@@ -44,7 +45,7 @@ func _process(delta: float) -> void:
 
         # NOTE: This value is updated by the animated weapon scene. Due to -Z,
         #       we always want the negative rotation from 3D.
-        var target: float = fposmod(-revolver_weapon._animated_cylinder_rotation, TAU)
+        var target: float = fposmod(-revolver_scene.get_cylinder_rotation(), TAU)
 
         var diff: float = target - cylinder.rotation
         var diff_2: float
@@ -85,13 +86,18 @@ func _process(delta: float) -> void:
             cylinder.rotation = target
 
 
-func update(weapon: WeaponResource) -> void:
+func update(weapon: WeaponNode) -> void:
     super.update(weapon)
 
-    var revolver: RevolverWeapon = weapon as RevolverWeapon
-    if not revolver:
+    if not weapon:
+        return
+
+    var revolver: RevolverWeapon = weapon.weapon_type as RevolverWeapon
+    var scene: RevolverWeaponScene = weapon._weapon_scene as RevolverWeaponScene
+    if (not revolver) or (not scene):
         return
     revolver_weapon = revolver
+    revolver_scene = scene
 
     var supported: Dictionary = revolver.get_supported_ammunition()
     for i in range(revolver.ammo_reserve_size):

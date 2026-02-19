@@ -8,9 +8,10 @@ extends WeaponUI
 var reserve_size: int = 0
 
 
-func update(weapon: WeaponResource) -> void:
-    super.update(weapon)
+func update(weapon_node: WeaponNode) -> void:
+    super.update(weapon_node)
 
+    var weapon: WeaponResource = weapon_node.weapon_type
     var adding: bool = weapon.ammo_reserve_size != reserve_size
     reserve_size = weapon.ammo_reserve_size
 

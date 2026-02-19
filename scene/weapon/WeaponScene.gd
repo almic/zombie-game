@@ -362,3 +362,9 @@ func attach_magazine() -> void:
     # NOTE: it is an error to call this from animation without these markers
     reload_marker.visible = false
     magazine_marker.visible = true
+
+## Handles visual scene changes when the weapon state changes. Implemented per
+## weapon scene.
+@warning_ignore("unused_parameter")
+func on_weapon_updated(weapon: WeaponResource) -> void:
+    pass

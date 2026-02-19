@@ -67,13 +67,13 @@ script = ExtResource("1_si4e3")
 action = ExtResource("8_q3wsk")
 input_mappings = Array[ExtResource("3_obwup")]([SubResource("Resource_w6bd8"), SubResource("Resource_apw35")])
 
-[sub_resource type="Resource" id="Resource_ecpk4"]
+[sub_resource type="Resource" id="Resource_a8syp"]
 script = ExtResource("4_y6uqt")
-key = 81
+key = 84
 
 [sub_resource type="Resource" id="Resource_1ah74"]
 script = ExtResource("3_obwup")
-input = SubResource("Resource_ecpk4")
+input = SubResource("Resource_a8syp")
 
 [sub_resource type="Resource" id="Resource_766sy"]
 script = ExtResource("1_si4e3")

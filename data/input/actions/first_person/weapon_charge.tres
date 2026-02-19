@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_egs4a")
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Charge Weapon"

@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="GUIDEAction" load_steps=2 format=3 uid="uid://mie3rlidsb5b"]
+[gd_resource type="Resource" script_class="GUIDEAction" format=3 uid="uid://mie3rlidsb5b"]
 
 [ext_resource type="Script" uid="uid://cluhc11vixkf1" path="res://addons/guide/guide_action.gd" id="1_nrbcn"]
 
 [resource]
 script = ExtResource("1_nrbcn")
 name = &"Toggle Zombie Targeting"
+block_lower_priority_actions = false
 metadata/_custom_type_script = "uid://cluhc11vixkf1"

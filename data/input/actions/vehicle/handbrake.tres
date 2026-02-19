@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="GUIDEAction" load_steps=2 format=3 uid="uid://d4ynu0va0f30"]
+[gd_resource type="Resource" script_class="GUIDEAction" format=3 uid="uid://d4ynu0va0f30"]
 
 [ext_resource type="Script" uid="uid://cluhc11vixkf1" path="res://addons/guide/guide_action.gd" id="1_nou3x"]
 
 [resource]
 script = ExtResource("1_nou3x")
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Handbrake"

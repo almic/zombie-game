@@ -5,3 +5,4 @@
 [resource]
 script = ExtResource("1_35ltq")
 action_value_type = 2
+block_lower_priority_actions = false

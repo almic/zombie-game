@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_1y5fl")
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Load Weapon"

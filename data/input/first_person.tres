@@ -30,6 +30,7 @@
 [ext_resource type="Resource" uid="uid://cxamus3byuxsa" path="res://data/input/actions/first_person/weapon_alt.tres" id="25_m8yck"]
 [ext_resource type="Resource" uid="uid://dheiirlyouuld" path="res://data/input/actions/first_person/weapon_charge.tres" id="28_1dtex"]
 [ext_resource type="Resource" uid="uid://c8ipmag2tt3b7" path="res://data/input/actions/first_person/interact.tres" id="28_6wxkn"]
+[ext_resource type="Resource" uid="uid://cvnul02l8a0jg" path="res://data/input/actions/first_person/weapon_select_switch.tres" id="30_1dtex"]
 
 [sub_resource type="Resource" id="Resource_2myea"]
 script = ExtResource("4_ha628")
@@ -212,16 +213,16 @@ script = ExtResource("1_5kk23")
 action = ExtResource("21_srcnp")
 input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_fiijf")])
 
-[sub_resource type="Resource" id="Resource_6c25b"]
+[sub_resource type="Resource" id="Resource_5ou03"]
 script = ExtResource("4_ha628")
-key = 81
+key = 84
 
 [sub_resource type="Resource" id="Resource_i3p8k"]
 script = ExtResource("14_46ss4")
 
 [sub_resource type="Resource" id="Resource_pr8ev"]
 script = ExtResource("3_nvbr2")
-input = SubResource("Resource_6c25b")
+input = SubResource("Resource_5ou03")
 triggers = Array[ExtResource("8_46ss4")]([SubResource("Resource_i3p8k")])
 
 [sub_resource type="Resource" id="Resource_qnh3i"]
@@ -229,13 +230,13 @@ script = ExtResource("1_5kk23")
 action = ExtResource("23_6y23l")
 input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_pr8ev")])
 
-[sub_resource type="Resource" id="Resource_5ou03"]
+[sub_resource type="Resource" id="Resource_6c25b"]
 script = ExtResource("4_ha628")
 key = 82
 
 [sub_resource type="Resource" id="Resource_2orev"]
 script = ExtResource("3_nvbr2")
-input = SubResource("Resource_5ou03")
+input = SubResource("Resource_6c25b")
 
 [sub_resource type="Resource" id="Resource_e4g2w"]
 script = ExtResource("1_5kk23")
@@ -311,19 +312,40 @@ script = ExtResource("1_5kk23")
 action = ExtResource("28_1dtex")
 input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_pachv")])
 
-[sub_resource type="Resource" id="Resource_2txww"]
+[sub_resource type="Resource" id="Resource_7vel2"]
 script = ExtResource("4_ha628")
-key = 90
+key = 81
+
+[sub_resource type="Resource" id="Resource_x6356"]
+script = ExtResource("14_46ss4")
 
 [sub_resource type="Resource" id="Resource_5juv8"]
 script = ExtResource("3_nvbr2")
-input = SubResource("Resource_2txww")
+input = SubResource("Resource_7vel2")
+triggers = Array[ExtResource("8_46ss4")]([SubResource("Resource_x6356")])
 
 [sub_resource type="Resource" id="Resource_50vkl"]
 script = ExtResource("1_5kk23")
 action = ExtResource("25_m8yck")
 input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_5juv8")])
 
+[sub_resource type="Resource" id="Resource_6yqd0"]
+script = ExtResource("4_ha628")
+key = 90
+
+[sub_resource type="Resource" id="Resource_hewb1"]
+script = ExtResource("14_46ss4")
+
+[sub_resource type="Resource" id="Resource_kgt2m"]
+script = ExtResource("3_nvbr2")
+input = SubResource("Resource_6yqd0")
+triggers = Array[ExtResource("8_46ss4")]([SubResource("Resource_hewb1")])
+
+[sub_resource type="Resource" id="Resource_fqc61"]
+script = ExtResource("1_5kk23")
+action = ExtResource("30_1dtex")
+input_mappings = Array[ExtResource("3_nvbr2")]([SubResource("Resource_kgt2m")])
+
 [resource]
 script = ExtResource("2_pme3w")
-mappings = Array[ExtResource("1_5kk23")]([SubResource("Resource_kfofi"), SubResource("Resource_hwbnv"), SubResource("Resource_5blti"), SubResource("Resource_3a0jo"), SubResource("Resource_mul2j"), SubResource("Resource_3krds"), SubResource("Resource_qnh3i"), SubResource("Resource_e4g2w"), SubResource("Resource_10dph"), SubResource("Resource_sfbg0"), SubResource("Resource_icp33"), SubResource("Resource_pmmte"), SubResource("Resource_wuy35"), SubResource("Resource_50vkl")])
+mappings = Array[ExtResource("1_5kk23")]([SubResource("Resource_kfofi"), SubResource("Resource_hwbnv"), SubResource("Resource_5blti"), SubResource("Resource_3a0jo"), SubResource("Resource_mul2j"), SubResource("Resource_3krds"), SubResource("Resource_qnh3i"), SubResource("Resource_e4g2w"), SubResource("Resource_10dph"), SubResource("Resource_sfbg0"), SubResource("Resource_icp33"), SubResource("Resource_pmmte"), SubResource("Resource_wuy35"), SubResource("Resource_50vkl"), SubResource("Resource_fqc61")])

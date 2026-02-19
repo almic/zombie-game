@@ -5,5 +5,6 @@
 [resource]
 script = ExtResource("1_wsy4j")
 action_value_type = 3
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Movement"

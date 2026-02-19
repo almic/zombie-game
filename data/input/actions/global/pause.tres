@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="GUIDEAction" load_steps=2 format=3 uid="uid://dyq3nbpw2252v"]
+[gd_resource type="Resource" script_class="GUIDEAction" format=3 uid="uid://dyq3nbpw2252v"]
 
 [ext_resource type="Script" uid="uid://cluhc11vixkf1" path="res://addons/guide/guide_action.gd" id="1_46vbn"]
 
 [resource]
 script = ExtResource("1_46vbn")
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Pause"

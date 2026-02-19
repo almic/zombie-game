@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_llsje")
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Previous Weapon"

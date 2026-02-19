@@ -4,5 +4,6 @@
 
 [resource]
 script = ExtResource("1_mww7j")
+block_lower_priority_actions = false
 is_remappable = true
 display_name = "Primary Fire"

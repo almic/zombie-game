@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="GUIDEAction" format=3 uid="uid://cvnul02l8a0jg"]
+
+[ext_resource type="Script" uid="uid://cluhc11vixkf1" path="res://addons/guide/guide_action.gd" id="1_18o6p"]
+
+[resource]
+script = ExtResource("1_18o6p")
+block_lower_priority_actions = false
+is_remappable = true
+display_name = "Switch Fire Mode"
+metadata/_custom_type_script = "uid://cluhc11vixkf1"

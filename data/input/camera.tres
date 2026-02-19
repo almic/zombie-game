@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://cgy4anjdob2tp" path="res://addons/guide/modifiers/guide_modifier_window_relative.gd" id="6_ei5i2"]
 [ext_resource type="Script" uid="uid://bjm4myqxg4phm" path="res://addons/guide/modifiers/guide_modifier_scale.gd" id="7_fqs44"]
 [ext_resource type="Script" uid="uid://x74mnwgr08a7" path="res://addons/guide/triggers/guide_trigger.gd" id="8_sg1ci"]
+[ext_resource type="Script" uid="uid://doauobik3xyea" path="res://addons/guide/inputs/guide_input_joy_axis_2d.gd" id="9_vfasc"]
+[ext_resource type="Script" uid="uid://cww11sq1k36tt" path="res://addons/guide/modifiers/guide_modifier_stick.gd" id="10_vfasc"]
 
 [sub_resource type="Resource" id="Resource_4mcap"]
 script = ExtResource("4_jmbwu")
@@ -25,10 +27,24 @@ script = ExtResource("3_yeo5j")
 input = SubResource("Resource_4mcap")
 modifiers = Array[ExtResource("5_50rtm")]([SubResource("Resource_x5jfb"), SubResource("Resource_r7kty")])
 
+[sub_resource type="Resource" id="Resource_brsuv"]
+script = ExtResource("9_vfasc")
+x = 2
+y = 3
+
+[sub_resource type="Resource" id="Resource_285b8"]
+script = ExtResource("10_vfasc")
+scale = 1.8
+
+[sub_resource type="Resource" id="Resource_my27r"]
+script = ExtResource("3_yeo5j")
+input = SubResource("Resource_brsuv")
+modifiers = Array[ExtResource("5_50rtm")]([SubResource("Resource_285b8")])
+
 [sub_resource type="Resource" id="Resource_64ngj"]
 script = ExtResource("1_hjeco")
 action = ExtResource("2_8x1dr")
-input_mappings = Array[ExtResource("3_yeo5j")]([SubResource("Resource_mkl8k")])
+input_mappings = Array[ExtResource("3_yeo5j")]([SubResource("Resource_mkl8k"), SubResource("Resource_my27r")])
 
 [resource]
 script = ExtResource("2_7b3hd")

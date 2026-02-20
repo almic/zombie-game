@@ -40,12 +40,17 @@ func tick(delta: float) -> float:
     var used: bool = false
 
     if _prime_timer > 0.0:
-        used = true
-        if delta >= _prime_timer:
+        if primed:
+            # NOTE: some animations may be active which charge the weapon
+            #       so do not double-charge and do not use any delta
+            _prime_timer = 0.0
+        elif delta >= _prime_timer:
+            used = true
             delta -= _prime_timer
             _prime_timer = 0.0
             _actions.append(Action.CHARGE)
         else:
+            used = true
             _prime_timer -= delta
             delta = 0.0
 
@@ -54,17 +59,18 @@ func tick(delta: float) -> float:
         if delta >= _delay_timer:
             delta -= _delay_timer
             _delay_timer = 0.0
-            fire()
+            _actions.append(Action.FIRE)
+            primed = false
         else:
             _delay_timer -= delta
             delta = 0.0
 
-    if not used:
-        delta = 0.0
-
     if _delay_timer <= 0.0 and should_trigger():
         actuate()
         actuated = true
+        needs_reset = true
+    elif not used:
+        delta = 0.0
 
     return delta
 
@@ -73,13 +79,15 @@ func actuate() -> void:
     if primed:
         primed = false
         if fire_delay == 0.0:
-            fire()
+            _actions.append(Action.FIRE)
+            primed = false
         else:
             _delay_timer = fire_delay / 1000.0
     elif prime_delay == 0.0:
         _actions.append(Action.CHARGE)
         if fire_delay == 0.0:
-            fire()
+            _actions.append(Action.FIRE)
+            primed = false
         else:
             _delay_timer = fire_delay / 1000.0
     else:
@@ -88,7 +96,6 @@ func actuate() -> void:
             _delay_timer = 0.0001
         else:
             _delay_timer = fire_delay / 1000.0
-
 
 ## Hide unused properties of the double action (no charging/ ejecting)
 func _validate_property(property: Dictionary) -> void:

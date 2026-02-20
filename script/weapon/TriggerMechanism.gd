@@ -139,12 +139,12 @@ func tick(delta: float) -> float:
             _reset_timer -= delta
             delta = 0.0
 
-    if not used:
-        delta = 0.0
 
     if _reset_timer <= 0.0 and should_trigger():
         actuate()
         actuated = true
+    elif not used:
+        delta = 0.0
 
     return delta
 

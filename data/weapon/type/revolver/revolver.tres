@@ -13,6 +13,7 @@
 
 [sub_resource type="Resource" id="Resource_2vv8o"]
 script = ExtResource("9_qdvuk")
+prime_delay = 233.3
 fire_delay = 5.0
 metadata/_custom_type_script = "uid://jtsjpvb46vsa"
 

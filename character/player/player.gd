@@ -872,6 +872,9 @@ func update_weapon_node(delta: float) -> void:
         # NOTE: special revolver behavior, give aim recoil reduction in alt mode
         if weapon_node.weapon_type is RevolverWeapon:
             weapon_node.set_aiming(weapon_node.weapon_type.alt_mode)
+            # Charge when entering fan hammer mode
+            if weapon_node.weapon_type.alt_mode:
+                weapon_node.charge()
 
     if _handle_input and charge.is_triggered():
         weapon_node.continue_reload = false
@@ -923,6 +926,9 @@ func update_weapon_node(delta: float) -> void:
             actuated = weapon_node.reload()
             if actuated:
                 clear_input_buffer(reload)
+                # NOTE: special case for revolver, exit alt mode when reloading
+                if weapon_node.weapon_type is RevolverWeapon and weapon_node.weapon_type.alt_mode:
+                    weapon_node.toggle_alt_mode()
             else:
                 update_input_buffer(reload)
         #else:
@@ -1222,7 +1228,11 @@ func revolver_spin_to_next(revolver: RevolverWeapon) -> void:
     else:
         spin = -backward
 
-    weapon_node.on_cylinder_rotated(spin)
+    if weapon_node.weapon_type == revolver:
+        # NOTE: use weapon node when the revolver is active
+        weapon_node.on_cylinder_rotated(spin)
+    else:
+        revolver.rotate_cylinder(spin)
 
 func connect_hurtboxes() -> void:
     hurtbox.enable()

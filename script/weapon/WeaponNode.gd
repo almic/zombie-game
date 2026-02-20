@@ -365,6 +365,7 @@ func toggle_alt_mode() -> void:
         weapon_type.set_alt_mode(not weapon_type.alt_mode)
         _alt_interp.reset(_alt_interp.current)
         _alt_interp.duration = weapon_type.get_alt_switch_time()
+        _weapon_scene.on_weapon_updated(weapon_type)
 
 func set_continue_reload(value: bool) -> void:
     continue_reload = value
@@ -390,7 +391,7 @@ func switch_ammo() -> bool:
     if not weapon_type.switch_ammo():
         return false
 
-    weapon_updated.emit()
+    emit_weapon_update()
 
     if not _weapon_scene:
         return true
@@ -425,10 +426,22 @@ func update_trigger(triggered: bool, delta: float) -> bool:
 
     mechanism.update_trigger(triggered)
 
-    while true:
+    # NOTE: Special case for revolver, ensure weapon is charged when mechanism
+    #       is going to trigger.
+    if weapon_type is RevolverWeapon and weapon_type.alt_mode and mechanism.should_trigger():
+        weapon_type.charge_weapon()
+
+    var fire_played: bool = false
+
+    var max_ticks: int = 20
+    while max_ticks > 0:
+        max_ticks -= 1
+
         var can_fire: bool = weapon_type.can_fire()
         mechanism.update_can_fire(can_fire)
-        delta = mechanism.tick(delta)
+
+        # NOTE: enforce a minimum of 1ms to pass for weapon ticks
+        delta = minf(mechanism.tick(delta), delta - 0.01)
 
         # Consider a failed actuation if could not fire
         if mechanism.actuated and can_fire:
@@ -437,6 +450,7 @@ func update_trigger(triggered: bool, delta: float) -> bool:
         for action in mechanism.get_actions():
             if action == TriggerMechanism.Action.FIRE:
                 _weapon_scene.goto_fire()
+                fire_played = true
 
                 var ammo: AmmoResource = weapon_type.get_ammo_to_fire()
                 if ammo:
@@ -460,8 +474,11 @@ func update_trigger(triggered: bool, delta: float) -> bool:
             break
 
     if emit_updated:
-        weapon_updated.emit()
-        _weapon_scene.on_weapon_updated(weapon_type)
+        emit_weapon_update()
+
+    # For double-action mechanisms, immediately start the fire animation
+    if actuated and (not fire_played) and mechanism is DoubleActionMechanism:
+        _weapon_scene.goto_fire()
 
     return actuated
 
@@ -650,6 +667,10 @@ func _load_particle_system() -> void:
         add_child(_particle_system)
     _particle_system.position = weapon_type.particle_offset
 
+func emit_weapon_update() -> void:
+    weapon_updated.emit()
+    _weapon_scene.on_weapon_updated(weapon_type)
+
 func on_cylinder_rotated(steps: int) -> void:
     if weapon_type is RevolverWeapon:
         weapon_type.rotate_cylinder(steps)
@@ -742,8 +763,7 @@ func on_weapon_charged() -> void:
         return
 
     weapon_type.charge_weapon()
-    weapon_updated.emit()
-    _weapon_scene.on_weapon_updated(weapon_type)
+    emit_weapon_update()
 
 func on_weapon_uncharged() -> void:
     if not weapon_type:
@@ -752,7 +772,7 @@ func on_weapon_uncharged() -> void:
     # NOTE: method does not exist, this is ONLY called by RevolverScene after it
     #       has set the revolver hammer to the uncocked state.
     # weapon_type.uncharge_weapon()
-    weapon_updated.emit()
+    emit_weapon_update()
 
 func on_weapon_reload_loop() -> void:
     if not continue_reload:
@@ -772,7 +792,7 @@ func on_weapon_round_loaded() -> void:
         return
 
     weapon_type.load_rounds()
-    weapon_updated.emit()
+    emit_weapon_update()
 
 func on_weapon_round_ejected() -> void:
     if not weapon_type or not weapon_type.can_eject():
@@ -783,8 +803,7 @@ func on_weapon_round_ejected() -> void:
         round_dict = weapon_type.get_chamber_round()
 
     if weapon_type.eject_round():
-        weapon_updated.emit()
-        _weapon_scene.on_weapon_updated(weapon_type)
+        emit_weapon_update()
 
     if not round_dict:
         return
@@ -819,5 +838,4 @@ func on_weapon_magazine_unloaded() -> void:
         return
 
     weapon_type.unload_rounds()
-    weapon_updated.emit()
-    _weapon_scene.on_weapon_updated(weapon_type)
+    emit_weapon_update()

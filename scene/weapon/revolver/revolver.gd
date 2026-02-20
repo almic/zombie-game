@@ -5,7 +5,6 @@ class_name RevolverWeaponScene extends WeaponScene
 const PORTS = 6
 const PORT_ANGLE = TAU / PORTS
 const FIRE_DOUBLE = &'fire_double'
-const FIRE_EMPTY = &'fire_empty'
 
 const OPEN_CYLINDER_RELOAD = &'open_cylinder_reload'
 const EJECT_ROUNDS_BEFORE_RELOAD = &'eject_rounds_before_reload'
@@ -27,7 +26,6 @@ const OUT_UNLOAD = &'out_unload'
 
 const FIRE_FAN = &'fire_fan'
 const FIRE_FAN_CHARGE = &'fire_fan_charge'
-const FIRE_FAN_EMPTY = &'fire_fan_empty'
 
 
 const CYLINDER_ROTATE = &'revolver/cylinder_rotate'
@@ -58,7 +56,6 @@ var supported_ammo: Dictionary
 
 var is_fanning: bool = false
 var cocked: bool = false
-var is_round_live: bool = false
 var mixed_reserve: PackedInt32Array
 var cylinder_ammo_state: PackedByteArray
 var cylinder_position: int
@@ -254,24 +251,7 @@ func can_aim() -> bool:
         or state == FIRE
         or state == CHARGE
         or state == FIRE_DOUBLE
-        or state == FIRE_EMPTY
     )
-
-func can_fan() -> bool:
-    var state: StringName = anim_state.get_current_node()
-    return (
-           state == IDLE
-        or state == WALK
-        or state == FIRE_FAN
-        or state == FIRE_FAN_CHARGE
-        or state == FIRE_FAN_EMPTY
-    )
-
-func goto_fan() -> bool:
-    if not is_idle():
-        return false
-
-    return true
 
 func goto_fire() -> bool:
     var state: StringName = anim_state.get_current_node()
@@ -280,27 +260,21 @@ func goto_fire() -> bool:
         or state == WALK
     ):
         if is_fanning:
-            if is_round_live:
-                travel(FIRE_FAN, true)
-            else:
-                travel(FIRE_FAN_EMPTY, true)
+            travel(FIRE_FAN, true)
         elif cocked:
-            if is_round_live:
-                travel(FIRE)
-            else:
-                travel(FIRE_EMPTY)
+            travel(FIRE)
         else:
             travel(FIRE_DOUBLE)
         return true
     elif (
+           state == CHARGE
+    ):
+        travel(FIRE_DOUBLE, true)
+    elif (
            state == FIRE_FAN
         or state == FIRE_FAN_CHARGE
-        or state == FIRE_FAN_EMPTY
     ):
-        if is_round_live:
-            travel(FIRE_FAN, true)
-        else:
-            travel(FIRE_FAN_EMPTY, true)
+        travel(FIRE_FAN, true)
         return true
 
     return false
@@ -447,14 +421,12 @@ func on_weapon_updated(weapon: WeaponResource) -> void:
     if weapon is RevolverWeapon:
         cylinder_position = weapon._cylinder_position
         cylinder_ammo_state = weapon._cylinder_ammo_state
-        is_round_live = bool(cylinder_ammo_state[cylinder_position])
         cocked = weapon.hammer_cocked
     else:
         cylinder_position = 0
         cylinder_ammo_state = []
         cylinder_ammo_state.resize(PORTS)
         cylinder_ammo_state.fill(0)
-        is_round_live = false
         cocked = false
 
     update_ports()

@@ -1,13 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://dcwdq2tolxn0a"]
+[gd_scene format=3 uid="uid://dcwdq2tolxn0a"]
 
 [ext_resource type="Material" uid="uid://cs7yat6t36dup" path="res://material/level/grid_purple.tres" id="1_ftrpg"]
 [ext_resource type="JoltVehicleSettings" uid="uid://dlnf4w43oiscr" path="res://vehicle/truck/truck_vehicle_settings.tres" id="1_xwacg"]
 [ext_resource type="Script" uid="uid://dl2cax557cbov" path="res://vehicle/base/wheeled_jolt_vehicle.gd" id="2_bupvu"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_xwacg"]
-friction = 0.8
-bounce = 0.5
-absorbent = true
+rough = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wyv1k"]
 size = Vector3(1.872, 1.016, 6.01)
@@ -30,7 +28,7 @@ material = SubResource("StandardMaterial3D_84iuc")
 inner_radius = 0.127
 outer_radius = 0.414
 
-[node name="TruckVehicle" type="JoltVehicle" node_paths=PackedStringArray("exit_position", "camera_target")]
+[node name="TruckVehicle" type="JoltVehicle" unique_id=1970571783 node_paths=PackedStringArray("exit_position", "camera_target")]
 process_mode = 1
 physics_interpolation_mode = 1
 collision_layer = 64
@@ -52,85 +50,85 @@ dbg_enable = true
 dbg_print_zero_sixty = true
 dbg_show_wheel_slip = true
 
-[node name="body_shape" type="CollisionShape3D" parent="."]
+[node name="body_shape" type="CollisionShape3D" parent="." unique_id=70575851]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1044, 0)
 shape = SubResource("BoxShape3D_wyv1k")
 
-[node name="cab_shape" type="CollisionShape3D" parent="."]
+[node name="cab_shape" type="CollisionShape3D" parent="." unique_id=1516246812]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9544, 0.87)
 shape = SubResource("BoxShape3D_0nvtn")
 
-[node name="mesh" type="CSGCombiner3D" parent="."]
+[node name="mesh" type="CSGCombiner3D" parent="." unique_id=151140147]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19, 0)
 
-[node name="body" type="CSGBox3D" parent="mesh"]
+[node name="body" type="CSGBox3D" parent="mesh" unique_id=44659856]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9144, 0)
 size = Vector3(1.872, 1.016, 6.01)
 material = ExtResource("1_ftrpg")
 
-[node name="cab" type="CSGBox3D" parent="mesh"]
+[node name="cab" type="CSGBox3D" parent="mesh" unique_id=1808254740]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7644, 0.87)
 size = Vector3(1.63, 0.7, 1.7374)
 material = ExtResource("1_ftrpg")
 
-[node name="wheel_wells" type="CSGCombiner3D" parent="mesh"]
+[node name="wheel_wells" type="CSGCombiner3D" parent="mesh" unique_id=1473998599]
 operation = 2
 
-[node name="front_left" type="CSGCylinder3D" parent="mesh/wheel_wells"]
+[node name="front_left" type="CSGCylinder3D" parent="mesh/wheel_wells" unique_id=746017768]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, 2.1717)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="front_right" type="CSGCylinder3D" parent="mesh/wheel_wells"]
+[node name="front_right" type="CSGCylinder3D" parent="mesh/wheel_wells" unique_id=1765819452]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, 2.1717)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="back_left" type="CSGCylinder3D" parent="mesh/wheel_wells"]
+[node name="back_left" type="CSGCylinder3D" parent="mesh/wheel_wells" unique_id=1517660901]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, 0.8, 0.45, -1.5189)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="back_right" type="CSGCylinder3D" parent="mesh/wheel_wells"]
+[node name="back_right" type="CSGCylinder3D" parent="mesh/wheel_wells" unique_id=407412667]
 transform = Transform3D(0, 1, 0, -1, 0, 0, 0, 0, 1, -0.8, 0.45, -1.5189)
 radius = 0.44
 height = 0.36
 sides = 18
 material = ExtResource("1_ftrpg")
 
-[node name="wheel_FL" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.01745240576565, 0.99980962276459, 0.00872387830168, 0.9998477101326, 0.01745174080133, 0.00015227585391, 0, 0.00872520636767, -0.99996197223663, 0.8024195, 0.6202949, 2.1744194)
+[node name="wheel_FL" type="MeshInstance3D" parent="." unique_id=1417995800]
+transform = Transform3D(-0.017452406, 0.9998096, 0.008723878, 0.9998477, 0.01745174, 0.00015227585, 0, 0.008725206, -0.999962, 0.8024195, 0.6202949, 2.1744194)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="wheel_FR" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.01745240576565, 0.99980962276459, -0.00872387830168, 0.9998477101326, -0.01745174080133, 0.00015227585391, 0, -0.00872520636767, -0.99996197223663, -0.8024195, 0.6202949, 2.1744194)
+[node name="wheel_FR" type="MeshInstance3D" parent="." unique_id=1336173710]
+transform = Transform3D(0.017452406, 0.9998096, -0.008723878, 0.9998477, -0.01745174, 0.00015227585, 0, -0.008725206, -0.999962, -0.8024195, 0.6202949, 2.1744194)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="wheel_BL" type="MeshInstance3D" parent="."]
-transform = Transform3D(-0.01745240576565, 0.9998477101326, 0, 0.9998477101326, 0.01745240576565, 0, 0, 0, -1, 0.8024195, 0.6202949, -1.5214195)
+[node name="wheel_BL" type="MeshInstance3D" parent="." unique_id=503261458]
+transform = Transform3D(-0.017452406, 0.9998477, 0, 0.9998477, 0.017452406, 0, 0, 0, -1, 0.8024195, 0.6202949, -1.5214195)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="wheel_BR" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.01745240576565, 0.9998477101326, 0, 0.9998477101326, -0.01745240576565, 0, 0, 0, -1, -0.8024195, 0.6202949, -1.5214195)
+[node name="wheel_BR" type="MeshInstance3D" parent="." unique_id=2123273432]
+transform = Transform3D(0.017452406, 0.9998477, 0, 0.9998477, -0.017452406, 0, 0, 0, -1, -0.8024195, 0.6202949, -1.5214195)
 mesh = SubResource("TorusMesh_xwacg")
 skeleton = NodePath("")
 
-[node name="CameraTarget" type="Marker3D" parent="."]
+[node name="CameraTarget" type="Marker3D" parent="." unique_id=78359781]
 unique_name_in_owner = true
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.8, 0.6)
 
-[node name="ExitPoint" type="Marker3D" parent="."]
+[node name="ExitPoint" type="Marker3D" parent="." unique_id=1661452692]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 1)
 
-[node name="Marker3D" type="Marker3D" parent="."]
+[node name="Marker3D" type="Marker3D" parent="." unique_id=999631743]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.68, 0.441)

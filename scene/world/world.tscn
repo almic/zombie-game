@@ -443,7 +443,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." unique_id=426770923 instance=ExtResource("4_036b0")]
 physics_interpolation_mode = 1
-transform = Transform3D(-1.00000051197437, 0, 0, 0, 1, 0, 0, 0, -1.00000051197437, -318.0618367, 13.061959, -508.3853816)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -301.0024936, 8.7854465, -356.3552049)
 camera_smooth_enabled = true
 
 [node name="zombie" parent="." unique_id=978147832 groups=["zombie"] instance=ExtResource("19_ckxcn")]
@@ -9332,7 +9332,7 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -368.0724358, 3.83, -697.232
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." unique_id=273614056 instance=ExtResource("54_x6gsb")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -301.5851658, 8.1724774, -351.7898)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -301.2883103, 8.3006795, -351.7898)
 
 [node name="Race" type="Node3D" parent="." unique_id=1034726807]
 visible = false

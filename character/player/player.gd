@@ -192,6 +192,14 @@ var drive_steer_acceleration_limit: float = 1.0
 @export var handbrake: GUIDEAction
 
 
+enum InputContext {
+    KEYBOARD,
+    CONTROLLER,
+}
+
+var input_context: InputContext = InputContext.KEYBOARD
+
+
 var score: int = 0:
     set = set_score
 
@@ -350,6 +358,9 @@ func _process(delta: float) -> void:
 
     _handle_input = Input.mouse_mode == Input.MOUSE_MODE_CAPTURED
 
+    if _handle_input:
+        update_controller_keyboard_context()
+
     # Check vehicle enter/exit input is released first
     if (
             _vehicle_enter_exit_action
@@ -362,13 +373,23 @@ func _process(delta: float) -> void:
     if _handle_input and interact.is_triggered():
         var a_collider = aim_target.get_collider()
         if a_collider:
-            interact_with(a_collider)
+            interact_with(a_collider, aim_target.get_collision_point())
 
     if current_vehicle:
         update_vehicle(delta)
     else:
         update_first_person(delta)
 
+func update_controller_keyboard_context() -> void:
+    var input_state: GUIDEInputState = GUIDE._input_state
+    if input_state.is_any_key_pressed() or input_state.is_any_mouse_button_pressed():
+        input_context = InputContext.KEYBOARD
+    elif (
+           input_state.is_any_joy_button_pressed()
+        or input_state.get_joy_axis_value(GUIDEInputState.ANY_JOY_DEVICE_ID, JOY_AXIS_TRIGGER_LEFT) >= 0.05
+        or input_state.get_joy_axis_value(GUIDEInputState.ANY_JOY_DEVICE_ID, JOY_AXIS_TRIGGER_RIGHT) >= 0.05
+    ):
+        input_context = InputContext.CONTROLLER
 
 func update_first_person_camera(delta: float) -> void:
     if not _look_roll.is_done:
@@ -482,7 +503,7 @@ func update_vehicle(delta: float) -> void:
     # Rate of input acceleration decay
     const DECAY_RATE: float = 0.33
 
-    if drive_forward_enable:
+    if drive_forward_enable and input_context == InputContext.KEYBOARD:
         if accelerate.is_triggered() or reverse.is_triggered():
             var t: float = 1.0
             if not accelerate.is_triggered():
@@ -553,14 +574,21 @@ func update_vehicle(delta: float) -> void:
                 #print(input)
                 current_vehicle.forward(input)
     else:
+        if _vehicle_forward_input != 0.0:
+            _vehicle_forward_input = 0.0
+        if _vehicle_forward_input_speed != 0.0:
+            _vehicle_forward_input_speed = 0.0
         if accelerate.is_triggered():
             if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.forward(1)
-        if reverse.is_triggered():
+                current_vehicle.forward(accelerate.value_axis_1d)
+        elif reverse.is_triggered():
             if current_vehicle is WheeledJoltVehicle:
-                current_vehicle.forward(-1)
+                if current_vehicle.get_gear() > 0 and current_vehicle.get_kmh() > 1.0:
+                    current_vehicle.brake(reverse.value_axis_1d)
+                else:
+                    current_vehicle.forward(-reverse.value_axis_1d)
 
-    if drive_steer_enable:
+    if drive_steer_enable and input_context == InputContext.KEYBOARD:
         if steer.is_triggered():
             var t: float = steer.value_axis_1d
             var sign_t: float = signf(t)
@@ -602,6 +630,10 @@ func update_vehicle(delta: float) -> void:
                 # print('in: %.4f' % _vehicle_right_input)
                 current_vehicle.steer(_vehicle_right_input)
     else:
+        if _vehicle_right_input != 0.0:
+            _vehicle_right_input = 0.0
+        if _vehicle_right_input_speed != 0.0:
+            _vehicle_right_input_speed = 0.0
         if steer.is_triggered():
             if current_vehicle is WheeledJoltVehicle:
                 current_vehicle.steer(steer.value_axis_1d)
@@ -1077,9 +1109,16 @@ func select_weapon(slot: int) -> void:
             cam_attributes = get_world_3d().camera_attributes
         scoped_rifle.apply_camera_attributes(cam_attributes)
 
-func interact_with(object: Object) -> void:
-    if object is JoltVehicle:
+func interact_with(object: Object, point: Vector3) -> void:
+    if object is WheeledJoltVehicle:
         if _vehicle_enter_exit_action:
+            return
+
+        # If the vehicle is approximately flipped, apply an impulse to attempt
+        # to right the vehicle. Halo style.
+        var cos_theta: float = object.global_basis.tdoty(Vector3.UP)
+        if cos_theta < 0.5:
+            object.flip(point)
             return
 
         current_vehicle = object

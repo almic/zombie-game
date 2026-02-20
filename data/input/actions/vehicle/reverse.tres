@@ -4,6 +4,7 @@
 
 [resource]
 script = ExtResource("1_pfuro")
+action_value_type = 1
 block_lower_priority_actions = false
 is_remappable = true
 display_name = "Reverse"

@@ -55,6 +55,9 @@ var _last_gear: int = 0
 var _virtual_right: float = 0
 var _right_impulse: float = 0
 
+var _flip_timer: float = 0.0
+var _do_flip: bool = false
+
 
 func _ready() -> void:
     if dbg_enable and dbg_show_wheel_slip:
@@ -84,6 +87,18 @@ func handbrake(amount: float) -> void:
 
 func get_exit_position() -> Vector3:
     return exit_position.global_position + settings.up
+
+func get_gear() -> int:
+    var controller: WheeledVehicleController = get_controller() as WheeledVehicleController
+    if not controller:
+        return 0
+    return controller.get_current_gear()
+
+func get_kmh() -> float:
+    var controller: WheeledVehicleController = get_controller() as WheeledVehicleController
+    if not controller:
+        return 0
+    return controller.get_speed_kmh()
 
 func get_mph() -> float:
     var controller: WheeledVehicleController = get_controller() as WheeledVehicleController
@@ -169,6 +184,18 @@ func update_right_two(_state: PhysicsDirectBodyState3D) -> void:
 
 
 func _physics_process(delta: float) -> void:
+    if _flip_timer > 0.0:
+        _flip_timer = maxf(_flip_timer - delta, 0.0)
+
+    if _do_flip:
+        apply_central_impulse(Vector3.UP * 5.0 * mass)
+        # TODO: figure out if on left or right of the truck. I'm too dumb.
+        var side_dir: float = signf(global_basis.x.y)
+        if absf(global_basis.x.y) < 0.1:
+            side_dir = 2.0
+        apply_torque_impulse(global_basis.z * -side_dir * inertia.z * 1.2)
+        _do_flip = false
+
     var controller: WheeledVehicleController = get_controller() as WheeledVehicleController
     if not controller:
         _reset()
@@ -263,3 +290,10 @@ func update_virtual_steer(delta: float) -> void:
             or (offset < 0 and _virtual_right < _right)
     ):
         _virtual_right = _right
+
+func flip(from: Vector3) -> void:
+    if _flip_timer != 0.0:
+        return
+
+    _do_flip = true
+    _flip_timer = 1.0

@@ -16,6 +16,12 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 @onready var flashlight: SpotLight3D = %Flashlight
 
 
+@export_group("Movement")
+
+## Speed used for walking, this is also the minimum speed when moving
+@export var walk_speed: float = 1.2
+
+
 @export_group("Vision")
 
 ## Visible points on this character which are detected by other characters.
@@ -156,6 +162,7 @@ var drive_steer_acceleration_limit: float = 1.0
 @export var jump: GUIDEAction
 @export var look: GUIDEAction
 @export var move: GUIDEAction
+@export var walk: GUIDEAction
 @export var fire_primary: GUIDEAction
 @export var aim: GUIDEAction
 @export var weapon_alt: GUIDEAction
@@ -234,6 +241,8 @@ var _vehicle_right_input_speed: float = 0.0
 var _aim_is_aiming: bool = false
 ## If we were trying to aim on the last tick
 var _aim_was_triggered: bool = false
+## Current move speed, mainly from analogue input
+var _move_speed: float = 0.0
 ## Top speed interpolation, used for aiming
 var _top_speed: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, Tween.EASE_OUT)
 ## FOV interpolation, used for aiming
@@ -271,6 +280,11 @@ var _camera_smooth_next_position_b: Vector3
 
 ## Jump can be activated
 var _jump_ready: bool = true
+
+## Walk can be toggled
+var _walk_ready: bool = true
+## Currently using walk speed
+var _is_walking: bool = false
 
 ## Melee can be activated
 var _melee_ready: bool = true
@@ -451,12 +465,24 @@ func update_first_person(delta: float) -> void:
     #       if we were not already trying to aim
     _aim_was_triggered = _handle_input && aim.is_triggered()
 
+    if walk.is_triggered():
+        if _walk_ready:
+            _is_walking = not _is_walking
+            _walk_ready = false
+    else:
+        _walk_ready = true
+
     var move_length: float = move.value_axis_3d.length()
 
     if is_zero_approx(move_length):
         movement_direction = Vector3.ZERO
+        _move_speed = 0.0
     else:
-        movement_direction = basis * move.value_axis_3d.normalized()
+        movement_direction = basis * (move.value_axis_3d / move_length)
+        if _is_walking:
+            _move_speed = walk_speed
+        else:
+            _move_speed = _top_speed.current * clampf(move_length, 0.0, 1.0)
 
     if jump.is_triggered() or jump.is_ongoing():
         if _jump_ready:
@@ -686,7 +712,7 @@ func _physics_process(delta: float) -> void:
     var initial_camera_position: Vector3 = camera_smooth_target_node.global_position
 
     var last_accel: Vector3 = acceleration
-    update_movement(delta, _top_speed.current)
+    update_movement(delta, _move_speed)
 
     if is_grounded():
         _footstep_accumulator += velocity.length() * delta
@@ -696,9 +722,8 @@ func _physics_process(delta: float) -> void:
         play_sound_jump()
         _footstep_accumulator = 0.0
     else:
-        var target_aim_speed: float = top_speed * aim_move_speed
         var run_amount: float = clampf(
-                (_top_speed.current - target_aim_speed) / (top_speed - target_aim_speed),
+                (_move_speed - walk_speed) / (top_speed - walk_speed),
                 0.0,
                 1.0
         )

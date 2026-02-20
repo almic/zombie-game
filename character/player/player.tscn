@@ -9,6 +9,7 @@
 [ext_resource type="Resource" uid="uid://dkhhlod7rprl1" path="res://data/input/actions/first_person/fire_primary.tres" id="5_eu8pa"]
 [ext_resource type="Script" uid="uid://cx8x5g2jhcrm6" path="res://script/hitbox/hurtbox.gd" id="5_px5sl"]
 [ext_resource type="Script" uid="uid://n578e74oit7v" path="res://script/weapon/WeaponNode.gd" id="7_qh58e"]
+[ext_resource type="Resource" uid="uid://cnb25868o6uxa" path="res://data/input/actions/first_person/walk.tres" id="7_vhygx"]
 [ext_resource type="Resource" uid="uid://cj0mmtnxy5wct" path="res://data/input/actions/first_person/aim.tres" id="8_7mvkq"]
 [ext_resource type="Resource" uid="uid://jl3d6mw54p0f" path="res://data/input/actions/first_person/melee.tres" id="8_fkbv7"]
 [ext_resource type="Resource" uid="uid://dkxs81p2pc2v5" path="res://data/input/actions/first_person/weapon_next.tres" id="8_muf2e"]
@@ -69,6 +70,7 @@ drive_steer_enable = true
 jump = ExtResource("4_wfnr8")
 look = ExtResource("3_otwb2")
 move = ExtResource("2_otwb2")
+walk = ExtResource("7_vhygx")
 fire_primary = ExtResource("5_eu8pa")
 aim = ExtResource("8_7mvkq")
 weapon_alt = ExtResource("9_aph6w")

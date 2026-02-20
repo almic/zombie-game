@@ -98,6 +98,8 @@ script = ExtResource("9_4re3i")
 
 [sub_resource type="Resource" id="Resource_750xq"]
 script = ExtResource("10_kfofi")
+deadzone_lower_threshold = 0.25
+curve = 1.0
 
 [sub_resource type="Resource" id="Resource_pjuuq"]
 script = ExtResource("7_jostj")

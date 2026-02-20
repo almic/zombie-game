@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://bl8rjl4oaldje" path="res://addons/guide/modifiers/guide_modifier.gd" id="5_ybrqv"]
 [ext_resource type="Script" uid="uid://x74mnwgr08a7" path="res://addons/guide/triggers/guide_trigger.gd" id="6_ib8fc"]
 [ext_resource type="Script" uid="uid://b52rqq28tuqpg" path="res://addons/guide/triggers/guide_trigger_pressed.gd" id="7_82x6x"]
+[ext_resource type="Script" uid="uid://rvttn472ix6v" path="res://addons/guide/inputs/guide_input_joy_button.gd" id="8_82x6x"]
 [ext_resource type="Resource" uid="uid://mie3rlidsb5b" path="res://data/input/actions/global/debug_toggle_zombie_targeting.tres" id="8_b1xgh"]
 [ext_resource type="Resource" uid="uid://dgky2snybxdau" path="res://data/input/actions/global/debug_focus_log.tres" id="9_ib8fc"]
 [ext_resource type="Resource" uid="uid://bfsb06cgsqlvw" path="res://data/input/actions/global/debug_toggle_log.tres" id="10_82x6x"]
@@ -24,10 +25,22 @@ script = ExtResource("2_487i1")
 input = SubResource("Resource_bco5q")
 triggers = Array[ExtResource("6_ib8fc")]([SubResource("Resource_6rmlv")])
 
+[sub_resource type="Resource" id="Resource_sghel"]
+script = ExtResource("8_82x6x")
+button = 6
+
+[sub_resource type="Resource" id="Resource_td281"]
+script = ExtResource("7_82x6x")
+
+[sub_resource type="Resource" id="Resource_ny068"]
+script = ExtResource("2_487i1")
+input = SubResource("Resource_sghel")
+triggers = Array[ExtResource("6_ib8fc")]([SubResource("Resource_td281")])
+
 [sub_resource type="Resource" id="Resource_wy4bc"]
 script = ExtResource("1_0j75c")
 action = ExtResource("2_cmvib")
-input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_t31np")])
+input_mappings = Array[ExtResource("2_487i1")]([SubResource("Resource_t31np"), SubResource("Resource_ny068")])
 
 [sub_resource type="Resource" id="Resource_ybrqv"]
 script = ExtResource("4_b1xgh")

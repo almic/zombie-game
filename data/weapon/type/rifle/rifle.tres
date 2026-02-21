@@ -14,10 +14,9 @@
 [sub_resource type="Resource" id="Resource_gr8q3"]
 script = ExtResource("9_c4im0")
 automatic_fire = true
-fire_delay = 5.0
-eject_delay = 20.0
-charge_delay = 30.0
-reset_delay = 37.4
+eject_delay = 17.5
+charge_delay = 32.5
+reset_delay = 43.75
 metadata/_custom_type_script = "uid://ccudtj1s0f1ct"
 
 [resource]

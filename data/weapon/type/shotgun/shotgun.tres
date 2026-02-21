@@ -13,6 +13,7 @@
 
 [sub_resource type="Resource" id="Resource_30v3l"]
 script = ExtResource("9_vfjio")
+reset_delay = 100.0
 metadata/_custom_type_script = "uid://ccudtj1s0f1ct"
 
 [resource]

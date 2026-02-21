@@ -429,8 +429,6 @@ func update_trigger(triggered: bool, delta: float) -> bool:
     if weapon_type is RevolverWeapon and weapon_type.alt_mode and mechanism.should_trigger():
         weapon_type.charge_weapon()
 
-    var fire_played: bool = false
-
     var max_ticks: int = 20
     while max_ticks > 0:
         max_ticks -= 1
@@ -438,8 +436,8 @@ func update_trigger(triggered: bool, delta: float) -> bool:
         var can_fire: bool = weapon_type.can_fire()
         mechanism.update_can_fire(can_fire)
 
-        # NOTE: enforce a minimum of 1ms to pass for weapon ticks
-        delta = minf(mechanism.tick(delta), delta - 0.01)
+        # NOTE: enforce delta to decrease
+        delta = minf(mechanism.tick(delta), delta)
 
         # Consider a failed actuation if could not fire
         if mechanism.actuated and can_fire:
@@ -447,9 +445,6 @@ func update_trigger(triggered: bool, delta: float) -> bool:
 
         for action in mechanism.get_actions():
             if action == TriggerMechanism.Action.FIRE:
-                _weapon_scene.goto_fire()
-                fire_played = true
-
                 var ammo: AmmoResource = weapon_type.get_ammo_to_fire()
                 if ammo:
                     weapon_fire_queue.append(ammo)
@@ -476,15 +471,18 @@ func update_trigger(triggered: bool, delta: float) -> bool:
     if emit_updated:
         emit_weapon_update()
 
-    # For double-action mechanisms, immediately start the fire animation
-    if actuated and (not fire_played) and mechanism is DoubleActionMechanism:
-        _weapon_scene.goto_fire()
+    # Start the fire animation when actuated
+    if actuated:
+        if mechanism is DoubleActionMechanism:
+            _weapon_scene.goto_fire_double()
+        else:
+            _weapon_scene.goto_fire()
 
     return actuated
 
 ## Test if the weapon could be aiming right now
 func can_aim() -> bool:
-    if not weapon_type.aim_enabled:
+    if (not weapon_type) or (not weapon_type.aim_enabled):
         return false
 
     return _weapon_scene.can_aim()

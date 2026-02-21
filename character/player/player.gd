@@ -915,7 +915,8 @@ func update_weapon_node(delta: float) -> void:
                     update_input_buffer(fire_primary)
                 # NOTE: For the revolver only, use the longer buffer if we are charging.
                 #       This happens when aiming auto-charges, which is longer than the buffer.
-                elif weapon_node.weapon_type is RevolverWeapon and weapon_node._weapon_scene.is_state(WeaponScene.CHARGE):
+                # TODO: holy spaghetti fix this!
+                elif weapon_node.weapon_type is RevolverWeapon and weapon_node._weapon_scene.state == WeaponScene.CHARGE:
                     update_input_buffer(fire_primary)
                 else:
                     update_input_buffer(fire_primary, FIRE_INPUT_BUFFER_TIME)

@@ -260,10 +260,12 @@ func goto_fire() -> bool:
         else:
             travel(FIRE_DOUBLE)
         return true
-    elif (
-           state == CHARGE
-    ):
-        travel(FIRE_DOUBLE, true)
+    elif state == CHARGE:
+        if cocked:
+            travel(FIRE, true)
+        else:
+            travel(FIRE_DOUBLE, true)
+        return true
     elif (
            state == FIRE_FAN
         or state == FIRE_FAN_CHARGE
@@ -272,6 +274,14 @@ func goto_fire() -> bool:
         return true
 
     return false
+
+func goto_fire_double() -> void:
+    if is_fanning:
+        travel(FIRE_FAN, true)
+    elif cocked:
+        travel(FIRE, true)
+    else:
+        travel(FIRE_DOUBLE, true)
 
 func goto_reload() -> bool:
     if (

@@ -71,6 +71,9 @@ signal uncharged()
 ## If the weapon has mechanical animations when melee'ing
 ## At the moment, none of the weapons change appearance when used for melee
 var _has_melee_anim: bool = false
+## If the weapon has mechanical animations when firing. Some weapons have no
+## visual changes when firing (with the exception of triggers)
+var _has_fire_anim: bool = false
 
 var _reload_loop_start_time: float = -1
 var _unload_loop_start_time: float = -1
@@ -86,8 +89,13 @@ func _ready() -> void:
     if reload_marker:
         reload_marker.visible = false
 
-    anim_state.state_started.connect(func(s: StringName) -> void: state = s)
+    anim_state.state_started.connect(
+        func(s: StringName) -> void:
+            state = s
+            print('state: %s' % state)
+    )
     _has_melee_anim = state_machine.has_node(MELEE)
+    _has_fire_anim = state_machine.has_node(FIRE)
 
 func _reload_loop_start() -> void:
     _reload_loop_start_time = anim_state.get_current_play_position()
@@ -101,19 +109,11 @@ func _unload_loop_start() -> void:
 func _unload_loop_end() -> void:
     unload_loop.emit()
 
-func _emit_fired() -> void:
-    # TODO: remove this from all animation logic.
-    pass
-
 func _emit_melee() -> void:
     melee.emit()
 
 func _emit_swap_hand(time: float) -> void:
     swap_hand.emit(time)
-
-func _emit_round_ejected() -> void:
-    # TODO: remove this from all animation logic.
-    pass
 
 func _emit_round_loaded() -> void:
     round_loaded.emit()
@@ -253,16 +253,16 @@ func travel(node: StringName, immediate: bool = false) -> void:
 
 ## Weapon should fire
 func goto_fire() -> bool:
-    if not is_idle():
-        return false
+    if _has_fire_anim:
+        travel(FIRE)
 
-    travel(FIRE)
     return true
 
 ## Weapon should melee
 func goto_melee() -> bool:
     if _has_melee_anim:
         travel(MELEE)
+
     return true
 
 ## Weapon starts to reload

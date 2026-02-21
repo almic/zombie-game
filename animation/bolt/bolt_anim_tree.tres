@@ -3,9 +3,6 @@
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l3tjp"]
 animation = &"bolt/charge"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ord0y"]
-animation = &"bolt/fire"
-
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_ec11v"]
 animation = &"bolt/into_reload"
 
@@ -22,8 +19,6 @@ switch_mode = 2
 switch_mode = 2
 advance_mode = 2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jtry8"]
-
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_04gk4"]
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_igito"]
@@ -36,28 +31,22 @@ advance_mode = 2
 switch_mode = 2
 advance_mode = 2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fd16x"]
-switch_mode = 2
-advance_mode = 2
-
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_51wkv"]
 states/End/position = Vector2(616, 100)
 states/Start/position = Vector2(341, 100)
 states/charge/node = SubResource("AnimationNodeAnimation_l3tjp")
-states/charge/position = Vector2(481, 2)
-states/fire/node = SubResource("AnimationNodeAnimation_ord0y")
-states/fire/position = Vector2(481, 100)
+states/charge/position = Vector2(481, 100)
 states/into_reload/node = SubResource("AnimationNodeAnimation_ec11v")
 states/into_reload/position = Vector2(341, 201)
 states/out_reload/node = SubResource("AnimationNodeAnimation_n7l1y")
 states/out_reload/position = Vector2(616, 201)
 states/reload/node = SubResource("AnimationNodeAnimation_51wkv")
 states/reload/position = Vector2(481, 201)
-transitions = ["into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_l7m5n"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_y58sg"), "Start", "fire", SubResource("AnimationNodeStateMachineTransition_jtry8"), "Start", "into_reload", SubResource("AnimationNodeStateMachineTransition_04gk4"), "Start", "charge", SubResource("AnimationNodeStateMachineTransition_igito"), "charge", "End", SubResource("AnimationNodeStateMachineTransition_dhhyx"), "out_reload", "End", SubResource("AnimationNodeStateMachineTransition_x64qx"), "fire", "End", SubResource("AnimationNodeStateMachineTransition_fd16x")]
-graph_offset = Vector2(-189, -181)
+transitions = ["into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_l7m5n"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_y58sg"), "Start", "into_reload", SubResource("AnimationNodeStateMachineTransition_04gk4"), "Start", "charge", SubResource("AnimationNodeStateMachineTransition_igito"), "charge", "End", SubResource("AnimationNodeStateMachineTransition_dhhyx"), "out_reload", "End", SubResource("AnimationNodeStateMachineTransition_x64qx")]
+graph_offset = Vector2(-227, -8)
 
 [resource]
-graph_offset = Vector2(-432, 129)
+graph_offset = Vector2(-486, -96)
 nodes/StateMachine/node = SubResource("AnimationNodeStateMachine_51wkv")
 nodes/StateMachine/position = Vector2(-100, 120)
 node_connections = [&"output", 0, &"StateMachine"]

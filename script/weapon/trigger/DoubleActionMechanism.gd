@@ -77,7 +77,6 @@ func tick(delta: float) -> float:
 ## The mechanism has been actuated and will soon fire a round
 func actuate() -> void:
     if primed:
-        primed = false
         if fire_delay == 0.0:
             _actions.append(Action.FIRE)
             primed = false

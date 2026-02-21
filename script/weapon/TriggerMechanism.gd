@@ -25,7 +25,7 @@ var eject_delay: float = 0
 var charge_delay: float = 0
 
 ## Weapon reset time, after all other steps have completed.
-@export_range(0.1, 50.0, 0.1, 'or_greater', 'suffix:ms')
+@export_range(0.1, 50.0, 0.01, 'or_greater', 'suffix:ms')
 var reset_delay: float = 10.0
 
 
@@ -64,14 +64,14 @@ func _get_property_list() -> Array[Dictionary]:
             'name': &'cycle_time',
             'type': TYPE_FLOAT,
             'hint': PROPERTY_HINT_RANGE,
-            'hint_string': '0,400,0.1,or_greater,hide_control,suffix:ms',
+            'hint_string': '0,400,0.01,or_greater,hide_control,suffix:ms',
             'usage': PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY,
         },
         {
             'name': &'fire_rate',
             'type': TYPE_FLOAT,
             'hint': PROPERTY_HINT_RANGE,
-            'hint_string': '0,1000,0.1,or_greater,hide_control,suffix:rpm',
+            'hint_string': '0,1000,0.01,or_greater,hide_control,suffix:rpm',
             'usage': PROPERTY_USAGE_EDITOR | PROPERTY_USAGE_READ_ONLY,
         }
     ]

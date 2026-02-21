@@ -22,7 +22,7 @@ animation = &"revolver/fire_single"
 animation = &"revolver/fire_double"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_21sw6"]
-animation = &"revolver/fire_fan"
+animation = &"revolver/fire_single"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7whc7"]
 animation = &"revolver/fan_charge"

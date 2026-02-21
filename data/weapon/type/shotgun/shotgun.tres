@@ -24,6 +24,7 @@ melee_impact = 400.0
 melee_collision = 88
 trigger_mechanism = SubResource("Resource_30v3l")
 can_chamber = true
+can_auto_charge = true
 projectile_inaccuracy = 0.45
 projectile_hit_mask = 88
 aim_enabled = true

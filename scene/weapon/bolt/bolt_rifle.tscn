@@ -405,7 +405,6 @@ libraries/bolt = ExtResource("6_ry02v")
 
 [node name="AnimationTree" type="AnimationTree" parent="." unique_id=2122976039]
 unique_name_in_owner = true
-active = false
 root_node = NodePath("%AnimationTree/..")
 tree_root = ExtResource("10_cxsjy")
 advance_expression_base_node = NodePath("..")

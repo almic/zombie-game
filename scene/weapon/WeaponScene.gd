@@ -2,8 +2,8 @@
 
 class_name WeaponScene extends Node3D
 
-const IDLE = &'idle'
-const WALK = &'walk'
+const START = &'Start'
+const END = &'End'
 const FIRE = &'fire'
 const MELEE = &'melee'
 const CHARGE = &'charge'
@@ -16,6 +16,7 @@ const UNLOAD = &'unload'
 var anim_state: AnimationNodeStateMachinePlayback
 var state_machine: AnimationNodeStateMachine
 
+var state: StringName = &''
 
 ## For animations that change the main hand
 signal swap_hand(time: float)
@@ -67,20 +68,17 @@ signal uncharged()
 @export var recoil_marker: Marker3D
 
 
+## If the weapon has mechanical animations when melee'ing
+## At the moment, none of the weapons change appearance when used for melee
+var _has_melee_anim: bool = false
+
 var _reload_loop_start_time: float = -1
 var _unload_loop_start_time: float = -1
-
-var is_anim_traveling: bool = false
-var is_walking: bool = false
-
-var anim_target: StringName = &''
-var anim_locked: bool = false
 
 
 func _ready() -> void:
     animation_tree.active = false
     anim_state = animation_tree['parameters/StateMachine/playback']
-    animation_tree.animation_started.connect(_on_anim_start)
 
     var root: AnimationNodeBlendTree = animation_tree.tree_root as AnimationNodeBlendTree
     state_machine = root.get_node('StateMachine') as AnimationNodeStateMachine
@@ -88,6 +86,8 @@ func _ready() -> void:
     if reload_marker:
         reload_marker.visible = false
 
+    anim_state.state_started.connect(func(s: StringName) -> void: state = s)
+    _has_melee_anim = state_machine.has_node(MELEE)
 
 func _reload_loop_start() -> void:
     _reload_loop_start_time = anim_state.get_current_play_position()
@@ -100,12 +100,6 @@ func _unload_loop_start() -> void:
 
 func _unload_loop_end() -> void:
     unload_loop.emit()
-
-func _lock_anim() -> void:
-    anim_locked = true
-
-func _unlock_anim() -> void:
-    anim_locked = false
 
 func _emit_fired() -> void:
     # TODO: remove this from all animation logic.
@@ -139,15 +133,6 @@ func _emit_charged() -> void:
 func _emit_uncharged() -> void:
     uncharged.emit()
 
-
-func _on_anim_start(_anim: StringName) -> void:
-    anim_locked = false
-    #var node: StringName = anim_state.get_current_node()
-    #print('node ' + node + ' (' + anim + ')')
-    if anim_state.get_current_node() == anim_target:
-        #print('Travel to ' + anim_target + ' (' + anim + ') finished!')
-        is_anim_traveling = false
-        anim_target = &''
 
 func set_reload_scene(scene: PackedScene) -> void:
     if not reload_marker:
@@ -259,21 +244,12 @@ func travel(node: StringName, immediate: bool = false) -> void:
         push_error('Missing animation node "%s" for %s' % [node, self.name])
         return
 
-    anim_target = node
-    is_anim_traveling = true
     #print('Traveling to ' + node + ' (' + anim_node.animation + ')')
+    if state == END:
+        # TODO: this should be handled by Godot, teleport to Start when
+        #       traveling from End. Compile!
+        anim_state.start(START)
     anim_state.travel(node)
-
-## Weapon is ready to be used
-func goto_ready() -> bool:
-    animation_tree.active = true
-
-    if is_walking:
-        travel(WALK)
-    else:
-        travel(IDLE)
-
-    return true
 
 ## Weapon should fire
 func goto_fire() -> bool:
@@ -285,19 +261,21 @@ func goto_fire() -> bool:
 
 ## Weapon should melee
 func goto_melee() -> bool:
-    travel(MELEE)
+    if _has_melee_anim:
+        travel(MELEE)
     return true
 
 ## Weapon starts to reload
 func goto_reload() -> bool:
-    if is_idle() or is_state(UNLOAD):
-        travel(RELOAD)
-        return true
-    return false
+    if not is_idle():
+        return false
+
+    travel(RELOAD)
+    return true
 
 ## Weapon continues (loops) the reload
 func goto_reload_continue() -> bool:
-    if not is_state(RELOAD):
+    if state != RELOAD:
         return false
 
     if _reload_loop_start_time >= 0:
@@ -308,14 +286,15 @@ func goto_reload_continue() -> bool:
 
 ## Weapon starts to unload
 func goto_unload() -> bool:
-    if is_idle() or is_state(RELOAD):
-        travel(UNLOAD)
-        return true
-    return false
+    if not is_idle():
+        return false
+
+    travel(UNLOAD)
+    return true
 
 ## Weapon continues (loops) the reload
 func goto_unload_continue() -> bool:
-    if not is_state(UNLOAD):
+    if state != UNLOAD:
         return false
 
     if _unload_loop_start_time >= 0:
@@ -334,22 +313,15 @@ func goto_charge() -> bool:
 
 ## If the animation state is an 'idle' or 'walk' state
 func is_idle() -> bool:
-    var state: StringName = anim_state.get_current_node()
-    return state == IDLE or state == WALK
-
-## If the animation state matches the given state
-func is_state(anim: StringName) -> bool:
-    var current: StringName = anim_state.get_current_node()
-    return anim == current
+    return state == END or state == START
 
 ## If the animation state allows aiming
 func can_aim() -> bool:
-    var state: StringName = anim_state.get_current_node()
-    return state == IDLE or state == WALK or state == FIRE
-
-## Controller is walking with the weapon
-func set_walking(walking: bool = true) -> void:
-    is_walking = walking
+    if is_idle():
+        return true
+    elif state == FIRE:
+        return true
+    return false
 
 ## Show the reload mesh and hide the magazine mesh
 func detach_magazine() -> void:

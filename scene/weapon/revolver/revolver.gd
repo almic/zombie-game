@@ -244,21 +244,15 @@ func _emit_magazine_unloaded() -> void:
     super._emit_magazine_unloaded()
 
 func can_aim() -> bool:
-    var state: StringName = anim_state.get_current_node()
     return (
-           state == WALK
-        or state == IDLE
+           is_idle()
         or state == FIRE
         or state == CHARGE
         or state == FIRE_DOUBLE
     )
 
 func goto_fire() -> bool:
-    var state: StringName = anim_state.get_current_node()
-    if (
-           state == IDLE
-        or state == WALK
-    ):
+    if is_idle():
         if is_fanning:
             travel(FIRE_FAN, true)
         elif cocked:
@@ -280,7 +274,6 @@ func goto_fire() -> bool:
     return false
 
 func goto_reload() -> bool:
-    var state: StringName = anim_state.get_current_node()
     if (
            is_idle()
         or state == OPEN_CYLINDER_UNLOAD
@@ -306,7 +299,6 @@ func goto_reload() -> bool:
     return false
 
 func goto_unload() -> bool:
-    var state: StringName = anim_state.get_current_node()
     if (
            is_idle()
         or state == OPEN_CYLINDER_RELOAD
@@ -335,7 +327,7 @@ func goto_unload() -> bool:
     return false
 
 func goto_reload_continue() -> bool:
-    if not is_state(RELOAD):
+    if state != RELOAD:
         return false
 
     # NOTE: It may be possible for all cylinders to be filled, so check for that
@@ -348,11 +340,11 @@ func goto_reload_continue() -> bool:
 func goto_unload_continue() -> bool:
     _unload_one_spin = true
 
-    if not is_state(UNLOAD):
-        return is_state(UNLOAD_SPIN)
+    if state == UNLOAD:
+        travel(UNLOAD_SPIN)
+        return true
 
-    travel(UNLOAD_SPIN)
-    return true
+    return state == UNLOAD_SPIN
 
 func get_cylinder_rotation() -> float:
     return cylinder_spin.rotation.z

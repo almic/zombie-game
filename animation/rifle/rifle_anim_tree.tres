@@ -6,9 +6,6 @@ animation = &"rifle/charge"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_fyojs"]
 animation = &"rifle/fire"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_mbpeo"]
-animation = &"RESET"
-
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_evl3x"]
 animation = &"rifle/into_reload"
 
@@ -18,91 +15,45 @@ animation = &"rifle/out_reload"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3c15l"]
 animation = &"rifle/reload"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_3d6q2"]
-animation = &"RESET"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_evl3x"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_flwm2"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_uqieo"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_4p1ep"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2d63p"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i6awq"]
-xfade_time = 0.25
-advance_mode = 2
-advance_expression = "is_walking
-"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_gal7r"]
-xfade_time = 0.15
-advance_mode = 2
-advance_expression = "!is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_06dra"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5ivui"]
-xfade_time = 0.05
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_3hea1"]
-
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_cpwiv"]
 switch_mode = 2
-advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2w0gh"]
 switch_mode = 2
 advance_mode = 2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ua2n1"]
-xfade_time = 0.2
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_li5mr"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_movjv"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_htkrd"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ky7qo"]
 switch_mode = 2
 advance_mode = 2
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2o3py"]
-xfade_time = 0.2
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_o7oia"]
 switch_mode = 2
 advance_mode = 2
-advance_expression = "is_walking"
 
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ya014"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fyojs"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_mbpeo"]
-xfade_time = 0.05
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_0bbb4"]
 switch_mode = 2
 advance_mode = 2
-advance_expression = "is_walking"
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_y8syv"]
+states/End/position = Vector2(513, 100)
 states/charge/node = SubResource("AnimationNodeAnimation_qqsv1")
-states/charge/position = Vector2(628, -52)
+states/charge/position = Vector2(359, -3)
 states/fire/node = SubResource("AnimationNodeAnimation_fyojs")
-states/fire/position = Vector2(365, -52)
-states/idle/node = SubResource("AnimationNodeAnimation_mbpeo")
-states/idle/position = Vector2(365, 100)
+states/fire/position = Vector2(359, 100)
 states/into_reload/node = SubResource("AnimationNodeAnimation_evl3x")
-states/into_reload/position = Vector2(365, 207)
+states/into_reload/position = Vector2(200, 207)
 states/out_reload/node = SubResource("AnimationNodeAnimation_flwm2")
-states/out_reload/position = Vector2(628, 207)
+states/out_reload/position = Vector2(513, 207)
 states/reload/node = SubResource("AnimationNodeAnimation_3c15l")
-states/reload/position = Vector2(492, 283)
-states/walk/node = SubResource("AnimationNodeAnimation_3d6q2")
-states/walk/position = Vector2(628, 100)
-transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_evl3x"), "idle", "fire", SubResource("AnimationNodeStateMachineTransition_flwm2"), "fire", "idle", SubResource("AnimationNodeStateMachineTransition_uqieo"), "idle", "charge", SubResource("AnimationNodeStateMachineTransition_4p1ep"), "charge", "idle", SubResource("AnimationNodeStateMachineTransition_2d63p"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_i6awq"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_gal7r"), "walk", "charge", SubResource("AnimationNodeStateMachineTransition_06dra"), "charge", "walk", SubResource("AnimationNodeStateMachineTransition_5ivui"), "idle", "into_reload", SubResource("AnimationNodeStateMachineTransition_3hea1"), "into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_cpwiv"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_2w0gh"), "out_reload", "idle", SubResource("AnimationNodeStateMachineTransition_ua2n1"), "out_reload", "walk", SubResource("AnimationNodeStateMachineTransition_2o3py"), "walk", "into_reload", SubResource("AnimationNodeStateMachineTransition_ya014"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_fyojs"), "fire", "walk", SubResource("AnimationNodeStateMachineTransition_mbpeo")]
-graph_offset = Vector2(-281, -17)
+states/reload/position = Vector2(359, 207)
+transitions = ["into_reload", "reload", SubResource("AnimationNodeStateMachineTransition_cpwiv"), "reload", "out_reload", SubResource("AnimationNodeStateMachineTransition_2w0gh"), "Start", "fire", SubResource("AnimationNodeStateMachineTransition_li5mr"), "Start", "charge", SubResource("AnimationNodeStateMachineTransition_movjv"), "Start", "into_reload", SubResource("AnimationNodeStateMachineTransition_htkrd"), "out_reload", "End", SubResource("AnimationNodeStateMachineTransition_ky7qo"), "charge", "End", SubResource("AnimationNodeStateMachineTransition_o7oia"), "fire", "End", SubResource("AnimationNodeStateMachineTransition_0bbb4")]
+graph_offset = Vector2(-207, -183)
 
 [resource]
 graph_offset = Vector2(-378, 109)

@@ -47,6 +47,11 @@ var melee_collision: int = 8
 ## capacity is reserve + 1
 @export var can_chamber: bool = false
 
+## Enable this if weapon controllers should automatically charge the weapon
+## after firing. Should not be enabled for weapons that charge as part of the
+## firing mechanism.
+@export var can_auto_charge: bool = false
+
 
 @export_group("Ballistics", "projectile")
 

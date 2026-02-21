@@ -1,6 +1,4 @@
-@tool
-
-class_name ScopeRifle extends WeaponScene
+class_name BoltWeaponScene extends WeaponScene
 
 
 @onready var scope_camera_target: Marker3D = %ScopeCameraTarget
@@ -29,10 +27,16 @@ func apply_camera_attributes(camera_attributes: CameraAttributes) -> void:
     scope_camera.fov = fov
 
 
+# NOTE: There is no reason to unload the bolt rifle, so it is disabled
+func goto_unload() -> bool:
+    return false
+
+func goto_unload_continue() -> bool:
+    return false
+
 func can_aim() -> bool:
-    var state: StringName = anim_state.get_current_node()
     return (
-           state == IDLE
+           is_idle()
         or state == FIRE
         or state == CHARGE
     )

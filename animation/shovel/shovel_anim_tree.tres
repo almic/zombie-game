@@ -3,48 +3,18 @@
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_e0q86"]
 animation = &"shovel/swing"
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_7oqv8"]
-animation = &"shovel/idle"
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_kyujr"]
 
-[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_bw47e"]
-animation = &"shovel/walk"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_t6r7u"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5ffy0"]
-xfade_time = 0.2
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_wxlad"]
 switch_mode = 2
 advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_eksiw"]
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_levy8"]
-xfade_time = 0.15
-advance_mode = 2
-advance_expression = "not is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_jve8e"]
-xfade_time = 0.25
-advance_mode = 2
-advance_expression = "is_walking"
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_av2sp"]
-xfade_time = 0.2
-switch_mode = 2
-advance_mode = 2
-
-[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qr2j5"]
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_45uv1"]
+states/End/position = Vector2(463, 100)
 states/fire/node = SubResource("AnimationNodeAnimation_e0q86")
-states/fire/position = Vector2(479, 1)
-states/idle/node = SubResource("AnimationNodeAnimation_7oqv8")
-states/idle/position = Vector2(344, 100)
-states/walk/node = SubResource("AnimationNodeAnimation_bw47e")
-states/walk/position = Vector2(620, 100)
-transitions = ["idle", "fire", SubResource("AnimationNodeStateMachineTransition_t6r7u"), "fire", "walk", SubResource("AnimationNodeStateMachineTransition_5ffy0"), "walk", "fire", SubResource("AnimationNodeStateMachineTransition_eksiw"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_levy8"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_jve8e"), "fire", "idle", SubResource("AnimationNodeStateMachineTransition_av2sp"), "Start", "idle", SubResource("AnimationNodeStateMachineTransition_qr2j5")]
-graph_offset = Vector2(-46, -112)
+states/fire/position = Vector2(336, 100)
+transitions = ["Start", "fire", SubResource("AnimationNodeStateMachineTransition_kyujr"), "fire", "End", SubResource("AnimationNodeStateMachineTransition_wxlad")]
+graph_offset = Vector2(-254, -13)
 
 [resource]
 graph_offset = Vector2(-650, 100)

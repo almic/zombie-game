@@ -42,6 +42,10 @@ func get_sight_points() -> Array[Node3D]:
 ## Position of the weapon node relative to the camera
 @export var weapon_position: Vector3 = Vector3.ZERO
 
+## When firing, the minimum time delay before weapons can be manually charged
+@export_range(200, 1000, 1, 'or_greater', 'suffix:ms')
+var fire_charge_delay: int = 350
+
 
 @export_group("Movement Sounds")
 
@@ -256,6 +260,8 @@ var _weapon_position: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, T
 
 ## Transform containing recoil deltas
 var _recoil_transform: Transform3D
+## If the recoil transform has some non-identity value
+var _is_recoiling: bool = false
 ## Transform containing look deltas
 var _look_transform: Transform3D
 
@@ -292,6 +298,9 @@ var _melee_ready: bool = true
 ## Fire can be activated
 var _fire_ready: bool = true
 
+## Charge can be activated
+var _charge_ready: bool = true
+
 ## Disabled when mouse is not captured
 var _handle_input: bool = true
 
@@ -300,6 +309,11 @@ var _footstep_accumulator: float = 0.0
 
 ## Fire may be buffered
 var _fire_can_buffer: bool = true
+
+## Timer for weapon charging after firing
+var _weapon_charge_time: float = 0.0
+## If weapon should be automatically charged after firing
+var _weapon_auto_charge: bool = false
 
 ## Timer for doing a full reload.
 ## Tap to full reload, hold for controlled reload.
@@ -354,6 +368,7 @@ func _ready() -> void:
     weapon_node.ammo_bank = ammo_bank
     weapon_node.weapon_updated.connect(update_weapon_hud)
     weapon_node.reload_complete.connect(on_reload_complete)
+    weapon_node.weapon_fired.connect(on_weapon_fired)
 
     connect_hurtboxes()
     life.died.connect(on_death)
@@ -770,6 +785,10 @@ func get_camera() -> Camera3D:
 
 func set_recoil_transform(recoil_transform: Transform3D) -> void:
     _recoil_transform = recoil_transform
+    if recoil_transform.is_equal_approx(Transform3D.IDENTITY):
+        _is_recoiling = false
+    else:
+        _is_recoiling = true
 
 func update_aiming(should_aim: bool) -> void:
     var aim_starting: bool = false
@@ -871,8 +890,6 @@ func update_weapon_node(delta: float) -> void:
 
     update_weapon_switch()
 
-    weapon_node.set_walking(!_aim_is_aiming and !movement_direction.is_zero_approx())
-
     if _handle_input and switch_ammo.is_triggered():
         weapon_node.switch_ammo()
 
@@ -913,7 +930,7 @@ func update_weapon_node(delta: float) -> void:
     if _handle_input and melee.is_triggered():
         weapon_node.continue_reload = false
         update_last_input(melee)
-        if _melee_ready or weapon_node.melee():
+        if _melee_ready and weapon_node.melee():
             # If a melee ever activates, clear the buffer
             if _next_input:
                 clear_input_buffer()
@@ -937,19 +954,26 @@ func update_weapon_node(delta: float) -> void:
         weapon_node.continue_reload = false
         update_last_input(charge)
 
-        # NOTE: Even if the action is blocked, buffer anyway because we
-        #       may be waiting to load a round
-        actuated = weapon_node.charge()
-        if actuated:
-            clear_input_buffer(charge)
+        if _charge_ready:
+            # NOTE: Even if the action is blocked, buffer anyway because we
+            #       may be waiting to load a round
+            actuated = weapon_node.charge()
+            if actuated:
+                clear_input_buffer(charge)
+            else:
+                update_input_buffer(charge)
         else:
             update_input_buffer(charge)
     elif is_input_buffered(charge):
-        # NOTE: If the action was blocked, keep trying anyway
-        #       because we way be waiting to reload
-        actuated = weapon_node.charge()
-        if actuated:
-            clear_input_buffer()
+        if _charge_ready:
+            # NOTE: If the action was blocked, keep trying anyway
+            #       because we way be waiting to reload
+            actuated = weapon_node.charge()
+            if actuated:
+                clear_input_buffer()
+    elif _weapon_auto_charge and _charge_ready and (not _is_recoiling):
+        _weapon_auto_charge = false
+        weapon_node.charge()
     # NOTE: We may have a fire buffered, but we have failed to shoot, so try
     #       charging the weapon in case we were waiting for that
     elif is_input_buffered(fire_primary):
@@ -957,7 +981,7 @@ func update_weapon_node(delta: float) -> void:
             # NOTE: Revolver cannot be charged from a buffered trigger.
             #       This is because it charges as part of a longer fire animation
             pass
-        else:
+        elif _charge_ready:
             weapon_node.charge()
 
     if _handle_input and reload.is_triggered():
@@ -1007,6 +1031,7 @@ func update_weapon_node(delta: float) -> void:
     if _handle_input and unload.is_triggered():
         weapon_node.continue_reload = false
         weapon_node.continue_unload = true
+        update_last_input(unload)
         weapon_node.unload()
     else:
         weapon_node.continue_unload = false
@@ -1015,6 +1040,19 @@ func update_weapon_node(delta: float) -> void:
     if weapon_node.continue_reload and (_handle_input and aim.is_triggered()) and not _aim_was_triggered:
         weapon_node.continue_reload = false
 
+    if not _charge_ready:
+        _weapon_charge_time -= delta
+        if _weapon_charge_time <= 0.0:
+            _charge_ready = true
+
+    # NOTE: any input except firing on this frame will cancel manual charging
+    if (
+            _weapon_auto_charge
+        and _last_input_timer == LAST_INPUT_TIME
+        and _last_input != fire_primary
+    ):
+        _weapon_auto_charge = false
+
 func on_reload_complete() -> void:
     # If a reload ended and we wanted to continue, queue a charge
     if weapon_node.continue_reload:
@@ -1022,6 +1060,13 @@ func on_reload_complete() -> void:
     # Don't buffer a reload off a reload
     elif _next_input == reload:
         clear_input_buffer()
+
+func on_weapon_fired() -> void:
+    _weapon_charge_time = float(fire_charge_delay) / 1000.0
+    _charge_ready = false
+
+    if weapon_node.weapon_type.can_auto_charge:
+        _weapon_auto_charge = true
 
 func on_hurt(_from: Node3D, _part: HurtBox, _damage: float, _hit: Dictionary) -> void:
     get_tree().call_group('hud', 'update_health', life.health / life.max_health)
@@ -1126,7 +1171,7 @@ func select_weapon(slot: int) -> void:
     update_weapon_hud()
 
     # NOTE: Special behavior for scoped rifle, it needs our camera attributes
-    var scoped_rifle: ScopeRifle = weapon_node._weapon_scene as ScopeRifle
+    var scoped_rifle: BoltWeaponScene = weapon_node._weapon_scene as BoltWeaponScene
     if scoped_rifle:
         var cam_attributes: CameraAttributes = camera_3d.attributes
         if not cam_attributes:

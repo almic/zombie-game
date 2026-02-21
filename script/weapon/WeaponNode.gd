@@ -9,6 +9,9 @@ class_name WeaponNode extends Node3D
 ## When the weapon state is updated, such as shooting, reloading, unloading, etc.
 signal weapon_updated()
 
+## When the weapon fires a round
+signal weapon_fired()
+
 signal reload_complete()
 
 
@@ -196,6 +199,7 @@ func _physics_process(_delta: float) -> void:
                 weapon_fire_queue[i],
                 weapon_fire_queue[i + 1]
         )
+
         #s += 1
         i += 2
 
@@ -376,12 +380,6 @@ func set_continue_unload(value: bool) -> void:
 func set_melee_excluded_hurboxes(hurtboxes: Array[HurtBox]) -> void:
     melee_excluded_hurtboxes.assign(hurtboxes.map(func (h): return h.get_rid()))
 
-func set_walking(walking: bool) -> void:
-    if not _weapon_scene:
-        return
-
-    _weapon_scene.set_walking(walking)
-
 ## Switches ammo types, returns true if successful
 func switch_ammo() -> bool:
     # There is no animation to switch ammo type, so just pass to weapon
@@ -459,6 +457,8 @@ func update_trigger(triggered: bool, delta: float) -> bool:
 
                 if on_weapon_fire():
                     emit_updated = true
+
+                weapon_fired.emit()
 
                 continue
 
@@ -586,7 +586,6 @@ func load_weapon_type(type: WeaponResource) -> void:
             _weapon_scene.set_magazine_scene(weapon_type.scene_magazine)
             _weapon_scene.set_reload_scene(weapon_type.scene_magazine)
         _weapon_scene.on_weapon_updated(weapon_type)
-        _weapon_scene.goto_ready()
 
     _weapon_audio_player.sound = weapon_type.sound_effect
 
@@ -625,6 +624,9 @@ func _load_weapon_scene() -> void:
     _weapon_scene = weapon_scene
 
     add_child(_weapon_scene)
+
+    # NOTE: The animation tree is not enabled by default
+    _weapon_scene.animation_tree.active = true
 
     # NOTE: Special case for revolver scene and weapon
     if _weapon_scene is RevolverWeaponScene:

@@ -23,6 +23,7 @@ melee_delay = 0.1
 melee_damage = 20.0
 trigger_mechanism = SubResource("Resource_d8qpc")
 can_chamber = true
+can_auto_charge = true
 projectile_inaccuracy = 0.3
 projectile_range = 500.0
 projectile_hit_mask = 88

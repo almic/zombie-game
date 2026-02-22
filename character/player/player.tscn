@@ -53,17 +53,15 @@ height = 1.7
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_i6sc0"]
 
-[node name="player" type="CharacterBody3D" unique_id=173820620 node_paths=PackedStringArray("sight_points", "camera_smooth_target_node") groups=["player", "zombie_target"]]
+[node name="player" type="CharacterBody3D" unique_id=173820620 node_paths=PackedStringArray("sight_points") groups=["player", "zombie_target"]]
 process_mode = 1
 collision_mask = 115
 script = ExtResource("1_y482n")
 sight_points = [NodePath("SightNodes/eyes"), NodePath("SightNodes/left_head"), NodePath("SightNodes/right_head"), NodePath("SightNodes/mid_chest"), NodePath("SightNodes/right_chest"), NodePath("SightNodes/left_chest"), NodePath("SightNodes/left_leg"), NodePath("SightNodes/right_leg")]
 sight_points_no_depth = true
 life = ExtResource("3_lqp71")
-weapon_position = Vector3(0.225, -0.195, -0.605)
-camera_smooth_enabled = false
-camera_smooth_target_node = NodePath("Neck/CameraTarget")
-weapon_aim_position = Vector3(0, -0.1, -0.5)
+weapon_position = Vector3(0.225, 0, -0.605)
+weapon_aim_position = Vector3(0, 0.05, -0.5)
 drive_forward_enable = true
 drive_forward_input_curve = ExtResource("3_tkl2s")
 drive_steer_enable = true
@@ -114,36 +112,20 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.395, 0)
 metadata/_edit_lock_ = true
 
-[node name="CameraTarget" type="Node3D" parent="Neck" unique_id=1597187228]
-unique_name_in_owner = true
-editor_description = "Target position for the Camera3D, used to smooth vertical jitter."
+[node name="Eyes" type="Node3D" parent="Neck" unique_id=261632467]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
-metadata/_edit_lock_ = true
 
-[node name="Camera3D" type="Camera3D" parent="Neck/CameraTarget" unique_id=678954323]
+[node name="Camera3D" type="Camera3D" parent="Neck/Eyes" unique_id=678954323]
 unique_name_in_owner = true
 cull_mask = 524287
 current = true
 near = 0.02
 metadata/_edit_lock_ = true
 
-[node name="WeaponNode" type="Node3D" parent="Neck/CameraTarget/Camera3D" unique_id=906250424 node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
-unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, -0.195, -0.605)
-script = ExtResource("7_qh58e")
-controller = NodePath("../../../..")
-hitbox = NodePath("../../../../Hitbox")
-sound_groups = Array[StringName]([&"gunshot"])
-aim_target = NodePath("../AimTarget")
-aim_target_reduced_rate = false
-aim_duration = 0.25
-metadata/_custom_type_script = "uid://n578e74oit7v"
+[node name="hud" parent="Neck/Eyes/Camera3D" unique_id=1649981851 instance=ExtResource("11_vuhga")]
 metadata/_edit_lock_ = true
 
-[node name="hud" parent="Neck/CameraTarget/Camera3D" unique_id=1649981851 instance=ExtResource("11_vuhga")]
-metadata/_edit_lock_ = true
-
-[node name="AimTarget" type="RayCast3D" parent="Neck/CameraTarget/Camera3D" unique_id=1151300626]
+[node name="AimTarget" type="RayCast3D" parent="Neck/Eyes/Camera3D" unique_id=1151300626]
 unique_name_in_owner = true
 editor_description = "Weapon targetting raycast so weapons aim correctly"
 exclude_parent = false
@@ -155,7 +137,7 @@ debug_shape_custom_color = Color(0, 0, 0, 0)
 debug_shape_thickness = 1
 metadata/_edit_lock_ = true
 
-[node name="Flashlight" type="SpotLight3D" parent="Neck/CameraTarget/Camera3D" unique_id=1737080198]
+[node name="Flashlight" type="SpotLight3D" parent="Neck/Eyes/Camera3D" unique_id=1737080198]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.414)
 visible = false
@@ -169,6 +151,19 @@ spot_range = 50.0
 spot_attenuation = 2.0
 spot_angle = 33.0
 spot_angle_attenuation = 0.0116912
+metadata/_edit_lock_ = true
+
+[node name="WeaponNode" type="Node3D" parent="." unique_id=906250424 node_paths=PackedStringArray("controller", "hitbox", "aim_target")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.225, 1.395, -0.605)
+script = ExtResource("7_qh58e")
+controller = NodePath("..")
+hitbox = NodePath("../Hitbox")
+sound_groups = Array[StringName]([&"gunshot"])
+aim_target = NodePath("../Neck/Eyes/Camera3D/AimTarget")
+aim_target_reduced_rate = false
+aim_duration = 0.25
+metadata/_custom_type_script = "uid://n578e74oit7v"
 metadata/_edit_lock_ = true
 
 [node name="Hurtbox" type="Area3D" parent="." unique_id=950143746]

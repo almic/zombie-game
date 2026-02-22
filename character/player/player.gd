@@ -8,7 +8,6 @@ const LOOK_DOWN_MAX = deg_to_rad(-89)
 
 
 @onready var neck: Node3D = %Neck
-@onready var camera_target: Node3D = %CameraTarget
 @onready var camera_3d: Camera3D = %Camera3D
 @onready var hurtbox: HurtBox = %Hurtbox
 @onready var weapon_node: WeaponNode = %WeaponNode
@@ -72,17 +71,6 @@ var look_speed: float = deg_to_rad(0.5)
 ## FOV of the camera
 @export_range(1.0, 179.0, 0.001, 'suffix:°')
 var fov: float = 75.0
-
-
-@export_subgroup("Smoothing", "camera_smooth")
-## Enables camera smoothing
-@export var camera_smooth_enabled: bool = true
-## The target location for the camera. This is used as the endpoint for
-## smoothing, and if smoothing must be performed. However, it is not used to
-## reset interpolation duration, the position of the Player is used for that.
-@export var camera_smooth_target_node: Node3D = null
-## Maximum distance from the target node
-@export var camera_smooth_max_distance: float = 0.45
 
 
 @export_group("Aiming")
@@ -262,27 +250,8 @@ var _weapon_position: Interpolation = Interpolation.new(0.0, Tween.TRANS_SINE, T
 var _recoil_transform: Transform3D
 ## If the recoil transform has some non-identity value
 var _is_recoiling: bool = false
-## Transform containing look deltas
-var _look_transform: Transform3D
-
-## Camera smoothing duration
-var _camera_smooth_duration: float = 0.0
-## The elapsed smoothing time
-var _camera_smooth_time: float = 0.0
-## Computed position of the camera for smoothing
-var _camera_smooth_position: Vector3
-## Mutex for setting camera smoothing values
-var _camera_smooth_lock: Mutex = Mutex.new()
-
-## The last location of the smooth target node
-var _camera_smooth_target_last_position: Vector3 = Vector3.ZERO
-## The initial transform of the camera
-var _camera_smooth_initial_position: Vector3
-## Target position of the camera
-var _camera_smooth_target_position: Vector3
-## Predicted next positions of the camera target
-var _camera_smooth_next_position_a: Vector3
-var _camera_smooth_next_position_b: Vector3
+## Basis containing look deltas
+var _look_basis: Basis
 
 ## Jump can be activated
 var _jump_ready: bool = true
@@ -336,17 +305,9 @@ func _ready() -> void:
 
     ammo_bank.set('owner', get_rid())
 
-    #if not Engine.is_editor_hint():
-        #camera_smooth_enabled = randf() > 0.5
-
-    if camera_smooth_enabled and not Engine.is_editor_hint():
-        camera_3d.top_level = true
-        _camera_smooth_initial_position = camera_smooth_target_node.global_position
-        _camera_smooth_target_last_position = _camera_smooth_initial_position
-
     weapons = weapons.duplicate()
 
-    weapon_node.position = weapon_position
+    weapon_node.transform = neck.transform.translated_local(weapon_position)
 
     if Engine.is_editor_hint():
         return
@@ -377,8 +338,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
     if Engine.is_editor_hint():
-        camera_3d.global_transform = camera_target.global_transform
-        weapon_node.position = weapon_position
+        weapon_node.transform = neck.transform.translated_local(weapon_position)
         return
 
     # If we could not fire the last frame, force a "trigger reset" for fire_primary
@@ -435,27 +395,22 @@ func update_first_person_camera(delta: float) -> void:
     if _handle_input:
         rotation.y -= look.value_axis_2d.x * _look_speed.current
 
-    neck.rotation.z = _look_roll.current
-    weapon_node.rotation.z = -_look_roll.current * 0.5
-
     if _handle_input:
-        _look_transform = _look_transform.rotated_local(
-                Vector3.RIGHT,
+        _look_basis = _look_basis.rotated(
+                _look_basis.x,
                 -look.value_axis_2d.y * _look_speed.current
         )
-        var look_euler: Vector3 = _look_transform.basis.get_euler()
+        var look_euler: Vector3 = _look_basis.get_euler()
         look_euler.x = clampf(look_euler.x, LOOK_DOWN_MAX, LOOK_UP_MAX)
-        look_euler.z = _look_roll.current * 0.5
-        look_euler.y = rotation.y
-        _look_transform.basis = Basis.from_euler(look_euler)
+        look_euler.z = _look_roll.current
+        _look_basis = Basis.from_euler(look_euler)
 
-
-    interpolate_camera_smooth(delta)
-    _look_transform.origin = _camera_smooth_position
+    neck.transform.basis = _look_basis
+    camera_3d.rotation.z = _look_roll.current * 0.5
 
     # NOTE: this allows recoil to push the camera over max rotations, but
     #       I will accept this because it would be hard to intuitively remove
-    camera_3d.transform = _look_transform
+    camera_3d.transform = Transform3D.IDENTITY
     camera_3d.transform *= _recoil_transform
 
 func update_first_person(delta: float) -> void:
@@ -468,13 +423,6 @@ func update_first_person(delta: float) -> void:
     # NOTE: Must be before camera update, so the weapon fires where it appears
     #       to point right now
     update_weapon_node(delta)
-
-    if not _weapon_position.is_done:
-        _weapon_position.update(delta)
-
-    # NOTE: set weapon position after update_fanning(), as we may need to start
-    #       moving to a new position.
-    weapon_node.position = _weapon_position.current
 
     # NOTE: Reload cancel uses this to track if it should ignore aim attempts
     #       if we were not already trying to aim
@@ -525,6 +473,11 @@ func update_first_person(delta: float) -> void:
                 _last_input_timer = 0.0
 
     update_first_person_camera(delta)
+
+    if not _weapon_position.is_done:
+        _weapon_position.update(delta)
+
+    weapon_node.transform = neck.transform.translated_local(_weapon_position.current)
 
 func update_vehicle(delta: float) -> void:
     if _handle_input and (not _vehicle_enter_exit_action) and exit_vehicle.is_triggered():
@@ -694,18 +647,17 @@ func update_vehicle_camera(_delta: float) -> void:
     const follow_distance: float = 5.0
 
     # TODO: Create an arm to track distance and lock vertical look
-    _look_transform.origin = Vector3.ZERO
     if _handle_input:
-        _look_transform = _look_transform.rotated(
+        _look_basis = _look_basis.rotated(
                 Vector3.UP,
                 -look.value_axis_2d.x * _look_speed.current
         )
-        _look_transform = _look_transform.rotated_local(
-                Vector3.RIGHT,
+        _look_basis = _look_basis.rotated(
+                _look_basis.x,
                 -look.value_axis_2d.y * _look_speed.current
         )
 
-    camera_3d.transform = _look_transform
+    camera_3d.transform.basis = _look_basis
 
     # Track backwards from forward to follow distance
     camera_3d.transform = camera_3d.transform.translated_local(Vector3.BACK * follow_distance)
@@ -724,9 +676,6 @@ func _physics_process(delta: float) -> void:
     # NOTE: Only process input in _process(), so we do not
     # miss inputs shorter than a physics frame.
 
-    var initial_camera_position: Vector3 = camera_smooth_target_node.global_position
-
-    var last_accel: Vector3 = acceleration
     update_movement(delta, _move_speed)
 
     if is_grounded():
@@ -758,27 +707,6 @@ func _physics_process(delta: float) -> void:
             if down_speed_sqrd >= (land_sound_speed * land_sound_speed):
                 play_sound_land()
                 _footstep_accumulator = 0.0
-
-    if camera_smooth_enabled:
-        if not camera_smooth_target_node.global_position.is_equal_approx(_camera_smooth_target_last_position):
-            _camera_smooth_target_last_position = camera_smooth_target_node.global_position
-
-            var jerk: Vector3 = acceleration - last_accel
-
-            _camera_smooth_lock.lock()
-
-            _camera_smooth_initial_position = initial_camera_position
-            _camera_smooth_target_position = _camera_smooth_target_last_position
-            _camera_smooth_next_position_a = _camera_smooth_target_position + (last_velocity + acceleration + jerk) * delta
-            _camera_smooth_next_position_b = _camera_smooth_next_position_a + (last_velocity + (acceleration + jerk + jerk)) * delta
-
-            _camera_smooth_time = 0.0
-            _camera_smooth_duration = delta * 3
-
-            _camera_smooth_lock.unlock()
-
-        else:
-            _camera_smooth_duration = 0.0
 
 func get_camera() -> Camera3D:
     return camera_3d
@@ -852,37 +780,6 @@ func update_aiming(should_aim: bool) -> void:
 
         _weapon_position.duration = look_aim_return_time
         _weapon_position.set_target_delta(weapon_position, weapon_position - _weapon_position.current)
-
-func interpolate_camera_smooth(delta: float) -> void:
-    if not camera_smooth_enabled:
-        return
-
-    _camera_smooth_lock.lock()
-
-    if is_zero_approx(_camera_smooth_duration):
-        _camera_smooth_position = _camera_smooth_target_position
-        _camera_smooth_lock.unlock()
-        return
-
-    _camera_smooth_time = minf(_camera_smooth_time + delta, _camera_smooth_duration)
-
-    var t: float = _camera_smooth_time / _camera_smooth_duration
-    var t2: float = t * t
-    var t3: float = t2 * t
-
-    if is_equal_approx(_camera_smooth_time, _camera_smooth_duration):
-        _camera_smooth_duration = 0.0
-
-    _camera_smooth_position = (
-            _camera_smooth_initial_position * (-t3 + 3.0 * t2 - 3.0 * t + 1.0)
-            + _camera_smooth_target_position * (3.0 * t3 - 6.0 * t2 + 3.0 * t)
-            + _camera_smooth_next_position_a * (-3.0 * t3 + 3.0 * t2)
-            + _camera_smooth_next_position_b * (t3)
-    )
-
-    _camera_smooth_lock.unlock()
-
-    #print('lag ' + str(camera_3d.global_position.distance_to(camera_smooth_target_node.global_position)))
 
 func update_weapon_node(delta: float) -> void:
     if not weapon_index:

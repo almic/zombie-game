@@ -442,9 +442,7 @@ debug_path_custom_color = Color(1, 0, 0, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." unique_id=426770923 instance=ExtResource("4_036b0")]
-physics_interpolation_mode = 1
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, -301.0024936, 8.7854465, -356.3552049)
-camera_smooth_enabled = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.7616507, 13.4477526, -511.29068)
 
 [node name="zombie" parent="." unique_id=978147832 groups=["zombie"] instance=ExtResource("19_ckxcn")]
 process_mode = 4

@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AmmoResource" load_steps=7 format=3 uid="uid://csa7jc86bj06l"]
+[gd_resource type="Resource" script_class="AmmoResource" format=3 uid="uid://csa7jc86bj06l"]
 
 [ext_resource type="Texture2D" uid="uid://cfh2bqdqan380" path="res://icon/buckshot_front.png" id="1_8dk3t"]
 [ext_resource type="PackedScene" uid="uid://bxqwg5im4xufb" path="res://scene/item/ammo/buckshot/buckshot_rigid.tscn" id="1_27hun"]
@@ -11,7 +11,7 @@
 script = ExtResource("1_j6sir")
 type = 2
 damage = 20.0
-impulse_power = 25.0
+impact_power = 25.0
 projectiles = 12
 projectile_spread = 0.122173
 projectile_clustering = 0.75
@@ -19,7 +19,6 @@ ui_texture = ExtResource("4_6g6xq")
 alt_ui_texture = ExtResource("1_8dk3t")
 stock_height = 70
 stock_rotation = 0.349066
-stock_pivot = Vector2(0.5, 0.5)
 scene_round = ExtResource("2_6g6xq")
 scene_round_expended = ExtResource("2_6nq0u")
 scene_round_unloaded = ExtResource("1_27hun")

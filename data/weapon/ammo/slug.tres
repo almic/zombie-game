@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AmmoResource" load_steps=7 format=3 uid="uid://nqh0w26v06v4"]
+[gd_resource type="Resource" script_class="AmmoResource" format=3 uid="uid://nqh0w26v06v4"]
 
 [ext_resource type="PackedScene" uid="uid://3wxvwr8id84v" path="res://scene/item/ammo/slug/slug_rigid_expend.tscn" id="1_36j7w"]
 [ext_resource type="Texture2D" uid="uid://b6wcyk10gacuj" path="res://icon/slug_front.png" id="1_306uj"]
@@ -11,15 +11,13 @@
 script = ExtResource("1_xqace")
 type = 3
 damage = 40.0
-impulse_power = 50.0
-projectiles = 1
+impact_power = 50.0
 projectile_spread = 0.00436332
 projectile_clustering = 0.0
 ui_texture = ExtResource("4_v0ih0")
 alt_ui_texture = ExtResource("1_306uj")
 stock_height = 70
 stock_rotation = 0.349066
-stock_pivot = Vector2(0.5, 0.5)
 scene_round = ExtResource("2_v0ih0")
 scene_round_expended = ExtResource("1_36j7w")
 scene_round_unloaded = ExtResource("1_pfnld")

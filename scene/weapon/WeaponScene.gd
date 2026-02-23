@@ -64,8 +64,9 @@ signal uncharged()
 ## Location of magazine mesh while in the gun
 @export var magazine_marker: Marker3D
 
-## Origin point of recoil rotation
-@export var recoil_marker: Marker3D
+## Brace point of the weapon. For weapons with stocks, this should be the back
+## center of the stock. Otherwise, should be back center of the grip.
+@export var brace_marker: Marker3D
 
 
 ## If the weapon has mechanical animations when melee'ing

@@ -148,39 +148,8 @@ var ammo_expend_force_range: float = 0.0
 ## If recoil is enabled
 @export var recoil_enabled: bool = false
 
-## Time to recover from recoil, in seconds
-@export_range(0.001, 1.0, 0.0001, 'or_greater', 'suffix:s')
-var recoil_recover_time: float = 0.25
-
-## Vertical recoil acceleration per shot in degrees per second^2
-@export_range(0.0, 20.0, 0.001, 'or_greater', 'radians_as_degrees', 'suffix:°/s²')
-var recoil_vertical_acceleration: float = 0.0
-
-## Maximum recoil distance in degrees. This is applied as a hard-stop on vertical
-## rise, but as an eased function on kick. True max angle is 50% over this value.
-@export_range(0.0, 20.0, 0.001, 'or_greater', 'radians_as_degrees')
-var recoil_spread_max: float = 0.0
-
-## Angular distance of random recoil, in arc minutes
-@export_range(0.0, 120.0, 0.1, 'or_greater', 'suffix:′')
-var recoil_kick: float = 0.0
-
-## Minimum recoil power, in arc minutes.
-@export_range(0.0, 100.0, 0.1, 'or_greater', 'suffix:′')
-var recoil_random_range: float = 0.0
-
-## Axis of random recoil, the following parameters operate from this line.
-@export_range(-90.0, 90.0, 0.0001, 'radians_as_degrees')
-var recoil_spread_axis_angle: float = 0.0
-
-## Left-Right bias of random recoil, -1.0 is left-only recoil, 1.0 is right-only
-## recoil, 0.0 is equally left and right recoil
-@export_range(-1.0, 1.0, 0.0001)
-var recoil_spread_bias: float = 0.0
-
-## Angular spread from the baseline recoil direction in the positive and negative direction
-@export_range(0.0, 90.0, 0.001, 'or_greater', 'radians_as_degrees')
-var recoil_spread_angle: float = 0.0
+## If this weapon recoils against the shoulder instead of the elbows
+@export var recoil_shouldered: bool = false
 
 ## How much to reduce recoil by when aiming, if aiming is enabled
 @export_range(0.0, 1.0, 0.0001)
@@ -677,7 +646,7 @@ func fire_projectiles(node: Node3D, ammo: AmmoResource, transform: Transform3D) 
                 DebugSphere.create_color(node, hit.position, debug_time_to_live, debug_sphere_radius, debug_sphere_color)
 
         if hit.collider is HurtBox:
-            hit.power = ammo.impulse_power
+            hit.power = ammo.impact_power
             hit.from = from
             # NOTE: i do not understand why this is different than the impulse direction...
             hit.direction = -projectile_forward

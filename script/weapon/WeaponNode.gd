@@ -33,6 +33,21 @@ signal reload_complete()
 @export var sound_groups: Array[StringName]
 
 
+@export_group("Recoil", "recoil")
+
+## How much handling the controller has over recoil
+@export_range(0.1, 10.0, 0.01, 'or_greater', 'suffix:m/s²')
+var recoil_handle_acceleration: float = 5.0
+
+## Maximum recoil handling of the controller. Set to zero to disable.
+@export_range(0.0, 10.0, 0.01, 'or_greater', 'suffix:m/s')
+var recoil_handle_max: float = 8.0
+
+## How quickly the controller can recover the weapon after handling recoil.
+@export_range(0.1, 2.0, 0.01, 'or_greater', 'suffix:m/s')
+var recoil_recover_rate: float = 1.0
+
+
 @export_group("Aiming", "aim")
 
 ## If the weapon should align itself with the target RayCast3D. You should
@@ -55,15 +70,25 @@ const AIM_TICK_RATE: int = 12
 const RECOIL_DURATION: float = 0.117
 const RECOIL_ANGLE: float = deg_to_rad(180.0)
 const RECOIL_SPLIT = 0.5
-const RECOIL_ALT_SPLIT = 1.0 - RECOIL_SPLIT
+const RECOIL_ALT_SPLIT = 0.1
 
 var aim_transform: Transform3D
 var alt_mode_transform: Transform3D
 var sway_transform: Transform3D
 var recoil_transform: Transform3D
 
-# Recoil & aiming flags
+## If recoil aim reduction is applied
 var _is_aiming: bool = false
+## Current recoil force
+var _recoil_force: float = 0.0
+## Recoil velocity
+var _recoil_velocity: Vector3 = Vector3.ZERO
+## Recoil angular velocity
+var _recoil_angular_velocity: Vector3 = Vector3.ZERO
+## Handle speed
+var _handle_speed: float = 0.0
+##
+
 var _is_recoil_rising: bool = false
 
 # Random component of recoil
@@ -171,7 +196,6 @@ func _physics_process(_delta: float) -> void:
     if Engine.is_editor_hint():
         return
 
-    var played_effects: bool = false
     var from_node: Node3D = self
     if controller:
         from_node = controller
@@ -180,11 +204,6 @@ func _physics_process(_delta: float) -> void:
     #var s: int = 0
     var size: int = weapon_fire_queue.size()
     while i < size:
-        if not played_effects:
-            played_effects = true
-            trigger_sound()
-            trigger_particle()
-
         if weapon_type.melee_only:
             weapon_type.fire_melee(
                     from_node,
@@ -259,6 +278,8 @@ func interpolate_alt_mode(delta: float) -> void:
         alt_mode_transform = _alt_transform.interpolate_with(Transform3D.IDENTITY, 1.0 - progress)
 
 func interpolate_recoil(delta: float) -> void:
+    return
+
     recoil_transform = Transform3D.IDENTITY
     var alt_recoil_transform = Transform3D.IDENTITY
 
@@ -404,7 +425,8 @@ func switch_ammo() -> bool:
 
     return true
 
-## Updates weapon trigger, returns 'true' if weapon has actuated and will soon fire
+## Updates weapon trigger, returns 'true' if weapon has actuated and will soon fire.
+## Should run in frame process as it relies on input and high timing accuracy.
 func update_trigger(triggered: bool, delta: float) -> bool:
     if weapon_type.melee_only:
         if triggered and weapon_type.can_melee():
@@ -449,11 +471,14 @@ func update_trigger(triggered: bool, delta: float) -> bool:
                 if ammo:
                     weapon_fire_queue.append(ammo)
                     weapon_fire_queue.append(weapon_projectile_transform())
+                    _recoil_force += ammo.recoil_force
+                    trigger_sound()
+                    trigger_particle()
 
-                if on_weapon_fire():
+                if weapon_type.fire_round():
                     emit_updated = true
-
-                weapon_fired.emit()
+                    if ammo:
+                        weapon_fired.emit()
 
                 continue
 
@@ -571,7 +596,7 @@ func load_weapon_type(type: WeaponResource) -> void:
     if _has_alt_mode:
         _alt_transform = weapon_type.get_alt_transform()
 
-    _recoil_recovery.duration = weapon_type.recoil_recover_time
+    # _recoil_recovery.duration = weapon_type.recoil_recover_time
 
     if _weapon_scene:
         if weapon_type.ammo_can_mix:
@@ -675,74 +700,6 @@ func on_cylinder_rotated(steps: int) -> void:
     if weapon_type is RevolverWeapon:
         weapon_type.rotate_cylinder(steps)
         _weapon_scene.on_weapon_updated(weapon_type)
-
-## Returns true if the weapon state changed, used to consolidate weapon firing updates
-func on_weapon_fire() -> bool:
-    if not weapon_type:
-        return false
-
-    # NOTE: Dev only, should be removed later
-    if weapon_type.melee_only:
-        print_debug('on_weapon_fire() must not be called for melee-only weapons!')
-        return false
-
-    # TODO: recoil system change to impulses
-    # Turn on recoil rise when firing, before fire_round as it may become empty
-    if weapon_type.recoil_enabled:
-        _is_recoil_rising = true
-
-    var updated: bool = weapon_type.fire_round()
-    # TODO: change recoil system to be impulse based. The result of this method
-    #       should have no impact on recoil!
-
-    # TODO: recoil system change to impulses
-    # NOTE: Always apply recoil kick
-    if weapon_type.recoil_enabled:
-        # TODO: Probably make it sway back and forth instead
-        var bias: float = weapon_type.recoil_spread_bias
-        var distance: float = randf() * (2.0 - abs(bias)) - (1.0 - abs(bias))
-        if bias < 0.0:
-            distance = -distance
-
-        if distance < 0.0:
-            distance = -sqrt(-distance)
-            distance *= deg_to_rad(weapon_type.recoil_random_range / 60.0)
-            distance -= deg_to_rad(weapon_type.recoil_kick / 60.0)
-        else:
-            distance = sqrt(distance)
-            distance *= deg_to_rad(weapon_type.recoil_random_range / 60.0)
-            distance += deg_to_rad(weapon_type.recoil_kick / 60.0)
-
-        var angle: float = 2.0 * (randf() - 0.5) * weapon_type.recoil_spread_angle
-        if _is_aiming and not is_zero_approx(weapon_type.recoil_aim_control):
-            distance *= (1.0 - weapon_type.recoil_aim_control)
-            angle *= (1.0 - weapon_type.recoil_aim_control)
-        angle += weapon_type.recoil_spread_axis_angle
-
-        var change: Vector2 = Vector2(-cos(angle) * distance, sin(angle) * distance)
-        var max_spread: float = weapon_type.recoil_spread_max
-
-        var target: Vector2 = _recoil_kick.current
-
-        # If we pass our max spread, ensure the kick pulls us back
-        if not is_zero_approx(max_spread):
-            var total: Vector2 = Vector2(target.x, target.y + _recoil_rise_amount)
-            if abs(total.x) > max_spread:
-                if signf(total.x) == signf(change.x):
-                    change.x *= -1.0
-
-            if abs(total.y) > max_spread:
-                if signf(total.y) == signf(change.y):
-                    change.y *= -1.0
-
-        target += change
-
-        _recoil_kick.duration = RECOIL_DURATION
-        _recoil_kick.easing = Tween.EASE_OUT
-        _recoil_kick.transition = Tween.TRANS_SPRING
-        _recoil_kick.set_target_delta(target, target - _recoil_kick.current)
-
-    return updated
 
 func on_weapon_melee(melee_transform: Transform3D) -> void:
     if not weapon_type:

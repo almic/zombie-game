@@ -13,13 +13,14 @@ _data = {
 &"RESET": ExtResource("4_cj22s")
 }
 
-[node name="Pistol" type="Node3D" unique_id=264754222 node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker")]
+[node name="Pistol" type="Node3D" unique_id=264754222 node_paths=PackedStringArray("eject_marker", "projectile_marker", "particle_marker", "reload_marker", "magazine_marker", "brace_marker")]
 script = ExtResource("1_pe3ky")
 eject_marker = NodePath("Mesh/EjectMarker")
 projectile_marker = NodePath("Mesh/protomesh/BarrelMarker")
 particle_marker = NodePath("Mesh/protomesh/BarrelMarker")
 reload_marker = NodePath("ReloadMarker")
 magazine_marker = NodePath("Mesh/MagazineMarker")
+brace_marker = NodePath("GripMarker")
 metadata/_custom_type_script = "uid://ddecsnlrrapmh"
 
 [node name="Mesh" type="Node3D" parent="." unique_id=1711359242]
@@ -98,3 +99,8 @@ anim_player = NodePath("../AnimationPlayer")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.064, 0.099)
 visible = false
 gizmo_extents = 0.0
+
+[node name="GripMarker" type="Marker3D" parent="." unique_id=676699052]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.06, 0.14)
+visible = false
+gizmo_extents = 0.05

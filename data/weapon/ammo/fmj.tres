@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AmmoResource" load_steps=6 format=3 uid="uid://dlrkgbv4k2ayw"]
+[gd_resource type="Resource" script_class="AmmoResource" format=3 uid="uid://dlrkgbv4k2ayw"]
 
 [ext_resource type="Script" uid="uid://br0bn4v8ti7u5" path="res://script/weapon/AmmoResource.gd" id="1_6aw5r"]
 [ext_resource type="PackedScene" uid="uid://cql2ehaj8f2h3" path="res://scene/item/ammo/fmj/fmj_mesh.tscn" id="1_ropqi"]
@@ -10,14 +10,12 @@
 script = ExtResource("1_6aw5r")
 type = 4
 damage = 35.0
-impulse_power = 35.0
-projectiles = 1
+impact_power = 35.0
 projectile_spread = 0.00174533
 projectile_clustering = 1.0
 ui_texture = ExtResource("5_clx7x")
 stock_height = 70
 stock_rotation = 0.314159
-stock_pivot = Vector2(0.5, 0.5)
 scene_round = ExtResource("1_ropqi")
 scene_round_expended = ExtResource("2_clx7x")
 scene_round_unloaded = ExtResource("3_f2t08")

@@ -1,0 +1,193 @@
+[gd_scene format=3 uid="uid://dcjqy8rryhky2"]
+
+[ext_resource type="CameraAttributesPhysical" uid="uid://djs1o5pq2224k" path="res://environment/camera_attributes_physical.tres" id="1_ly1na"]
+[ext_resource type="Script" uid="uid://nn8y8fwywgtd" path="res://script/dynamic_day/dynamic_day.gd" id="1_ncfcg"]
+[ext_resource type="Script" uid="uid://mvbofvslxl7" path="res://scene/world/world.gd" id="1_pglek"]
+[ext_resource type="Script" uid="uid://b30sia5gpcc2f" path="res://script/dynamic_day/physical_sky_compute.gd" id="1_xj600"]
+[ext_resource type="Script" uid="uid://kot5fg2d3vpw" path="res://script/post_process/auto_exposure.gd" id="2_teqxl"]
+[ext_resource type="Resource" uid="uid://c03y3iyxl2p81" path="res://data/input/global.tres" id="2_xsdv8"]
+[ext_resource type="Resource" uid="uid://b1tmnuu4av4go" path="res://data/input/camera.tres" id="3_5p31p"]
+[ext_resource type="Script" uid="uid://cke0kq5c5l0ai" path="res://script/post_process/tonemap.gd" id="3_ly1na"]
+[ext_resource type="Resource" uid="uid://7qgp0c8ytmj1" path="res://data/input/first_person.tres" id="4_pkvml"]
+[ext_resource type="Resource" uid="uid://codpo6l5xn1m8" path="res://data/input/vehicle_realistic.tres" id="5_548ov"]
+[ext_resource type="PackedScene" uid="uid://bq2cigt6cpkql" path="res://script/dynamic_day/moon.tscn" id="5_teqxl"]
+[ext_resource type="Resource" uid="uid://dyq3nbpw2252v" path="res://data/input/actions/global/pause.tres" id="6_6r2se"]
+[ext_resource type="PackedScene" uid="uid://ni06m8vhlyt4" path="res://character/player/player.tscn" id="7_bsm1r"]
+[ext_resource type="Resource" uid="uid://dgky2snybxdau" path="res://data/input/actions/global/debug_focus_log.tres" id="7_pvu7v"]
+[ext_resource type="Resource" uid="uid://bfsb06cgsqlvw" path="res://data/input/actions/global/debug_toggle_log.tres" id="8_31711"]
+[ext_resource type="Resource" uid="uid://mie3rlidsb5b" path="res://data/input/actions/global/debug_toggle_zombie_targeting.tres" id="9_5wtv0"]
+[ext_resource type="PackedScene" uid="uid://bq8evo0aqxnp4" path="res://ui/pause.tscn" id="13_6r2se"]
+[ext_resource type="PackedScene" uid="uid://bb3wt0w01eidc" path="res://ui/gameover.tscn" id="14_yos4n"]
+[ext_resource type="PackedScene" uid="uid://tm8ou68ducip" path="res://ui/debug/log.tscn" id="15_jp3yk"]
+[ext_resource type="PackedScene" uid="uid://dcwdq2tolxn0a" path="res://vehicle/truck/truck_vehicle.tscn" id="17_pvu7v"]
+[ext_resource type="Terrain3DAssets" uid="uid://byfr0ftpf4tol" path="res://environment/terrain_assets.tres" id="19_31711"]
+
+[sub_resource type="Environment" id="Environment_x42x4"]
+background_mode = 2
+background_intensity = 10000.0
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_pglek"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 1
+access_resolved_color = false
+access_resolved_depth = false
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("1_xj600")
+lut_size = 1024
+sky_size = 512
+metadata/_custom_type_script = "uid://b30sia5gpcc2f"
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_v1h4h"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("2_teqxl")
+metadata/_custom_type_script = "uid://kot5fg2d3vpw"
+
+[sub_resource type="CompositorEffect" id="CompositorEffect_gbx38"]
+resource_local_to_scene = false
+resource_name = ""
+enabled = true
+effect_callback_type = 4
+needs_motion_vectors = false
+needs_normal_roughness = false
+script = ExtResource("3_ly1na")
+metadata/_custom_type_script = "uid://cke0kq5c5l0ai"
+
+[sub_resource type="Compositor" id="Compositor_xso80"]
+compositor_effects = Array[CompositorEffect]([SubResource("CompositorEffect_pglek"), SubResource("CompositorEffect_v1h4h"), SubResource("CompositorEffect_gbx38")])
+
+[sub_resource type="Gradient" id="Gradient_ly1na"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_bsm1r"]
+noise_type = 2
+frequency = 0.03
+cellular_jitter = 3.0
+cellular_return_type = 0
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 50.0
+domain_warp_fractal_type = 2
+domain_warp_fractal_lacunarity = 1.5
+domain_warp_fractal_gain = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_pglek"]
+noise = SubResource("FastNoiseLite_bsm1r")
+color_ramp = SubResource("Gradient_ly1na")
+seamless = true
+
+[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_v1h4h"]
+_shader_parameters = {
+&"auto_base_texture": 2,
+&"auto_height_reduction": 0.0,
+&"auto_overlay_texture": 0,
+&"auto_shader": null,
+&"auto_slope": 0.0290000013775,
+&"bias_distance": 512.0,
+&"blend_sharpness": 0.90000004,
+&"depth_blur": 0.0,
+&"flat_terrain_normals": false,
+&"general": null,
+&"macro_variation": null,
+&"macro_variation1": Color(1, 1, 1, 1),
+&"macro_variation2": Color(1, 1, 1, 1),
+&"macro_variation_enabled": true,
+&"macro_variation_slope": 0.333,
+&"mipmap_bias": 1.0,
+&"mipmaps": null,
+&"noise1_angle": 0.0,
+&"noise1_offset": Vector2(0.5, 0.5),
+&"noise1_scale": 0.04,
+&"noise2_scale": 0.076,
+&"noise_texture": SubResource("NoiseTexture2D_pglek"),
+&"projection_threshold": 0.8,
+&"vertical_projection": true
+}
+world_background = 0
+texture_filtering = 1
+auto_shader_enabled = true
+
+[node name="TerrainTesting" type="Node3D" unique_id=297241825]
+process_mode = 3
+script = ExtResource("1_pglek")
+global_context = ExtResource("2_xsdv8")
+camera_context = ExtResource("3_5p31p")
+first_person = ExtResource("4_pkvml")
+vehicle_context = ExtResource("5_548ov")
+act_pause = ExtResource("6_6r2se")
+act_focus_log = ExtResource("7_pvu7v")
+act_toggle_log = ExtResource("8_31711")
+act_toggle_zombie_targeting = ExtResource("9_5wtv0")
+enable_spawning = false
+metadata/_custom_type_script = "uid://mvbofvslxl7"
+
+[node name="DynamicDay" type="WorldEnvironment" parent="." unique_id=2111591210 node_paths=PackedStringArray("Sun", "Moon")]
+environment = SubResource("Environment_x42x4")
+camera_attributes = ExtResource("1_ly1na")
+compositor = SubResource("Compositor_xso80")
+script = ExtResource("1_ncfcg")
+Sun = NodePath("Sun")
+Moon = NodePath("Moon")
+initial_time = 0.33404
+north = -1.5707963267949
+moon_renderer = ExtResource("5_teqxl")
+metadata/_custom_type_script = "uid://nn8y8fwywgtd"
+
+[node name="Sun" type="DirectionalLight3D" parent="DynamicDay" unique_id=2048082377]
+transform = Transform3D(-0.00021758344055, -0.9175276, -0.3976719875654, -0.86354379304858, -0.20036317883125, 0.46275988812332, -0.50427380473778, 0.34350786542001, -0.7922817, 0, 0, 0)
+shadow_enabled = true
+directional_shadow_mode = 0
+directional_shadow_max_distance = 1000.0
+
+[node name="Moon" type="DirectionalLight3D" parent="DynamicDay" unique_id=2022628484]
+transform = Transform3D(0, -0.9494529, 0.31390960176898, 0.86379681559307, -0.15816031212342, -0.47837263, 0.50384031336453, 0.27115411439214, 0.8201343700132, 0, 0, 0)
+visible = false
+light_energy = 0.0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1353221532]
+
+[node name="ui_pause" parent="CanvasLayer" unique_id=834296885 instance=ExtResource("13_6r2se")]
+unique_name_in_owner = true
+process_mode = 2
+visible = false
+
+[node name="ui_gameover" parent="CanvasLayer" unique_id=882982208 instance=ExtResource("14_yos4n")]
+unique_name_in_owner = true
+visible = false
+
+[node name="ui_log" parent="CanvasLayer" unique_id=960472370 instance=ExtResource("15_jp3yk")]
+unique_name_in_owner = true
+visible = false
+
+[node name="Terrain3D" type="Terrain3D" parent="." unique_id=142077360]
+data_directory = "res://terrain_data/testing_terrain/"
+material = SubResource("Terrain3DMaterial_v1h4h")
+assets = ExtResource("19_31711")
+save_16_bit = true
+collision_mode = 3
+collision_layer = 16
+collision_mask = 0
+mesh_size = 36
+displacement_sharpness = 0.5
+render_layers = 2147483651
+cast_shadows = 2
+top_level = true
+metadata/_edit_lock_ = true
+
+[node name="Marker3D" type="Marker3D" parent="." unique_id=1578784270]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -100, 0)
+gizmo_extents = 50.0
+
+[node name="player" parent="." unique_id=173820620 instance=ExtResource("7_bsm1r")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 9.5024651, 120.0207085, 72.77102)
+
+[node name="TruckVehicle" parent="." unique_id=1970571783 instance=ExtResource("17_pvu7v")]
+transform = Transform3D(0.47027270714357, 0, 0.88252115, 0, 1, 0, -0.88252115, 0, 0.47027270714357, 1.563505, 119.968315, 72.7338771)

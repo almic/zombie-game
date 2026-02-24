@@ -395,13 +395,13 @@ func update_first_person_camera(delta: float) -> void:
     if _handle_input:
         rotation.y -= look.value_axis_2d.x * _look_speed.current
 
-    if _handle_input:
         _look_basis = _look_basis.rotated(
                 _look_basis.x,
                 -look.value_axis_2d.y * _look_speed.current
         )
         var look_euler: Vector3 = _look_basis.get_euler()
         look_euler.x = clampf(look_euler.x, LOOK_DOWN_MAX, LOOK_UP_MAX)
+        look_euler.y = 0.0
         look_euler.z = _look_roll.current
         _look_basis = Basis.from_euler(look_euler)
 
@@ -648,21 +648,23 @@ func update_vehicle_camera(_delta: float) -> void:
 
     # TODO: Create an arm to track distance and lock vertical look
     if _handle_input:
-        _look_basis = _look_basis.rotated(
-                Vector3.UP,
-                -look.value_axis_2d.x * _look_speed.current
-        )
+        current_vehicle.camera_target.rotation.y -= look.value_axis_2d.x * _look_speed.current
+
         _look_basis = _look_basis.rotated(
                 _look_basis.x,
                 -look.value_axis_2d.y * _look_speed.current
         )
+        var look_euler: Vector3 = _look_basis.get_euler()
+        look_euler.x = clampf(look_euler.x, LOOK_DOWN_MAX, LOOK_UP_MAX)
+        look_euler.y = current_vehicle.camera_target.rotation.y
+        look_euler.z = 0
+        _look_basis = Basis.from_euler(look_euler)
 
-    camera_3d.transform.basis = _look_basis
+    camera_3d.global_position = current_vehicle.camera_target.global_position
+    camera_3d.global_basis = _look_basis
 
     # Track backwards from forward to follow distance
-    camera_3d.transform = camera_3d.transform.translated_local(Vector3.BACK * follow_distance)
-
-    camera_3d.global_transform = camera_3d.transform.translated(current_vehicle.camera_target.global_position)
+    camera_3d.global_transform = camera_3d.global_transform.translated_local(Vector3.BACK * follow_distance)
 
 
 func _physics_process(delta: float) -> void:
@@ -1249,13 +1251,13 @@ func connect_hurtboxes() -> void:
 
 func show_self(yes: bool = true) -> void:
     if yes:
-        visible = true
         collider.disabled = false
+        weapon_node.visible = true
         weapon_node.process_mode = Node.PROCESS_MODE_INHERIT
         return
 
-    visible = false
     collider.disabled = true
+    weapon_node.visible = false
     weapon_node.process_mode = Node.PROCESS_MODE_DISABLED
 
 func bush_test() -> void:

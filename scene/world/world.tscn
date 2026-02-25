@@ -92,6 +92,63 @@
 [ext_resource type="Resource" uid="uid://c2wtc3kd0rcpc" path="res://scene/world/polygon2d/street_gutter_76.tres" id="65_6ywls"]
 [ext_resource type="Shader" uid="uid://cvbcuevc7mush" path="res://shader/simple/checker.gdshader" id="82_c4lkr"]
 [ext_resource type="Script" uid="uid://db37nkvye6raf" path="res://addons/terrain_instancer/TerrainInstanceNode.gd" id="83_cqpt1"]
+[ext_resource type="Shader" uid="uid://og4ni5sxfwtq" path="res://environment/terrain.gdshader" id="93_qg5jb"]
+
+[sub_resource type="Gradient" id="Gradient_pljh8"]
+offsets = PackedFloat32Array(0.2, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_687a7"]
+noise_type = 2
+frequency = 0.03
+cellular_jitter = 3.0
+cellular_return_type = 0
+domain_warp_enabled = true
+domain_warp_type = 1
+domain_warp_amplitude = 50.0
+domain_warp_fractal_type = 2
+domain_warp_fractal_lacunarity = 1.5
+domain_warp_fractal_gain = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_8a4wk"]
+noise = SubResource("FastNoiseLite_687a7")
+color_ramp = SubResource("Gradient_pljh8")
+seamless = true
+
+[sub_resource type="Terrain3DMaterial" id="Terrain3DMaterial_0sovs"]
+_shader_parameters = {
+&"auto_base_texture": 2,
+&"auto_height_reduction": 0.029,
+&"auto_overlay_texture": 0,
+&"auto_shader": null,
+&"auto_slope": 1.794,
+&"bias_distance": 512.0,
+&"blend_sharpness": 0.90000004,
+&"depth_blur": 0.0,
+&"enable_textures": true,
+&"flat_terrain_normals": false,
+&"general": null,
+&"ground_level": 0.0,
+&"macro_variation": null,
+&"macro_variation1": Color(1, 0.943244, 0.919604, 1),
+&"macro_variation2": Color(0.899196, 1, 0.823027, 1),
+&"macro_variation_enabled": true,
+&"macro_variation_slope": 0.333,
+&"mipmap_bias": 1.0,
+&"mipmaps": null,
+&"noise1_angle": 0.0,
+&"noise1_offset": Vector2(0.5, 0.5),
+&"noise1_scale": 0.04,
+&"noise2_scale": 0.076,
+&"noise_texture": SubResource("NoiseTexture2D_8a4wk"),
+&"projection_threshold": 0.8,
+&"region_blend": 0.25,
+&"vertical_projection": true
+}
+world_background = 0
+texture_filtering = 1
+shader_override = ExtResource("93_qg5jb")
+show_grey = true
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d2i0j"]
 radius = 0.6
@@ -378,6 +435,19 @@ directional_shadow_blend_splits = true
 sky_mode = 1
 metadata/_edit_lock_ = true
 
+[node name="Terrain" type="Terrain3D" parent="." unique_id=1150435940 groups=["sound_group:grass"]]
+data_directory = "res://terrain_data/new_world/"
+material = SubResource("Terrain3DMaterial_0sovs")
+assets = ExtResource("14_5enf7")
+collision_mode = 3
+collision_layer = 16
+collision_mask = 0
+mesh_lods = 9
+displacement_sharpness = 0.5
+show_grey = true
+top_level = true
+metadata/_edit_lock_ = true
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=388886696]
 process_mode = 3
 
@@ -442,7 +512,7 @@ debug_path_custom_color = Color(1, 0, 0, 1)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -149.571, 0.56837, 490.218)
 
 [node name="player" parent="." unique_id=426770923 instance=ExtResource("4_036b0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -321.7616507, 13.4477526, -511.29068)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -302.658064, 8.213255, -354.65082)
 
 [node name="zombie" parent="." unique_id=978147832 groups=["zombie"] instance=ExtResource("19_ckxcn")]
 process_mode = 4
@@ -806,25 +876,28 @@ unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -379, 0, -508)
 navigation_mesh = ExtResource("47_85d2q")
 
-[node name="Terrain3D" type="Terrain3D" parent="." unique_id=753370391 groups=["nav_group", "sound_group:grass"]]
+[node name="TerrainOLD" type="Terrain3D" parent="." unique_id=753370391 groups=["nav_group", "sound_group:grass"]]
 data_directory = "res://terrain_data/world"
 material = ExtResource("4_2u3nc")
 assets = ExtResource("14_5enf7")
 save_16_bit = true
 collision_mode = 3
-collision_layer = 16
+collision_layer = 0
 collision_mask = 0
 instance_collision_mode = 3
 instance_collision_radius = 8.0
-mesh_size = 36
+mesh_lods = 8
+mesh_size = 8
 displacement_sharpness = 0.5
 render_layers = 2147483651
-cast_shadows = 2
-process_mode = 1
+cast_shadows = 0
+show_grey = true
+process_mode = 4
 top_level = true
+visible = false
 metadata/_edit_lock_ = true
 
-[node name="TerrainInstanceNode" type="Node3D" parent="Terrain3D" unique_id=1793775891 node_paths=PackedStringArray("terrain")]
+[node name="TerrainInstanceNode" type="Node3D" parent="TerrainOLD" unique_id=1793775891 node_paths=PackedStringArray("terrain")]
 script = ExtResource("83_cqpt1")
 terrain = NodePath("..")
 target_groups_enabled = true
@@ -835,47 +908,47 @@ target_groups = {
 metadata/_custom_type_script = "uid://db37nkvye6raf"
 metadata/_edit_lock_ = true
 
-[node name="CabinArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=990783198]
+[node name="CabinArea" type="Node3D" parent="TerrainOLD/TerrainInstanceNode" unique_id=990783198]
 script = ExtResource("55_fs5wv")
 seed = 3873114041
 settings = SubResource("Resource_dsaby")
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"
 metadata/_edit_lock_ = true
 
-[node name="CabinDrivewayCut" type="Node3D" parent="Terrain3D/TerrainInstanceNode/CabinArea" unique_id=1375471601]
+[node name="CabinDrivewayCut" type="Node3D" parent="TerrainOLD/TerrainInstanceNode/CabinArea" unique_id=1375471601]
 script = ExtResource("59_yidmw")
 mode = 1
 vertices = PackedInt32Array(-222, 492, -213, 504, -205, 506, -163, 508, -160, 502, -159, 490, -167, 480, -162, 467, -147, 455, -137, 454, -130, 464, -125, 469, -121, 475, -124, 481, -135, 494, -139, 499, -141, 505, -145, 512, -150, 518, -160, 522, -171, 522, -198, 521, -207, 520, -217, 518, -221, 516)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 
-[node name="MainArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/CabinArea" unique_id=2056786455]
+[node name="MainArea" type="Node3D" parent="TerrainOLD/TerrainInstanceNode/CabinArea" unique_id=2056786455]
 script = ExtResource("59_yidmw")
 vertices = PackedInt32Array(-217, 518, -200, 531, -178, 534, -143, 533, -118, 498, -125, 482, -139, 453, -155, 442, -180, 449, -183, 471, -190, 496, -213, 504)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 
-[node name="EastForest" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=1102254799]
+[node name="EastForest" type="Node3D" parent="TerrainOLD/TerrainInstanceNode" unique_id=1102254799]
 script = ExtResource("55_fs5wv")
 seed = 1714493046
 settings = SubResource("Resource_icy4k")
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"
 metadata/_edit_lock_ = true
 
-[node name="EastArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/EastForest" unique_id=488010291]
+[node name="EastArea" type="Node3D" parent="TerrainOLD/TerrainInstanceNode/EastForest" unique_id=488010291]
 script = ExtResource("59_yidmw")
 vertices = PackedInt32Array(1069, 612, 970, -118, 855, -103, 747, -78, 756, -34, 758, 75, 749, 122, 715, 219, 706, 285, 715, 360, 735, 411, 767, 489, 775, 587, 754, 658)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
 metadata/_edit_lock_ = true
 
-[node name="IslandTrees" type="Node3D" parent="Terrain3D/TerrainInstanceNode" unique_id=1537603505]
+[node name="IslandTrees" type="Node3D" parent="TerrainOLD/TerrainInstanceNode" unique_id=1537603505]
 script = ExtResource("55_fs5wv")
 seed = 2715453188
 settings = SubResource("Resource_e5bey")
 metadata/_custom_type_script = "uid://ba7dj46pupxe5"
 metadata/_edit_lock_ = true
 
-[node name="IslandArea" type="Node3D" parent="Terrain3D/TerrainInstanceNode/IslandTrees" unique_id=1889409829]
+[node name="IslandArea" type="Node3D" parent="TerrainOLD/TerrainInstanceNode/IslandTrees" unique_id=1889409829]
 script = ExtResource("59_yidmw")
 vertices = PackedInt32Array(361, 159, 357, 161, 354, 165, 354, 173, 355, 189, 354, 214, 356, 240, 362, 260, 370, 280, 380, 298, 388, 313, 395, 324, 409, 344, 416, 351, 422, 354, 426, 351, 428, 346, 425, 329, 418, 310, 412, 291, 406, 270, 400, 255, 394, 242, 389, 218, 383, 201, 379, 187, 372, 170, 367, 162)
 metadata/_custom_type_script = "uid://c5sknaqxkqhcr"
@@ -9330,7 +9403,7 @@ transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -368.0724358, 3.83, -697.232
 transform = Transform3D(0.486719, 0, 0.873559, 0, 1, 0, -0.873559, 0, 0.486719, -145.554, 0.506972, 486.774)
 
 [node name="TruckVehicle" parent="." unique_id=273614056 instance=ExtResource("54_x6gsb")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -301.2883103, 8.3006795, -351.7898)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -301.2883103, 8.3006795, -351.7898)
 
 [node name="Race" type="Node3D" parent="." unique_id=1034726807]
 visible = false

@@ -261,6 +261,8 @@ func _forward_3d_gui_input(p_viewport_camera: Camera3D, p_event: InputEvent) -> 
 			# Mouse clicked, start editing
 			editor.start_operation(mouse_global_position)
 			editor.operate(mouse_global_position, p_viewport_camera.rotation.y)
+			if ui.brush_data.stamp and editor.get_tool() == Terrain3DEditor.HEIGHT:
+				editor.stop_operation()
 			return AFTER_GUI_INPUT_STOP
 		
 		# _input_apply released, save undo data

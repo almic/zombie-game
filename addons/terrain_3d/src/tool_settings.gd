@@ -77,6 +77,8 @@ func _ready() -> void:
 							"unit":"m", "range":Vector3(-500, 500, 0.1), "flags":ALLOW_OUT_OF_BOUNDS })
 	add_setting({ "name":"height_picker", "type":SettingType.PICKER, "list":main_list, "default":Terrain3DEditor.HEIGHT,
 							"flags":NO_LABEL, "tooltip":"Pick Height from the terrain." })
+	add_setting({ "name":"stamp", "type":SettingType.CHECKBOX, "list":main_list, "default":false,
+							"tool_tip":"Apply the brush once per click, for stamping brushes."})
 	
 	add_setting({ "name":"color", "type":SettingType.COLOR_SELECT, "list":main_list, 
 							"default":Color.WHITE, "flags":ADD_SEPARATOR })

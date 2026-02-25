@@ -193,6 +193,7 @@ func _on_tool_changed(p_tool: Terrain3DEditor.Tool, p_operation: Terrain3DEditor
 			to_show.push_back("strength")
 			to_show.push_back("height")
 			to_show.push_back("height_picker")
+			to_show.push_back("stamp")
 			to_show.push_back("invert")
 
 		Terrain3DEditor.TEXTURE:
